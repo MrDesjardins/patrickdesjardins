@@ -33,6 +33,7 @@
     "gatsby-plugin-mdx": "^2.13.0",
     "gatsby-plugin-sharp": "^3.13.0",
     "gatsby-plugin-styled-components": "^4.13.0",
+    "gatsby-remark-images": "^5.10.0",
     "gatsby-remark-prismjs": "^5.10.0",
     "gatsby-source-filesystem": "^3.13.0",
     "gatsby-transformer-remark": "^4.10.0",

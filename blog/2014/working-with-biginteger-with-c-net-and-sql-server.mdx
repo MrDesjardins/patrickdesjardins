@@ -16,6 +16,9 @@ To pass a value to Sql Server of type **BigInt**, you must use a **long** in .Ne
 
 For example, here is how to pass a **long** to SqlServer using SqlParameter.
 
-\[csharp\] long myBigNumber = 1; var myParameter = new SqlParameter("@myParameterName", myBigNumber) { SqlDbType = SqlDbType.BigInt }; \[/csharp\]
+
+```csharp
+ long myBigNumber = 1; var myParameter = new SqlParameter("@myParameterName", myBigNumber) { SqlDbType = SqlDbType.BigInt }; 
+```
 
 You have to use a long for the value, but you specify the type to be of SqlDbType.BigInt. Has you can see, we do not need to specify the DbType but only the SqlDbType. We are using a long because a long and Int64 is the same type.

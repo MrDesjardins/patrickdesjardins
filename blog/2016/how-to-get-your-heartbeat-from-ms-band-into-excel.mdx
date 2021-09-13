@@ -12,6 +12,6 @@ First, you need to go to Microsoft Health Dashboard : https://dashboard.microsof
 The response is a JSON object. The interesting part is the property "Workouts". This one is an array, open the first one, and get the data from the property "HeartRateChartData".
 
 ```typescript
-\[ { "AverageHeartRate": 71, "Duration": 0 }, { "AverageHeartRate": 74, "Duration": 1 }, ... \] 
+[ { "AverageHeartRate": 71, "Duration": 0 }, { "AverageHeartRate": 74, "Duration": 1 }, ... ] 
 ``` 
  This give you a minute by minute average of your heart. You can use a website to convert that information into CSV. This website is doing it for free : http://konklone.io/json/. At the end, you get a CSV from every minutes of your presentation. If you are using Microsoft Skype for Business, you can record your presentation and correlate every minute that your heart peaked. Here is mine. I highlighted in blue my "average working day" range of my heart beat. The yellow highlights are the time before I start talking and the end of the presentation where on of my teammate was doing a part. [![heartbeat](http://patrickdesjardins.com/blog/wp-content/uploads/2016/06/heartbeat-1024x604.png)](http://patrickdesjardins.com/blog/?attachment_id=4669)

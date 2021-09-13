@@ -19,7 +19,7 @@ The action can often be handled without passing data, or by passing a React's pr
 
  const setName = useCallback(() => {
     dispatch(AppActions.setName("test"));
- }, \[\]);
+ }, []);
 
 A quick change with React Hooks to produce the desired scenario is to use useCallback at the top of the component and access it directly in the onClick function callback.
 
@@ -29,7 +29,7 @@ At the moment, it works. However, we are not passing any information. Let's imag
 
 const setName = useCallback((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     dispatch(AppActions.setName("test"));
-  }, \[\]);
+  }, []);
 
 The idea is to have a callback that return a function that as on its turn the input event.
 
@@ -43,7 +43,7 @@ The invocation code change by passing the data. In that example, it is a string,
     ) => {
       dispatch(AppActions.setName(name));
     },
-    \[\]
+    []
   );
 
 My rule of thumb is that I do not need to have this convoluted definition if I am accessing directly properties of the component. Otherwise, I am passing the data needed. I always define the type, which gives me a good quick view about what is passed (name is a string and the event is a mouse event) without having to rummage the code. Here is the code sand box to play with the code of this article.

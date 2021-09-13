@@ -27,8 +27,11 @@ Second, Entity Framework will do his mapping of the property inside the inner ob
 
 If you do not want to alter your table, you will need to configure the Database Context.
 
-\[csharp\] protected override void OnModelCreating(DbModelBuilder modelBuilder) { modelBuilder.Configuration.Add(new MyTable2Configuration()); //Add subsequent configuration... }
 
-public class MyTable2Configuration: ComplexTypeConfiguration<Class2> { public MyTable2Configuration() { Property(o => o.Field3).HasColumnName("Field3"); Property(o => o.Field4).HasColumnName("Field4"); } } \[/csharp\]
+```csharp
+ protected override void OnModelCreating(DbModelBuilder modelBuilder) { modelBuilder.Configuration.Add(new MyTable2Configuration()); //Add subsequent configuration... }
+
+public class MyTable2Configuration: ComplexTypeConfiguration<Class2> { public MyTable2Configuration() { Property(o => o.Field3).HasColumnName("Field3"); Property(o => o.Field4).HasColumnName("Field4"); } } 
+```
 
 You do not have to configure the Table1 class, only the complex type. If you need more information about Complex Type, you can always check this [blog](http://weblogs.asp.net/manavi/archive/2011/03/28/associations-in-ef-4-1-code-first-part-2-complex-types.aspx) which give additional information.

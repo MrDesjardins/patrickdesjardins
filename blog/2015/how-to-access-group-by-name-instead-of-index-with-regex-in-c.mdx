@@ -8,17 +8,26 @@ categories:
 
 When you are searching with a **Regex Expression** you may have multiple groups and you may do not one to rely on the position to have access to the information. The good news is that Regex allows to **name** every group directly into the Regex Expression. This is done by adding inside the group parentheses a question mark followed by the less greater sign, the name and closing the name with the greater sign.
 
-\[csharp\] const string PATTERN\_WITHOUT\_NAME = @"(parser)\\((.\*?)\\)"; //This has 3 groups const string PATTERN\_WITH\_NAME= @"(parser)\\((?<parameterName>.\*?)\\)"; //This also has 3 groups \[/csharp\]
+
+```csharp
+ const string PATTERN\_WITHOUT\_NAME = @"(parser)\\((.\*?)\\)"; //This has 3 groups const string PATTERN\_WITH\_NAME= @"(parser)\\((?<parameterName>.\*?)\\)"; //This also has 3 groups 
+```
 
 This code is searching for every thing inside the parse method. For example: "This is parser(abc) and it is awesome". This would result to get "abc". This is also working for multiple instances of _parser_ method.
 
-\[csharp\] var regex = new Regex(PATTERN\_WITH\_NAME, RegexOptions.IgnoreCase);
 
-var matches = regex.Matches(stringToSearch); foreach (Match match in matches) { var url = match.Groups\["parameterName"\].Value; } \[/csharp\]
+```csharp
+ var regex = new Regex(PATTERN\_WITH\_NAME, RegexOptions.IgnoreCase);
+
+var matches = regex.Matches(stringToSearch); foreach (Match match in matches) { var url = match.Groups["parameterName"].Value; } 
+```
 
 Something that can be also interesting is to replace the named group from your Regex. This can be done with the **MatchEvaluator** delegate function that the Regex' Replace method use. This deletage is called every time a match is found. From here, you must return what you want to do.
 
-\[csharp\] transformedString = regex.Replace(originalContent, match => { var group = match.Groups\["parameterName"\]; if (group != null) { var parameter = match.Groups\["parameterName"\].Value; //Do your transformation logic here return string.Format("parser({0})", transformedParameter); } return match.ToString(); }); \[/csharp\]
+
+```csharp
+ transformedString = regex.Replace(originalContent, match => { var group = match.Groups["parameterName"]; if (group != null) { var parameter = match.Groups["parameterName"].Value; //Do your transformation logic here return string.Format("parser({0})", transformedParameter); } return match.ToString(); }); 
+```
 
 In this example, every time the Regex pattern match, the delegate is called. We get the parameter and could do something with like and return the whole match string. This is important to understand that you cannot return only a single group. For example, if you desired to just modify the _parameterName_ and not the whole _parser_ method this cannot be done.
 

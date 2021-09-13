@@ -10,7 +10,12 @@ categories:
 
 At some point in the life of your software the performance can become an issue. If you have optimized your queries or your Entity Framework configuration, than the next step is to think about keeping some data in memory or in an external cache. This has the advantage to have the data already available.
 
-First of all, we need to have some infrastructure classes and interface because we want to have something flexible and not tightly bound to Asp.Net since this will be used in the Data Access Layer. \[csharp\] public interface ICacheConfiguration { bool IsActivate(); } \[/csharp\] The first interface configures the cache. So far, to keep it simple, only one property is set. It is about its activation. Caching system must always have a possibility to be desactivated. The reason is that if your data become not what you expect that you can turn off the cache and use the main persistence. If the problem is solved, than it means that the problem is the cache. Otherwise, the problem is with the persistence or the logic that use the data. \[csharp\] public interface ICacheProvider { void Set<T>(T objectToCache) where T : ICachableModel;
+First of all, we need to have some infrastructure classes and interface because we want to have something flexible and not tightly bound to Asp.Net since this will be used in the Data Access Layer. 
+```csharp
+ public interface ICacheConfiguration { bool IsActivate(); } 
+``` The first interface configures the cache. So far, to keep it simple, only one property is set. It is about its activation. Caching system must always have a possibility to be desactivated. The reason is that if your data become not what you expect that you can turn off the cache and use the main persistence. If the problem is solved, than it means that the problem is the cache. Otherwise, the problem is with the persistence or the logic that use the data. 
+```csharp
+ public interface ICacheProvider { void Set<T>(T objectToCache) where T : ICachableModel;
 
 void Set(string key, Object objectToCache);
 
@@ -24,13 +29,19 @@ T Delete<T>(T objectTodelete) where T : ICachableModel;
 
 bool IsInCache(string key);
 
-bool IsInCache<T>(T objectToVerify) where T : ICachableModel; } \[/csharp\] This second interface allows you to have something in front of the technology used. You can have a memory cache, an external caching system or to have an Azure cache behind this interface.
+bool IsInCache<T>(T objectToVerify) where T : ICachableModel; } 
+``` This second interface allows you to have something in front of the technology used. You can have a memory cache, an external caching system or to have an Azure cache behind this interface.
 
-\[csharp\] public interface ICachableModel { string GetCacheKey(); } \[/csharp\]
+
+```csharp
+ public interface ICachableModel { string GetCacheKey(); } 
+```
 
 Most of the methods are defined twice. One use a string key, and the other use a ICachableModel. This interface allows to have the model class to have its logic to built its unique key.
 
-\[csharp\] public class MemoryCache:ICacheProvider { private readonly ObjectCache cache; private readonly CacheItemPolicy defaultPolicy; private readonly ICacheConfiguration configuration;
+
+```csharp
+ public class MemoryCache:ICacheProvider { private readonly ObjectCache cache; private readonly CacheItemPolicy defaultPolicy; private readonly ICacheConfiguration configuration;
 
 public MemoryCache(ICacheConfiguration configuration) { this.configuration = configuration; this.cache = new System.Runtime.Caching.MemoryCache(Constants.Configurations.CacheNameConfiguration); this.defaultPolicy = new CacheItemPolicy(); }
 
@@ -50,11 +61,15 @@ public T Delete<T>(T objectTodelete) where T : ICachableModel { if (configuratio
 
 public bool IsInCache(string key) { if (configuration.IsActivate()) { return cache.Contains(key); } else { return false; } }
 
-public bool IsInCache<T>(T objectToVerify) where T : ICachableModel { if (configuration.IsActivate()) { return cache.Contains(objectToVerify.GetCacheKey()); } else { return false; } } } \[/csharp\] This implementation uses the System.Runtime.Caching as you can see, it also use the configuration to disable the cache. This way to proceed does not affect any of the caller code. In fact, all method return the default value when the cache does not find the value. This should tell to the called to continue with the default persistence strategy.
+public bool IsInCache<T>(T objectToVerify) where T : ICachableModel { if (configuration.IsActivate()) { return cache.Contains(objectToVerify.GetCacheKey()); } else { return false; } } } 
+``` This implementation uses the System.Runtime.Caching as you can see, it also use the configuration to disable the cache. This way to proceed does not affect any of the caller code. In fact, all method return the default value when the cache does not find the value. This should tell to the called to continue with the default persistence strategy.
 
 The caller should be in the Services classes if you have followed previous post about Enterprise Asp.Net MVC application.
 
-\[csharp\] var cacheResult = (YouEntity)this.cache.Get("YouUniqueKey123"); if (cacheResult == null) { var repositoryResult = yourRepository.GetYourEntity(); this.cache.Set("YouUniqueKey123", repositoryResult); return repositoryResult; } else { return cacheResult; } \[/csharp\]
+
+```csharp
+ var cacheResult = (YouEntity)this.cache.Get("YouUniqueKey123"); if (cacheResult == null) { var repositoryResult = yourRepository.GetYourEntity(); this.cache.Set("YouUniqueKey123", repositoryResult); return repositoryResult; } else { return cacheResult; } 
+```
 
 This create a simple architecture for caching. It has the flexibility to use the concrete cache you want and to have high cohesive classes. Configurations could have additional information about how many time the entity must stay in cache, the information about external cache like which IP or PORT to use for MemCached for example.
 

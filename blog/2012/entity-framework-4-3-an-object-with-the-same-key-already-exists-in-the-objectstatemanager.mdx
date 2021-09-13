@@ -10,7 +10,10 @@ This situation occur if you have already the object inside the DbContext and you
 
 This can be done with the help of **DbSet** and its **Local** property which is a collection of Locally attached entity.
 
-\[csharp\] if (!Database.Set<MyObject>().Local.Any(e => e.ID == myObject.ID)) Database.MyObjects.Attach(myObject); else myObject = Database.Set<MyObject>().Local.Single(e => e.ID == myObject.ID); \[/csharp\]
+
+```csharp
+ if (!Database.Set<MyObject>().Local.Any(e => e.ID == myObject.ID)) Database.MyObjects.Attach(myObject); else myObject = Database.Set<MyObject>().Local.Single(e => e.ID == myObject.ID); 
+```
 
 The first line verify if the Local repositor contains or not your object. This line use the primary has identifier (ID). If it doesn't contain anything, the object is attached. Otherwise, your object will takes the reference of the one of the Local repository. This way, it won't create a new instance of your object. Without the fourth line, you could end up with a new entry into the database even if the primary key is the same as an existing one (Entity Framework will do an Insert and the ID will auto-increment).
 

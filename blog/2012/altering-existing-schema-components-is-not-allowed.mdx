@@ -17,7 +17,9 @@ The problem is when trying to altering this schema you will get an error message
 
 To fix this, you will need to change the column type to remove the XSD validation. After, you will need to drop the validation and create a new one to finally apply again the new validation.
 
-\[sql\]
+
+```sql
+
 
 ALTER TABLE my\_table ALTER COLUMN xml\_column XML
 
@@ -27,4 +29,6 @@ CREATE XML SCHEMA COLLECTION xml\_collection AS 'YOU XSD HERE'
 
 ALTER TABLE my\_table ALTER COLUMN xml\_column XML(xml\_collection)
 
-\[/sql\]
+
+```
+

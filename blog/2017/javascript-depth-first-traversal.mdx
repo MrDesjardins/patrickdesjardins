@@ -8,12 +8,12 @@ categories:
 Traversing a tree by going in one path as down as possible is possible recursively or with an iteration. Let's first create a node function that will hold the information of each node. ```typescript
 var node = function(v, c) { return { value : v, children : c }; };
 
-var node5 = node("node5"); var node4 = node("node4"); var node3 = node("node3"); var node2 = node("node2", \[node5\]); var node1 = node("node1", \[node3, node4\]); var graph = node("root", \[node1, node2\]); 
+var node5 = node("node5"); var node4 = node("node4"); var node3 = node("node3"); var node2 = node("node2", [node5]); var node1 = node("node1", [node3, node4]); var graph = node("root", [node1, node2]); 
 ``` 
  The graph is simple, and is the same that we used in the breadth first approach. The algorithm to traverse the tree doesn't need any structure since we will call recursively every children when we find one. This has the advantage to not carry a stack with us, but the disadvantage that we may want to have additional variable to not go too deep in one direction.
 
 ```typescript
-function depthFirstRecursive(node, callback){ callback(node); if(node.children){ for(var i = 0 ; i < node.children.length; i++){ var child = node.children\[i\]; if(!child.hasBeenVisited){ depthFirstRecursive(child, callback); } } } }
+function depthFirstRecursive(node, callback){ callback(node); if(node.children){ for(var i = 0 ; i < node.children.length; i++){ var child = node.children[i]; if(!child.hasBeenVisited){ depthFirstRecursive(child, callback); } } } }
 
 depthFirstRecursive(graph, function(node){ console.log(node.value); }); 
 ``` 
@@ -22,7 +22,7 @@ depthFirstRecursive(graph, function(node){ console.log(node.value); });
 This output : Root, Node1, Node3, Node4, Node2, Node5
 
 The iterative approach is similar. However, we loop from the length of the children array to zero. We do this if we want to have the exact same output of the recursive one. Without loop in reverse, we still do a depth first but from the right side of the tree first instead of the left side. ```typescript
-function depthFirstIterative(root, callback){ var stack = \[\]; stack.unshift(root); while(stack.length > 0) { var node = stack.shift(); callback(node); if(node.children){ for(var i = node.children.length - 1; i >= 0; i--){ var child = node.children\[i\]; if(!child.discovered){ child.discovered = true; stack.unshift(child); } } } } }
+function depthFirstIterative(root, callback){ var stack = []; stack.unshift(root); while(stack.length > 0) { var node = stack.shift(); callback(node); if(node.children){ for(var i = node.children.length - 1; i >= 0; i--){ var child = node.children[i]; if(!child.discovered){ child.discovered = true; stack.unshift(child); } } } } }
 
 depthFirstIterative(graph, function(node){ console.log(node.value); }); 
 ``` 

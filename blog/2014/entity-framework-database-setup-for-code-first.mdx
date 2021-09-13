@@ -9,7 +9,9 @@ This article is part of a series of Entity Framework articles. This first articl
 
 First, let's define model classes that will be used across all articles.
 
-\[csharp\] public class Person { public int Id { get; set; } public int Name { get; set; } public DateTime BirthDate { get; set; }
+
+```csharp
+ public class Person { public int Id { get; set; } public int Name { get; set; } public DateTime BirthDate { get; set; }
 
 public ICollection<Person> Friends { get; set; }
 
@@ -21,7 +23,8 @@ public Address Address { get; set; }
 
 public ICollection<Person> Resident { get; set; } public Person Owner { get; set; } }
 
-public class Address { public string Street { get; set; } public int Number { get; set; } public string City { get; set; } } \[/csharp\]
+public class Address { public string Street { get; set; } public int Number { get; set; } public string City { get; set; } } 
+```
 
 But, first we will comment the Address class and all references to it. The reason is that we do not want for the moment to configure anything.
 
@@ -31,11 +34,17 @@ Then, we need to add Entity Framework to your project.
 
 The last step is to tell Entity Framework to initialize the database. This will create the database and all tables defined by the DbContext.
 
-\[csharp\] public static void BuildDatabase() { using (var context = new YourContext()) { context.Database.Initialize(true); } } \[/csharp\]
+
+```csharp
+ public static void BuildDatabase() { using (var context = new YourContext()) { context.Database.Initialize(true); } } 
+```
 
 We could also add an Entity to the database to generate the database automatically. This would produce the same result.
 
-\[csharp\] public static void BuildByAddingEntity() { using (var context = new YourContext()) { var stud = new Person() { Name = "Person1", BirthDate = new DateTime(1990, 01, 01) }; context.Persons.Add(stud); context.SaveChanges(); } } \[/csharp\]
+
+```csharp
+ public static void BuildByAddingEntity() { using (var context = new YourContext()) { var stud = new Person() { Name = "Person1", BirthDate = new DateTime(1990, 01, 01) }; context.Persons.Add(stud); context.SaveChanges(); } } 
+```
 
 The result is not very interesting because it creates something without the help of any connection string. This mean that the database name is generated with the context name and the namespace. For example, the code executed generate a database would be "EntityFrameworkTestConsole.DataAccessLayer.YourContext". To fix this issue, we need to define a connection string and than set it in the YourContext. It also has used the default Sql Server defined for your machine. In general, it is SQL Express. This is very restrictive.
 
@@ -45,11 +54,18 @@ If you setup a connection string with a name, for example you could use "Default
 
 The **app.config** is where the connection string can be defined.
 
-\[xml\] <configSections> <!-- For more information on Entity Framework configuration, visit http://go.microsoft.com/fwlink/?LinkID=237468 --> <section name="entityFramework" type="System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false" /> </configSections> <connectionStrings> <add name="DefaultConnection" connectionString="Data Source=(LocalDb)\\v11.0;Initial Catalog=EntityFrameworkTestConsole;Integrated Security=True" providerName="System.Data.SqlClient" /> </connectionStrings> \[/xml\]
 
-\[csharp highlight="3"\] public class YourContext : DbContext { public YourContext(): base("DefaultConnection") {
+```xml
+ <configSections> <!-- For more information on Entity Framework configuration, visit http://go.microsoft.com/fwlink/?LinkID=237468 --> <section name="entityFramework" type="System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false" /> </configSections> <connectionStrings> <add name="DefaultConnection" connectionString="Data Source=(LocalDb)\\v11.0;Initial Catalog=EntityFrameworkTestConsole;Integrated Security=True" providerName="System.Data.SqlClient" /> </connectionStrings> 
+```
 
-} public DbSet<Person> Persons { get; set; } public DbSet<House> Houses { get; set; } } \[/csharp\]
+
+```csharp
+public class YourContext : DbContext { public YourContext(): base("DefaultConnection") {
+
+} 
+public DbSet<Person> Persons { get; set; } public DbSet<House> Houses { get; set; } } 
+```
 
 This generate the database with the name specified in the **Catalog** from the connection string. You could also specify directly the connection string into the base() but this will be a show stopper if you are building application that must change the server and database depending of the environment (dev, test, prod).
 

@@ -8,7 +8,9 @@ categories:
 
 This is a small JavaScript and CSS control that allows to have some edition from a textbox in a fashion that this one is only a button to minimize space and once clicked become a more extended version. The goal is to have a way to add information in a quick way without taking too much space. This is perfect for situation where adding information is not the main task. The use case is that a user want to add information which require a text box. The user click the button to open the edition which reveal a text box. The button does not need to stay there because we want to save space so the button transforms into a closing button which cancel the operation if required. When the user starts to type, a save button is added. From there, the user can click the cancel button or hit save. In both case, the text box is rolling back and the user interface come back to the initial state. This design is intended to be minimal. There is not label. This is why we need to use a watermark, also known as placeholder in the text box. Since we want to limit button, the expand button and cancel (collapse) button is the same. To make sure that the user knows what the button is doing we display a tooltip but also we have an animation that transform visually the button to its intend.
 
-To keep it simples, let's start with a division that will hold all our Html elements. \[html\] <div id="container"> </div> \[/html\]
+To keep it simples, let's start with a division that will hold all our Html elements. 
+```html  <div id="container"> </div> 
+``` 
 
 Next, we need to create our three main controls. The first one is the input where the user will write any information that will be saved. The second one is the toggle button that expand or collapse the input box and the third one is the save button that will be displayed only when the user save. ```typescript
 var $controlContainer = $('#container');
@@ -56,7 +58,7 @@ function onOk(jqueryEvent) { var data = jqueryEvent.data; var $input = data.inpu
 ``` 
 
 
-\[css\] #toggleButton, #okButton { padding:0 2px 4px 2px; margin-left:3px; height: 22px; width: 22px; vertical-align: top; }
+[css] #toggleButton, #okButton { padding:0 2px 4px 2px; margin-left:3px; height: 22px; width: 22px; vertical-align: top; }
 
 #toggleButton span.glyphicon { transition: all 1000ms ease; }
 
@@ -78,6 +80,6 @@ function onOk(jqueryEvent) { var data = jqueryEvent.data; var $input = data.inpu
 
 } #inline-editor-textbox { border: none; background-color: #E2E2E2; color:#7f7f7f; padding-left:4px; height:22px;/\*To fix the size of the button since we do not have any border\*/ }
 
-#inline-editor-textbox:focus { outline: none; background-color:white; } \[/css\]
+#inline-editor-textbox:focus { outline: none; background-color:white; } [/css]
 
 <iframe width="100%" height="200" src="//jsfiddle.net/mrdesjardins/tLpu8kfr/3/embedded/result,html,js,css" allowfullscreen="allowfullscreen" frameborder="0"></iframe>

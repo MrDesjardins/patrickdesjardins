@@ -13,6 +13,8 @@ The operation that interest us is named **DiffDays**. It takes two parameters. T
 
 Here is an example of use:
 
-\[csharp highlight="5"\] var allActiveContest = GetAllActiveContestForUser(userId) .Select(d=>new ContestWithSmallStatistics(){ Id=d.Id, Name=d.Name, NumberOfDaysRemainingBeforeEndDate = DbFunctions.DiffDays(d.RegistrationRules.StartingTime,d.RegistrationRules.EndingTime).Value, NumberOfUsersRegistered = d.Contester.Count }); \[/csharp\]
+```csharp
+var allActiveContest = GetAllActiveContestForUser(userId) .Select(d=>new ContestWithSmallStatistics(){ Id=d.Id, Name=d.Name, NumberOfDaysRemainingBeforeEndDate = DbFunctions.DiffDays(d.RegistrationRules.StartingTime,d.RegistrationRules.EndingTime).Value, NumberOfUsersRegistered = d.Contester.Count }); 
+```
 
 The main advantage is that you can have from the database exactly what you want instead of having a class that would have two dates. You could also use it for having some logics that will not return everything. For example, we could return only Active Contest for contest that has more than 30 days.

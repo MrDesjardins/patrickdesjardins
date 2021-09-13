@@ -9,9 +9,12 @@ Entity Framework has something called **complex type**. They are classes that do
 
 Let's see a coding example.
 
-\[csharp\] public class House { public int Id { get; set; } public double Price { get; set; } public Address Address { get; set; } }
 
-public class Address { public string Street { get; set; } public int Number { get; set; } public string City { get; set; } } \[/csharp\]
+```csharp
+ public class House { public int Id { get; set; } public double Price { get; set; } public Address Address { get; set; } }
+
+public class Address { public string Street { get; set; } public int Number { get; set; } public string City { get; set; } } 
+```
 
 An house has an Address. Later on, if we add Business entity, this one could also refer to the Address entity without having to copy and paste all Address properties.
 
@@ -19,12 +22,26 @@ The main point of that article is that every properties inside a complex type is
 
 To illustrate more the point, here is a second example with Entity Framework calls.
 
-\[csharp\] public class MyEntity { public MyComplexClass Property1 { get; set; } }
 
-var entityLocal = this.Set<MyEntity>().Local.SingleOrDefault(d => d.Id == entity.Id); if (entityLocal == null) { entityLocal = this.Set<MyEntity>().Attach(entity); } this.ChangeTracker.Entries<MyEntity>().Single(d => d.Entity == entityLocal).State = EntityState.Modified; this.Entry(entity).Property(s => s.Property1.SubProperty1).IsModified = true; this.Entry(entity).Property(s => s.Property1.SubProperty2).IsModified = false;//This remove all modification of the object!!! this.SaveChanges(); \[/csharp\]
+```csharp
+ public class MyEntity { public MyComplexClass Property1 { get; set; } }
 
-As you can see, the entity is marked as modified and I set one of the complex type property to false. The result is that none of the complex type properties will be saved. Here is the SQL generated: \[sql\] update \[dbo\].\[MyEntity\] set @p = 0 where ((\[Id\] = @0)) \[/sql\] The Sql update just the property of the entity, not the one of the complex type. However, if we do not mark the _SubProperty2_ with _IsModified_ to False, we have a SQL that save the whole entity, with the complex type. \[sql\] update \[dbo\].\[MyEntity\] set \[Property1\_SubProperty1\] = @0 , \[Property1\_SubProperty2\] = null where ((\[Id\] = @1)) \[/sql\]
+var entityLocal = this.Set<MyEntity>().Local.SingleOrDefault(d => d.Id == entity.Id); if (entityLocal == null) { entityLocal = this.Set<MyEntity>().Attach(entity); } this.ChangeTracker.Entries<MyEntity>().Single(d => d.Entity == entityLocal).State = EntityState.Modified; this.Entry(entity).Property(s => s.Property1.SubProperty1).IsModified = true; this.Entry(entity).Property(s => s.Property1.SubProperty2).IsModified = false;//This remove all modification of the object!!! this.SaveChanges(); 
+```
 
-I took the shortcut to profile the Sql Database to see the output but you could just check from the database context the properties changed and realize the same behavior. \[csharp\] var entry = DatabaseContext.Entry(entity); var namesOfChangedProperties = entry.CurrentValues.PropertyNames .Where(p => entry.Property(p).IsModified) .ToArray(); \[/csharp\]
+As you can see, the entity is marked as modified and I set one of the complex type property to false. The result is that none of the complex type properties will be saved. Here is the SQL generated: 
+```sql
+ update [dbo].[MyEntity] set @p = 0 where (([Id] = @0)) 
+```
+ The Sql update just the property of the entity, not the one of the complex type. However, if we do not mark the _SubProperty2_ with _IsModified_ to False, we have a SQL that save the whole entity, with the complex type. 
+```sql
+ update [dbo].[MyEntity] set [Property1\_SubProperty1] = @0 , [Property1\_SubProperty2] = null where (([Id] = @1)) 
+```
+
+
+I took the shortcut to profile the Sql Database to see the output but you could just check from the database context the properties changed and realize the same behavior. 
+```csharp
+ var entry = DatabaseContext.Entry(entity); var namesOfChangedProperties = entry.CurrentValues.PropertyNames .Where(p => entry.Property(p).IsModified) .ToArray(); 
+```
 
 At the end, you have to think the Complex Type as a whole. That mean that everything is related for Entity Framework. It also mean that if you are concerned about performance that you may not want to have huge complex type because, during load or save, the transportation of the information become into a single package. You may have end result that is not what desired, have too much information loaded or half a complex type saved (in the case you have just fill up half of the object). Take in consideration that Entity Framework limitation/feature when you create your classes design.

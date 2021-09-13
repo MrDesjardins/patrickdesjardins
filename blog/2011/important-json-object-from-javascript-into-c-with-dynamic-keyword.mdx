@@ -9,7 +9,10 @@ I never really used the **dynamic** keyword in a real application. I did some tu
 
 This week, I got a situation where I was getting from Silverlight a Json object that I did not want to create an object for.
 
-\[csharp\] string response = HtmlPage.Window.Invoke("GetMyJson").ToString(); MyObject data = (MyObject)JsonConvert.DeserializeObject(response); \[/csharp\]
+
+```csharp
+ string response = HtmlPage.Window.Invoke("GetMyJson").ToString(); MyObject data = (MyObject)JsonConvert.DeserializeObject(response); 
+```
 
 But, I did not wanted to create the MyObject because it was just for transferring data; a simple DTO object. Instead, I used the **dynamic** keyword provided by .Net framework 4.0.
 
@@ -22,6 +25,9 @@ The **dynamic** keyword will be resolved in runtime and this give us the leverag
 
 So, in the C# code, I simply called those properties from the **dynamic** object.
 
-\[csharp\] string response = HtmlPage.Window.Invoke("GetMyJson").ToString(); dynamic data = JsonConvert.DeserializeObject(response); string s1 = data.Abc; string s2 = data.Def; \[/csharp\]
+
+```csharp
+ string response = HtmlPage.Window.Invoke("GetMyJson").ToString(); dynamic data = JsonConvert.DeserializeObject(response); string s1 = data.Abc; string s2 = data.Def; 
+```
 
 This is pretty useful for accessing quickly some data from Json object.

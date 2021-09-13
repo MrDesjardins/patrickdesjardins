@@ -9,14 +9,22 @@ If you do not want to create an Entity and to configure this one with the ToTabl
 
 Here is how to do it with the ToTable method:
 
-\[csharp highlight="5"\] public class WorkoutConfiguration : EntityTypeConfiguration<Workout> { public WorkoutConfiguration() { base.ToTable("dbo", "ViewNameHere"); base.HasMany(d => d.Sessions) .WithRequired(d=>d.Workout) .WillCascadeOnDelete(true); } } \[/csharp\]
+```csharp
+public class WorkoutConfiguration : EntityTypeConfiguration<Workout> { public WorkoutConfiguration() { base.ToTable("dbo", "ViewNameHere"); base.HasMany(d => d.Sessions) .WithRequired(d=>d.Workout) .WillCascadeOnDelete(true); } } 
+```
 
 Here is how to do it with a direct SQL statement:
 
-\[csharp\] var workouts = \_dbContext.Database.SqlQuery<Workout>("select \* from dbo.Workout") \[/csharp\]
+
+```csharp
+ var workouts = \_dbContext.Database.SqlQuery<Workout>("select \* from dbo.Workout") 
+```
 
 The SqlQuery acts the same with the binding of value than with Entity Framework. Every fields is mapped with the corresponding methods. You can use AS statement to change the return value of some fields to be the same name of your methods.
 
-\[csharp\] var workouts = \_dbContext.Database.SqlQuery<Workout>("select id as ID, name as nameFR from dbo.Workout") \[/csharp\]
+
+```csharp
+ var workouts = \_dbContext.Database.SqlQuery<Workout>("select id as ID, name as nameFR from dbo.Workout") 
+```
 
 At first, the last solution seems to be faster and fine but consider the first one if you are using table or view because it's better. Better because you do not have to handle a string with a SQL query. If the database change, you won't notice any problem until the query is executed. It's more a work around than a good "enterprise" solution. But, the last one can be a good compromise if you need to use stored procedure. Nevertheless, always ask yourself in the long term what will be the repercussion of your choice.

@@ -20,7 +20,7 @@ To do so, hit "F1" key and type "**Configure Task Runner**". This will create fo
 [![taskrunner](http://patrickdesjardins.com/blog/wp-content/uploads/2016/04/taskrunner.png)](http://patrickdesjardins.com/blog/vscode-typescript/taskrunner)
 
 You can put he following code: ```typescript
-{ // See http://go.microsoft.com/fwlink/?LinkId=733558 // for the documentation about the tasks.json format "version": "0.1.0", "command": "tsc", "isShellCommand": true, "args": \["-p", "."\], "showOutput": "silent", "problemMatcher": "$tsc" } 
+{ // See http://go.microsoft.com/fwlink/?LinkId=733558 // for the documentation about the tasks.json format "version": "0.1.0", "command": "tsc", "isShellCommand": true, "args": ["-p", "."], "showOutput": "silent", "problemMatcher": "$tsc" } 
 ``` 
 
 
@@ -28,12 +28,14 @@ You can put he following code: ```typescript
 
 From there, you can use the default hotkey to run the task : Ctrl+Shift+B. However, you can also bind that key on save. This way, everytime you save your file, TypeScript will be compiled into JavaScript. To do so, you can change you VsCode keybinding located in your user profile.
 
-\[code\] C:\\Users\\patrick\\AppData\\Roaming\\Code\\User\\keybindings.json \[/code\]
+``` 
+ C:\\Users\\patrick\\AppData\\Roaming\\Code\\User\\keybindings.json 
+``` 
 
 You can all on "ctrl+s" the command "tasks build".
 
 ```typescript
-\[ { "key": "ctrl+s", "command": "workbench.action.tasks.build" } \] 
+[ { "key": "ctrl+s", "command": "workbench.action.tasks.build" } ] 
 ``` 
 
 

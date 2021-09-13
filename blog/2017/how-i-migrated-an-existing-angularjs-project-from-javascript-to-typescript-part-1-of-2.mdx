@@ -29,12 +29,12 @@ Now that we have the tool to transpile, let's do the migration in two phases. Th
          "target": "es3",         
          "rootDir": "./"     
         },     
-"include": \[         
+"include": [         
        "./public/\*\*/\*.js"     
-         \],     
-        "exclude": \[       
+         ],     
+        "exclude": [       
             "./public/assets/"     
-   \] 
+   ] 
 } 
 
 For phase 2, we will have to change the include and bring few other configurations, but so far, it does what we want. We just need to put the configuration in tsconfig.json and we are all set to go in the Gruntfile.js to create a task to build TypeScript.

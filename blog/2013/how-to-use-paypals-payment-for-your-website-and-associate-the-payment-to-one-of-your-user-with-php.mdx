@@ -21,7 +21,7 @@ The method I am showing you has the limitation of having few hardcoded values li
 
 Third, you need to associate the user to the transaction because you want that in the call back to save into your database that you have a new transactions executed for a specific user. This can be done by adding hidden fields to the form where the Paypal's button has been inserted. In fact, you can go to the [IPN Guide](https://www.x.com/sites/default/files/ipnguide.pdf) or the [online documentation](https://www.x.com/developers/paypal/documentation-tools/paypal-payments-standard/integration-guide/Appx_websitestandard_htmlvariables#id08A6HF080O3) and see all possibles parameters (hidden fields) that can be sent to Paypal with a button. I use the "custom" field where I concatenate multiple information like the user id, the goods id, etc.
 
-\[php\] <input type="hidden" name="custom" value="<?php echo(urlencode(base64\_encode($usagerCourant->getIdUsager()."+1")));?>"> <input type="hidden" name="lc" value="fr"/> \[/php\]
+[php] <input type="hidden" name="custom" value="<?php echo(urlencode(base64\_encode($usagerCourant->getIdUsager()."+1")));?>"> <input type="hidden" name="lc" value="fr"/> [/php]
 
 Has you can see in the example above, I am encoding the user id and I concatenate the item id. When Paypal will call back my webpage, I'll be able to get from the http header the field custom and decode the field to get back both information. You can also see that I am using the hidden field name "lc". This field tells Paypal to display itself in French. This can be useful if you have multiple languages to support.
 
@@ -41,15 +41,15 @@ The first step is to send back to Paypal every parameters with the additionnal c
 
 So, your code should look like this one :
 
-\[php\] $req = 'cmd=\_notify-validate'; foreach ($\_POST as $key => $value) { $value = urlencode(stripslashes($value)); $req .= "&$key=$value"; } \[/php\]
+[php] $req = 'cmd=\_notify-validate'; foreach ($\_POST as $key => $value) { $value = urlencode(stripslashes($value)); $req .= "&$key=$value"; } [/php]
 
-Then, we need to send the request. I use a socket connection to send a Http request. Many other ways could be used of course. \[php\] $header = "POST /cgi-bin/webscr HTTP/1.0\\r\\n"; $header .= "Content-Type: application/x-www-form-urlencoded\\r\\n"; $header .= "Content-Length: " . strlen($req) . "\\r\\n\\r\\n"; if($isDebugging) $fp = fsockopen('www.sandbox.paypal.com', 80, $errno, $errstr, 30); else $fp = fsockopen('ssl://www.paypal.com', 443, $errno, $errstr, 30); \[/php\]
+Then, we need to send the request. I use a socket connection to send a Http request. Many other ways could be used of course. [php] $header = "POST /cgi-bin/webscr HTTP/1.0\\r\\n"; $header .= "Content-Type: application/x-www-form-urlencoded\\r\\n"; $header .= "Content-Length: " . strlen($req) . "\\r\\n\\r\\n"; if($isDebugging) $fp = fsockopen('www.sandbox.paypal.com', 80, $errno, $errstr, 30); else $fp = fsockopen('ssl://www.paypal.com', 443, $errno, $errstr, 30); [/php]
 
 Before sending back the request to Paypal, I personalty insert some information to my database concerning the transaction id, the item name, the user who bought the item/service the real name of the user and real email, etc. As you can see, I am not yet sending the request but preparing the socket to open an url (that change depending if I am testing or not). Since we are using at different place different url, I suggest that you have a mechanism to switch between dev/debug mode and prod/real mode. For more information concerning which url to use, please refer yourself to [this documentation](https://www.paypal.com/cgi-bin/webscr?cmd=p/sell/ipn-test-outside).
 
 The next step is to send the request and wait the response.
 
-\[php\] fputs ($fp, $header . $req); while (!feof($fp)) { $res = fgets ($fp, 1024); if (strcmp ($res, "VERIFIED") == 0) { //... //... } fclose ($fp); \[/php\]
+[php] fputs ($fp, $header . $req); while (!feof($fp)) { $res = fgets ($fp, 1024); if (strcmp ($res, "VERIFIED") == 0) { //... //... } fclose ($fp); [/php]
 
 If the answer is the string "VERIFIED" then everything is fine. From here, I do some other validation concerning if the price is right with the product/service bought and I can grand the user of his goods. For me, it's simply adding his id to a junction table with special privileges with an expiration date.
 

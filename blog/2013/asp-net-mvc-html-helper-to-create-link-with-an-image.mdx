@@ -9,7 +9,10 @@ You can use the default **Html Helper** to have a text url. This is most of the 
 
 So, if we take the ActionLink html helper we would use it this way.
 
-\[csharp\] @Html.ActionLink("Text to display", "ActionNameHere", "ControllerNameHere", new { id = 123 }, new{@class="myClass"}) \[/csharp\]
+
+```csharp
+ @Html.ActionLink("Text to display", "ActionNameHere", "ControllerNameHere", new { id = 123 }, new{@class="myClass"}) 
+```
 
 As you can see, this overload take the text to display, the action name to redirect to and the controller which belong the action. Then, we have the route value which in this example send an id to the action and finally an html attribute which let you configure the link accordingly to some html attributes you desire.
 
@@ -17,7 +20,9 @@ As you can see, this overload take the text to display, the action name to redir
 
 What we want to do it almost the same but adding an image.
 
-\[csharp\] public MvcHtmlString ActionImage(this HtmlHelper htmlHelper, string controller, string action, object routeValues, string imagePath, string alternateText = "", object htmlAttributes = null) {
+
+```csharp
+ public MvcHtmlString ActionImage(this HtmlHelper htmlHelper, string controller, string action, object routeValues, string imagePath, string alternateText = "", object htmlAttributes = null) {
 
 var anchorBuilder = new TagBuilder("a"); var url = new UrlHelper(HtmlHelper.ViewContext.RequestContext);
 
@@ -25,7 +30,8 @@ anchorBuilder.MergeAttribute("href",url.Action(action,controller,routeValues)); 
 
 var attributes = (IDictionary<string, object>) HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes); imgBuilder.MergeAttributes(attributes); string imgHtml = imgBuilder.ToString(TagRenderMode.SelfClosing);
 
-anchorBuilder.InnerHtml = imgHtml; return MvcHtmlString.Create(anchorBuilder.ToString()); } \[/csharp\]
+anchorBuilder.InnerHtml = imgHtml; return MvcHtmlString.Create(anchorBuilder.ToString()); } 
+```
 
 The first parameter let you extend the HtmlHelper. This will let you use your new method with the @Html keyword. The 4 next parameters is the required parameters. THe first one is the controller, then the action, the route value and the image path. Finally, we can specify if desired an alternated text and additional html attributes.
 
@@ -35,4 +41,7 @@ The last part build the image and add it into the link. Finally, we merge the at
 
 Here is how to html helper can be used.
 
-\[csharp\] @Html.ActionImage("Workout", "Delete", new { id = @workout.Id }, "/images/bluetrash.png", "Delete", new { id="deletebutton"}) \[/csharp\]
+
+```csharp
+ @Html.ActionImage("Workout", "Delete", new { id = @workout.Id }, "/images/bluetrash.png", "Delete", new { id="deletebutton"}) 
+```

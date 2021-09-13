@@ -13,10 +13,16 @@ A cleaner way to proceed with this kind of string clean up it's to use the TRIM 
 
 Here is an example:
 
-\[csharp\] string fileName = "Test/"; fileName= fileName.TrimEnd(new\[\] { '/' }); \[/csharp\]
+
+```csharp
+ string fileName = "Test/"; fileName= fileName.TrimEnd(new[] { '/' }); 
+```
 
 With this method you can also specify multiple characters so you may want to remove all slash or backslash using the array.
 
-\[csharp\] string fileName = "Test\\\\"; fileName= fileName.TrimEnd(new\[\] { '/', '\\\\' }); \[/csharp\]
+
+```csharp
+ string fileName = "Test\\\\"; fileName= fileName.TrimEnd(new[] { '/', '\\\\' }); 
+```
 
 Do not forget that this method will trim more than only the last character but all ending characters. This mean that a string ending with two slashes will see both slashes removed. I think it's even better!

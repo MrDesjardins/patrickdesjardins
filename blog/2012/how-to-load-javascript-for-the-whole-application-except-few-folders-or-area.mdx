@@ -9,18 +9,36 @@ When you want to load a specific resource like a Javascript file or a CSS file d
 
 On the other hand, if you always want to load this Javascript file (or CSS) but not in some folder, how can you do it? This can be resolved by using \_ViewStart.cshtml file. Every folders can have a defined \_ViewStart.cshtml which allow you to choose which Layout to use.
 
-\[csharp\] @{ Layout = "~/Views/Shared/\_MasterPage.cshtml"; } \[/csharp\]
+
+```csharp
+ @{ Layout = "~/Views/Shared/\_MasterPage.cshtml"; } 
+```
 
 This is an example of a \_ViewStart.cshtml page that define the Layout. If you are using Area within your application, you can have an Area which doesn't use the same Layout. This can be defined by adding this file to the folder of your views and you change the Layout. It can be at the root of the Area's view folder or directly into the folder of a specific view. Asp.Net MVC will execute ALL \_ViewStart.cshtml from the root to the view. That mean that if you define something at the root, this will remain if not overwritten. It work's fine with the Layout property which can be redefined in a folder which will override the default \_ViewStart.cshtml value.
 
 So, if you want to load a Javascript file for all view except one Area, you cannot do :
 
-\[csharp\] //\_ViewStart.cshtml : At the root for every views @{ Layout = "~/Views/Shared/\_Layout.cshtml"; <script src="@Url.Content("~/Scripts/myFile.js")" type="text/javascript" > </script> } \[/csharp\] \[csharp\] //\_ViewStart.cshtml : Inside the View directory of the Area @{ Layout = "~/Views/Shared/\_Layout.cshtml"; } \[/csharp\] This won't work because the \_ViewStart.cshtml will be executed first and add the script.
+
+```csharp
+ //\_ViewStart.cshtml : At the root for every views @{ Layout = "~/Views/Shared/\_Layout.cshtml"; <script src="@Url.Content("~/Scripts/myFile.js")" type="text/javascript" > </script> } 
+``` 
+```csharp
+ //\_ViewStart.cshtml : Inside the View directory of the Area @{ Layout = "~/Views/Shared/\_Layout.cshtml"; } 
+``` This won't work because the \_ViewStart.cshtml will be executed first and add the script.
 
 To solve this issue you can use TempData.
 
-\[csharp\] //\_ViewStart.cshtml : At the root for every views @{ Layout = "~/Views/Shared/\_Layout.cshtml"; ViewContext.TempData.Add("MyFileKey", @Url.Content("~/Scripts/MyFile.js")); } \[/csharp\] \[csharp\] //\_ViewStart.cshtml : Inside the View directory of the Area @{ Layout = "~/Views/Shared/\_Layout.cshtml"; ViewContext.TempData.Remove("MyFileKey"); } \[/csharp\]
 
-This require you to modify the Layout also : \[csharp\] <head> ... @if(ViewContext.TempData.ContainsKey("MyFileKey")) { <script src="@ViewContext.TempData\["MyFileKey"\]" type="text/javascript" > </script> } ... </head> \[/csharp\]
+```csharp
+ //\_ViewStart.cshtml : At the root for every views @{ Layout = "~/Views/Shared/\_Layout.cshtml"; ViewContext.TempData.Add("MyFileKey", @Url.Content("~/Scripts/MyFile.js")); } 
+``` 
+```csharp
+ //\_ViewStart.cshtml : Inside the View directory of the Area @{ Layout = "~/Views/Shared/\_Layout.cshtml"; ViewContext.TempData.Remove("MyFileKey"); } 
+```
+
+This require you to modify the Layout also : 
+```csharp
+ <head> ... @if(ViewContext.TempData.ContainsKey("MyFileKey")) { <script src="@ViewContext.TempData["MyFileKey"]" type="text/javascript" > </script> } ... </head> 
+```
 
 That's it. You have now the Javascript file loaded for the whole application except those areas where it removes it from the TempData. Of course, a even better solution would be to use an object that can have multiple resources which are then handled in the Layout. The goal here is just to show you a way to handle Javascript and CSS file with the perspective of Area where this one remove additionnal resource.

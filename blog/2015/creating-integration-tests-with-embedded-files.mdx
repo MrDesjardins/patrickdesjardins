@@ -13,10 +13,16 @@ One option is to use embedded resource for file and inside the test to use the a
 
 The next step is to use that embedded file. Since we are using the same assembly that the unit test is created, we can call the Assembly.GetCallingAssembly method.
 
-\[csharp\] var assembly = Assembly.GetCallingAssembly(); var resourceName = assembly.GetName().Name + ".YourTestContentFolder.SubClassFolder.SubMethodFolder.Input.html"; \[/csharp\]
+
+```csharp
+ var assembly = Assembly.GetCallingAssembly(); var resourceName = assembly.GetName().Name + ".YourTestContentFolder.SubClassFolder.SubMethodFolder.Input.html"; 
+```
 
 The resource file is embedded which has created the resource identifier by using the assembly name with all the folder structure up to the file name. The separator used between folder are the dot. Once you have the resourceName, you need to use the **GetManifestResourceStream** method with a StreamReader.
 
-\[csharp\] using (var stream = new StreamReader(assembly.GetManifestResourceStream(resourceName), Encoding.UTF8)) { //... } \[/csharp\]
+
+```csharp
+ using (var stream = new StreamReader(assembly.GetManifestResourceStream(resourceName), Encoding.UTF8)) { //... } 
+```
 
 This solution is great but keep in mind that nothing is better than real unit test. A lot of thing can be wrong by doing to much processing in a test. This increase the possibility of having error that does not have any relationship with the real purpose of the test.

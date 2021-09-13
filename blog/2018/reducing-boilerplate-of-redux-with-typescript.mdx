@@ -15,7 +15,7 @@ export function createActionPayload<TypeAction, TypePayload>(actionType: TypeAct
 
 export interface ActionsWithoutPayload<TypeAction> { type: TypeAction; payload: {}; }
 
-export type ActionsUnion<A extends ActionCreatorsMapObject> = ReturnType<A\[keyof A\]>; 
+export type ActionsUnion<A extends ActionCreatorsMapObject> = ReturnType<A[keyof A]>; 
 ``` 
 
 

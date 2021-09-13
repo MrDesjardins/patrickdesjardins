@@ -25,7 +25,13 @@ The next step is to match the rules' violation with the code. This is make easil
 
 This could be resolved by changing the CQLinq which is NDepend Linq language. The too many parameters look like this:
 
-\[code\] warnif count > 0 from m in JustMyCode.Methods where m.NbParameters > 8 orderby m.NbParameters descending select new { m, m.NbParameters } \[/code\] To fix the problem I edited the query to do not check the class in problem. \[code highlight="4"\] warnif count > 0 from m in JustMyCode.Methods where m.NbParameters > 8 && m.FullName.Contains("DataAccessMigration") orderby m.NbParameters descending select new { m, m.NbParameters } \[/code\]
+``` 
+ warnif count > 0 from m in JustMyCode.Methods where m.NbParameters > 8 orderby m.NbParameters descending select new { m, m.NbParameters } 
+```  
+To fix the problem I edited the query to do not check the class in problem.
+``` 
+ warnif count > 0 from m in JustMyCode.Methods where m.NbParameters > 8 && m.FullName.Contains("DataAccessMigration") orderby m.NbParameters descending select new { m, m.NbParameters } 
+``` 
 
 What is interesting is that you have auto-completion and the result is live. That mean that whilst typing the query you see the result to the output panel. For me, the Queries and Rules Explorer is the panel that I use the most of all NDepend's feature. The only negative I have found is that I was expecting to move to Visual Studio when double clicking a method in problem inside the Visual NDepend. It does open the code but every time into a new Visual Studio instance. That mean that you can have 10 Visual Studio running if you double clicked 10 methods to be improved.
 

@@ -31,9 +31,13 @@ if(typeof(trr.propBoolean) === "undefined") { show("propBoolean", "type of === u
 
 The output is what expected except the ! operator which doesn't work with undefined with a boolean value.
 
-\[code\] propBoolean is null true with == null propBoolean is null true with === undefined propBoolean is null true with == undefined propBoolean is null true with type of === undefined \[/code\]
+``` 
+ propBoolean is null true with == null propBoolean is null true with === undefined propBoolean is null true with == undefined propBoolean is null true with type of === undefined 
+``` 
 
-If we redo the test with boolean, but this time by setting the value to null (trr.propBoolean = null;) we get this result: \[code\] propBoolean is null true with === null propBoolean is null true with == null propBoolean is null true with == undefined \[/code\]
+If we redo the test with boolean, but this time by setting the value to null (trr.propBoolean = null;) we get this result: ``` 
+ propBoolean is null true with === null propBoolean is null true with == null propBoolean is null true with == undefined 
+``` 
 
 The result is more surprising. As expected, the typeof undefined is not working anymore since it's defined to null. However, the comparison the == undefined is true. Also, the direct validation doesn't work as well as the !!.
 
@@ -41,9 +45,13 @@ Setting the value to true, we have the no operator and the !! that let it throug
 
 ## Number
 
-If we do the test with number, we have the same result than with boolean when comparing to nothing (undefined) as well as null. \[code\] propNumber is null true with == null propNumber is null true with === undefined propNumber is null true with == undefined propNumber is null true with type of === undefined \[/code\]
+If we do the test with number, we have the same result than with boolean when comparing to nothing (undefined) as well as null. ``` 
+ propNumber is null true with == null propNumber is null true with === undefined propNumber is null true with == undefined propNumber is null true with type of === undefined 
+``` 
 
-and : \[code\] propNumber is null true with === null propNumber is null true with == null propNumber is null true with == undefined \[/code\]
+and : ``` 
+ propNumber is null true with === null propNumber is null true with == null propNumber is null true with == undefined 
+``` 
 
 The problem is when we set the number to the value of 1. This one will pass the test of being true if compared with if(numberOfValue1) and also if (!!1). So, the only way to really validate number type to check if they are null or undefined is to use 1) == null or 2) == undefined.
 
@@ -51,7 +59,9 @@ The problem is when we set the number to the value of 1. This one will pass the 
 
 Comparing a string is producing the same value when undefined and null than the boolean and number. The problem is if the value of the string is "0" or "true" than it will goes in the if(stringValueWithZero) or if(stringValueOfTrue).
 
-\[code\] propString is null true with no operator propString is null true with !! \[/code\]
+``` 
+ propString is null true with no operator propString is null true with !! 
+``` 
 
 It means that you can really truly just verify null or undefined value of a string with the equal operator -- again.
 

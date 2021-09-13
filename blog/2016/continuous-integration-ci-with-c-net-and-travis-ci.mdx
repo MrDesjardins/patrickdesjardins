@@ -20,7 +20,9 @@ I am take for grant that you have a [GitHub](https://github.com/) account. If yo
 
 Once that is done, you need to add something into your repository which will give instruction to the continuous integration system. This is where we will tell what to build and to run unit tests. The file must be set at the root of your repository with the name ".travis.yml". There is a lot of options. Here is a sample of my C# project.
 
-\[code\] language: csharp solution: AspNetMvcEasyRouting.sln install: - nuget restore AspNetMvcEasyRouting.sln - nuget install xunit.runners -Version 1.9.2 -OutputDirectory testrunner script: - xbuild /p:Configuration=Release AspNetMvcEasyRouting.sln - mono ./testrunner/xunit.runners.1.9.2/tools/xunit.console.clr4.exe ./AspNetMvcEasyRoutingTest/bin/Release/AspNetMvcEasyRoutingTest.dll \[/code\]
+``` 
+ language: csharp solution: AspNetMvcEasyRouting.sln install: - nuget restore AspNetMvcEasyRouting.sln - nuget install xunit.runners -Version 1.9.2 -OutputDirectory testrunner script: - xbuild /p:Configuration=Release AspNetMvcEasyRouting.sln - mono ./testrunner/xunit.runners.1.9.2/tools/xunit.console.clr4.exe ./AspNetMvcEasyRoutingTest/bin/Release/AspNetMvcEasyRoutingTest.dll 
+``` 
 
 As you can see, it specify the language, and which solution to use. It defines what to do during the installation which is to restore all nuget packages and to install XUnit runner. XUnit is one supported type of unit tests that can be used. Visual Studio Test cannot be run because Travis run on Mono. That might be a show stopper for you if you have heavily invested in Visual Studio Test. The last section of the file is what to do. The first line, with xbuild, compile the code and the next one run the unit test. If at one of these steps something happen wrong, you will get an email. Otherwise, it's all fine!
 

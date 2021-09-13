@@ -15,25 +15,25 @@ let x: string = "x"; x = 1; // As expected, this line doesn't compile
 An index signature allows an object to have value accessed by an index that can be a string or a number. This is often used in JavaScript to access properties of an object. The pattern in JavaScript to create a dictionary is by using the index signature. The following code is legit in JavaScript.
 
 ```typescript
-var x = {}; x\[123\] = "Value in property 123"; x\["456"\] = "Value in property 456"; x\[true\] = "Value in property true"; 
+var x = {}; x[123] = "Value in property 123"; x["456"] = "Value in property 456"; x[true] = "Value in property true"; 
 ``` 
 
 
 [![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/04/JavaScriptObjectStringNumberBoolean.png)](https://patrickdesjardins.com/blog/?attachment_id=5752)
 
-In the end, the type doesn't matter, it becomes a property of the object. For example, you can access the value 123 by using x\[123\] or x\["123"\] and same thing for 456 with x\[456\] or x\["456"\] and similarly with the boolean value x\[true\] or x\["true"\]. Again, so far, so good. Where it starts to become not clear is that TypeScript lets your strongly type the index. First detail: you cannot use boolean. Only a string and a number are allowed. This is no harm because it is not pragmatic to have a boolean. The major twist is that if you define the index to be a number that you can set a string. If you specify the index to be a string, you will be able to set a number. The cherry on top is that you cannot define the index to be an union of a number or a string.
+In the end, the type doesn't matter, it becomes a property of the object. For example, you can access the value 123 by using x[123] or x["123"] and same thing for 456 with x[456] or x["456"] and similarly with the boolean value x[true] or x["true"]. Again, so far, so good. Where it starts to become not clear is that TypeScript lets your strongly type the index. First detail: you cannot use boolean. Only a string and a number are allowed. This is no harm because it is not pragmatic to have a boolean. The major twist is that if you define the index to be a number that you can set a string. If you specify the index to be a string, you will be able to set a number. The cherry on top is that you cannot define the index to be an union of a number or a string.
 
 ```typescript
-interface Obj { \[id: string\]: boolean; } let y: Obj = {}; y\["okay"\] = true; // string key: legit and compile y\[123\] = false; // number key: legit and compile
+interface Obj { [id: string]: boolean; } let y: Obj = {}; y["okay"] = true; // string key: legit and compile y[123] = false; // number key: legit and compile
 
-interface Obj2 { \[id: number\]: boolean; } let y: Obj2 = {}; y\["okay"\] = true; // string key: legit and compile y\[123\] = false; // number key: legit and compile 
+interface Obj2 { [id: number]: boolean; } let y: Obj2 = {}; y["okay"] = true; // string key: legit and compile y[123] = false; // number key: legit and compile 
 ``` 
 
 
 I was bemused by the fact that TypeScript allows me to specify the type and wasn't respecting it. It would be a great way to ensure that no one is using the wrong type, even if at the end it doesn't matter in term of runtime it could matter in term of consistency in your code. As mentioned, the logical signature seems to be with a union since both types are valid.
 
 ```typescript
-interface Obj { \[id: string | number\]: boolean; // Won't compile! } 
+interface Obj { [id: string | number]: boolean; // Won't compile! } 
 ``` 
 
 

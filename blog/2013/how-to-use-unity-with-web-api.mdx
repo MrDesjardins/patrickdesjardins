@@ -9,17 +9,21 @@ categories:
 
 Web Api controller are instantied by Asp.Net MVC framework and by default, the parameter less constructor is called. If you want to instantiate your class with your IoC, like Microsoft Unity, you will have to customize the instantiation of those Web Api Controller. The customized instanciator is called a Dependency Resolver and can be configured in the Global.asax.
 
-\[csharp highlight="12,15"\] public class WebApiApplication : System.Web.HttpApplication { protected void Application\_Start() { AreaRegistration.RegisterAllAreas();
+```csharp
+public class WebApiApplication : System.Web.HttpApplication { protected void Application\_Start() { AreaRegistration.RegisterAllAreas();
 
 WebApiConfig.Register(GlobalConfiguration.Configuration); FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters); RouteConfig.RegisterRoutes(RouteTable.Routes); BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-UnityConfiguration.Initialize(); MapperConfiguration.Initialize(UnityConfiguration.Container.Resolve<IMapperFactory>()); UnityConfiguration.Container.Resolve<IDatabaseContext>().InitializeDatabase(); GlobalConfiguration.Configuration.DependencyResolver = new IoCContainer(UnityConfiguration.Container); } } \[/csharp\]
+UnityConfiguration.Initialize(); MapperConfiguration.Initialize(UnityConfiguration.Container.Resolve<IMapperFactory>()); UnityConfiguration.Container.Resolve<IDatabaseContext>().InitializeDatabase(); GlobalConfiguration.Configuration.DependencyResolver = new IoCContainer(UnityConfiguration.Container); } } 
+```
 
 The first thing to do is to modify the Application\_Start of your WebApi project. You need to execute the configuration of all your interface with Unity. In the example above, this is done by calling UnityConfiguration.Initialize() which Resolve every interface to a concrete class.
 
 The second thing to do is to set to the **GlobalConfiguration** a **DependencyResolver** to a IocContainer that we will create to use Unity container.
 
-\[csharp\] internal class ScopeContainer : IDependencyScope { protected readonly IUnityContainer \_container;
+
+```csharp
+ internal class ScopeContainer : IDependencyScope { protected readonly IUnityContainer \_container;
 
 public ScopeContainer(IUnityContainer container) { if (container == null) { throw new ArgumentNullException("container"); } this.\_container = container; }
 
@@ -33,7 +37,8 @@ public void Dispose() { \_container.Dispose(); } }
 
 internal class IoCContainer : ScopeContainer, IDependencyResolver { public IoCContainer(IUnityContainer container):base(container) { }
 
-public IDependencyScope BeginScope() { var child = \_container.CreateChildContainer(); return new ScopeContainer(child); } } \[/csharp\]
+public IDependencyScope BeginScope() { var child = \_container.CreateChildContainer(); return new ScopeContainer(child); } } 
+```
 
 The GetService is made in a way that it doesn't require you to register every controllers with Unity but only registered type will go through Unity.
 

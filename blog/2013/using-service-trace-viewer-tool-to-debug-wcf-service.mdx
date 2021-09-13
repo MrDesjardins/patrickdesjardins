@@ -12,7 +12,11 @@ The first step to configure the tool is to go inside your service project and op
 
 You should add into the _Configuration_ tag the code below:
 
-\[xml\] <system.diagnostics> <trace autoflush="true" /> <sources> <source name="System.ServiceModel" switchValue="Information, ActivityTracing" propagateActivity="true"> <listeners> <add name="sdt" type="System.Diagnostics.XmlWriterTraceListener" initializeData= "yourFileName.log" /> </listeners> </source> </sources> </system.diagnostics> \[/xml\]
+
+```xml
+ <system.diagnostics> <trace autoflush="true" /> <sources> <source name="System.ServiceModel" switchValue="Information, ActivityTracing" propagateActivity="true"> <listeners> <add name="sdt" type="System.Diagnostics.XmlWriterTraceListener" initializeData= "yourFileName.log" /> </listeners> </source> </sources> </system.diagnostics> 
+```
+
 
 Your file can contain any extension. The tools be default will search for few ones but you can at the end select All and see every extensions.
 

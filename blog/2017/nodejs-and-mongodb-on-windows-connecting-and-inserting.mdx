@@ -12,7 +12,9 @@ You can download a free version directly on MongoD : [https://www.mongodb.com/do
 
 Before working out MongoDb with NodeJs, I recommend to download RoboMongo for free: [https://robomongo.org/download](https://robomongo.org/download). This tool allows to query MongoDb and explore the data. Before using RoboMongo or to use the MongoDb library, we need to run the MongoDb server. To do so, go in the development folder you are working and execute the **mongod** command with the dbpath. For example, the following command will store the MongoDb in the "data" folder in the development folder.
 
-\[code\] mongod --dbpath=.\\data \[/code\]
+``` 
+ mongod --dbpath=.\\data 
+``` 
 
 Inside your NodeJs project, you needs sto have the mongodb library. If you are using TypeScript, you can get the type definition too.
 
@@ -37,7 +39,7 @@ MongoClient.connect(url, (errMongo: MongoError, db: Db) => { if (errMongo) { con
 
 To insert something in you need to get the collection name and use the insert method. Something I haven't yet figure out perfectly is how to handle Date from a .json file. In my case, I was opening file (.json) and inserting them into MongoDb. The Json parse method was returning the date as string, hence I needed to assign the value back with an instance of date
 
-\[javascript\]
+[javascript]
 
 // To have a real date format in MongoDb objToInsert.fullDate = new Date(objToInsert.fullDate);
 

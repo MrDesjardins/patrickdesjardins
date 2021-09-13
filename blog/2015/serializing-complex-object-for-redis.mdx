@@ -10,12 +10,18 @@ I have been using Redis since few weeks now and I stumble into a weird problem a
 
 First of all, I am using [JSON.Net](http://www.newtonsoft.com/json) for serialization and deserialization. It is the common serializer library for a long time, it's even the one Microsoft is using now for all its new projects. Second, I was already using some configurations to handle references. The problem was that one of the object had a collection of an interface which it was not deserialized correctly because JSON.Net did not know to which concrete type to instanciate.
 
-To fix this issue and have during serialization the concrete type added to the serialization, you need to use **JsonSerializerSettings** with the **TypeNameHandling** property to **All**. The result look like the following code: \[csharp\] var serializedObjectToCache = JsonConvert.SerializeObject(objectToCache , Formatting.Indented , new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Serialize, PreserveReferencesHandling = PreserveReferencesHandling.Objects, TypeNameHandling = TypeNameHandling.All }); \[/csharp\]
+To fix this issue and have during serialization the concrete type added to the serialization, you need to use **JsonSerializerSettings** with the **TypeNameHandling** property to **All**. The result look like the following code: 
+```csharp
+ var serializedObjectToCache = JsonConvert.SerializeObject(objectToCache , Formatting.Indented , new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Serialize, PreserveReferencesHandling = PreserveReferencesHandling.Objects, TypeNameHandling = TypeNameHandling.All }); 
+```
 
 The result of the serialization is a JSON attribute named **"$type"** which has the complete namespace and class name. You can find more detail on [JSON.Net documentation about TypeNameHandling](http://www.newtonsoft.com/json/help/html/SerializeTypeNameHandling.htm).
 
 The deserialization contains also the same **JsonSerializerSettings**.
 
-\[csharp\] var obj = JsonConvert.DeserializeObject<T>(serializedObject , new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Serialize, PreserveReferencesHandling = PreserveReferencesHandling.Objects, TypeNameHandling = TypeNameHandling.All }); \[/csharp\]
+
+```csharp
+ var obj = JsonConvert.DeserializeObject<T>(serializedObject , new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Serialize, PreserveReferencesHandling = PreserveReferencesHandling.Objects, TypeNameHandling = TypeNameHandling.All }); 
+```
 
 With the three settings used in this article, you can serialize complex object with recursive references, with abstract type or interface type and not have to worry about serializing an Entity Framework object. So, why this is not the default configuration? Because this add a lot of information in the JSON. This shouldn't be a huge problem if you are using it with Redis, more a problem is you transfer the information through an Ajax call.

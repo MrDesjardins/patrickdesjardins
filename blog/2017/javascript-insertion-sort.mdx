@@ -10,7 +10,7 @@ Insertion sort name is confusing. It won't swap in the same manner that the bubb
 The idea is : Position at the beginning of the array by moving previous value up and finally swap once reach the correct spot.
 
 ```typescript
-function insertionSort(arrayToSort){ var key; var length = arrayToSort.length; for (var i = 1; i < length; i++) { key = arrayToSort\[i\]; var j = i-1; while (j >= 0 && arrayToSort\[j\] > key) { arrayToSort\[j+1\] = arrayToSort\[j\]; j = j-1; } arrayToSort\[j+1\] = key; } } 
+function insertionSort(arrayToSort){ var key; var length = arrayToSort.length; for (var i = 1; i < length; i++) { key = arrayToSort[i]; var j = i-1; while (j >= 0 && arrayToSort[j] > key) { arrayToSort[j+1] = arrayToSort[j]; j = j-1; } arrayToSort[j+1] = key; } } 
 ``` 
 
 

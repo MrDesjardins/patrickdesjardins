@@ -23,7 +23,7 @@ $(document).on("click", "a.offsite", function(){ alert("Goodbye!"); }); // jQuer
 In this example, since the .on() function is called from the $(document) this will listen every html that change to hook the function if the selector match.
 
 The syntax of the on function in Jquery is : ```typescript
-.on( events \[, selector\] \[, data\], handler(eventObject) ) or .on( events-map \[, selector\] \[, data\] ) 
+.on( events [, selector] [, data], handler(eventObject) ) or .on( events-map [, selector] [, data] ) 
 ``` 
  This mean that you first select the event you want to add, then the selector in the Jquery syntax and finallywhat you want to hook to.
 

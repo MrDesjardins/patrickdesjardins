@@ -16,13 +16,19 @@ This is not an easy step to do, migrating, but if you have your MVC4 already up-
 
 The second step is to run Nuget to update every packages. This can be done with a single statement in the Nuget Console.
 
-\[code\] PM> Update-Package \[/code\]
+``` 
+ PM> Update-Package 
+``` 
 
 This may take several minutes if you use a lot of package. This will do about half of the job. You will need to do this for every of your project that use package from Nuget. A good practice is to have always referenced your external library with Nuget. Even if you are using the same package from some of your projects, this won't duplicate them in your _solution/packages_.
 
 The third step is to be done in every of your project. I suggest you start from your web site project since it's the one that will have the most job to do. Open the web.config of the web project. Verify that you have Entity Framework set to version 6. The information is set inside configuration>configSections inside a section named "EntityFramework".
 
-\[xml\] <configuration> <configSections> <section name="entityFramework" type="System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false"/> ................... \[/xml\]
+
+```xml
+ <configuration> <configSections> <section name="entityFramework" type="System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false"/> ................... 
+```
+
 
 As you can see, the version MUST be set to 6.0.0.0 and in fact it should have been modified by the Nuget update that we have done earlier. If it's not, go in your project reference and be sure that you have a reference to EntityFramework.dll.
 
@@ -32,23 +38,33 @@ The screenshot show you that not only the version is set to version 6.0.0.0 but 
 
 The next step is to go lower in your web.config to the appSetting section. You need to update the version of webpages from 2.0.0.0 to 3.0.0.0
 
-\[xml 1="<appSettings>" 2="<add" key="webpages:Version" 3="value="3.0.0.0"/>" 4="....." 5="\[/xml" language="....."\]
+[xml 1="<appSettings>" 2="<add" key="webpages:Version" 3="value="3.0.0.0"/>" 4="....." 5="[/xml" language="....."]
 
 Then, you need to set the framework to 4.5.1 (if you want to be all up to date). This can be done in the web.config also inside the configuration tag, under system.web:
 
-\[xml\] <system.web> <compilation debug="true" targetFramework="4.5.1"/> <httpRuntime targetFramework="4.5.1"/> \[/xml\]
+
+```xml
+ <system.web> <compilation debug="true" targetFramework="4.5.1"/> <httpRuntime targetFramework="4.5.1"/> 
+```
+
 
 Before going any further in the web.config. Do not forget to open ALL your project to go in the properties of the project and to select the Target Framework to 4.5.1. [![ApplicationPropertiesTargetFramework](http://patrickdesjardins.com/blog/wp-content/uploads/2013/10/ApplicationPropertiesTargetFramework-400x237.png)](http://patrickdesjardins.com/blog/how-to-migrate-from-asp-net-mvc-4-to-asp-net-mvc-5/applicationpropertiestargetframework)
 
 Back to the web.config, we have the runtime tag to update. Here is my runtime information, yours should be almost the same.
 
-\[xml\] <runtime> <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1"> <dependentAssembly> <assemblyIdentity name="WebMatrix.WebData" publicKeyToken="31BF3856AD364E35" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-3.0.0.0" newVersion="3.0.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="System.Web.WebPages.Razor" publicKeyToken="31BF3856AD364E35" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-3.0.0.0" newVersion="3.0.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="WebMatrix.Data" publicKeyToken="31BF3856AD364E35" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-3.0.0.0" newVersion="3.0.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="System.Web.Razor" publicKeyToken="31BF3856AD364E35" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-3.0.0.0" newVersion="3.0.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="System.Web.Helpers" publicKeyToken="31bf3856ad364e35"/> <bindingRedirect oldVersion="1.0.0.0-3.0.0.0" newVersion="3.0.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="System.Web.Mvc" publicKeyToken="31bf3856ad364e35"/> <bindingRedirect oldVersion="0.0.0.0-5.0.0.0" newVersion="5.0.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="System.Web.WebPages" publicKeyToken="31bf3856ad364e35"/> <bindingRedirect oldVersion="1.0.0.0-3.0.0.0" newVersion="3.0.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="AutoMapper" publicKeyToken="be96cd2c38ef1005" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-2.2.1.0" newVersion="2.2.1.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="WebGrease" publicKeyToken="31bf3856ad364e35" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-1.5.2.14234" newVersion="1.5.2.14234"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="Microsoft.Practices.Unity" publicKeyToken="31bf3856ad364e35" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-3.0.0.0" newVersion="3.0.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="DotNetOpenAuth.AspNet" publicKeyToken="2780ccd10d57b246" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-4.3.0.0" newVersion="4.3.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="DotNetOpenAuth.Core" publicKeyToken="2780ccd10d57b246" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-4.3.0.0" newVersion="4.3.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="System.Web.Http" publicKeyToken="31bf3856ad364e35" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-5.0.0.0" newVersion="5.0.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="System.Net.Http.Formatting" publicKeyToken="31bf3856ad364e35" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-5.0.0.0" newVersion="5.0.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="Antlr3.Runtime" publicKeyToken="eb42632606e9261f" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-3.5.0.2" newVersion="3.5.0.2"/> </dependentAssembly> </assemblyBinding> \[/xml\]
+
+```xml
+ <runtime> <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1"> <dependentAssembly> <assemblyIdentity name="WebMatrix.WebData" publicKeyToken="31BF3856AD364E35" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-3.0.0.0" newVersion="3.0.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="System.Web.WebPages.Razor" publicKeyToken="31BF3856AD364E35" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-3.0.0.0" newVersion="3.0.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="WebMatrix.Data" publicKeyToken="31BF3856AD364E35" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-3.0.0.0" newVersion="3.0.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="System.Web.Razor" publicKeyToken="31BF3856AD364E35" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-3.0.0.0" newVersion="3.0.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="System.Web.Helpers" publicKeyToken="31bf3856ad364e35"/> <bindingRedirect oldVersion="1.0.0.0-3.0.0.0" newVersion="3.0.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="System.Web.Mvc" publicKeyToken="31bf3856ad364e35"/> <bindingRedirect oldVersion="0.0.0.0-5.0.0.0" newVersion="5.0.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="System.Web.WebPages" publicKeyToken="31bf3856ad364e35"/> <bindingRedirect oldVersion="1.0.0.0-3.0.0.0" newVersion="3.0.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="AutoMapper" publicKeyToken="be96cd2c38ef1005" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-2.2.1.0" newVersion="2.2.1.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="WebGrease" publicKeyToken="31bf3856ad364e35" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-1.5.2.14234" newVersion="1.5.2.14234"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="Microsoft.Practices.Unity" publicKeyToken="31bf3856ad364e35" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-3.0.0.0" newVersion="3.0.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="DotNetOpenAuth.AspNet" publicKeyToken="2780ccd10d57b246" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-4.3.0.0" newVersion="4.3.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="DotNetOpenAuth.Core" publicKeyToken="2780ccd10d57b246" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-4.3.0.0" newVersion="4.3.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="System.Web.Http" publicKeyToken="31bf3856ad364e35" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-5.0.0.0" newVersion="5.0.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="System.Net.Http.Formatting" publicKeyToken="31bf3856ad364e35" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-5.0.0.0" newVersion="5.0.0.0"/> </dependentAssembly> <dependentAssembly> <assemblyIdentity name="Antlr3.Runtime" publicKeyToken="eb42632606e9261f" culture="neutral"/> <bindingRedirect oldVersion="0.0.0.0-3.5.0.2" newVersion="3.5.0.2"/> </dependentAssembly> </assemblyBinding> 
+```
+
 
 This tell the .Net compiler to use the new version if a reference is made to an older version. You can find information through MSDN concerning [Assembly Unification](http://msdn.microsoft.com/en-us/library/7wd6ex19.aspx).
 
 Now, do that in all your web.config that contain similar XML elements. Once it's done, go into the view folder. This one also should contain a web.config. You need to change some version number here too. Here is one of my view folder (you can have few because of area).
 
-\[xml\] <?xml version="1.0"?>
+
+```xml
+ <?xml version="1.0"?>
 
 <configuration> <configSections> <sectionGroup name="system.web.webPages.razor" type="System.Web.WebPages.Razor.Configuration.RazorWebSectionGroup, System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35"> <section name="host" type="System.Web.WebPages.Razor.Configuration.HostSection, System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false" /> <section name="pages" type="System.Web.WebPages.Razor.Configuration.RazorPagesSection, System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" requirePermission="false" /> </sectionGroup> </configSections>
 
@@ -62,7 +78,9 @@ Now, do that in all your web.config that contain similar XML elements. Once it's
 
 <system.webServer> <validation validateIntegratedModeConfiguration="false" />
 
-<handlers> <remove name="BlockViewHandler"/> <add name="BlockViewHandler" path="\*" verb="\*" preCondition="integratedMode" type="System.Web.HttpNotFoundHandler" /> </handlers> </system.webServer> </configuration> \[/xml\]
+<handlers> <remove name="BlockViewHandler"/> <add name="BlockViewHandler" path="\*" verb="\*" preCondition="integratedMode" type="System.Web.HttpNotFoundHandler" /> </handlers> </system.webServer> </configuration> 
+```
+
 
 You have 3 entries to change for razor. You need to change version 2.0.0.0 to version 3.0.0.0. Also, System.Web.Mvc.MvcWebRazorHostFactory, System.Web.Mvc need to be to 5.0.0.0. Then, under pages you have 3 others change concerning MVC that need to be to version 5.
 

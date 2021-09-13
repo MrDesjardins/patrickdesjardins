@@ -38,7 +38,7 @@ I share to you the code. This code might not be optimized perfectly but work fin
 - Use a threshold of 1 cm before switching light (otherwise can't go in sleep mode easily
 - Has a save confirm signal (switch light from red to green) when save occur
 
-\[c\] #include <EEPROM.h> boolean debug = false;
+[c] #include <EEPROM.h> boolean debug = false;
 
 //Distance long distance; //The current distance found long lastDistance = 0; //The last distance found int recordedDistance; //The recorded distance by a button int light=0; //0= start, 1 = green, 2 = yellow, 3 = red
 
@@ -68,7 +68,7 @@ if(lastActivity != 0 && lastActivity < currentTime) //Check if we had an activit
 
 //ConfirmSave void ConfirmSave() { digitalWrite(ledRed, HIGH); digitalWrite(ledYellow, HIGH); digitalWrite(ledGreen, HIGH); delay(500); digitalWrite(ledRed, LOW); digitalWrite(ledYellow, HIGH); digitalWrite(ledGreen, HIGH); delay(500); digitalWrite(ledRed, HIGH); digitalWrite(ledYellow, LOW); digitalWrite(ledGreen, HIGH); delay(500); digitalWrite(ledRed, HIGH); digitalWrite(ledYellow, HIGH); digitalWrite(ledGreen, LOW); delay(500); }
 
-//Open the correct light void OpenLight() { //NO-SLEEP MODE if(distance != lastDistance) //If distance has changed (no boundary, very precise) { //Open the good light if(distance<minDistance && distance>0) { digitalWrite(ledRed, LOW); digitalWrite(ledYellow, HIGH); digitalWrite(ledGreen, HIGH); Serial.println("\*RED\*"); light = 3; } else if(distance<maxDistance && distance>0) { digitalWrite(ledRed, HIGH); digitalWrite(ledYellow, LOW); digitalWrite(ledGreen, HIGH); Serial.println("\*Yellow\*"); light = 2; } else if(distance>=maxDistance) { digitalWrite(ledRed, HIGH); digitalWrite(ledYellow, HIGH); digitalWrite(ledGreen, LOW); Serial.println("\*Green\*"); light = 1; } } } \[/c\]
+//Open the correct light void OpenLight() { //NO-SLEEP MODE if(distance != lastDistance) //If distance has changed (no boundary, very precise) { //Open the good light if(distance<minDistance && distance>0) { digitalWrite(ledRed, LOW); digitalWrite(ledYellow, HIGH); digitalWrite(ledGreen, HIGH); Serial.println("\*RED\*"); light = 3; } else if(distance<maxDistance && distance>0) { digitalWrite(ledRed, HIGH); digitalWrite(ledYellow, LOW); digitalWrite(ledGreen, HIGH); Serial.println("\*Yellow\*"); light = 2; } else if(distance>=maxDistance) { digitalWrite(ledRed, HIGH); digitalWrite(ledYellow, HIGH); digitalWrite(ledGreen, LOW); Serial.println("\*Green\*"); light = 1; } } } [/c]
 
 You can see the final version on [YouTube](http://youtu.be/O3TtWqblM9I). The physical enclosure may has be done more beautifully but I am not a carpenter. I am happy of the end result. Some thing that you might know : the power cable is too short. I bought a 1.5 meters extension cord and I think you should get at least 2.5 meters. Also, I had the idea to have the ultrasonic sensor outside the main enclosure and this is a good idea. The only error I did is that I bought a plastic enclosure too big for the purpose of having only the ultrasonic sensor (not a big deal). Last thing, the wood enclosure is too small, I had difficulty to put the relay, the Arduino, all the wire and the power supply.
 

@@ -15,7 +15,13 @@ Once the DLL changed, and the validation that the project is well referenced to 
 
 ## Namespace changes
 
-The first think you have to know is if you use data annotation, the namespace has changed. \[csharp\] using System.ComponentModel.DataAnnotations; \[/csharp\] became: \[csharp\] using System.ComponentModel.DataAnnotations.Schema; \[/csharp\] So you have to change some of your classes to use the new Schema. This was required for us because we use data annotation (not a lot but still over hundred places).
+The first think you have to know is if you use data annotation, the namespace has changed. 
+```csharp
+ using System.ComponentModel.DataAnnotations; 
+``` became: 
+```csharp
+ using System.ComponentModel.DataAnnotations.Schema; 
+``` So you have to change some of your classes to use the new Schema. This was required for us because we use data annotation (not a lot but still over hundred places).
 
 ## NotMappedAttribute is not NotMapped
 

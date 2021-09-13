@@ -9,27 +9,42 @@ If you are using Entity Framework with **Lazy Loading** or **Eager Loading** you
 
 In a scenario where you have a one to one relationship, for example a Person that has an House.
 
-\[csharp\] var person = new Person {Id = 1, Name = "SeededPerson", BirthDate = new DateTime(1900, 1, 1), Friends = new Collection<Person> {person2, person3}}; person.Residence = new House {Id = 1, Address = new Address{City="Montreal", Number = 123, Street = "Owl"}, Price = 350000}; context.Persons.Add(person); \[/cshapr\]
+
+```csharp
+ var person = new Person {Id = 1, Name = "SeededPerson", BirthDate = new DateTime(1900, 1, 1), Friends = new Collection<Person> {person2, person3}}; person.Residence = new House {Id = 1, Address = new Address{City="Montreal", Number = 123, Street = "Owl"}, Price = 350000}; context.Persons.Add(person); [/cshapr]
 
 You can load the Residence by using Eager Loading this way:
 
-\[csharp\] private static void LazyLoadingAndEagerLoadingSameResult() { using (var context = new YourContext()) { Console.WriteLine("No Lazy Loading, Eager Loading"); var person = context.Persons.Find(1); context.Entry(person).Reference(d=>d.Residence).Load(); Console.WriteLine("City is " + person.Residence.Address.City); } } \[/csharp\]
+
+```csharp
+ private static void LazyLoadingAndEagerLoadingSameResult() { using (var context = new YourContext()) { Console.WriteLine("No Lazy Loading, Eager Loading"); var person = context.Persons.Find(1); context.Entry(person).Reference(d=>d.Residence).Load(); Console.WriteLine("City is " + person.Residence.Address.City); } } 
+```
 
 If we kick in the Microsoft **SQL Profiler**, we see two queries. One that load the Person and one that load the Residence object.
 
-\[sql\] SELECT \[Limit1\].\[Id\] AS \[Id\], \[Limit1\].\[Name\] AS \[Name\], \[Limit1\].\[BirthDate\] AS \[BirthDate\], \[Limit1\].\[Residence\_Id\] AS \[Residence\_Id\], \[Limit1\].\[House\_Id\] AS \[House\_Id\] FROM ( SELECT TOP (2) \[Extent1\].\[Id\] AS \[Id\], \[Extent1\].\[Name\] AS \[Name\], \[Extent1\].\[BirthDate\] AS \[BirthDate\], \[Extent1\].\[Residence\_Id\] AS \[Residence\_Id\], \[Extent1\].\[House\_Id\] AS \[House\_Id\] FROM \[dbo\].\[People\] AS \[Extent1\] WHERE \[Extent1\].\[Id\] = @p0 ) AS \[Limit1\]
 
-SELECT \[Extent2\].\[Id\] AS \[Id\], \[Extent2\].\[Price\] AS \[Price\], \[Extent2\].\[Address\_Street\] AS \[Address\_Street\], \[Extent2\].\[Address\_Number\] AS \[Address\_Number\], \[Extent2\].\[Address\_City\] AS \[Address\_City\], \[Extent2\].\[Owner\_Id\] AS \[Owner\_Id\] FROM \[dbo\].\[People\] AS \[Extent1\] INNER JOIN \[dbo\].\[Houses\] AS \[Extent2\] ON \[Extent1\].\[Residence\_Id\] = \[Extent2\].\[Id\] WHERE (\[Extent1\].\[Residence\_Id\] IS NOT NULL) AND (\[Extent1\].\[Id\] = @EntityKeyValue1) \[/sql\]
+```sql
+ SELECT [Limit1].[Id] AS [Id], [Limit1].[Name] AS [Name], [Limit1].[BirthDate] AS [BirthDate], [Limit1].[Residence\_Id] AS [Residence\_Id], [Limit1].[House\_Id] AS [House\_Id] FROM ( SELECT TOP (2) [Extent1].[Id] AS [Id], [Extent1].[Name] AS [Name], [Extent1].[BirthDate] AS [BirthDate], [Extent1].[Residence\_Id] AS [Residence\_Id], [Extent1].[House\_Id] AS [House\_Id] FROM [dbo].[People] AS [Extent1] WHERE [Extent1].[Id] = @p0 ) AS [Limit1]
+
+SELECT [Extent2].[Id] AS [Id], [Extent2].[Price] AS [Price], [Extent2].[Address\_Street] AS [Address\_Street], [Extent2].[Address\_Number] AS [Address\_Number], [Extent2].[Address\_City] AS [Address\_City], [Extent2].[Owner\_Id] AS [Owner\_Id] FROM [dbo].[People] AS [Extent1] INNER JOIN [dbo].[Houses] AS [Extent2] ON [Extent1].[Residence\_Id] = [Extent2].[Id] WHERE ([Extent1].[Residence\_Id] IS NOT NULL) AND ([Extent1].[Id] = @EntityKeyValue1) 
+```
+
 
 The Lazy Loading version is similar but without the Reference/Load line.
 
-\[csharp\] using (var context = new YourContext()) { context.Configuration.LazyLoadingEnabled = true; Console.WriteLine("Lazy Loading, No Eager Loading"); var person = context.Persons.Find(1); Console.WriteLine("City is " + person.Residence.Address.City); } \[/csharp\]
 
-It also require you to change the Person class to have the Residence to be virtual. \[csharp\] public class Person { public int Id { get; set; } public string Name { get; set; } public DateTime BirthDate { get; set; }
+```csharp
+ using (var context = new YourContext()) { context.Configuration.LazyLoadingEnabled = true; Console.WriteLine("Lazy Loading, No Eager Loading"); var person = context.Persons.Find(1); Console.WriteLine("City is " + person.Residence.Address.City); } 
+```
+
+It also require you to change the Person class to have the Residence to be virtual. 
+```csharp
+ public class Person { public int Id { get; set; } public string Name { get; set; } public DateTime BirthDate { get; set; }
 
 public ICollection<Person> Friends { get; set; }
 
-public virtual House Residence { set; get; } } \[/csharp\]
+public virtual House Residence { set; get; } } 
+```
 
 If you forget to set the virtual, you will not receive an error message about the virtual but about a **NullReferenceException**. Unfortunately, the exception does not speak for itself! You have to remember to change the property to virtual.
 

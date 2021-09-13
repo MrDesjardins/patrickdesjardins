@@ -10,17 +10,23 @@ In the part one, we saw how to register a service worker and how to handle incom
 
 The first thing, is to define a generic contract with an interface. I decided to create a simple one that return a simple boolean to indicate if the message sent is a success or a failure. The method signature allows to pass the "to" token, which is the unique identifier of the user for Firebase (the token saved from the Ajax call in the part 1). The remaining parameters are self explanatory with the title, message and url when the user click the notification.
 
-\[csharp\] public interface IPushNotification { bool QueueMessage(string to, string title, string message, string urlNotificationClick); } \[/csharp\]
+
+```csharp
+ public interface IPushNotification { bool QueueMessage(string to, string title, string message, string urlNotificationClick); } 
+```
 
 The implementation is also very simple. It relies on the REST endpoint of Google Firebase.
 
-\[csharp\] public class GoogleFirebaseNotification:IPushNotification { public bool QueueMessage(string to, string title, string message, string urlNotificationClick) { if (string.IsNullOrEmpty(to)) { return false; } var serverApiKey = "SuperLongKeyHere"; var firebaseGoogleUrl = "https://fcm.googleapis.com/fcm/send";
+
+```csharp
+ public class GoogleFirebaseNotification:IPushNotification { public bool QueueMessage(string to, string title, string message, string urlNotificationClick) { if (string.IsNullOrEmpty(to)) { return false; } var serverApiKey = "SuperLongKeyHere"; var firebaseGoogleUrl = "https://fcm.googleapis.com/fcm/send";
 
 var httpClient = new WebClient(); httpClient.Headers.Add("Content-Type", "application/json"); httpClient.Headers.Add(HttpRequestHeader.Authorization, "key=" + serverApiKey); var timeToLiveInSecond = 24 \* 60; // 1 day var data = new { to = to, data = new { notification = new { body = message, title = title, icon = "/Content/Images/Logos/BourseVirtuelle.png", url = urlNotificationClick } }, time\_to\_live = timeToLiveInSecond };
 
-var json = JsonConvert.SerializeObject(data); Byte\[\] byteArray = Encoding.UTF8.GetBytes(json); var responsebytes = httpClient.UploadData(firebaseGoogleUrl, "POST", byteArray); string responsebody = Encoding.UTF8.GetString(responsebytes); dynamic responseObject = JsonConvert.DeserializeObject(responsebody);
+var json = JsonConvert.SerializeObject(data); Byte[] byteArray = Encoding.UTF8.GetBytes(json); var responsebytes = httpClient.UploadData(firebaseGoogleUrl, "POST", byteArray); string responsebody = Encoding.UTF8.GetString(responsebytes); dynamic responseObject = JsonConvert.DeserializeObject(responsebody);
 
-return responseObject.success == "1"; } } \[/csharp\]
+return responseObject.success == "1"; } } 
+```
 
 The first piece of puzzle is to use the right server api key. It's under the Firebase console, under the setting's cog and under the **Cloud Messaging**. [![](http://patrickdesjardins.com/blog/wp-content/uploads/2016/12/ServerKeyFirebase-1024x415.png)](http://patrickdesjardins.com/blog/service-worker-push-notification-and-asp-net-mvc-part-2-of-3-server-side/serverkeyfirebase) The remaining of the code is configuring the **WebClient**. You must use a specific **content-type** to be **json**. The second header that must be defined is the authorization key. This is where you set the cloud messaging server key. Finally, we setup the data from the signature. Some information are hardcoded like the icon to display as well as the time that we want Firebase to hold the message if the user doesn't have a browser to collect the message. The last step is to retrieve the response and looks to see if the message got delivered successfully to the Firebase's server.
 

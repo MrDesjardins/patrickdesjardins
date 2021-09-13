@@ -51,12 +51,12 @@ export const typeDefs = gql\`
         author: String
     }
     type Query {
-        books: \[Book\]
+        books: [Book]
     }
 \`;
 
 // Fake data source
-export const books = \[
+export const books = [
     {
         title: "Harry Potter and the Chamber of Secrets",
         author: "J.K. Rowling"
@@ -65,7 +65,7 @@ export const books = \[
         title: "Jurassic Park",
         author: "Michael Crichton"
     }
-\];
+];
 
 // Resolver
 export const resolvers = {

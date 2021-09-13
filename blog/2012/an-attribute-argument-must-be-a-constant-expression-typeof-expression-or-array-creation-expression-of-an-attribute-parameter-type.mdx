@@ -11,8 +11,14 @@ If you are trying to use a static string in an attribute for an action inside a 
 
 This is because you are using static string instead of constant.
 
-\[csharp\] public static string AdministratorRole="admin"; \[/csharp\]
+
+```csharp
+ public static string AdministratorRole="admin"; 
+```
 
 The code below works because it's a **public const string** instead of a public static string.
 
-\[csharp\] public const string AdministratorRole="admin"; \[/csharp\]
+
+```csharp
+ public const string AdministratorRole="admin"; 
+```

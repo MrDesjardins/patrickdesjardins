@@ -13,7 +13,11 @@ The Analytics service is available directly on Microsoft Azure portal. The Analy
 
 For example, I have some Azure WebJobs that collect the duration of the jobs. The output desired is to see the time that a job take and if the performance are stable across every execution but also in every day. This is possible with Analytics. The syntax is not really easy to catch on and I won't give all information in this article.
 
-\[sql\] customEvents | where name == "JobPerformance" | where timestamp >= ago(14d) | extend d=parsejson(customDimensions) | extend jobName = d.JobName | where jobName == "CleanExpiredOrders" | extend m=parsejson(customMeasurements) | extend tt = todouble(m.JobElapsedTimeInMs) | summarize percentiles(tt, 25, 50, 75, 95) by bin(timestamp,1d) \[/sql\]
+
+```sql
+ customEvents | where name == "JobPerformance" | where timestamp >= ago(14d) | extend d=parsejson(customDimensions) | extend jobName = d.JobName | where jobName == "CleanExpiredOrders" | extend m=parsejson(customMeasurements) | extend tt = todouble(m.JobElapsedTimeInMs) | summarize percentiles(tt, 25, 50, 75, 95) by bin(timestamp,1d) 
+```
+
 
 The first line is about on "what" we will query. I have create a custom query with the name "JobPerformance" that I use to run on each type of WebJob I have. The second line filter down to that telemetry -- only WebJob. The third line filter even more to get just the last 14 days. The two next lines open the customDimensions which are properties that you create during the write of the telemetry. In my case, this is an object with some properties, the one I need it the JobName. I need it because I want a graph in time for a specific job named "CleanExpiredOrders". Finally, I need to get from that custom event some custom measurements. I need the property I created named "JobElapsedTimeInMs". Once all information is collected, the idea is to bucket the data in percentile to see if we have some stable performances across queries. This is done by **summarizing** with the percentiles keyword. Since we want to get the information per day, we select a bin per day.
 

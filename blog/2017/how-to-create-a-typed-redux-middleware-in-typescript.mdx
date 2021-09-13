@@ -34,7 +34,7 @@ It would be better to have a stronger definition than relying on the generic typ
 ```typescript
 export interface Middleware { <S>(api: MiddlewareAPI<S>): (next: Dispatch<S>) => Dispatch<S>; }
 
-export function applyMiddleware(...middlewares: Middleware\[\]): GenericStoreEnhancer; 
+export function applyMiddleware(...middlewares: Middleware[]): GenericStoreEnhancer; 
 ``` 
 
 

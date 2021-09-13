@@ -7,7 +7,10 @@ categories:
 
 You may have a private constructor for your class. This is often useful if you want the developer to use a constructor but still have your ORM to be able to create your entity. The problem is when serializing and deserializing will use the public constructor and will pass null on every parameters. To have the deserializer user the private constructor, like the ORM, you need to tell Json.Net that it can use private constructor.
 
-\[csharp\] new JsonSerializerSettings { ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor } \[/csharp\]
+
+```csharp
+ new JsonSerializerSettings { ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor } 
+```
 
 The **JsonSerializerSettings** required is the **ConstructorHandling** which need to be set to **AllowNonPublicDefaultConstructor**.
 
@@ -15,8 +18,11 @@ Also, you may have public getter but private setter. Often the case when the pro
 
 Json.Net can have custom contract resolver. The trick is to tell to Json.Net that if the property has a private setter to use it.
 
-\[csharp\] new JsonSerializerSettings { ContractResolver = new PrivateResolver() } //......... public class PrivateResolver : DefaultContractResolver { protected override JsonProperty CreateProperty(MemberInfo member , MemberSerialization memberSerialization) { var prop = base.CreateProperty(member, memberSerialization);
+
+```csharp
+ new JsonSerializerSettings { ContractResolver = new PrivateResolver() } //......... public class PrivateResolver : DefaultContractResolver { protected override JsonProperty CreateProperty(MemberInfo member , MemberSerialization memberSerialization) { var prop = base.CreateProperty(member, memberSerialization);
 
 if (!prop.Writable) { var property = member as PropertyInfo; if (property != null) { var hasPrivateSetter = property.GetSetMethod(true) != null; prop.Writable = hasPrivateSetter; } }
 
-return prop; } } \[/csharp\] This is it. [![DefaultContract](http://patrickdesjardins.com/blog/wp-content/uploads/2015/07/DefaultContract-400x222.png)](http://patrickdesjardins.com/blog/?attachment_id=4289) The **CreateProperty** method returns a **JsonProperty** which has some information about the serialization settings. As you can see in the image above, it's possible to see if we have a get and set with the **Readable** and **Writable** property of the the **JsonProperty**. The only task we need to do is to set the **Writable** to true if this one is not yet set to deserialize (Writable) and if the property has a setter. This is done by using reflection and check if the property has a setting. This is done by using the **PropertyInfo** on the **MemberInfo** and use **GetSetMethod**.
+return prop; } } 
+``` This is it. [![DefaultContract](http://patrickdesjardins.com/blog/wp-content/uploads/2015/07/DefaultContract-400x222.png)](http://patrickdesjardins.com/blog/?attachment_id=4289) The **CreateProperty** method returns a **JsonProperty** which has some information about the serialization settings. As you can see in the image above, it's possible to see if we have a get and set with the **Readable** and **Writable** property of the the **JsonProperty**. The only task we need to do is to set the **Writable** to true if this one is not yet set to deserialize (Writable) and if the property has a setter. This is done by using reflection and check if the property has a setting. This is done by using the **PropertyInfo** on the **MemberInfo** and use **GetSetMethod**.

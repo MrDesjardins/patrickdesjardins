@@ -20,10 +20,13 @@ Next step, is to be able to set and get from the Asp.Net C# application. This is
 
 Once installed, you'll be able to access Redis with almost no effort for basic command like setting and getting. Here is a short example of possible use.
 
-\[csharp\] public class RedisCache : ICache { private readonly ConnectionMultiplexer redisConnections;
+
+```csharp
+ public class RedisCache : ICache { private readonly ConnectionMultiplexer redisConnections;
 
 public RedisCache() { this.redisConnections = ConnectionMultiplexer.Connect("localhost"); } public void Set<T>(string key, T objectToCache) where T : class { var db = this.redisConnections.GetDatabase(); db.StringSet(key, JsonConvert.SerializeObject(objectToCache , Formatting.Indented , new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Serialize, PreserveReferencesHandling = PreserveReferencesHandling.Objects })); }
 
-public T Get<T>(string key) where T :class { var db = this.redisConnections.GetDatabase(); var redisObject = db.StringGet(key); if (redisObject.HasValue) { return JsonConvert.DeserializeObject<T>(redisObject , new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Serialize, PreserveReferencesHandling = PreserveReferencesHandling.Objects }); } else { return (T)null; } } \[/csharp\]
+public T Get<T>(string key) where T :class { var db = this.redisConnections.GetDatabase(); var redisObject = db.StringGet(key); if (redisObject.HasValue) { return JsonConvert.DeserializeObject<T>(redisObject , new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Serialize, PreserveReferencesHandling = PreserveReferencesHandling.Objects }); } else { return (T)null; } } 
+```
 
 From here, you can inject the ICache with your IOC and use RedisCache. You can get and set any object. Voila! Of course, this class is not ready for any production code. The real ICache should have more methods like deleting and you should not hardcode "localhost", but this should give you enough to get started with Redis and .Net.

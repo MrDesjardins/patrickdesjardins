@@ -15,13 +15,16 @@ or with the package console with this line:
 
 Install-Package Microsoft.Bcl.Immutable
 
-\[csharp\]
+
+```csharp
+
 
 using System.Collections.Immutable;
 
 ImmutableList<int> array = ImmutableList.Create<int>(100, 101, 300);
 
-List<int> myList = new List<int> { 100, 101, 300 };ImmutableList<int> array2 = ImmutableList.ToImmutableList<int>(myList); \[/csharp\]
+List<int> myList = new List<int> { 100, 101, 300 };ImmutableList<int> array2 = ImmutableList.ToImmutableList<int>(myList); 
+```
 
 As you can see, you need to use the namespace System.Collections.Immutable. The namespace contains more than only ImmutableList, but also contains an ImmutableDictionary, ImmutableQueue, ImmutableSet and ImmutableStack.
 

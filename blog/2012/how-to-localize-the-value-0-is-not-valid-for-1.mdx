@@ -11,7 +11,10 @@ You cannot simply use an attribute like Required to specify the message your wan
 
 You need to set the name of a resource file that you will create.
 
-\[csharp\] DefaultModelBinder.ResourceClassKey = "GlobalErrorMessage" \[/csharp\]
+
+```csharp
+ DefaultModelBinder.ResourceClassKey = "GlobalErrorMessage" 
+```
 
 The file (in our case called GlobalErrorMessage) needs to be inside the App\_GlobalResources of the assembly that use the view. Then, you need to add an entry called PropertyValueInvalid. For a French translation, you could use: La valeur '{0}' n'est pas valide pour le champ {1}.
 

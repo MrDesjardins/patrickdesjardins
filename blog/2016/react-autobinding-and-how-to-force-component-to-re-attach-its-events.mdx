@@ -11,4 +11,7 @@ Under the hood, React knows to handle binding events, even if it doesn't hit aga
 
 The problem is that if you want to reset those listeners, how do you do? How can you force the **AutoBinding** to reset all listeners? The solution is with **key**. The binding is associated to a component by this identifier. If you do not provide one, React is smart enough to figure out that you are creating again the same component and do some optimization like AutoBinding. If you want to skip this optimization and create from scratch, you need to setup a unique key. If you are clicking on different view, you can use the view id as the component key. If you want to have always a new creation, you can use a GUID.
 
-\[csharp\] React.createElement(MyComponent, { props1: "value1", key: newGuid() } ); \[/csharp\]
+
+```csharp
+ React.createElement(MyComponent, { props1: "value1", key: newGuid() } ); 
+```

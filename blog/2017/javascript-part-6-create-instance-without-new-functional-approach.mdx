@@ -21,7 +21,7 @@ instance1.publicMethod(); instance2.publicMethod();
 If we want to inherit, we need to assign members to the object literal by using the base class factory. There is many ways to do it. The way presented is that every public members of the base class will be exposed through the child class. This is done by adding the children members to the base instance instead of adding the, to an empty object. However, we could have kept the empty literal object and create public method that proxied the base class if we wanted to manually decide which public property of the base class to expose.
 
 ```typescript
-var myBaseFactory = function (p2){ var privateContainer = {}; var private = "PrivateBase"; privateContainer.publicMethodInBase = function(){console.log("\[BASE\] Can access private variable like : " + private + " or the param " + p2)}; return privateContainer; }
+var myBaseFactory = function (p2){ var privateContainer = {}; var private = "PrivateBase"; privateContainer.publicMethodInBase = function(){console.log("[BASE] Can access private variable like : " + private + " or the param " + p2)}; return privateContainer; }
 
 var myFactory = function (p1){ var privateContainer = myBaseFactory("Base!" + p1); var private = "Private"; privateContainer.publicMethod = function(){console.log("Can access private variable like : " + private + " or the param " + p1)}; return privateContainer; }
 
@@ -31,6 +31,8 @@ instance1.publicMethod(); instance1.publicMethodInBase(); instance2.publicMethod
 ``` 
 
 
-Here is the output: \[code\] "Can access private variable like : Private or the param i1" "\[BASE\] Can access private variable like : PrivateBase or the param Base!i1" "Can access private variable like : Private or the param i2" "\[BASE\] Can access private variable like : PrivateBase or the param Base!i2" \[/code\]
+Here is the output: ``` 
+ "Can access private variable like : Private or the param i1" "[BASE] Can access private variable like : PrivateBase or the param Base!i1" "Can access private variable like : Private or the param i2" "[BASE] Can access private variable like : PrivateBase or the param Base!i2" 
+``` 
 
 This way offer a clean and simple way to create instances without the complexity of the prototype chain. It has the disadvantage of not sharing with the prototype, hence will be more heavy in term of memory. It has the advantage to encapsulate functions and variables inside the factory and to not expose them.

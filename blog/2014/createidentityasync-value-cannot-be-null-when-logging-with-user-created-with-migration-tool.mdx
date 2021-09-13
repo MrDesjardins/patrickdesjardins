@@ -19,6 +19,8 @@ As you can see, the column was not set for user created by Entity Framework Migr
 
 To solve this issue, the seed method changed to generate a **Security Stamp**. The security stamp can be generated with a random GUID.
 
-\[csharp highlight="9"\] var adminUser = new ApplicationUser { Id = Guid.NewGuid().ToString() , FirstName = "Patrick" , LastName = "Desjardins" , DisplayName = "pdesjardins" , Email = EMAIL\_ADMIN , CreationDateTime = runningContext.GetCurrentTime() , UserName = userValueGenerator.GenerateUserName(EMAIL\_ADMIN), PasswordHash = ApplicationUser.HashPassword("123123") , ValidationDateTime = runningContext.GetCurrentTime() , SecurityStamp = Guid.NewGuid().ToString() }; \[/csharp\]
+```csharp
+ var adminUser = new ApplicationUser { Id = Guid.NewGuid().ToString() , FirstName = "Patrick" , LastName = "Desjardins" , DisplayName = "pdesjardins" , Email = EMAIL\_ADMIN , CreationDateTime = runningContext.GetCurrentTime() , UserName = userValueGenerator.GenerateUserName(EMAIL\_ADMIN), PasswordHash = ApplicationUser.HashPassword("123123") , ValidationDateTime = runningContext.GetCurrentTime() , SecurityStamp = Guid.NewGuid().ToString() }; 
+```
 
 With the Security Stamp set, it is possible to login without having CreateIdentityAsync raising any exception.

@@ -15,11 +15,14 @@ This is the simplest strategy. It takes all properties of the base class and all
 
 For example you have 3 classes. Two sub-classes that inherit a single base class.
 
-\[csharp\] public class Book { public string ISBN { get; set; } public int PageCount { get; set; } }
+
+```csharp
+ public class Book { public string ISBN { get; set; } public int PageCount { get; set; } }
 
 public class Magazine : Book { public string MagazineProperty { get; set; } }
 
-public class Encyclopedia:Book { public string EncyclopediaProperty { get; set; } } \[/csharp\]
+public class Encyclopedia:Book { public string EncyclopediaProperty { get; set; } } 
+```
 
 The class diagram of these 3 classes is the following: [![ClassDiagram](http://patrickdesjardins.com/blog/wp-content/uploads/2013/12/ClassDiagram-400x318.png)](http://patrickdesjardins.com/blog/entity-framework-inheritance/classdiagram)
 
@@ -27,17 +30,31 @@ This will result to a single table with all property nullable for those who are 
 
 To create a short test, simply add these three classes to a .Net project. Then, you need to setup the database context.
 
-\[csharp\] public class TestContext:DbContext { public TestContext() : base("TestContext") {
+
+```csharp
+ public class TestContext:DbContext { public TestContext() : base("TestContext") {
 
 } public DbSet<Magazine> Magazines { get; set; } public DbSet<Encyclopedia> Encyclopedia { get; set; }
 
 protected override void OnModelCreating(DbModelBuilder modelBuilder) { modelBuilder.Conventions.Remove<PluralizingTableNameConvention>(); modelBuilder.Entity<Book>().HasKey(d => d.ISBN);
 
-} } \[/csharp\]
+} } 
+```
 
-Do no forget to add Entity Framework with Nuget and setup the web.config with a good connection string. To get entity framework you can do a search inside Nuget manager or in the package console. \[code\] Menu Project>Manage NuGet Packages Select the Online tab Select the EntityFramework package Click Install \[/code\] or \[code\] PM> install-package entityframework \[/code\] The configuration file should have a config section (which are added from Nuget) and the connection string to be setup to the Sql instance you have and the database you want to use. \[xml\] <configuration> <configSections> <section name="entityFramework" type="System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false" /> </configSections> <connectionStrings> <add name="TestContext" connectionString="Data Source=PATRICK-I7\\SQLEXPRESS;Initial Catalog=TestContextDatabase;Integrated Security=SSPI;" providerName="System.Data.SqlClient"/> </connectionStrings> ... \[/xml\] This is the most basic setup possible, we simply set the primary key to the base class. We do not set anything for sub-classes . Then, we need to let Entity Framework create the database. For that, just instanciate the dbcontext and do something to the query. We could also generate the database with the migration tool but for simplicity, let's just add a new Encyclopedia in the main method.
+Do no forget to add Entity Framework with Nuget and setup the web.config with a good connection string. To get entity framework you can do a search inside Nuget manager or in the package console. ``` 
+ Menu Project>Manage NuGet Packages Select the Online tab Select the EntityFramework package Click Install 
+```  or ``` 
+ PM> install-package entityframework 
+```  The configuration file should have a config section (which are added from Nuget) and the connection string to be setup to the Sql instance you have and the database you want to use. 
+```xml
+ <configuration> <configSections> <section name="entityFramework" type="System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false" /> </configSections> <connectionStrings> <add name="TestContext" connectionString="Data Source=PATRICK-I7\\SQLEXPRESS;Initial Catalog=TestContextDatabase;Integrated Security=SSPI;" providerName="System.Data.SqlClient"/> </connectionStrings> ... 
+```
+ This is the most basic setup possible, we simply set the primary key to the base class. We do not set anything for sub-classes . Then, we need to let Entity Framework create the database. For that, just instanciate the dbcontext and do something to the query. We could also generate the database with the migration tool but for simplicity, let's just add a new Encyclopedia in the main method.
 
-\[csharp\] using (var context = new DataAccessLayer.TestContext()) { context.Encyclopedia.Add(new Models.Encyclopedia { ISBN = "123" }); context.SaveChanges(); } \[/csharp\]
+
+```csharp
+ using (var context = new DataAccessLayer.TestContext()) { context.Encyclopedia.Add(new Models.Encyclopedia { ISBN = "123" }); context.SaveChanges(); } 
+```
 
 Here is how the table looks:
 
@@ -57,11 +74,14 @@ All types are mapped to its own table. This produce a normalized database, while
 
 Entity Framework performs more inner join to be able to know which table to use for subclass when information are gathered from the database. This result to be less performing than the previous approach. Nevertheless, tables are more clean because they doesn't have a huge amount of nullable of property.
 
-To configure table per type (TPT) it requires to set the table for the subclass. \[csharp\] public class TestContext : DbContext { public TestContext() : base("TestContext") { }
+To configure table per type (TPT) it requires to set the table for the subclass. 
+```csharp
+ public class TestContext : DbContext { public TestContext() : base("TestContext") { }
 
 public DbSet<Book> Book { get; set; } public DbSet<Magazine> Magazines { get; set; } public DbSet<Encyclopedia> Encyclopedia { get; set; }
 
-protected override void OnModelCreating(DbModelBuilder modelBuilder) { modelBuilder.Conventions.Remove<PluralizingTableNameConvention>(); modelBuilder.Entity<Magazine>().ToTable("Magazine"); modelBuilder.Entity<Encyclopedia>().ToTable("Encyclopedia"); modelBuilder.Entity<Book>().ToTable("Book").HasKey(d => d.ISBN); } } \[/csharp\]
+protected override void OnModelCreating(DbModelBuilder modelBuilder) { modelBuilder.Conventions.Remove<PluralizingTableNameConvention>(); modelBuilder.Entity<Magazine>().ToTable("Magazine"); modelBuilder.Entity<Encyclopedia>().ToTable("Encyclopedia"); modelBuilder.Entity<Book>().ToTable("Book").HasKey(d => d.ISBN); } } 
+```
 
 If we delete the database and run again the code, the database is created with two tables.
 
@@ -75,12 +95,15 @@ As you can see in the example above, the ISBN and PageCount are repeated in both
 
 The configuration is more complex.
 
-\[csharp\] public class TestContext:DbContext { public TestContext() : base("TestContext") {
+
+```csharp
+ public class TestContext:DbContext { public TestContext() : base("TestContext") {
 
 } public DbSet<Magazine> Magazines { get; set; } public DbSet<Encyclopedia> Encyclopedia { get; set; }
 
 protected override void OnModelCreating(DbModelBuilder modelBuilder) { modelBuilder.Conventions.Remove<PluralizingTableNameConvention>(); modelBuilder.Entity<Magazine>().Map(m => { m.MapInheritedProperties(); m.ToTable("Magazine"); });
 
-modelBuilder.Entity<Encyclopedia>().Map(m => { m.MapInheritedProperties(); m.ToTable("Encyclopedia"); }); modelBuilder.Entity<Magazine>().HasKey(d => d.ISBN); modelBuilder.Entity<Encyclopedia>().HasKey(d => d.ISBN); } } \[/csharp\]
+modelBuilder.Entity<Encyclopedia>().Map(m => { m.MapInheritedProperties(); m.ToTable("Encyclopedia"); }); modelBuilder.Entity<Magazine>().HasKey(d => d.ISBN); modelBuilder.Entity<Encyclopedia>().HasKey(d => d.ISBN); } } 
+```
 
 The code generated in SQL is complex. It has sub query with union to know from which table to take its data. This result to have bad performance for heavy inheritance model. TPC is good for deep inheritance, TPH is good for small entity with not a lot of property and TPT is good for small inheritance level with many properties. Personally, I lean for TPT most of the time. Having a normalize database is important in most enterprise and performance is not that bad if the inheritance is only one level.

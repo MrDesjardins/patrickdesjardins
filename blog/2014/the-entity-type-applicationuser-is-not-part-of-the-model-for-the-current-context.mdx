@@ -15,6 +15,9 @@ This exception is raised if you go to the login screen and try to log in. It occ
 
 Your database context must be aware of Identity tables.
 
-\[csharp\] public class DatabaseContext :IdentityDbContext<ApplicationUser> \[/csharp\]
+
+```csharp
+ public class DatabaseContext :IdentityDbContext<ApplicationUser> 
+```
 
 Having this inheritance solve the problem.

@@ -16,9 +16,11 @@ This solution is having some caveats. First, if the time between the image and t
 
 Let's dive in the code.
 
-\[html\] <div id="box1" class="box"><i class="fa fa-spinner fa-spin"></i></div> <div id="box2" class="box"><i class="fa fa-spinner fa-spin"></i></div> \[/html\] \[css\] .box{ width:150px; height:150px; background-color:lightblue; margin:10px; }
 
-.box i{ font-size: 3em; } \[/css\]
+```html  <div id="box1" class="box"><i class="fa fa-spinner fa-spin"></i></div> <div id="box2" class="box"><i class="fa fa-spinner fa-spin"></i></div> 
+```  [css] .box{ width:150px; height:150px; background-color:lightblue; margin:10px; }
+
+.box i{ font-size: 3em; } [/css]
 
 This will produce the following html : [![2LoadingZonesBoxes](http://patrickdesjardins.com/blog/wp-content/uploads/2015/11/2LoadingZonesBoxes.png)](http://patrickdesjardins.com/blog/?attachment_id=4376)
 
@@ -54,7 +56,7 @@ function cache($elementToCache) { var id = $elementToCache.attr('id'); html2canv
 ``` 
 
 
-The loading is more tricky. We need to load from the local storage the base64 image, create an image with the source to this base64 and return it. \[javascript\]
+The loading is more tricky. We need to load from the local storage the base64 image, create an image with the source to this base64 and return it. [javascript]
 
 function unDataToCanvas(data) { var img = new Image(); var canvas = document.createElement('canvas'); img.onload = function() { canvas.width = 150; canvas.height = 150; canvas.getContext("2d").drawImage(img, 0, 0); }; img.src = data; if(data){ return img; } else{ return null; } } 
 ``` 

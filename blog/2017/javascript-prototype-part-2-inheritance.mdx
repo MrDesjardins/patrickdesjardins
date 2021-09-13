@@ -22,15 +22,17 @@ var BaseClass1 = function() { this.memberbase = "base"; this.function4 = functio
 
 BaseClass1.prototype.function1 = function() { return "return function1 from base prototype"; }; BaseClass1.prototype.function2 = function() { return "return function2 from base prototype"; }; BaseClass1.prototype.function3 = function() { return "return function3 from base prototype"; };
 
-var ChildClass1 = function() { BaseClass1.call(this); // Call the constructor of the base class \[Step1\] this.memberclass = "Child"; this.function2 = function(){ return "return function2 from child"; }; };
+var ChildClass1 = function() { BaseClass1.call(this); // Call the constructor of the base class [Step1] this.memberclass = "Child"; this.function2 = function(){ return "return function2 from child"; }; };
 
-ChildClass1.prototype = Object.create(BaseClass1.prototype); // \[Step2\] ChildClass1.prototype.constructor = ChildClass1; // \[Step3\] ChildClass1.prototype.function1 = function() { // Must be after previous line return "return from child"; };
+ChildClass1.prototype = Object.create(BaseClass1.prototype); // [Step2] ChildClass1.prototype.constructor = ChildClass1; // [Step3] ChildClass1.prototype.function1 = function() { // Must be after previous line return "return from child"; };
 
 var instance1 = new ChildClass1();
 
 console.log("instance1.function1: "+ instance1.function1()); // override with prototype of child console.log("instance1.function2: "+ instance1.function2()); // override with instance function console.log("instance1.function3: "+ instance1.function3()); // Use base class function console.log("instance1.function4: "+ instance1.function4()); // Use base class function //console.log(ChildClass1.prototype.constructor) // uncomment to see what step 3 change. 
 ``` 
- The output is : \[code\] "instance1.function1: return from child" "instance1.function2: return function2 from child" "instance1.function3: return function3 from base prototype" "instance1.function4: return function4 from base instance" \[/code\]
+ The output is : ``` 
+ "instance1.function1: return from child" "instance1.function2: return function2 from child" "instance1.function3: return function3 from base prototype" "instance1.function4: return function4 from base instance" 
+``` 
 
 What we can see is that the chain of priority when calling a function start with the child instance function, move up to the child prototype function, then to the base prototype function. So, it's possible to redefine a base member in 3 different levels.
 

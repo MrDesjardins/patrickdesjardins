@@ -17,12 +17,14 @@ export class ClassB { public method1(): void { console.log("ClassB>method1"); se
 ``` 
 
 
-The way to do it is to use directly the AMD loader instead of using the EcmaScript import. This might not be the case in the future, but this is how to do it at the time I am writing this post. From the previous article about TypeScript, we configured to use AMD (requirejs). To have the TypeScript lazy-loaded, we will need to use require directly in the file. The first step is to add at the top of the file a require to a reference to the type. This won't load the file at runtime, but let us in development time a reference to the type. The second step is to use requirejs() method at the time you need to module. The third step is to have the types aware in every modules. This last and third step is done by using : \[code\] npm install @types/requirejs --save-dev \[/code\]
+The way to do it is to use directly the AMD loader instead of using the EcmaScript import. This might not be the case in the future, but this is how to do it at the time I am writing this post. From the previous article about TypeScript, we configured to use AMD (requirejs). To have the TypeScript lazy-loaded, we will need to use require directly in the file. The first step is to add at the top of the file a require to a reference to the type. This won't load the file at runtime, but let us in development time a reference to the type. The second step is to use requirejs() method at the time you need to module. The third step is to have the types aware in every modules. This last and third step is done by using : ``` 
+ npm install @types/requirejs --save-dev 
+``` 
 
 The first and second step can be seen in this transformed code form the initial snippet:
 
 ```typescript
-import foo = require("folder1/fileToLazyLoad"); export class ClassB { public method1(): void { console.log("ClassB>method1"); setTimeout(() => { requirejs(\["folder1/fileToLazyLoad"\], (c: typeof foo) => { const co = new c.ClassC(); co.method1(); }); }, 2000); } } 
+import foo = require("folder1/fileToLazyLoad"); export class ClassB { public method1(): void { console.log("ClassB>method1"); setTimeout(() => { requirejs(["folder1/fileToLazyLoad"], (c: typeof foo) => { const co = new c.ClassC(); co.method1(); }); }, 2000); } } 
 ``` 
 
 

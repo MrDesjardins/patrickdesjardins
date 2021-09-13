@@ -10,7 +10,10 @@ Let say that you have an exception on the server side and you want to specify th
 
 The easiest way is to return the error into the return value directly:
 
-\[csharp\] public JsonResult Create(MyObject myObject) { //AllFine return Json(new { IsCreated = True, Content = ViewGenerator(myObject)); //Error return Json(new { IsCreated = false, Content = ViewGenerator(myObject), ErrorMessage = 'Could not save because XYZ'); } \[/csharp\]
+
+```csharp
+ public JsonResult Create(MyObject myObject) { //AllFine return Json(new { IsCreated = True, Content = ViewGenerator(myObject)); //Error return Json(new { IsCreated = false, Content = ViewGenerator(myObject), ErrorMessage = 'Could not save because XYZ'); } 
+```
 
 In the Javascript, we just need to take the error message and display it. ```typescript
 $.ajax({ type: "POST", dataType: "json", url: "MyObjectController/Create", data: JSON.stringify(myObjectJson), success: function (result) { if(result.IsCreated) { //... } else { alert(result.ErrorMessage); } } }); 
@@ -21,9 +24,12 @@ This is a correct way to do it. But sometime, you may want to return handled err
 
 This can be done by changing the Response Header with a Http Code that is different from the normal 200.
 
-\[csharp\] public JsonResult Create(MyObject myObject) { //AllFine return Json(new { IsCreated = True, Content = ViewGenerator(myObject));
 
-//Use input may be wrong but nothing crashed return Json(new { IsCreated = False, Content = ViewGenerator(myObject)); //Error Response.StatusCode = (int)HttpStatusCode.InternalServerError; return Json(new { IsCreated = false, Content = ViewGenerator(myObject), ErrorMessage = 'Could not save because XYZ'); } \[/csharp\]
+```csharp
+ public JsonResult Create(MyObject myObject) { //AllFine return Json(new { IsCreated = True, Content = ViewGenerator(myObject));
+
+//Use input may be wrong but nothing crashed return Json(new { IsCreated = False, Content = ViewGenerator(myObject)); //Error Response.StatusCode = (int)HttpStatusCode.InternalServerError; return Json(new { IsCreated = false, Content = ViewGenerator(myObject), ErrorMessage = 'Could not save because XYZ'); } 
+```
 
 The Javascript can than go in three different direction:
 
@@ -40,4 +46,7 @@ For you curiosity, if you want to play with different status you can go see in *
 
 Here is it:
 
-\[csharp\] namespace System.Net { public enum HttpStatusCode { Continue = 100, SwitchingProtocols = 101, OK = 200, Created = 201, Accepted = 202, NonAuthoritativeInformation = 203, NoContent = 204, ResetContent = 205, PartialContent = 206, Ambiguous = 300, MultipleChoices = 300, Moved = 301, MovedPermanently = 301, Found = 302, Redirect = 302, RedirectMethod = 303, SeeOther = 303, NotModified = 304, UseProxy = 305, Unused = 306, RedirectKeepVerb = 307, TemporaryRedirect = 307, BadRequest = 400, Unauthorized = 401, PaymentRequired = 402, Forbidden = 403, NotFound = 404, MethodNotAllowed = 405, NotAcceptable = 406, ProxyAuthenticationRequired = 407, RequestTimeout = 408, Conflict = 409, Gone = 410, LengthRequired = 411, PreconditionFailed = 412, RequestEntityTooLarge = 413, RequestUriTooLong = 414, UnsupportedMediaType = 415, RequestedRangeNotSatisfiable = 416, ExpectationFailed = 417, InternalServerError = 500, NotImplemented = 501, BadGateway = 502, ServiceUnavailable = 503, GatewayTimeout = 504, HttpVersionNotSupported = 505, } } \[/csharp\]
+
+```csharp
+ namespace System.Net { public enum HttpStatusCode { Continue = 100, SwitchingProtocols = 101, OK = 200, Created = 201, Accepted = 202, NonAuthoritativeInformation = 203, NoContent = 204, ResetContent = 205, PartialContent = 206, Ambiguous = 300, MultipleChoices = 300, Moved = 301, MovedPermanently = 301, Found = 302, Redirect = 302, RedirectMethod = 303, SeeOther = 303, NotModified = 304, UseProxy = 305, Unused = 306, RedirectKeepVerb = 307, TemporaryRedirect = 307, BadRequest = 400, Unauthorized = 401, PaymentRequired = 402, Forbidden = 403, NotFound = 404, MethodNotAllowed = 405, NotAcceptable = 406, ProxyAuthenticationRequired = 407, RequestTimeout = 408, Conflict = 409, Gone = 410, LengthRequired = 411, PreconditionFailed = 412, RequestEntityTooLarge = 413, RequestUriTooLong = 414, UnsupportedMediaType = 415, RequestedRangeNotSatisfiable = 416, ExpectationFailed = 417, InternalServerError = 500, NotImplemented = 501, BadGateway = 502, ServiceUnavailable = 503, GatewayTimeout = 504, HttpVersionNotSupported = 505, } } 
+```

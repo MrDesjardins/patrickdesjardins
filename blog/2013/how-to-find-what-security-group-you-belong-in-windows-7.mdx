@@ -7,10 +7,14 @@ categories:
 
 This is a short blog entry that I write more as a reminder to know how to check in which group I belong in active directory while logged into a Windows 7 operating system.
 
-\[code\] gpresult /R \[/code\]
+``` 
+ gpresult /R 
+``` 
 
 [![infoGroup](http://patrickdesjardins.com/blog/wp-content/uploads/2012/12/infoGroup.png)](http://patrickdesjardins.com/blog/?attachment_id=1822) You can also search by using the pipe find method.
 
-\[code\] gpresult /R | find "Admin" \[/code\]
+``` 
+ gpresult /R | find "Admin" 
+``` 
 
 This will let you know if you belong to the Admin group. This can be handful in some system that you are developing and some right has been set. This way, you can confirm if you are really into a group or not.

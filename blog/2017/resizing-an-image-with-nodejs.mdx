@@ -42,14 +42,14 @@ import \* as g from "glob"; import \* as path from "path"; import \* as sharp fr
 The first function that we need to create is the one that return a list of string that represent the file to resize. This will be all our underscore aka best pictures. We want to be sure that we can re-run this function multiple times, thus we need to ignore the output folder where we will save resized images. This function returns the list in a promise fashion because the glob library is asynchronous. Here is the first version which call the module function "Glob" and add everything into an array while sending in the console the file for debugging purpose.
 
 ```typescript
-function getImageToAnalyze(): Promise<string\[\]> { const fullPathFiles: string\[\] = \[\]; const promise = new Promise<string\[\]>((resolve, reject) => { const glob = new g.Glob(pathImagesDirectory, { ignore: "\*\*/" + directoryName + "/\*\*" } as g.IOptions, (err: Error, matches: string\[\]) => { matches.forEach((file: string) => { console.log(file); fullPathFiles.push(file); }); resolve(fullPathFiles); }); }); return promise; } 
+function getImageToAnalyze(): Promise<string[]> { const fullPathFiles: string[] = []; const promise = new Promise<string[]>((resolve, reject) => { const glob = new g.Glob(pathImagesDirectory, { ignore: "\*\*/" + directoryName + "/\*\*" } as g.IOptions, (err: Error, matches: string[]) => { matches.forEach((file: string) => { console.log(file); fullPathFiles.push(file); }); resolve(fullPathFiles); }); }); return promise; } 
 ``` 
 
 
 This can be simplified by just returning the _matches_ string array and returning the promise instead of using a variable. At the end, if you are not debugging you can use :
 
 ```typescript
-function getImageToAnalyze(): Promise<string\[\]> { return new Promise<string\[\]>((resolve, reject) => { const glob = new g.Glob(pathImagesDirectory, { ignore: "\*\*/" + directoryName + "/\*\*" } as g.IOptions, (err: Error, matches: string\[\]) => { resolve(matches); }); }); } 
+function getImageToAnalyze(): Promise<string[]> { return new Promise<string[]>((resolve, reject) => { const glob = new g.Glob(pathImagesDirectory, { ignore: "\*\*/" + directoryName + "/\*\*" } as g.IOptions, (err: Error, matches: string[]) => { resolve(matches); }); }); } 
 ``` 
 
 
@@ -58,7 +58,7 @@ As mentioned, the quality of this code is average. In reality, some loves are mi
 At this point, we can call the method with :
 
 ```typescript
-console.log("Step 1 : Getting images to analyze " + pathImagesDirectory); getImageToAnalyze() .then((fullPathFiles: string\[\]) => { console.log("Step 2 : Resize " + fullPathFiles.length + " files"); return resize(fullPathFiles); }) 
+console.log("Step 1 : Getting images to analyze " + pathImagesDirectory); getImageToAnalyze() .then((fullPathFiles: string[]) => { console.log("Step 2 : Resize " + fullPathFiles.length + " files"); return resize(fullPathFiles); }) 
 ``` 
  The code inside the "then" is the one executed if the promise is resolved successfully. It will start resizing the list of pictures and pass this list into the function that we will create in an instant.
 
@@ -72,7 +72,7 @@ export interface IImage { thumbnailPath: string; originalFullPathImage: string; 
 This type allows to have the detail about the full path of the thumbnail "resized" picture and the original picture. When we have already resized, we just create an instance, when we do not have an image we create this one and then return a new instance. This method waits all resize to occur before resolving. This is the reason of the _.all_. We are doing so just to have a clear cut before moving to the next step and since we are launching multiple resizes in parallel, we are waiting to have them all done before analyzing.
 
 ```typescript
-function resize(fullPathFiles: string\[\]): Promise<IImage\[\]> { const listPromises: Array<Promise<IImage>> = \[\]; const promise = new Promise<IImage\[\]>((resolve, reject) => { for (const imagePathFile of fullPathFiles) { const thumb = getThumbnailPathAndFileName(imagePathFile); if (fs.existsSync(thumb)) { listPromises.push(Promise.resolve({ thumbnailPath: thumb, originalFullPathImage: imagePathFile } as IImage)); } else { listPromises.push(resizeImage(imagePathFile)); } } Promise.all(listPromises) .then((value: IImage\[\]) => resolve(value)); }); return promise; } 
+function resize(fullPathFiles: string[]): Promise<IImage[]> { const listPromises: Array<Promise<IImage>> = []; const promise = new Promise<IImage[]>((resolve, reject) => { for (const imagePathFile of fullPathFiles) { const thumb = getThumbnailPathAndFileName(imagePathFile); if (fs.existsSync(thumb)) { listPromises.push(Promise.resolve({ thumbnailPath: thumb, originalFullPathImage: imagePathFile } as IImage)); } else { listPromises.push(resizeImage(imagePathFile)); } } Promise.all(listPromises) .then((value: IImage[]) => resolve(value)); }); return promise; } 
 ``` 
 
 

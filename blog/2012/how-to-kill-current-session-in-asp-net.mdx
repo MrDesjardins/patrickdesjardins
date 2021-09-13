@@ -13,10 +13,16 @@ To kill cookies, you have to set the expiry to something already passed like the
 
 The Abandon method destroys all the objects stored in a Session object and releases their resources. The resources are not deleted right away, which mean that you still have access to the data of the session until the page is generated.
 
-\[csharp\] HttpContext.Current.Session.Abandon(); \[/csharp\]
+
+```csharp
+ HttpContext.Current.Session.Abandon(); 
+```
 
 Session are stored in a cookie with the name "ASP.NET\_SessionId". You need to kill this cookie like you would do with any cookie.
 
-\[csharp\] var sessionCookie = new HttpCookie("ASP.NET\_SessionId", string.Empty); sessionCookie.Expires = DateTime.Now.AddDays(-1); sessionCookie.Domain = UrlInformation.GetHostDomain(HttpContext.Current.Request.Url.Host); HttpContext.Current.Response.Cookies.Add(sessionCookie); \[/csharp\]
+
+```csharp
+ var sessionCookie = new HttpCookie("ASP.NET\_SessionId", string.Empty); sessionCookie.Expires = DateTime.Now.AddDays(-1); sessionCookie.Domain = UrlInformation.GetHostDomain(HttpContext.Current.Request.Url.Host); HttpContext.Current.Response.Cookies.Add(sessionCookie); 
+```
 
 With those two snippets of code, the session should be killed for good.

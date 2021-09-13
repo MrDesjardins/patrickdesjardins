@@ -9,15 +9,19 @@ categories:
 Performance when building TypeScript can be crutial if you are working on a big projects. If you are using watcher to compile when any TypeScript file change and use Gulp Watch to compile every TypeScript file, then you will have a huge performance hit. It means that if you change 1 file that you may have to build thousand of them. The following code is the lazy approach that build every TypeScript file if one changed:
 
 ```typescript
-gulp.watch(paths.typescript\_in + '\*\*/\*.ts', \['build', 'tsreload'\]); 
+gulp.watch(paths.typescript\_in + '\*\*/\*.ts', ['build', 'tsreload']); 
 ``` 
 
 
 This script watch for TypeScript files to be changed, if it does, run the build task and reload the browser. The problem is that the build task build all TypeScript. To remedy that situation, we want TypeScript to only build the changed file. For that, you will need a new Gulp package called "gulp-cached" that you install as a dev dependency.
 
-\[code\] npm install gulp-cached --save-dev \[/code\]
+``` 
+ npm install gulp-cached --save-dev 
+``` 
 
-Inside your gulpfile.js, you need to access the module: \[code\] const changed = require('gulp-cached'); \[/code\]
+Inside your gulpfile.js, you need to access the module: ``` 
+ const changed = require('gulp-cached'); 
+``` 
 
 And finally, you need to use the "on change" event after the watch, and remove the tasks's dependencies. ```typescript
 gulp.watch("app/scripts/\*\*/\*.ts").on("change", function() { var compilationResults = gulp.src("app/scripts/\*\*/\*.ts") .pipe(changed("./deploy/output")) .pipe(sourcemaps.init()) .pipe(tsProject()) compilationResults.dts.pipe(gulp.dest("./deploy/output")); compilationResults.js .pipe(sourcemaps.write('.')) .pipe(gulp.dest("./deploy/output")) .pipe(connect.reload()); }); 

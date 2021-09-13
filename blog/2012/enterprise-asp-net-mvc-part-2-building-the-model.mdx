@@ -18,7 +18,9 @@ All these classes will be used to contain the business logic but also to contain
 
 So far, if I translate the Model diagram into classes I have :
 
-\[csharp\] public class BaseModel { public int Id { get; set; } }
+
+```csharp
+ public class BaseModel { public int Id { get; set; } }
 
 public class Workout:BaseModel { public DateTime StartTime { get; set; } public DateTime EndTime { get; set; } public string Name { get; set; } public string Goal{ get; set; } public ICollection<WorkoutSession> Sessions { get; set; } }
 
@@ -28,19 +30,23 @@ public class Exercise:BaseModel { public string Name { get; set; } public string
 
 public class Muscle : BaseModel { public string Name { get; set; } public virtual MuscleGroup Group { get; set; } public ICollection<Exercise> Exercises { get; set; } }
 
-public class MuscleGroup:BaseModel { public string Name { get; set; } public ICollection<Muscle> Muscles { get; set; } } \[/csharp\]
+public class MuscleGroup:BaseModel { public string Name { get; set; } public ICollection<Muscle> Muscles { get; set; } } 
+```
 
 Indeed, I separate all these classes into individual file. Few modeling problem raised on my mind while I was writing those classes. First, every exercise need to be sorted for the user because every exercise are always done in a specific order. We need to add an Order property but we cannot add it to the Exercise class because the order will change depending of the workout session. For example, I may have the "Bicep Curl" exercise done in first on Monday and last on Friday. Also, we will create a directory of Exercise later so we need to have the "meta data" of exercise somewhere else from the exercise of the workout session. In fact, if we put out database glasses, this information would be in a junction table. If we put back our developer glasses, we will simply have a WorkouttSessionExecise that will have 1-1 relationship to an Exercise. So, let's modify the model diagram and the class.
 
-\[caption id="attachment\_1503" align="aligncenter" width="400"\] [![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/10/modelClassDiagramVersion3-400x302.png "modelClassDiagramVersion3")](http://patrickdesjardins.com/blog/enterprise-asp-net-mvc-part-2-building-the-model/modelclassdiagramversion3) Modified Class Diagram for the Workout Planner Web Application\[/caption\]
+[caption id="attachment\_1503" align="aligncenter" width="400"] [![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/10/modelClassDiagramVersion3-400x302.png "modelClassDiagramVersion3")](http://patrickdesjardins.com/blog/enterprise-asp-net-mvc-part-2-building-the-model/modelclassdiagramversion3) Modified Class Diagram for the Workout Planner Web Application[/caption]
 
 The modification need to be reflected into the classes.
 
-\[csharp\] public class WorkoutSession:BaseModel { public string Name { get; set; } public ICollection<WorkoutSessionExercise> WorkoutSessionExercises { get; set; } public virtual Workout Workout { get; set; } }
+
+```csharp
+ public class WorkoutSession:BaseModel { public string Name { get; set; } public ICollection<WorkoutSessionExercise> WorkoutSessionExercises { get; set; } public virtual Workout Workout { get; set; } }
 
 public class WorkoutSessionExercise:BaseModel { public int Order { get; set; } public string Repetitions { get; set; } public string Weights { get; set; } public string Tempo { get; set; } public TimeSpan RestBetweenSet { get; set; } public virtual Exercise Exercise { get; set; } public virtual WorkoutSession WorkoutSession { get; set; } }
 
-public class Exercise:BaseModel { public string Name { get; set; } public virtual Muscle Muscle { get; set; } public ICollection<WorkoutSessionExercise> WorkoutSessionExercices { get; set; } } \[/csharp\] As you can see, if have also moved the repetition, weight, tempo and all specific user/workout session information into something that will let the user add his information while having the Exercise class having the static information like the name of the exercise and the muscle concerned.
+public class Exercise:BaseModel { public string Name { get; set; } public virtual Muscle Muscle { get; set; } public ICollection<WorkoutSessionExercise> WorkoutSessionExercices { get; set; } } 
+``` As you can see, if have also moved the repetition, weight, tempo and all specific user/workout session information into something that will let the user add his information while having the Exercise class having the static information like the name of the exercise and the muscle concerned.
 
 The BaseModel class is used to have similar information like the primary key which is an Integer. Later, other information will be added.
 
@@ -48,7 +54,9 @@ The BaseModel class is used to have similar information like the primary key whi
 
 The next step is to add validation to the model. We could set it up to the setter of every property where we want to have some validation but we can also use the **IValidateObject** interface to let the ModelBinding system of Asp.Net MVC handle validation of every model object. If you want more information concerning the IValidationObject, I suggest you to go read this [blog post about IValidationObject interface](http://patrickdesjardins.com/blog/how-to-validate-model-object-with-asp-net-mvc-correctly). In short, the **ModelBinding** will verify every Validate method of the model when bound back to the controller and it will also Validate the object before saving it into Entity Framework. So, we have double validation automatically execute by .Net Framework. This is a big advantage because we cannot forget to validate the model since the framework do it for us. To make it mandatory we will inherit the interface from the **BaseModel** class and create an abstract method that will be defined on every model. This way, we are sure that we will have model with validation defined.
 
-\[csharp\] public abstract class BaseModel : IValidatableObject { public int Id { get; set; }
+
+```csharp
+ public abstract class BaseModel : IValidatableObject { public int Id { get; set; }
 
 #region IValidatableObject Members
 
@@ -56,17 +64,20 @@ public IEnumerable<ValidationResult> Validate(ValidationContext validationContex
 
 #endregion
 
-protected abstract IEnumerable<ValidationResult> ValidateModel(ValidationContext validationContext); } \[/csharp\]
+protected abstract IEnumerable<ValidationResult> ValidateModel(ValidationContext validationContext); } 
+```
 
 All our model classes are modified to have the abstract method defined. Here is an example of a model class with validation and one that doesn't have (yet) any validation logic.
 
-\[csharp highlight="4,36"\] public class Workout : BaseModel { public DateTime StartTime { get; set; } public DateTime? EndTime { get; set; } public string Name { get; set; } public string Goal { get; set; } public ICollection<WorkoutSession> Sessions { get; set; }
+```csharp
+public class Workout : BaseModel { public DateTime StartTime { get; set; } public DateTime? EndTime { get; set; } public string Name { get; set; } public string Goal { get; set; } public ICollection<WorkoutSession> Sessions { get; set; }
 
-protected override IEnumerable<ValidationResult> ValidateModel(ValidationContext validationContext) { if (string.IsNullOrEmpty(Name)) { yield return new ValidationResult("Name is mandatory", new\[\] {"Name"}); } if (EndTime.HasValue) { if (StartTime > EndTime.Value) { yield return new ValidationResult("EndTime must be after the StartTime", new\[\] {"StartTime", "EndTime"}); } } } }
+protected override IEnumerable<ValidationResult> ValidateModel(ValidationContext validationContext) { if (string.IsNullOrEmpty(Name)) { yield return new ValidationResult("Name is mandatory", new[] {"Name"}); } if (EndTime.HasValue) { if (StartTime > EndTime.Value) { yield return new ValidationResult("EndTime must be after the StartTime", new[] {"StartTime", "EndTime"}); } } } }
 
 public class WorkoutSessionExercise : BaseModel { public int Order { get; set; } public string Repetitions { get; set; } public string Weights { get; set; } public string Tempo { get; set; } public TimeSpan RestBetweenSet { get; set; } public virtual Exercise Exercise { get; set; } public virtual WorkoutSession WorkoutSession { get; set; }
 
-protected override IEnumerable<ValidationResult> ValidateModel(ValidationContext validationContext) { return new Collection<ValidationResult>(); } } \[/csharp\]
+protected override IEnumerable<ValidationResult> ValidateModel(ValidationContext validationContext) { return new Collection<ValidationResult>(); } } 
+```
 
 The first example show you some validation on the Name that need to be defined. It also validate the StartTime that must be before the EndTime. As you can see, the error will be displayed on both property if the error occur.
 
@@ -78,21 +89,27 @@ The second example show you an example where we do not have any validation defin
 
 The last thing that bother me with this model is that for the moment, we take for grant that everything is in English all the time. In fact, the workout goal could be in the user language but the exercise name must be translated into the language of the user. In a [previous blog post](http://patrickdesjardins.com/blog/how-to-have-localized-string-with-mvc-and-entity-framework), we have discussed about a technique that can be used to have with Entity Framework multiple language handled automatically. It also doesn't brake any object oriented theory. So, let's apply now the modification to the model by changing some string into [LocalizedString](http://patrickdesjardins.com/blog/how-to-have-localized-string-with-mvc-and-entity-framework) class.
 
-To do, we will add this class : \[csharp\] \[ComplexType\] public class LocalizedString { public string French { get; set; } public string English { get; set; }
+To do, we will add this class : 
+```csharp
+ [ComplexType] public class LocalizedString { public string French { get; set; } public string English { get; set; }
 
-\[NotMapped\] public string Current { get { return (string) LanguageProperty().GetValue(this); } set { LanguageProperty().SetValue(this, value); } }
+[NotMapped] public string Current { get { return (string) LanguageProperty().GetValue(this); } set { LanguageProperty().SetValue(this, value); } }
 
 public override string ToString() { return Current; }
 
-private PropertyInfo LanguageProperty() { string currentLanguage = Thread.CurrentThread.CurrentUICulture.DisplayName; return GetType().GetProperty(currentLanguage); } } \[/csharp\]
+private PropertyInfo LanguageProperty() { string currentLanguage = Thread.CurrentThread.CurrentUICulture.DisplayName; return GetType().GetProperty(currentLanguage); } } 
+```
 
 This class lets you have French and English for every _LocalizedString_ defined. It will add a column in the database for French and one for English.
 
 As you can see, the _LocalizedString_ does have a ComplexType attribute which will tel Entity Framework to merge the property into the owner and not to create a relationship to a table called _LocalizedString_. For example, we will use _LocalizedString_ with the name of Exercise. So the Exercise will have in its table _Name\_French_ and _Name\_English_.
 
-\[csharp\] public class Exercise : BaseModel { public LocalizedString Name { get; set; } public virtual Muscle Muscle { get; set; } public ICollection<WorkoutSessionExercise> WorkoutSessionExercices { get; set; }
 
-protected override IEnumerable<ValidationResult> ValidateModel(ValidationContext validationContext) { if (Name==null) { yield return new ValidationResult("Name is mandatory", new\[\] {"Name"}); } } } \[/csharp\]
+```csharp
+ public class Exercise : BaseModel { public LocalizedString Name { get; set; } public virtual Muscle Muscle { get; set; } public ICollection<WorkoutSessionExercise> WorkoutSessionExercices { get; set; }
+
+protected override IEnumerable<ValidationResult> ValidateModel(ValidationContext validationContext) { if (Name==null) { yield return new ValidationResult("Name is mandatory", new[] {"Name"}); } } } 
+```
 
 As you can see, the Name property is now of type _LocalizedString_ and we have modified the validation that now check if the name is defined.
 

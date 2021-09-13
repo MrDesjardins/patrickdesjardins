@@ -59,7 +59,7 @@ That's a lot of information and at the same time, just a sample of what Flow and
 
 Encapsulation or "modifier" is the first difference. I'll talk about the lack of private, public, protected keyword all at once. This level of protection doesn't exist in JavaScript, but TypeScript allows it if interested, otherwise, it's all open (public). TypeScript enforces it at the syntax level put the transpiled JavaScript doesn't have any trace of the encapsulation notion. For example:
 
-\[javascript\]
+[javascript]
 class MyClass {
     private privateMember: string;
     public publicMember: string;
@@ -77,7 +77,7 @@ class MyClass {
   
 Transpile to:
 
-\[javascript\]
+[javascript]
 var MyClass = (function () {
     function MyClass(message) {
         this.privateMember = message;
@@ -96,7 +96,7 @@ The encapsulation is not propagated in JavaScript, but could have been there wit
 
 Enum is a convenient way to organize potential value for a type. For example, with TypeScript you can write an enum that will hold a specific group of language the following way:
 
-\[javascript\]
+[javascript]
 enum Language {
     English,
     French
@@ -107,7 +107,7 @@ enum Language {
 
 This syntax allows to assign easily with a good Intellisense support, but also enforce passing only the value from the enum by parameter.
 
-\[javascript\]
+[javascript]
 var myLanguage = Language.English;
 functTakeOnlyLanguage(myLanguage);
 function functTakeOnlyLanguage(param: Language){
@@ -117,9 +117,9 @@ function functTakeOnlyLanguage(param: Language){
 ``` 
 
 
-The notion of Enum doesn't exist in Flow \[2\]. They have a workaround which more verbose \[3\] than the TypeScript keyword. Here is the same representation with Flow.
+The notion of Enum doesn't exist in Flow [2]. They have a workaround which more verbose [3] than the TypeScript keyword. Here is the same representation with Flow.
 
-\[javascript\]
+[javascript]
 export const LANGUAGES\_VALUE = {
     French: "French",
     English: "English"
@@ -137,7 +137,7 @@ function functTakeOnlyLanguage(param: Language){
 
 Using this type and constant with Flow require to have a special import when using.
 
-\[javascript\]
+[javascript]
 import { LANGUAGES\_VALUE } from "../general/Language";
 import type { Language } from "../general/Language";
 
@@ -148,7 +148,7 @@ The Flow version requires a little more work since you need to define the const 
 
 ## Utility Type
 
-Flow is having something TypeScript does not literally have called utility type \[3\] or magic utility type. We already saw the potential with Enum with the **$keys** one. TypeScript lets you do something similar with **keyof**.
+Flow is having something TypeScript does not literally have called utility type [3] or magic utility type. We already saw the potential with Enum with the **$keys** one. TypeScript lets you do something similar with **keyof**.
 
 Flow has also $Diff<a,b> which returns a type that is the difference between two types. There is also few others which are not all implemented. </a,b>
 
@@ -158,15 +158,15 @@ So, at first glance, it's a pro and I marked it as well. However, the more I was
 
 Getting definition files is different between TypeScript and Flow. The reason is that Flow doesn't use the same definition file than TypeScript. There is no way to translate one to the other, and both persist their definition files in an independent repository. This creates fragmentation in the community that needs to create two kinds of definition file. As mentioned in the first part, TypeScript has above three thousand definition files while Flow has reached few week ago three hundred. Besides the number of libraries, the major difference is how to get the definition files. TypeScript has a long history of ways to do it. At the time I am writing this article, we are at the third iteration which seem to be stable and better in many ways. It's now using NPM, a tool that every JavaScript developers have familiarity since it is the most common way to get library. It makes sense to have the definition file by the same way. Using NPM allows using the same syntax and configuration file (package.json). This is convenient to store data, but also convenient to get the definition file from a repository that you do not own. By installing with "npm install" you are getting all the libraries as well as all the definition files.
 
-\[javascript\]
+[javascript]
 npm install --save-dev @types/redux
 
 ``` 
 
 
-With Flow, getting library definition is not hard, but it's not a paved way what we are used to ride on. It requires using a cli (command line)\[4\]. This cli is available from npm (npm install -g flow-typed) and from there, you can use flow-typed to get a library that will be installed into a flow-typed folder at the root of your project. One requirement is that you must specify a version.
+With Flow, getting library definition is not hard, but it's not a paved way what we are used to ride on. It requires using a cli (command line)[4]. This cli is available from npm (npm install -g flow-typed) and from there, you can use flow-typed to get a library that will be installed into a flow-typed folder at the root of your project. One requirement is that you must specify a version.
 
-\[javascript\]
+[javascript]
 flow-typed install redux@2.3.x
 
 ``` 
@@ -180,7 +180,7 @@ TypeScript has the keyword **readonly**. Flow does not. However, Flow has someth
 
 Flow doesn't have the keyword read only. It has the concept of covariance that TypeScript doesn't have. To mimic this behavior, in Flow it requires having a "+" sign in front of the variable. The difference is small for a field but subtle. For example, it works well if you know the value and assigns it directly to the field of the class. However, if you want to assign it in the constructor, it won't work in Flow. Let's see some code:
 
-\[javascript\]
+[javascript]
 class Person {
   +name: string;
   constructor(name: string) {
@@ -193,7 +193,7 @@ class Person {
 
 But the equivalence work in TypeScript:
 
-\[javascript\]
+[javascript]
 class Person {
   readonly name: string;
   constructor(name: string) {
@@ -210,19 +210,19 @@ The case of read only is simpler with TypeScript and work like many other langua
 
 Both have a different way to achieve optional value to be provided for parameter of a function or to have a field defined (in an interface for example). TypeScript use the question mark in both cases.
 
-\[javascript\]
+[javascript]
 // Optional Field
-interface IInterface{ propertyName?: string } //Allow null &amp;amp;amp;amp;amp; undefined
+interface IInterface{ propertyName?: string } //Allow null amp;amp;amp;amp; undefined
 
 // Optional Parameter
-function myFunc( param?: string ) //Allow null &amp;amp;amp;amp;amp; undefined
+function myFunc( param?: string ) //Allow null amp;amp;amp;amp; undefined
 
 ``` 
 
 
 This is different from Flow which will not be that loose. With Flow, you can pass nothing (which is undefined) but cannot explicitly pass null for something optional.
 
-\[javascript\]
+[javascript]
 // Optional Field
 interface IInterface{ propertyName?: string } //Allow undefined
 
@@ -234,9 +234,9 @@ function myFunc( param?: string ) //Allow undefined
 
 If you want to pass null, you need to use the concept of "maybe" which is unique to Flow. The syntax is also with the question mark, but this time before the type.
 
-\[javascript\]
+[javascript]
 // Optional Parameter
-function myFunc( param: ?string ) //Allow null &amp;amp;amp;amp;amp; undefined
+function myFunc( param: ?string ) //Allow null amp;amp;amp;amp; undefined
 
 ``` 
 
@@ -251,7 +251,7 @@ Abstract is available in TypeScript; it's not in Flow. Abstract is an object ori
 
 TypeScript requires having a configuration flag to true in the tsconfig.json. Flow requires having a babel plugin. It needs a little more work, like getting the right package, but nothing significant. I started using the babel decorator, but was getting a warning message that conducted me to using the decorator-legacy.
 
-From there, Flow was giving an error saying that this feature was experimental. Flow, at this time, doesn’t support decorator \[5\]. I ended up by having to ignore the EcmaScript proposal in the .flowconfig file. TypeScript won. However, if you are not using Angular2+ or MobX than you might do not mind. However, more and more libraries and frameworks use decorator which is nice to have some type checking as well.
+From there, Flow was giving an error saying that this feature was experimental. Flow, at this time, doesn’t support decorator [5]. I ended up by having to ignore the EcmaScript proposal in the .flowconfig file. TypeScript won. However, if you are not using Angular2+ or MobX than you might do not mind. However, more and more libraries and frameworks use decorator which is nice to have some type checking as well.
 
 ## Quick Initialization
 
@@ -263,7 +263,7 @@ On this one, I wasn't very thorough. I had code that was defining readonly stati
 
 ## Type of Typing
 
-TypeScript is using a structural typing \[6\]. Flow is following nominally typing\[7\]. It means that for TypeScript, if you have two interfaces or classes with the same members but with a different name, hence are a different type, they are assignable. This is to mimic how JavaScript works. However, Flow is nominally typed which means that every class or interface defined is unique and cannot be assigned to another one even if they have the same members. I could elaborate more, but I suggest you read the TypeScript documentation about type compatibility. So who is winning? It’s a hard one. Flow wins if we want something more strict. TypeScript wins if we want not to invent a new language on top of JavaScript. To be noted is that, even if JavaScript doesn’t have keywords for encapsulation and abstraction, the language allow it with closures and other JavaScript tricks. So at the end, TypeScript seems to be the winner since it doesn’t try to change the nature of JavaScript, which Flow is doing…and maybe for the best? I guess that is debatable.
+TypeScript is using a structural typing [6]. Flow is following nominally typing[7]. It means that for TypeScript, if you have two interfaces or classes with the same members but with a different name, hence are a different type, they are assignable. This is to mimic how JavaScript works. However, Flow is nominally typed which means that every class or interface defined is unique and cannot be assigned to another one even if they have the same members. I could elaborate more, but I suggest you read the TypeScript documentation about type compatibility. So who is winning? It’s a hard one. Flow wins if we want something more strict. TypeScript wins if we want not to invent a new language on top of JavaScript. To be noted is that, even if JavaScript doesn’t have keywords for encapsulation and abstraction, the language allow it with closures and other JavaScript tricks. So at the end, TypeScript seems to be the winner since it doesn’t try to change the nature of JavaScript, which Flow is doing…and maybe for the best? I guess that is debatable.
 
 ## Conclusion
 
@@ -277,10 +277,10 @@ This part is getting long. I’ll end it here. In the first part, we saw some fu
 
 ## References
 
-\[1\] - 
-\[2\] https://github.com/facebook/flow/issues/627  
-\[3\] https://flow.org/en/docs/types/utilities/  
-\[4\] https://github.com/flowtype/flow-typed/blob/master/README.md  
-\[5\] https://github.com/facebook/flow/issues/3405  
-\[6\] https://www.typescriptlang.org/docs/handbook/type-compatibility.html  
-\[7\] https://flow.org/en/docs/types/classes/
+[1] - 
+[2] https://github.com/facebook/flow/issues/627  
+[3] https://flow.org/en/docs/types/utilities/  
+[4] https://github.com/flowtype/flow-typed/blob/master/README.md  
+[5] https://github.com/facebook/flow/issues/3405  
+[6] https://www.typescriptlang.org/docs/handbook/type-compatibility.html  
+[7] https://flow.org/en/docs/types/classes/

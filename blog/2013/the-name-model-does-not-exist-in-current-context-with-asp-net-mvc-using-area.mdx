@@ -9,4 +9,8 @@ categories:
 
 [![errorWebConfigMissing](http://patrickdesjardins.com/blog/wp-content/uploads/2013/02/errorWebConfigMissing.png)](http://patrickdesjardins.com/blog/the-name-model-does-not-exist-in-current-context-with-asp-net-mvc-using-area/errorwebconfigmissing)
 
-\[xml\] <system.web.webPages.razor> <host factoryType="System.Web.Mvc.MvcWebRazorHostFactory, System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" /> <pages pageBaseType="System.Web.Mvc.WebViewPage"> <namespaces> <add namespace="System.Web.Mvc" /> <add namespace="System.Web.Mvc.Ajax" /> <add namespace="System.Web.Mvc.Html" /> <add namespace="System.Web.Routing" /> </namespaces> </pages> </system.web.webPages.razor> \[/xml\] This error is often present when the area has been created by using "New Folder" instead of "New Area". Nevertheless, it's quite simple to solve with the web.config inside the folder.
+
+```xml
+ <system.web.webPages.razor> <host factoryType="System.Web.Mvc.MvcWebRazorHostFactory, System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" /> <pages pageBaseType="System.Web.Mvc.WebViewPage"> <namespaces> <add namespace="System.Web.Mvc" /> <add namespace="System.Web.Mvc.Ajax" /> <add namespace="System.Web.Mvc.Html" /> <add namespace="System.Web.Routing" /> </namespaces> </pages> </system.web.webPages.razor> 
+```
+ This error is often present when the area has been created by using "New Folder" instead of "New Area". Nevertheless, it's quite simple to solve with the web.config inside the folder.

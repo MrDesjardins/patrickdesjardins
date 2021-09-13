@@ -8,11 +8,17 @@ categories:
 
 Previously, we setup TypeScript but had two problems. The first one was that we couldn't move the vendor library and the second that we couldn't test the generated TypeScript file since we do not have a web server running. We will tackle the first problem by using Gulp. Gulp is like MsBuild, it's only goal is to help you automate some tasks.
 
-To be able to use Gulp, we need to download gulp. It's convenient since we can get it from npm by executing the install command. \[code\] npm install gulp --save-development //or npm install gulp -g \[/code\]
+To be able to use Gulp, we need to download gulp. It's convenient since we can get it from npm by executing the install command. ``` 
+ npm install gulp --save-development //or npm install gulp -g 
+``` 
 
-Create a Gulp's configuration file : **gulpfile.js** at the root, sibling to TypeScript's configuration file, and typings' configuration file. We will need some additional node modules to help us working inside Gulp. You can get the one we will use by typing: \[code\] npm install gulp-typescript --save-development npm install typescript --save-development npm install del --save-development npm install gulp-sourcemaps --save-development \[/code\]
+Create a Gulp's configuration file : **gulpfile.js** at the root, sibling to TypeScript's configuration file, and typings' configuration file. We will need some additional node modules to help us working inside Gulp. You can get the one we will use by typing: ``` 
+ npm install gulp-typescript --save-development npm install typescript --save-development npm install del --save-development npm install gulp-sourcemaps --save-development 
+``` 
 
-This file is pure JavaScript that use Node's module to execute JavasScript for specific tasks. The task runner is Gulp. The goal is to be able in the console to write: \[code\] gulp clean //or gulp build \[/code\] The Gulp file that we will build is simple for the case of learning how to use Gulp to do:
+This file is pure JavaScript that use Node's module to execute JavasScript for specific tasks. The task runner is Gulp. The goal is to be able in the console to write: ``` 
+ gulp clean //or gulp build 
+```  The Gulp file that we will build is simple for the case of learning how to use Gulp to do:
 
 Clean up previous build file
 
@@ -35,7 +41,7 @@ var paths = { webroot: "./", node\_modules: "./node\_modules/", typescript\_in: 
 Here start the fun. Let's create the first Gulp task to delete previous generated JavaScript file and mapping file from TypeScript. This is required because even if TypeScript will overwrite previous JavaScript generated, if you delete a TypeScript, the JavaScript will hang in the folder which can cause size problem once we bundle all JavaScript.
 
 ```typescript
-gulp.task("clean", function (callback) { var typeScriptGenFiles = \[ paths.typescript\_out + "/\*\*/\*.js", paths.typescript\_out + "/\*\*/\*.js.map" \];
+gulp.task("clean", function (callback) { var typeScriptGenFiles = [ paths.typescript\_out + "/\*\*/\*.js", paths.typescript\_out + "/\*\*/\*.js.map" ];
 
 del(typeScriptGenFiles, callback); }); 
 ``` 
@@ -48,20 +54,20 @@ The second task is to copy vendors library. This time, we use Gulp's functions t
 ```typescript
 gulp.task("copy", function () { var modulesToMove = { "jquery": "jquery/dist/jquery\*.{js,map}" }
 
-for (var destinationDir in modulesToMove) { gulp.src(paths.node\_modules + modulesToMove\[destinationDir\]) .pipe(gulp.dest(paths.modulesDestination + destinationDir)); } }); 
+for (var destinationDir in modulesToMove) { gulp.src(paths.node\_modules + modulesToMove[destinationDir]) .pipe(gulp.dest(paths.modulesDestination + destinationDir)); } }); 
 ``` 
 
 
 Finally, the biggest task : building. This need to create the TypeScript and if needed definition files. We use the tsProject variable that come from the tsconfig.json, get all the source, generate the source map, compile. After, we take all definition file and write everything at the destination path. Then, we do the same with JavaScript file where we write the source map and source in the destination folder. Here how it looks:
 
-\[javascript\]
+[javascript]
 
-gulp.task("build", function () { var sourceTsFiles = \[paths.typescript\_in, paths.typescript\_definitions\]; var compilationResults = tsProject.src() .pipe(sourcemaps.init()) .pipe(tsProject()) compilationResults.dts.pipe(gulp.dest(paths.typescript\_out)); return compilationResults.js .pipe(sourcemaps.write('.')) .pipe(gulp.dest(paths.typescript\_out)); }); 
+gulp.task("build", function () { var sourceTsFiles = [paths.typescript\_in, paths.typescript\_definitions]; var compilationResults = tsProject.src() .pipe(sourcemaps.init()) .pipe(tsProject()) compilationResults.dts.pipe(gulp.dest(paths.typescript\_out)); return compilationResults.js .pipe(sourcemaps.write('.')) .pipe(gulp.dest(paths.typescript\_out)); }); 
 ``` 
 
 
 So far, we can go in the console and use : gulp clean or gulp copy or gulp build. We saw that we can have a second parameter that is an array of task name, we could have a task that execute these three tasks we just created which will allow us to execute gulp buildall and have the clean, copy and build executed. ```typescript
-gulp.task("buildall", \["clean", "copy", "build"\], function (callback){ callback(); }); 
+gulp.task("buildall", ["clean", "copy", "build"], function (callback){ callback(); }); 
 ``` 
 
 

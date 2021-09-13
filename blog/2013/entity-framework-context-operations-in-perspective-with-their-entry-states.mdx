@@ -9,24 +9,48 @@ When manipulating data with Entity Framework and the context, you are changing t
 
 Before going deeper with the operation, let see all states. You can get the list of states by going into **EntityState** class of System.Data.
 
-\[csharp\] namespace System.Data { \[BindableType(IsBindable = false)\] \[Flags\] public enum EntityState { Detached = 1, Unchanged = 2, Added = 4, Deleted = 8, Modified = 16, } } \[/csharp\]
+
+```csharp
+ namespace System.Data { [BindableType(IsBindable = false)] [Flags] public enum EntityState { Detached = 1, Unchanged = 2, Added = 4, Deleted = 8, Modified = 16, } } 
+```
 
 The **Detached** state is when an object is not yet attached to Entity Framework's context. By default, if you create a new instance of a class, this one is not attached. Another way to be detached is when you delete an entity. This one will be deleted from the database by Entity Framework but the object reference remains in your code. This one will be back to detached. Having said that, moving back to detached won't delete the entity but won't make Entity Framework knows about it. We could also manually set the entry to detached to have this one not tracked.
 
-\[csharp\] var category = context.Categories.Find(id); context.Categories.Remove(category); context.SaveChanges(); // Will delete and set category as detached //Is the same as var category = context.Categories.Find(id); context.Entry(category).State = EntityState.Detached; context.SaveChanges(); // Will do nothing in the database because it's detached and it would required to be "Deleted" to be deleted. \[/csharp\]
 
-The example above call **Remove** to delete the entity. When deleting the state goes from **Added** to **Delete** to **Detached**. So both code below are doing the same thing : delete the entity from the database. \[csharp\] var category = context.Categories.Find(id); context.Categories.Remove(category); context.SaveChanges(); //Is the same as var category = context.Categories.Find(id); context.Entry(category).State = EntityState.Deleted; context.SaveChanges(); \[/csharp\]
+```csharp
+ var category = context.Categories.Find(id); context.Categories.Remove(category); context.SaveChanges(); // Will delete and set category as detached //Is the same as var category = context.Categories.Find(id); context.Entry(category).State = EntityState.Detached; context.SaveChanges(); // Will do nothing in the database because it's detached and it would required to be "Deleted" to be deleted. 
+```
 
-The **Unchanged** state occur when the entity is tracked by Entity Framework's context but has not changed yet. You can have this state if you use the method Attach() or if you change the state with Entry(). \[csharp\] var category = new Category{Id=123}; context.Categories.Attach(category); context.SaveChanges(); //Is the same as var category = new Category{Id=123}; context.Entry(category).State = EntityState.Unchanged; context.SaveChanges(); \[/csharp\]
+The example above call **Remove** to delete the entity. When deleting the state goes from **Added** to **Delete** to **Detached**. So both code below are doing the same thing : delete the entity from the database. 
+```csharp
+ var category = context.Categories.Find(id); context.Categories.Remove(category); context.SaveChanges(); //Is the same as var category = context.Categories.Find(id); context.Entry(category).State = EntityState.Deleted; context.SaveChanges(); 
+```
 
-The **Added** state is synonym of insertion. When a new entity is added to the context, this one will be inserted into the database. In Entity Framework words, it's called Added. This can be done by using the **Add** method or by changing the state to **EntityState.Added**. \[csharp\] var category = new Category{Id=123}; context.Categories.Add(category); context.SaveChanges(); //Is the same as var category = new Category{Id=123}; context.Entry(category).State = EntityState.Added; context.SaveChanges(); \[/csharp\]
+The **Unchanged** state occur when the entity is tracked by Entity Framework's context but has not changed yet. You can have this state if you use the method Attach() or if you change the state with Entry(). 
+```csharp
+ var category = new Category{Id=123}; context.Categories.Attach(category); context.SaveChanges(); //Is the same as var category = new Category{Id=123}; context.Entry(category).State = EntityState.Unchanged; context.SaveChanges(); 
+```
 
-Finally, you can be **Modified**. This state will do an update to the property that has been changed. Once the update has been done by calling **SaveChanges**, the state come back to attached \[csharp\] var category = context.Categories.Find(id); //State is to attached context.Categories.Update(category); //State is now updated context.SaveChanges(); //State is now attached //Is the same as var category = context.Categories.Find(id); //State is to attached context.Entry(category).State = EntityState.Modified; //State is now updated context.SaveChanges(); //State is now attached \[/csharp\]
+The **Added** state is synonym of insertion. When a new entity is added to the context, this one will be inserted into the database. In Entity Framework words, it's called Added. This can be done by using the **Add** method or by changing the state to **EntityState.Added**. 
+```csharp
+ var category = new Category{Id=123}; context.Categories.Add(category); context.SaveChanges(); //Is the same as var category = new Category{Id=123}; context.Entry(category).State = EntityState.Added; context.SaveChanges(); 
+```
+
+Finally, you can be **Modified**. This state will do an update to the property that has been changed. Once the update has been done by calling **SaveChanges**, the state come back to attached 
+```csharp
+ var category = context.Categories.Find(id); //State is to attached context.Categories.Update(category); //State is now updated context.SaveChanges(); //State is now attached //Is the same as var category = context.Categories.Find(id); //State is to attached context.Entry(category).State = EntityState.Modified; //State is now updated context.SaveChanges(); //State is now attached 
+```
 
 Without going in to much details you can handle modified state by using "**ApplyCurrentValues**". This will check the object passed by parameter and if changes are found will mark those properties with the new value and with the **Modified** state.
 
-\[csharp\] var category = context.Categories.Attach(new Category { ID = categoryThatCameFromUserForm.ID }); context.Categories.ApplyCurrentValues(categoryThatCameFromUserForm); context.SaveChanges(); //State is now attached \[/csharp\]
 
-We could also specify manually which property that could have been changed with Entry method. \[csharp\] var category = context.Categories.Attach(new Category { ID = categoryThatCameFromUserForm.ID }); context.Entry(category).Property(d=>d.Name).IsModified = true; context.SaveChanges(); //State is now attached \[/csharp\]
+```csharp
+ var category = context.Categories.Attach(new Category { ID = categoryThatCameFromUserForm.ID }); context.Categories.ApplyCurrentValues(categoryThatCameFromUserForm); context.SaveChanges(); //State is now attached 
+```
+
+We could also specify manually which property that could have been changed with Entry method. 
+```csharp
+ var category = context.Categories.Attach(new Category { ID = categoryThatCameFromUserForm.ID }); context.Entry(category).Property(d=>d.Name).IsModified = true; context.SaveChanges(); //State is now attached 
+```
 
 To conclude, it's possible to handle Entity Framework's entities with several approaches. The method one, with operation, is perfect for simple case when the method two, with state, is better to have further control over what is modified and to create abstract level over Entity Framework if requires. For example, you could easily add some code that check if the Id is Null or not, if it's null to change the state to Added, otherwise to set the state to Modified.

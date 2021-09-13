@@ -12,7 +12,7 @@ To do so, we need to add a launch configuration for VSCode. This is done by addi
 This file is used by Visual Studio when you hit "F5" or when you go in the left panel, under "debug" and click "Play". [![](http://patrickdesjardins.com/blog/wp-content/uploads/2017/02/DebugGulpScript.png)](http://patrickdesjardins.com/blog/?attachment_id=4977)
 
 The configuration contains few item that you must have, and some that you need to configure. ```typescript
-{ "version": "0.2.0", "configurations": \[ { "type": "node", "request": "launch", "name": "Debug Gulp", "program": "${workspaceRoot}/node\_modules/gulp/bin/gulp.js", "stopOnEntry": true, "args": \[ "copy" \], "cwd": "${workspaceRoot}/", "outFiles": \[\], "sourceMaps": true, "runtimeExecutable": null, "env": { } } \] } 
+{ "version": "0.2.0", "configurations": [ { "type": "node", "request": "launch", "name": "Debug Gulp", "program": "${workspaceRoot}/node\_modules/gulp/bin/gulp.js", "stopOnEntry": true, "args": [ "copy" ], "cwd": "${workspaceRoot}/", "outFiles": [], "sourceMaps": true, "runtimeExecutable": null, "env": { } } ] } 
 ``` 
 
 

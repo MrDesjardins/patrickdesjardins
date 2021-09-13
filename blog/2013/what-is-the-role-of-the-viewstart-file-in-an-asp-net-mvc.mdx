@@ -13,7 +13,10 @@ An other characteristic of the ViewStart is that this one is called "\_ViewStart
 
 The role is to avoid to repeat some code that must be the same between views. For example, the layout for the view (the master page). Instead of defining the the top of each view what layout to use, you can simply define a layout at the root of your views folder a file \_ViewStart.cshtml and put :
 
-\[csharp\] @{ Layout = &quot;~/Views/Shared/\_MasterPage.cshtml&quot;; } \[/csharp\]
+
+```csharp
+ @{ Layout = &quot;~/Views/Shared/\_MasterPage.cshtml&quot;; } 
+```
 
 If you need a different layout for a specific view, simply set the layout inside the view or inside a ViewStart inside the folder of the view. Since the order of read is from the root of the Views folder to its subdirectory, this last ViewStart will set the Layout property and override the one defined previously.
 

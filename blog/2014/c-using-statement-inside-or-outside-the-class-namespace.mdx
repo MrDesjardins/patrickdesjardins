@@ -9,13 +9,24 @@ categories:
 
 For example:
 
-\[csharp\] var x = new OtherLibrary.OtherNameSpace.Xyz.TheClass(); \[/csharp\]
+
+```csharp
+ var x = new OtherLibrary.OtherNameSpace.Xyz.TheClass(); 
+```
 
 Having the whole namespace in the code can become cumbersome. This is why the **using** statement exist. By default, the using is at the top of the file.
 
-\[csharp highlight="1"\] using System; namespace MyNameSpace {
+```csharp
+using System; namespace MyNameSpace {
 
-public class MyClass { //... } } \[/csharp\] But this could also be different by having the System namespace directly inside the namespace. \[csharp highlight="3"\] namespace MyNameSpace { using System; public class MyClass { //... } } \[/csharp\]
+public class MyClass { //... } } 
+``` 
+
+But this could also be different by having the System namespace directly inside the namespace. 
+
+```csharp
+namespace MyNameSpace { using System; public class MyClass { //... } } 
+```
 
 But what is the difference? The difference is the priority of how the .Net will use external dependencies. The priority is to the **using** inside the namespace and then to the one of the file. This is why having the using inside the namespace can be more safe in a way that you can be sure that no other library can hijack a namespace and break your code. For example, you could create a class named Math, and still be in your namespace and having this one be used instead of System.Math. But, to remove this possibility, if you set _using System;_ inside your namespace than you are sure to have the real Math class to be used (or to have a conflict during compilation file if both are explicitly marked with using).
 

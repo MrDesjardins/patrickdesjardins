@@ -10,9 +10,12 @@ If you want to use Unity with a Microsoft Data Service, you need to setup your i
 
 With Microsoft Data Service (OData) you want to setup your Unity container with the method _CreateDataSource_ which is available since you must inherit from _DataService_.
 
-\[csharp\] public class MyDataService : DataService<MyContext> { public UnityContainer Container { get; set; }
 
-public static void InitializeService(DataServiceConfiguration config) { config.SetEntitySetAccessRule("\*", EntitySetRights.AllRead); config.DataServiceBehavior.MaxProtocolVersion = DataServiceProtocolVersion.V3; config.UseVerboseErrors = true; } protected override ODataDbContext CreateDataSource() { Container = new UnityContainer(); Bootstrapper.Initialise(Container); return new MyDataSourceContext(Container.Resolve<IMyInterface>()); } } \[/csharp\]
+```csharp
+ public class MyDataService : DataService<MyContext> { public UnityContainer Container { get; set; }
+
+public static void InitializeService(DataServiceConfiguration config) { config.SetEntitySetAccessRule("\*", EntitySetRights.AllRead); config.DataServiceBehavior.MaxProtocolVersion = DataServiceProtocolVersion.V3; config.UseVerboseErrors = true; } protected override ODataDbContext CreateDataSource() { Container = new UnityContainer(); Bootstrapper.Initialise(Container); return new MyDataSourceContext(Container.Resolve<IMyInterface>()); } } 
+```
 
 As you can see, you just need to define your UnityContainer as a property to your class (or you could use an attribute) and then initialize it inside _CreateDataSource_ method. Not only you can initialize your container here, but you can override the one defined in DataSerivce to use yours (MyDataSourceContext) which use unity for its parameters.
 

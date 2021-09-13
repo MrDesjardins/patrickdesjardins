@@ -12,14 +12,28 @@ There are three places where you need to handle unexpected errors in a stack usi
 
 ## React Unhandled Exception
 
-Since version 16, React simplified the capture of error by introducing the lifecycle function "componentDidCatch." It is a function like "render" or "componentShouldUpdate" that come with the framework. The "componentDidCatch" is triggered when an exception go thrown any children of the component. The detail about what it covers is crucial. You must have a component that englobes most of your application. If you are using React-Router and would like to keep the web application with the same URL and have the menus to stay in place, this can be tricky. The idea is to create a new component with the sole purpose of wrapping all top route components. Having a single component to handle the unexpected error is interesting. It is simple, easy to test, with a cohesive and single task.
+Since version 16, React simplified the capture of error by introducing the lifecycle function `componentDidCatch`. It is a function like `render` or `componentShouldUpdate` that come with the framework. The `componentDidCatch` is triggered when an exception go thrown any children of the component. The detail about what it covers is crucial. You must have a component that englobes most of your application. If you are using React-Router and would like to keep the web application with the same URL and have the menus to stay in place, this can be tricky. The idea is to create a new component with the sole purpose of wrapping all top route components. Having a single component to handle the unexpected error is interesting. It is simple, easy to test, with a cohesive and single task.
 
 ```typescript
-export interface ErrorBoundaryStates { hasError: boolean; } export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryStates> { constructor(props: ErrorBoundaryProps) { super(props); this.state = { hasError: false }; }
+export interface ErrorBoundaryStates { hasError: boolean; } 
+export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryStates> { 
+  constructor(props: ErrorBoundaryProps) { 
+    super(props); 
+    this.state = { hasError: false }; 
+  }
 
-public componentDidCatch(error: Error, errorInfo: ErrorInfo): void { this.setState({ hasError: true }); YourLoggingSystem.track(error, "ErrorBoundary", { errorInfo: errorInfo }); }
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo): void { 
+    this.setState({ hasError: true }); 
+    YourLoggingSystem.track(error, "ErrorBoundary", { errorInfo: errorInfo }); 
+  }
 
-public render() { if (this.state.hasError) { return <div className="ErrorBoundary"> The application crashed. Sorry! </div>; } return this.props.children; } } 
+  public render() { 
+    if (this.state.hasError) { 
+      return <div className="ErrorBoundary"> The application crashed. Sorry! </div>; 
+    } 
+    return this.props.children; 
+  } 
+} 
 ``` 
 
 
@@ -28,25 +42,37 @@ However, with React-Router, every route is assigned as property. The property is
 ```typescript
 // CODE IN YOUR TOP APP CONTAINER:
 
-// Constructor: this.page1Component = withErrorBoundary()(Page1Component)); // Render: <Route path={Routes.PAGE\_1} component={this.page1Component} />
+// Constructor: 
+this.page1Component = withErrorBoundary()(Page1Component)); 
 
-// UTILITY FUNCTION export const withErrorBoundary = () => <P extends object>(Component: React.ComponentType<P>) => class WithErrorBoundary extends React.Component<P> { render() { return <ErrorBoundary}><Component {...this.props} /></ErrorBoundary>; } }; 
+// Render: 
+<Route path={Routes.PAGE_1} component={this.page1Component} />
+
+// UTILITY FUNCTION 
+export const withErrorBoundary = () => <P extends object>(Component: React.ComponentType<P>) 
+  => class WithErrorBoundary extends React.Component<P> { 
+    render() { 
+      return <ErrorBoundary}><Component {...this.props} /></ErrorBoundary>; 
+    } 
+}; 
 ``` 
 
 
 ## Redux Mapping Unhandled Exception
 
-This section will be short because it is covered with React. However, I wanted to clarify that this can be tricky if you are not doing exactly like the pattern I described. For instance, if you are wrapping the "withErrorBoundary" not at the initialization of the route but directly when you connect -- it will not work. For example, the code below does not work as you might expect. The reason is that the error is bound to the component but not to the code being bound by the React-Connect.
+This section will be short because it is covered with React. However, I wanted to clarify that this can be tricky if you are not doing exactly like the pattern I described. For instance, if you are wrapping the `withErrorBoundary` not at the initialization of the route but directly when you connect -- it will not work. For example, the code below does not work as you might expect. The reason is that the error is bound to the component but not to the code being bound by the React-Connect.
 
 ```typescript
-export default connect<ModelPage1, DispatchPage1, {}, {}, AppReduxState>( (s) => orgMappers.mapStateToProps(s), (s) => orgMappers.mapDispatchToProps(s) )(WithErrorBoundary()(Page1Component)); 
+export default connect<ModelPage1, DispatchPage1, {}, {}, AppReduxState>( (s) => 
+  orgMappers.mapStateToProps(s), (s) => orgMappers.mapDispatchToProps(s) )(WithErrorBoundary()(Page1Component)); 
 ``` 
 
 
-Outside of the initial solution proposed, it is also valid to wrap the "connect" to have the desired effect of receiving the error in the "componentDidCatch" of the "ErrorBoundary". I prefer the former solution because it does not coerce the ErrorBoundary with the component forever.
+Outside of the initial solution proposed, it is also valid to wrap the `connect` to have the desired effect of receiving the error in the `componentDidCatch` of the `ErrorBoundary`. I prefer the former solution because it does not coerce the ErrorBoundary with the component forever.
 
 ```typescript
-export default WithErrorBoundary(connect<ModelPage1, DispatchPage1, {}, {}, AppReduxState>( (s) => orgMappers.mapStateToProps(s), (s) => orgMappers.mapDispatchToProps(s) )(Page1Component)); 
+export default WithErrorBoundary(connect<ModelPage1, DispatchPage1, {}, {}, AppReduxState>( (s) => 
+  orgMappers.mapStateToProps(s), (s) => orgMappers.mapDispatchToProps(s) )(Page1Component)); 
 ``` 
 
 
@@ -57,7 +83,17 @@ The last portion of the code that needs to have a catch-all is the middleware. T
 ```typescript
 const appliedMiddleware = applyMiddleware( thunk, unhandledExceptionMiddleware, middleware1, middleware2, middleware3, middleware4 );
 
-// Excerpt of the middleware: return (api: MiddlewareAPI<Dispatch, AppReduxState>) => (next: Dispatch) => (action: Actions): any => { try { return next(action); } catch (error) { YourLoggingSystem.track(error, "Unhandled Exception in Middleware"); return next(/\*Insert here an action that will render something to the UI to indicate to the user that an error occured\*/); } }; 
+// Excerpt of the middleware: return (api: MiddlewareAPI<Dispatch, AppReduxState>) => 
+  (next: Dispatch) => 
+    (action: Actions): any => { 
+      try { 
+        return next(action); 
+      } 
+      catch (error) { 
+        YourLoggingSystem.track(error, "Unhandled Exception in Middleware"); 
+        return next(/*Insert here an action that will render something to the UI to indicate to the user that an error occured*/); 
+      } 
+    }; 
 ``` 
 
 

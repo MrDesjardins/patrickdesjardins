@@ -11,16 +11,25 @@ AutoMapper from version 4.2 the static method **CreateMap** is obsolete and will
 
 First of all, if you had a custom interface or base class for the classes that define your mapping you should use instead **AutoMapper.Profile**. Having your class using this interface lets you override a method called **Configure**. You can from that base class call **base.CreateMap**. Since you access the CreateMap method, not statically, and with the same signature, the migration is easy. Here is an example.
 
-\[csharp\] public class OverallMapping: Profile { protected override void Configure() { base.CreateMap<HealthOverall, HealthOverallViewModel>(); } } \[/csharp\]
+
+```csharp
+ public class OverallMapping: Profile { protected override void Configure() { base.CreateMap<HealthOverall, HealthOverallViewModel>(); } } 
+```
 
 The last step is to have all profiles loaded into your static variable. The easiest way is to use reflection to loops through all classes and to get all classes that inherit from **Profile**. The method that use the reflection is called once in your Global.asax.cs during the application start. Since it's called once, the reflection call is not problematic on performance of your web application.
 
-\[csharp\] public static class MappingConfiguration { public static void CreateMapping() { var profiles = (from type in typeof(MappingConfiguration).Assembly.GetTypes() where typeof(Profile).IsAssignableFrom(type) && !type.IsAbstract && type.GetConstructor(Type.EmptyTypes) != null select type).Select(d => (Profile)Activator.CreateInstance(d)) .ToArray();
+
+```csharp
+ public static class MappingConfiguration { public static void CreateMapping() { var profiles = (from type in typeof(MappingConfiguration).Assembly.GetTypes() where typeof(Profile).IsAssignableFrom(type) && !type.IsAbstract && type.GetConstructor(Type.EmptyTypes) != null select type).Select(d => (Profile)Activator.CreateInstance(d)) .ToArray();
 
 var config = new MapperConfiguration(cfg => { foreach (var profile in profiles) { cfg.AddProfile(profile); } }); MapperFacade.MapperConfiguration = config.CreateMapper(); } }
 
-public static class Mapper{ public static IMapper MapperConfiguration; } \[/csharp\]
+public static class Mapper{ public static IMapper MapperConfiguration; } 
+```
 
-The static class and static property that hold all mapping is what you need to use in your application to map anything. \[csharp\] var viewModel = MapperFacade.MapperConfiguration.Map<HealthOverall, HealthOverallViewModel>(model); \[/csharp\]
+The static class and static property that hold all mapping is what you need to use in your application to map anything. 
+```csharp
+ var viewModel = MapperFacade.MapperConfiguration.Map<HealthOverall, HealthOverallViewModel>(model); 
+```
 
 That's it! Pretty straight forward. What is time consuming is to change mapping configuration but this is still limited if your application already had a good division about how to define the mapping.

@@ -11,11 +11,20 @@ If you are creating a brand new Web Api and try to execute a POST query with Web
 
 The second thing that you have to ensure is that you are requesting a json call. This mean that you must have in the request header the **content-type** set to json.
 
-\[code highlight="4"\] User-Agent: Fiddler Host: localhost:17420 Content-Length: 16 Content-Type: application/json \[/code\]
+```
+User-Agent: Fiddler Host: localhost:17420 Content-Length: 16 Content-Type: application/json 
+``` 
 
-For example, running a post on an action that take a single string require Fiddler to have the Request Header set with the previous 4 lines and the request body of the string desired. For example "This is a test". \[csharp\] public void Post(\[FromBody\]string value) { } \[/csharp\] [![FiddlerSingleStringPost](http://patrickdesjardins.com/blog/wp-content/uploads/2014/05/FiddlerSingleStringPost-400x286.png)](http://patrickdesjardins.com/blog/asp-net-web-api-getting-401unauthorized-code/fiddlersinglestringpost)
+For example, running a post on an action that take a single string require Fiddler to have the Request Header set with the previous 4 lines and the request body of the string desired. For example "This is a test". 
+```csharp
+ public void Post([FromBody]string value) { } 
+``` 
+[![FiddlerSingleStringPost](http://patrickdesjardins.com/blog/wp-content/uploads/2014/05/FiddlerSingleStringPost-400x286.png)](http://patrickdesjardins.com/blog/asp-net-web-api-getting-401unauthorized-code/fiddlersinglestringpost)
 
-For a more exhaustive test, you can send an object. This require you to use the JSON syntax. The Web Api Controller also requires to have the class defined and the parameter to use this class. \[csharp\] public void Post(\[FromBody\]DTOExecutionParameters value) { } public class DTOExecutionParameters { public string NameTask { get; set; } public string ParameterName { get; set; } } \[/csharp\]
+For a more exhaustive test, you can send an object. This require you to use the JSON syntax. The Web Api Controller also requires to have the class defined and the parameter to use this class. 
+```csharp
+ public void Post([FromBody]DTOExecutionParameters value) { } public class DTOExecutionParameters { public string NameTask { get; set; } public string ParameterName { get; set; } } 
+```
 
 [![WebApiFiddlerPost](http://patrickdesjardins.com/blog/wp-content/uploads/2014/05/WebApiFiddlerPost-400x302.png)](http://patrickdesjardins.com/blog/asp-net-web-api-getting-401unauthorized-code/webapifiddlerpost)
 

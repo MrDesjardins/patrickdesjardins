@@ -15,11 +15,17 @@ WCF Data Service lets you use two well know structured semantic which is Atom (X
 
 To create a WCF Data Service, simply create a class that inherit from DataService. It's a generic class so you will have to specify a DataContext type. To use this class, you need to reference the dll : **System.Data.Services**.
 
-\[csharp\] public partial class MyService: DataService<MyDbContext> { //... } \[/csharp\]
+
+```csharp
+ public partial class MyService: DataService<MyDbContext> { //... } 
+```
 
 You will have to also specify which entities is allowed to be accessed in InitializeService.
 
-\[csharp\] public static void InitializeService(DataServiceConfiguration config) { //... } \[/csharp\]
+
+```csharp
+ public static void InitializeService(DataServiceConfiguration config) { //... } 
+```
 
 The simplicity lets you add this service in a later stage of your project. It's even more true if your project is already using Entity Framework because OData is tightly coupled Entity Framework way to handle entity. This is why it's very easy to create a WCF Data Service with Entity Framework because of the Data Model that both share.
 

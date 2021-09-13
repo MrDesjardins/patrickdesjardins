@@ -19,6 +19,10 @@ To be able to change the foreign key constrain name, you need to do it manually 
 
 The syntax is 'YourSchema.YourFKNameToChange' followed by only the FK you want. Here is an example:
 
-\[sql\] sp\_rename 'YourSchema.YourFKNameToChange', 'YourNewFKName', 'OBJECT' \[/sql\]
+
+```sql
+ sp\_rename 'YourSchema.YourFKNameToChange', 'YourNewFKName', 'OBJECT' 
+```
+
 
 That's it!

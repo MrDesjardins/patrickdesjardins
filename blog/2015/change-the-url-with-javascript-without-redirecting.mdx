@@ -20,7 +20,9 @@ window.onhashchange = function() { //Get the hash value from the url and execute
 ``` 
  The **onhashchange** become a hub if all time the url change which can be convenient to have a central place has a content controller. This method removes the need to have action handled in every click that has hash url to just have the click event of these links to change the url and let the **onhashchange** handles which action to execute.
 
-Here is an example: \[html\] <a id="report">Current Order Report</a> <a id="edit">Edit Current Order</a> \[/html\] ```typescript
+Here is an example: 
+```html  <a id="report">Current Order Report</a> <a id="edit">Edit Current Order</a> 
+```  ```typescript
 $('#report').click(function(){ window.location.assign("#open-current-report"); });
 
 $('#edit').click(function(){ window.location.assign("#edit-order"); });

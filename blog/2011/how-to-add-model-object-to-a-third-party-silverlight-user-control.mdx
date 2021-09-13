@@ -13,20 +13,34 @@ First, you may wonder why having this collection of object in the user control i
 
 First, this require that you create a new user control that will contain the user control that does not have the property desired.
 
-\[xml\] <UserControl x:Class="MyNameSpace.MyUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:ThirdPartyNamespace="clr-namespace:ThirdPartyNamespace;assembly=ThirdPartyUserControlHere" d:DesignHeight="300" d:DesignWidth="400">
 
-<ThirdPartyNamespace:ThirdPartyUserControlHere /> </UserControl> \[/xml\]
+```xml
+ <UserControl x:Class="MyNameSpace.MyUserControl" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:ThirdPartyNamespace="clr-namespace:ThirdPartyNamespace;assembly=ThirdPartyUserControlHere" d:DesignHeight="300" d:DesignWidth="400">
+
+<ThirdPartyNamespace:ThirdPartyUserControlHere /> </UserControl> 
+```
+
 
 In the code behind of the created user control, we need to add the dependency property.
 
-\[csharp\] public static readonly DependencyProperty MyCustomProperty = DependencyProperty.Register( "MyCustomProperty" , typeof (ObservableCollection<MyObject>) ,typeof (MyUserControl) ,new PropertyMetadata(null,OnMyObjectCollectionPropertyChanged) ); \[/csharp\] The line 3 contains the first parameters that is the property name you want to access from your control. This property will be bound to the third party user control. The line 4 if the type of the property added. In our example, it's a collection of MyObject. The line 5 is the type of the user control we add this property. This should be the name of the new user control you just added. The line 6 is the callback when this property change.
 
-The next step is to add the collection of MyObject and the callback. \[csharp\] public ObservableCollection<MyObject > MyObjects { get { return (ObservableCollection<MyObject>) GetValue(MyCustomProperty); } set { SetValue(MyCustomProperty, value); } }
+```csharp
+ public static readonly DependencyProperty MyCustomProperty = DependencyProperty.Register( "MyCustomProperty" , typeof (ObservableCollection<MyObject>) ,typeof (MyUserControl) ,new PropertyMetadata(null,OnMyObjectCollectionPropertyChanged) ); 
+``` The line 3 contains the first parameters that is the property name you want to access from your control. This property will be bound to the third party user control. The line 4 if the type of the property added. In our example, it's a collection of MyObject. The line 5 is the type of the user control we add this property. This should be the name of the new user control you just added. The line 6 is the callback when this property change.
+
+The next step is to add the collection of MyObject and the callback. 
+```csharp
+ public ObservableCollection<MyObject > MyObjects { get { return (ObservableCollection<MyObject>) GetValue(MyCustomProperty); } set { SetValue(MyCustomProperty, value); } }
 
 private static void OnMyObjectCollectionPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e) { ((MyUserControl) o).OnMyObjectCollectionPropertyChanged(e); }
 
-private void OnMyObjectCollectionPropertyChanged(DependencyPropertyChangedEventArgs e) { //Redraw code here! } \[/csharp\]
+private void OnMyObjectCollectionPropertyChanged(DependencyPropertyChangedEventArgs e) { //Redraw code here! } 
+```
 
 The Xaml of the custom user control that envelop the third party user control can now be bound to the view model.
 
-\[xml\] <x:MyCustomUserControl DataContext="{Binding Path=MyObjectViewModel, Mode=TwoWay}" Shapes="{Binding Path=MyRealObjectsCollection, Mode=TwoWay}" /> \[/xml\]
+
+```xml
+ <x:MyCustomUserControl DataContext="{Binding Path=MyObjectViewModel, Mode=TwoWay}" Shapes="{Binding Path=MyRealObjectsCollection, Mode=TwoWay}" /> 
+```
+

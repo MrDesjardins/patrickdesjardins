@@ -11,7 +11,7 @@ Sometime it can be useful to get a file that is a resource into the application.
 
 The first step is to get the file into the project and mark the Build In Action to resource in the property of the file.
 
-\[caption id="attachment\_481" align="aligncenter" width="346" caption="File Property"\][![](http://patrickdesjardins.com/blog/wp-content/uploads/2011/09/buildaction.png "buildaction")](http://patrickdesjardins.com/blog/how-to-load-application-resource-into-a-stream/buildaction)\[/caption\]
+[caption id="attachment\_481" align="aligncenter" width="346" caption="File Property"][![](http://patrickdesjardins.com/blog/wp-content/uploads/2011/09/buildaction.png "buildaction")](http://patrickdesjardins.com/blog/how-to-load-application-resource-into-a-stream/buildaction)[/caption]
 
 ## Application.GetResourceStream Methods
 
@@ -19,7 +19,10 @@ After, the only code required will be to read this resource from your C# code. T
 
 Let say that my project name is Project1 and the file is in Folder1/Folder2. The file name is Test.xml. You have a URI that would look like this.
 
-\[csharp\] ... = new Uri("Project1;component/Folder1/Folder2/Test.xml", UriKind.Relative) \[/csharp\]
+
+```csharp
+ ... = new Uri("Project1;component/Folder1/Folder2/Test.xml", UriKind.Relative) 
+```
 
 Has you can see, the path needs to have the "component" before all directories.
 
@@ -27,4 +30,7 @@ Has you can see, the path needs to have the "component" before all directories.
 
 So, if you want to load a text file you will need to write:
 
-\[csharp\] //... StreamResourceInfo sr1 = Application.GetResourceStream(new Uri("Project1;component/Folder1/Folder2/Test.xml", UriKind.Relative)); var file = new StreamReader(sr1.Stream); return file.ReadToEnd(); \[/csharp\]
+
+```csharp
+ //... StreamResourceInfo sr1 = Application.GetResourceStream(new Uri("Project1;component/Folder1/Folder2/Test.xml", UriKind.Relative)); var file = new StreamReader(sr1.Stream); return file.ReadToEnd(); 
+```

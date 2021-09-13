@@ -49,7 +49,7 @@ Every resolver is a function with three parameters. The parameter that concern t
 export const bookResolversMap = {
     Query: {
         books: (obj: null, args: {}, context: GraphQLCustomContext) => {
-            books\[0\].author = context.request.headers.injected\_header\_here\_id;
+            books[0].author = context.request.headers.injected\_header\_here\_id;
             return books;
         }
     }

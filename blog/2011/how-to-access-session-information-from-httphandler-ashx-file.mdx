@@ -14,7 +14,9 @@ This interface is called _IReadOnlySessionState_ or _IRequiresSessionState_.
 
 Here is an example:
 
-\[csharp\]
+
+```csharp
+
 
 <% @ webhandler language="C#" class="MyClass" %>
 
@@ -22,9 +24,10 @@ using System; using System.Web; using System.Web.SessionState;
 
 public class MyClass: IHttpHandler, IReadOnlySessionState { public bool IsReusable { get { return true; } }
 
-public void ProcessRequest(HttpContext ctx) { ctx.Response.Write(ctx.Session\["ID"\]); } }
+public void ProcessRequest(HttpContext ctx) { ctx.Response.Write(ctx.Session["ID"]); } }
 
-\[/csharp\]
+
+```
 
 This example show you how to get the ID session's variable from the HttpHandler.
 

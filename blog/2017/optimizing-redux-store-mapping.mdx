@@ -23,7 +23,7 @@ The third parameter is marked as optional in the documentation, but at this day,
 You may draw a parallel between React and its "shouldComponentUpdate" method that allow skipping rendering depending on the previous and current properties. That is very similar. The major difference is that you can intercept it earlier in the data flow. The main advantage is performance improvement by not computing data from the store to the component if this one doesn't need it.
 
 ```typescript
-// Won't notify a change from the store to React if no active id, or no entity loaded, or that the one we would display is not present. export function shouldMappingBeSkipped(nextState: AppReduxState, previous: AppReduxState): boolean { return nextState.entitiesX.activeId === undefined || Object.keys(nextState.entitiesX.all).length === 0 || nextState.entitiesX.all\[nextState.entitiesX.activeId\] === undefined ; } 
+// Won't notify a change from the store to React if no active id, or no entity loaded, or that the one we would display is not present. export function shouldMappingBeSkipped(nextState: AppReduxState, previous: AppReduxState): boolean { return nextState.entitiesX.activeId === undefined || Object.keys(nextState.entitiesX.all).length === 0 || nextState.entitiesX.all[nextState.entitiesX.activeId] === undefined ; } 
 ``` 
 
 

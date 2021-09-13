@@ -7,7 +7,9 @@ categories:
 
 This title has a lot of properties, I know. Today, I'll show you with a simple unit test that Automapper bind properties' property automatically with their name. For example, a class that has a property called User that has by itself a property called FirstName and LastName, will auto-bind to MyMappedClass.UserFirstName and MyMappedClass.UserLastName.
 
-\[csharp\] \[TestClass\] public class UnitTest1 { public class ClassA { public ClassA() { this.PropertyA = new ClassAB(); }
+
+```csharp
+ [TestClass] public class UnitTest1 { public class ClassA { public ClassA() { this.PropertyA = new ClassAB(); }
 
 public ClassAB PropertyA { get; set; } }
 
@@ -15,7 +17,8 @@ public class ClassAB { public int Id { get; set; } public string Suffixe { get; 
 
 public class ClassB { public int PropertyAId { get; set; } public string PropertyASuffixe { get; set; } public string NotReallyTheSame { get; set; } }
 
-\[TestMethod\] public void TestMethod1() { var c = new ClassA(); c.PropertyA.Id = 123; Mapper.CreateMap<ClassA, ClassB>(); var mapped = Mapper.Map<ClassA, ClassB>(c); Assert.AreEqual(c.PropertyA.Id,mapped.PropertyAId); Assert.AreEqual(c.PropertyA.Suffixe,mapped.PropertyASuffixe); Assert.IsNull(mapped.NotReallyTheSame); } } \[/csharp\]
+[TestMethod] public void TestMethod1() { var c = new ClassA(); c.PropertyA.Id = 123; Mapper.CreateMap<ClassA, ClassB>(); var mapped = Mapper.Map<ClassA, ClassB>(c); Assert.AreEqual(c.PropertyA.Id,mapped.PropertyAId); Assert.AreEqual(c.PropertyA.Suffixe,mapped.PropertyASuffixe); Assert.IsNull(mapped.NotReallyTheSame); } } 
+```
 
 [![AutoMapperSuccess](http://patrickdesjardins.com/blog/wp-content/uploads/2013/10/AutoMapperSuccess-400x68.png)](http://patrickdesjardins.com/blog/automapper-bind-automatically-property-of-property-by-concatenating-property-name/automappersuccess)
 

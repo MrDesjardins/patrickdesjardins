@@ -10,12 +10,16 @@ If you are using **Web Api** of .Net 4.5 framework and want to have the same beh
 
 In Asp.Net you would add a new filter to the FilterConfig file.
 
-\[csharp highlight="4"\] public static void RegisterGlobalFilters(GlobalFilterCollection filters) { filters.Add(new HandleErrorAttribute()); filters.Add(new AuthorizeAttribute()); } \[/csharp\]
+```csharp
+public static void RegisterGlobalFilters(GlobalFilterCollection filters) { filters.Add(new HandleErrorAttribute()); filters.Add(new AuthorizeAttribute()); } 
+```
 
 But, this won't work with the Api controller. You have to set the AuthorizeAttribute to the WebApiConfig file.
 
-\[csharp highlight="9"\] public static void Register(HttpConfiguration config) { config.Routes.MapHttpRoute( name: "DefaultApi", routeTemplate: "api/{controller}/{id}", defaults: new { id = RouteParameter.Optional } );
+```csharp
+public static void Register(HttpConfiguration config) { config.Routes.MapHttpRoute( name: "DefaultApi", routeTemplate: "api/{controller}/{id}", defaults: new { id = RouteParameter.Optional } );
 
-config.Filters.Add(new AuthorizeAttribute()); } \[/csharp\]
+config.Filters.Add(new AuthorizeAttribute()); } 
+```
 
-From here, every method of all your controllers will require authorization. If you want to remove this required authorization for specific web method, you need to add the attribute **\[AllowAnonymous\]**. You can have additional information directly at [Microsoft](http://www.asp.net/web-api/overview/security/authentication-and-authorization-in-aspnet-web-api).
+From here, every method of all your controllers will require authorization. If you want to remove this required authorization for specific web method, you need to add the attribute **[AllowAnonymous]**. You can have additional information directly at [Microsoft](http://www.asp.net/web-api/overview/security/authentication-and-authorization-in-aspnet-web-api).

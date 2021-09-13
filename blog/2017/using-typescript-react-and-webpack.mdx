@@ -16,7 +16,7 @@ First of all, we need to change index.html. The file was using RequireJs and was
 Before: ```typescript
 <html> <head> <title>TS + React Boilerplate v1.01</title> </head>
 
-<body> <div id="main"></div> </body> <script src="vendors/requirejs/require.js"></script> <script src="vendors/jquery/jquery.js"></script> <script> requirejs.config({ //Every script without folder specified before name will be looked in output folder baseUrl: 'output/', paths: { //Every script paths that start with "vendors/" will get loaded from the folder in string vendors: 'vendors', jquery: '../vendors/jquery/jquery', react: "../vendors/react/dist/react", "react-dom": "../vendors/react-dom/dist/react-dom" } }); //Startup file requirejs(\['file1'\]); </script>
+<body> <div id="main"></div> </body> <script src="vendors/requirejs/require.js"></script> <script src="vendors/jquery/jquery.js"></script> <script> requirejs.config({ //Every script without folder specified before name will be looked in output folder baseUrl: 'output/', paths: { //Every script paths that start with "vendors/" will get loaded from the folder in string vendors: 'vendors', jquery: '../vendors/jquery/jquery', react: "../vendors/react/dist/react", "react-dom": "../vendors/react-dom/dist/react-dom" } }); //Startup file requirejs(['file1']); </script>
 
 </html> 
 ``` 
@@ -29,15 +29,21 @@ After: ```typescript
 
 RequireJs' configuration and the startup file are gone. The complexity will move into Webpack's configuration file that we will see soon. So, at this point, you see that we won't be using AMD. This mean that we need to build our TypeScript to use something else. We will use CommonJS.
 
-\[javascript highlight="5"\] { "compilerOptions": { "sourceMap": true, "target": "es6", "module": "commonjs", "outDir": "./deploy/output", "jsx": "react", "noImplicitAny": true }, "exclude": \[ "node\_modules", "\*\*/\*.spec.ts" \] } 
+```javascript
+ { "compilerOptions": { "sourceMap": true, "target": "es6", "module": "commonjs", "outDir": "./deploy/output", "jsx": "react", "noImplicitAny": true }, "exclude": [ "node\_modules", "\*\*/\*.spec.ts" ] } 
 ``` 
 
 
 since Webpack will read the EcmaScript syntax used in each file of each module, it will transpile in CommonJS format. The JavaScript produced is read by Webpack and this one will bring all the file into a single one (bundle). This remove the need to load asynchronously (like AMD) was doing.
 
-Changing to CommonJS made the code to require a change. If you want to load a relative to the file that want to import a module, it needs to start with "./" instead of directly the name. For example, you won't be able to write : \[javascript\]import { Component } from "component1";"
+Changing to CommonJS made the code to require a change. If you want to load a relative to the file that want to import a module, it needs to start with "./" instead of directly the name. For example, you won't be able to write : 
+```javascript
+import { Component } from "component1";"
 ``` 
- but \[javascript\]import { Component } from "./component1";
+ but
+
+```javascript
+ import { Component } from "./component1";
 ``` 
 
 
@@ -48,11 +54,15 @@ import \* as $ from "jquery";
 
 Before going in Webpack configuration, we had with AMD a lazy loading file that was loading and using a specific file after 2 seconds. This is to simulate the "load on-demand" files that we may want not to load initially. The scenarios are multiple. This can be justify because the user is rarely using the feature, hence no need to load this one. This can also be that the user doesn't have the authorization to do this kind of action, thus no need to load code that won't be used.
 
-Here is the AMD solution we had before: \[javascript highlight="6"\] import foo = require("folder1/fileToLazyLoad"); export class ClassB { public method1(): void { console.log("ClassB->method1"); setTimeout(() => { requirejs(\["folder1/fileToLazyLoad"\], (c: typeof foo) => { const co = new c.ClassC(); co.method1(); }); }, 2000); } } 
+Here is the AMD solution we had before: 
+
+```javascript
+ import foo = require("folder1/fileToLazyLoad"); export class ClassB { public method1(): void { console.log("ClassB->method1"); setTimeout(() => { requirejs(["folder1/fileToLazyLoad"], (c: typeof foo) => { const co = new c.ClassC(); co.method1(); }); }, 2000); } } 
 ``` 
  The first line is to tell TypeScript the type we want to lazy load. It was using "require" which we will still use. This time, we can use the relative path. So far, not much as change. However, we can see that we were using requirejs directly inside the timer. This time, we will use CommonJS and load the module. It's almost the same thing -- using a different library.
 
-\[javascript highlight="6"\] import foo = require("./fileToLazyLoad"); export class ClassB { public method1(): void { console.log("ClassB->method1"); setTimeout(() => { System.import("./fileToLazyLoad").then((c: typeof foo) => { const co = new c.ClassC(); co.method1(); }); }, 2000); } } 
+```javascript
+import foo = require("./fileToLazyLoad"); export class ClassB { public method1(): void { console.log("ClassB->method1"); setTimeout(() => { System.import("./fileToLazyLoad").then((c: typeof foo) => { const co = new c.ClassC(); co.method1(); }); }, 2000); } } 
 ``` 
 
 
@@ -66,7 +76,7 @@ We are at the point where bigger change will occurs. The change start with NPM m
 The next step is that we won't use Gulp to invoke action. If we want to delete previous generated deploy files, build TypeScript or run the server, we need to use the CLI of each of the tool we are using. We could use directly the TypeScript's CLI, named tcs, and use xcopy to move file, etc. The problem is that it is not easy to remember. NPM allows to have custom script which can be invoked with "npm use ABC" where "ABC" is the name of your script. Here is the script we need to add to replace the Gulp tasks we had.
 
 ```typescript
-"scripts": { "clean": "del-cli deploy/\*\*", "package": "./node\_modules/.bin/webpack --config webpack.config.js --display-error-details", "copy": "copyfiles -u 1 ./app/index.html ./deploy", "build": "del-cli deploy/\*\* &amp; SET NODE\_ENV=development &amp; webpack --config webpack.config.js --display-error-details &amp; copyfiles -u 1 ./app/index.html ./deploy/", "server": "node bin/www.js", }, 
+"scripts": { "clean": "del-cli deploy/\*\*", "package": "./node\_modules/.bin/webpack --config webpack.config.js --display-error-details", "copy": "copyfiles -u 1 ./app/index.html ./deploy", "build": "del-cli deploy/\*\*  SET NODE\_ENV=development  webpack --config webpack.config.js --display-error-details  copyfiles -u 1 ./app/index.html ./deploy/", "server": "node bin/www.js", }, 
 ``` 
 
 
@@ -79,7 +89,7 @@ var path = require('path'); var webpack = require('webpack');
 ``` 
 
 
-Webpack needs to have an entry point. In the example we are working on, the main file is the one that was used in the index.html with "requirejs(\['file1'\]);". This time, we do not have any indication in the HTML file. However, Webpack needs one, or many, entry point and will navigate through all the dependencies to make the main bundle.
+Webpack needs to have an entry point. In the example we are working on, the main file is the one that was used in the index.html with "requirejs(['file1']);". This time, we do not have any indication in the HTML file. However, Webpack needs one, or many, entry point and will navigate through all the dependencies to make the main bundle.
 
 ```typescript
 module.exports = { entry: { app: "./app/scripts/file1.tsx" }, 
@@ -89,19 +99,25 @@ module.exports = { entry: { app: "./app/scripts/file1.tsx" },
 **Entry** may be the entry point, **Output** will be where the bundles goes. The filename uses the square bracket which will be replaced by the key provided by each entry point. In our example, we have "app" in the entry, and we will have a file produced with the name "appbundle.js" in the output. The directory is provided at the "path" property, which in that case is "deploy".
 
 ```typescript
-output: { path: path.resolve(\_\_dirname, 'deploy'), filename: '\[name\]bundle.js' }, 
+output: { path: path.resolve(\_\_dirname, 'deploy'), filename: '[name]bundle.js' }, 
 ``` 
- The next configuration is to tell which extension Webpack should care of. For us, it's TypeScript ```typescript
-resolve: { extensions: \['.ts', '.tsx', '.js', '.jsx'\] }, 
+ The next configuration is to tell which extension Webpack should care of. For us, it's TypeScript 
+ ```typescript
+resolve: { extensions: ['.ts', '.tsx', '.js', '.jsx'] }, 
 ``` 
- This property allows to have source map. This give the possibility to debug TypeScript in Chrome on the real individual file even if it's bundled. ```typescript
+ This property allows to have source map. This give the possibility to debug TypeScript in Chrome on the real individual file even if it's bundled. 
+ ```typescript
 devtool: "source-map", 
 ``` 
- Webpack work with rules. Every "test" evaluate a condition to execute a loader. We use two different ones. One to call the TypeScript loader that will transpile TS and TSX file. The second one is to generate source map. Even if we have the devtool to provide source map, we need a central place to handle third-party JS library too. ```typescript
-module: { rules: \[ { test: /\\.tsx?$/, loader: "awesome-typescript-loader" }, { enforce: "pre", test: /\\.js$/, loader: "source-map-loader" }, \] }, 
+ Webpack work with rules. Every "test" evaluate a condition to execute a loader. We use two different ones. One to call the TypeScript loader that will transpile TS and TSX file. The second one is to generate source map. Even if we have the devtool to provide source map, we need a central place to handle third-party JS library too. 
+ 
+```typescript
+module: { rules: [ { test: /\\.tsx?$/, loader: "awesome-typescript-loader" }, { enforce: "pre", test: /\\.js$/, loader: "source-map-loader" }, ] }, 
 ``` 
- The last piece is a plugin called CommonsChunkPlugin. It comes from Webpack and its role is to great additional bundle. In that case, we create a bundle name "vendorbundle.js". The minChunk can be a number of time we see the reference to join the bundle. For example, if we have a module that we use often and that we want them to be in a common bundle, we can say "5" and if more than 5 modules reference than instead of being in the "app" one, it would go in this one. For us, we want to have all vendors module, which mean they are from node\_modules directory. To do so, the minChunks allows to pass a function. When it contains the node\_modules in the path, it goes into that bundle instead of the main one (app). ```typescript
-plugins: \[ new webpack.optimize.CommonsChunkPlugin({ name: "vendor", filename: "vendorbundle.js", minChunks: function(module) { return module.context &amp;&amp; module.context.indexOf('node\_modules') !== -1; } }) \] }; 
+ The last piece is a plugin called CommonsChunkPlugin. It comes from Webpack and its role is to great additional bundle. In that case, we create a bundle name "vendorbundle.js". The minChunk can be a number of time we see the reference to join the bundle. For example, if we have a module that we use often and that we want them to be in a common bundle, we can say "5" and if more than 5 modules reference than instead of being in the "app" one, it would go in this one. For us, we want to have all vendors module, which mean they are from node\_modules directory. To do so, the minChunks allows to pass a function. When it contains the node\_modules in the path, it goes into that bundle instead of the main one (app). 
+ 
+```typescript
+plugins: [ new webpack.optimize.CommonsChunkPlugin({ name: "vendor", filename: "vendorbundle.js", minChunks: function(module) { return module.context  module.context.indexOf('node\_modules') !== -1; } }) ] }; 
 ``` 
 
 

@@ -9,7 +9,10 @@ Entity Framework works with entities that can be attached or not. Attached entit
 
 A simple example is this one. You have an entity that has a list of another type of entities. If you instantiate this entity and add to its list some entities and only do a Context.Add to the root, all entities from the added entity will be also added.
 
-\[csharp\] using (var context = new YourContext()) { var newHouse = new House {Address = new Address{City="TestCity",Number = 123,Street="Street Name here"}}; newHouse.Owner = new Person {Name = "Automatically added from the property", BirthDate = DateTime.Now}; newHouse.Resident = new Collection<Person>(new \[\]{new Person{BirthDate = DateTime.Now,Name = "Automatically added from the collection"}}); context.Houses.Add(newHouse); context.SaveChanges(); } \[/csharp\]
+
+```csharp
+ using (var context = new YourContext()) { var newHouse = new House {Address = new Address{City="TestCity",Number = 123,Street="Street Name here"}}; newHouse.Owner = new Person {Name = "Automatically added from the property", BirthDate = DateTime.Now}; newHouse.Resident = new Collection<Person>(new []{new Person{BirthDate = DateTime.Now,Name = "Automatically added from the collection"}}); context.Houses.Add(newHouse); context.SaveChanges(); } 
+```
 
 In this example, all Person entity does not exist in the database. The House entity does not exist. Rather to add the House entity and all Person, we just need to add the root element: the House. This is what the code is doing. This execution produces three entries into the database : one for the House, one for the Owner (a Person) and a last one for the Resisdent (a Person).
 

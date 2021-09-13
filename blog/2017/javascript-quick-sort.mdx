@@ -8,11 +8,11 @@ categories:
 Quick sort divide the array in multiple sequence, hence is a very good candidate for recursivity. The asymptotic analysis gives a O(log(n^2)) in average and a worse time of O(n^2). The algorithm can be implemented in different flavor depending of where you start the initial pivot. Then, there is a second way to customize the quick sort and it's by defining how we partition.
 
 ```typescript
-function swap(array, left, right) { var temp = array\[left\]; array\[left\] = array\[right\]; array\[right\] = temp; }
+function swap(array, left, right) { var temp = array[left]; array[left] = array[right]; array[right] = temp; }
 
-function partition(arrayToSort, left, right){ var i = left; var j = right; var pivot = arrayToSort\[Math.floor((left + right) / 2)\]; // Middle
+function partition(arrayToSort, left, right){ var i = left; var j = right; var pivot = arrayToSort[Math.floor((left + right) / 2)]; // Middle
 
-while (i <= j) { while (arrayToSort\[i\] < pivot){ i++; } while (arrayToSort\[j\] > pivot){ j--; } if (i <= j) { swap(arrayToSort, i, j); i++; j--; } }
+while (i <= j) { while (arrayToSort[i] < pivot){ i++; } while (arrayToSort[j] > pivot){ j--; } if (i <= j) { swap(arrayToSort, i, j); i++; j--; } }
 
 return i; }
 

@@ -32,7 +32,11 @@ Of course, now you have to setup your DbContext to be able to do what UsersConte
 
 The next step is to make sure the the web.config contain the right provider for the role and membership. Inside web.config, in the system.web section be sure that you have the code below. If not, add it.
 
-\[xml\] <roleManager enabled="true" defaultProvider="SimpleRoleProvider"> <providers> <clear/> <add name="SimpleRoleProvider" type="WebMatrix.WebData.SimpleRoleProvider, WebMatrix.WebData"/> </providers> </roleManager> <membership defaultProvider="SimpleMembershipProvider"> <providers> <clear/> <add name="SimpleMembershipProvider" type="WebMatrix.WebData.SimpleMembershipProvider, WebMatrix.WebData"/> </providers> </membership> \[/xml\]
+
+```xml
+ <roleManager enabled="true" defaultProvider="SimpleRoleProvider"> <providers> <clear/> <add name="SimpleRoleProvider" type="WebMatrix.WebData.SimpleRoleProvider, WebMatrix.WebData"/> </providers> </roleManager> <membership defaultProvider="SimpleMembershipProvider"> <providers> <clear/> <add name="SimpleMembershipProvider" type="WebMatrix.WebData.SimpleMembershipProvider, WebMatrix.WebData"/> </providers> </membership> 
+```
+
 
 This will specify that we are using the **SimpleRoleProvider** and the **SimpleMembershipProvider**. To be honest, I think with MVC4 it's the default configuration so you do not required to do this but [this website](http://blog.longle.net/2012/09/25/seeding-users-and-roles-with-mvc4-simplemembershipprovider-simpleroleprovider-ef5-codefirst-and-custom-user-properties/) suggest to have it.
 
@@ -40,13 +44,17 @@ Once done, you need to build the Migration Configuration. This is automatically 
 
 [![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/09/packageConsoleManager-329x400.png "packageConsoleManager")](http://patrickdesjardins.com/blog/?attachment_id=1553)
 
-The next step is to use this command below that will force the creation of the configuration file. This will be required only once. Do not forget to use "EnableAutomaticMigration". This will let you update the database later accordingly to changes you made to your model and entity configuration. \[code\] Enable-Migrations –EnableAutomaticMigrations -Force \[/code\]
+The next step is to use this command below that will force the creation of the configuration file. This will be required only once. Do not forget to use "EnableAutomaticMigration". This will let you update the database later accordingly to changes you made to your model and entity configuration. ``` 
+ Enable-Migrations –EnableAutomaticMigrations -Force 
+``` 
 
 Since we have removed the _UsersContext_ we won't have any conflict doing the command above. Otherwise, we would have need to specify which DbContext we want the migration to occur. Also, if you already had a database initializer (IDatabaseInitializer) like a "DropCreateDatabaseIfModelChanges", this won't work with the **DbMigrationsConfiguration.** In fact, you need to remove any initializer because we are switching to the Migration configuration. Nevertheless, this will give us additionnal control, more manual control but at least the possibility to generate the database automatically and also seed the database with Membership and custom tables.
 
 The command creates a folder called _Migrations_ with a _Configuration.cs_. Inside the Seed method, you will be able to create all data you want inside the database. Here is a small snippet of code that create a role, a user and some entities.
 
-\[csharp\] internal sealed class Configuration : DbMigrationsConfiguration<WorkoutPlanner.Database.DatabaseContext> { public Configuration() { AutomaticMigrationsEnabled = true; }
+
+```csharp
+ internal sealed class Configuration : DbMigrationsConfiguration<WorkoutPlanner.Database.DatabaseContext> { public Configuration() { AutomaticMigrationsEnabled = true; }
 
 protected override void Seed(WorkoutPlanner.Database.DatabaseContext context) { base.Seed(context);
 
@@ -56,11 +64,14 @@ if (!Roles.RoleExists("Administrator")) Roles.CreateRole("Administrator");
 
 if (!WebSecurity.UserExists("123123")) WebSecurity.CreateUserAndAccount("123123", "123123");
 
-if (!((IList<string>)Roles.GetRolesForUser("123123")).Contains("Administrator")) Roles.AddUsersToRoles(new\[\] { "123123" }, new\[\] { "Administrator" });
+if (!((IList<string>)Roles.GetRolesForUser("123123")).Contains("Administrator")) Roles.AddUsersToRoles(new[] { "123123" }, new[] { "Administrator" });
 
-context.Database.Initialize(true); context.Set<UserProfile>().Add(new UserProfile { UserId = 1, UserName = "123123" }); context.Set<Workout>().Add(new Workout { Id = 1, Name = "My First workout user1", StartTime = DateTime.Now.Add(TimeSpan.FromDays(-10)), Goal = "Increase body mass" }); context.Set<Workout>().Add(new Workout { Id = 2, Name = "My Second workout user1", StartTime = DateTime.Now, Goal = "Increase chest muscle, lower fat around abs" }); } } \[/csharp\]
+context.Database.Initialize(true); context.Set<UserProfile>().Add(new UserProfile { UserId = 1, UserName = "123123" }); context.Set<Workout>().Add(new Workout { Id = 1, Name = "My First workout user1", StartTime = DateTime.Now.Add(TimeSpan.FromDays(-10)), Goal = "Increase body mass" }); context.Set<Workout>().Add(new Workout { Id = 2, Name = "My Second workout user1", StartTime = DateTime.Now, Goal = "Increase chest muscle, lower fat around abs" }); } } 
+```
 
-The last step is to create table schema and insert those values from the seed configuration. This is done by this command : \[code\] update-database -verbose -force \[/code\] The verbose will show you the SQL statement executed and the force will regenerate the table even if data already exist in those tables.
+The last step is to create table schema and insert those values from the seed configuration. This is done by this command : ``` 
+ update-database -verbose -force 
+```  The verbose will show you the SQL statement executed and the force will regenerate the table even if data already exist in those tables.
 
 ## Conclusion
 

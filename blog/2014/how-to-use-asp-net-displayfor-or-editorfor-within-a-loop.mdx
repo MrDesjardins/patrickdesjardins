@@ -11,7 +11,10 @@ You can use the Html Helper to use the template system of Asp.Net MVC. You can h
 
 But, what if you want to use one of these two method within a loop to show value of a collection inside your model? This collection is from another type of the model and you cannot select from the Lambda expression items within a collection but only property of the model? The trick is to use Lambda for the current page model but not using any of the property. Instead, simple choose the variable your want to use the template item.
 
-\[csharp\] <tbody> @{ foreach (var contestListItemViewModel in Model.Contests) { <tr> <td>@Html.ActionLink(contestListItemViewModel.Name.Current, "Edit", "Contest", new { Area = Constants.Areas.ADMINISTRATOR, id = contestListItemViewModel.Id }, null)</td> <td>@Html.DisplayFor(d => contestListItemViewModel.StartingTime.ToShortDateString())</td> <td>@Html.DisplayFor(d => contestListItemViewModel.EndingTime.ToShortDateString())</td> <td>@Html.DisplayFor(d => contestListItemViewModel.InitialCapital)</td> <td>@Html.DisplayFor(d => contestListItemViewModel.IsUsingStockRules)</td> <td>@Html.DisplayFor(d => contestListItemViewModel.IsUsingShortRules)</td> <td>@Html.DisplayFor(d => contestListItemViewModel.IsUsingOptionRules)</td> </tr> } } </tbody> \[/csharp\]
+
+```csharp
+ <tbody> @{ foreach (var contestListItemViewModel in Model.Contests) { <tr> <td>@Html.ActionLink(contestListItemViewModel.Name.Current, "Edit", "Contest", new { Area = Constants.Areas.ADMINISTRATOR, id = contestListItemViewModel.Id }, null)</td> <td>@Html.DisplayFor(d => contestListItemViewModel.StartingTime.ToShortDateString())</td> <td>@Html.DisplayFor(d => contestListItemViewModel.EndingTime.ToShortDateString())</td> <td>@Html.DisplayFor(d => contestListItemViewModel.InitialCapital)</td> <td>@Html.DisplayFor(d => contestListItemViewModel.IsUsingStockRules)</td> <td>@Html.DisplayFor(d => contestListItemViewModel.IsUsingShortRules)</td> <td>@Html.DisplayFor(d => contestListItemViewModel.IsUsingOptionRules)</td> </tr> } } </tbody> 
+```
 
 As you can see, the code in this example is inside a foreach and I can use the DisplayFor Html Helper. The variable for the expression is "d" but I do not use the "d" variable. Instead, I am using the variable that is populated by the foreach "contestListItemviewModel".
 

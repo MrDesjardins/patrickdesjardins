@@ -12,7 +12,7 @@ Before analyzing the method, let's look at all of it.
 ```typescript
 export default function compose(...funcs) { if (funcs.length === 0) { return arg => arg }
 
-if (funcs.length === 1) { return funcs\[0\] }
+if (funcs.length === 1) { return funcs[0] }
 
 return funcs.reduce((a, b) => (...args) => a(b(...args))) } 
 ``` 
@@ -26,14 +26,14 @@ compose()("a", "b", "c") // Return "a"
 Having the two ifs analyzed let's jump on the last line which is the confusing one. The last line is the line that is mostly to be used because most application using Redux has several middlewares. The first thing to notice is the use of the JavaScript function **reduce**. The reduce function is applied to an array and call a callback with two parameters which are the accumulated value followed by the value of the array. The callback is executed the same amount of the length of the array. So, if you have 3 middlewares, the reduce function will call three times the callback. Here is a simple example to grasp the concept. The example takes an array and reduces it by summing every number. The callback function is anonymous and will be called 3 times (length-1). The first time the parameter "acc" and "value" will be 0,1; then 1,2; then 3,3. When every element of the array has proceeded, it returns the value which is 6.
 
 ```typescript
-console.log(\[0, 1, 2, 3\].reduce( function(acc, value){ return acc + value; } ) ); 
+console.log([0, 1, 2, 3].reduce( function(acc, value){ return acc + value; } ) ); 
 ``` 
 
 
 The first confusion with the compose function is that the reduce function is returning (...args) which is not clear. It's a little bit simpler to remove the arrow function to use traditional functions. Here is the same function written with functions. ```typescript
 export default function compose(...funcs) { if (funcs.length === 0) { return arg => arg }
 
-if (funcs.length === 1) { return funcs\[0\] }
+if (funcs.length === 1) { return funcs[0] }
 
 return funcs.reduce(combineMiddleware) }
 
@@ -46,7 +46,7 @@ The combineMiddleware function will return a new function. Since the reduce func
 ```typescript
 function compose(...funcs) { if (funcs.length === 0) { return arg => arg }
 
-if (funcs.length === 1) { return funcs\[0\] }
+if (funcs.length === 1) { return funcs[0] }
 
 return funcs.reduce(combineMiddleware) }
 
@@ -62,7 +62,9 @@ console.log("Compose Output", compose(a, b, c));
 
 We have the same compose, this time with a console.log that will output what is the next function. There are also three functions that return a function. This is how middlewares are constituted and since the compose function takes a function it is compatible. The idea is that each function takes a "next" parameter which is a pointer to the "next middleware" allowing the actual middleware, the inner function to be executed and returning the value transformed to the next one. In this example, we compose A-B-C. The compose will wrap the function to have C wrapping B wrapping A which will start with the value passed down (not provided yet). So, it is actually doing: "return function(A(B(C("Data here))))". The console output looks like the following:
 
-\[code\] Combined!!! ƒ (next){ console.log("Outside B", next); return function(previousReturnedValue) { console.log("Inside B", previousReturnedValue); return next(previousReturnedValue + 'b'); }; Combined!!! ƒ (next){ console.log("Outside C", next); return function(previousReturnedValue) { console.log("Inside C", previousReturnedValue); return next(previousReturnedValue + 'c'); }; Compose Output ƒ (...nextFunction){ console.log("What is nextFunction:", ...nextFunction); return functionWrapper(middlewareToAdd(...nextFunction)); } \[/code\]
+``` 
+ Combined!!! ƒ (next){ console.log("Outside B", next); return function(previousReturnedValue) { console.log("Inside B", previousReturnedValue); return next(previousReturnedValue + 'b'); }; Combined!!! ƒ (next){ console.log("Outside C", next); return function(previousReturnedValue) { console.log("Inside C", previousReturnedValue); return next(previousReturnedValue + 'c'); }; Compose Output ƒ (...nextFunction){ console.log("What is nextFunction:", ...nextFunction); return functionWrapper(middlewareToAdd(...nextFunction)); } 
+``` 
 
 So, what is "nextFunction" is the final function passed as a parameter to the returned function of "compose". In Redux, the applyMiddleware function will use it to pass the store.dispatch down (we will see in a future article). As expected, the combineMiddleware method output twice since we have 3 functions. We can see the final output being the function returned by combineMiddleware function. The next function returns the functionWrapper which is the function A, that call the function B with ...nextFunction that is function C.
 
@@ -75,9 +77,11 @@ console.log("Compose Output", compose(a, b, c)); // Change this line by: console
 
 The output is different this time but calls twice "What is next function" since we have 4 functions having the "final" one that will be wrapped also but executed. The major change is that every function gets called.
 
-\[code\] Combined!!! ƒ (next){ console.log("Outside B", next); return function(previousReturnedValue) { console.log("Inside B", previousReturnedValue); return next(previousReturnedValue + 'b'); }; Combined!!! ƒ (next){ console.log("Outside C", next); return function(previousReturnedValue) { console.log("Inside C", previousReturnedValue); return next(previousReturnedValue + 'c'); }; What is nextFunction: ƒ (next){ console.log("Final", next); return next; } Outside C ƒ (next){ console.log("Final", next); return next; } What is nextFunction: ƒ (previousReturnedValue) { console.log("Inside C", previousReturnedValue); return next(previousReturnedValue + 'c'); } Outside B ƒ (previousReturnedValue) { console.log("Inside C", previousReturnedValue); return next(previousReturnedValue + 'c'); } Outside A ƒ (previousReturnedValue) { console.log("Inside B", previousReturnedValue); return next(previousReturnedValue + 'b'); }
+``` 
+ Combined!!! ƒ (next){ console.log("Outside B", next); return function(previousReturnedValue) { console.log("Inside B", previousReturnedValue); return next(previousReturnedValue + 'b'); }; Combined!!! ƒ (next){ console.log("Outside C", next); return function(previousReturnedValue) { console.log("Inside C", previousReturnedValue); return next(previousReturnedValue + 'c'); }; What is nextFunction: ƒ (next){ console.log("Final", next); return next; } Outside C ƒ (next){ console.log("Final", next); return next; } What is nextFunction: ƒ (previousReturnedValue) { console.log("Inside C", previousReturnedValue); return next(previousReturnedValue + 'c'); } Outside B ƒ (previousReturnedValue) { console.log("Inside C", previousReturnedValue); return next(previousReturnedValue + 'c'); } Outside A ƒ (previousReturnedValue) { console.log("Inside B", previousReturnedValue); return next(previousReturnedValue + 'b'); }
 
-Compose Output ƒ (previousReturnedValue) { console.log("Inside A", previousReturnedValue); return next(previousReturnedValue + 'a'); } \[/code\] The last output is still a function, but this time, not the combine wrapper but the function A. This is interesting since every function was also a function but with a pointer to the next one. It means that that the returned function "A" will be executed and since this one call next (which in that case is "B") the cascade will continue until the "final" function is called. The final function also calls next and for the moment doesn't do much. In fact, we can remove the "return next" from function "final" and to have the same output.
+Compose Output ƒ (previousReturnedValue) { console.log("Inside A", previousReturnedValue); return next(previousReturnedValue + 'a'); } 
+```  The last output is still a function, but this time, not the combine wrapper but the function A. This is interesting since every function was also a function but with a pointer to the next one. It means that that the returned function "A" will be executed and since this one call next (which in that case is "B") the cascade will continue until the "final" function is called. The final function also calls next and for the moment doesn't do much. In fact, we can remove the "return next" from function "final" and to have the same output.
 
 Let's alter another time the last line.
 
@@ -88,7 +92,9 @@ console.log("Compose Output", compose(a, b, c)(final)("!"));
 
 This time, we execute the composition of functions completely. We are passing down the exclamation point. As we saw in the last trace, the "previousReturnedValue" is added before the function, hence we can expect to have the result "!ABC";
 
-\[code\]¸ // Same trace until the last output Inside A ! Inside B !a Inside C !ab Final !abc Compose Output !abc \[/code\]
+``` 
+¸ // Same trace until the last output Inside A ! Inside B !a Inside C !ab Final !abc Compose Output !abc 
+``` 
 
 As we notice, the function A is called first and call the function B and C and final. Removing the "return next" from the final function will print "undefined".
 

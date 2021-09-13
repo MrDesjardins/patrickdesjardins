@@ -17,7 +17,8 @@ test("should animate element over 500ms", function () { var el = jQuery("<div></
 
 This test fail on the second assertion. The reason is that _fadeOut_ is not yet done and we are already asserting the display which is still to _block_. We need to play with the time. We need to fake the time to something in the future. This is where SinonJs come to the rescue.
 
-\[javascript highlight="6"\] test("should animate element over 500ms", function () { var el = jQuery("<div></div>"); el.appendTo(document.body); ok(el.css('display').indexOf("block") > -1); el.fadeOut(); this.clock.tick(510); ok(el.css('display').indexOf("none") > -1); }); 
+```javascript
+test("should animate element over 500ms", function () { var el = jQuery("<div></div>"); el.appendTo(document.body); ok(el.css('display').indexOf("block") > -1); el.fadeOut(); this.clock.tick(510); ok(el.css('display').indexOf("none") > -1); }); 
 ``` 
 
 

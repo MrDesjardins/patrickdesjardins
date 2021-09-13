@@ -19,7 +19,9 @@ The screenshot above shows some information you can get with a simple call to a 
 
 If you double click the line an entry in the Intellitrace, you see the whole detail but also the code window is going to the line where the data has been gathered. In the example above, the code selected is the line that call the repository:
 
-\[csharp highlight="3"\] public IEnumerable<Workout> GetAll() { var listModel = Repository.Workout.GetAll().ToList(); return listModel; } \[/csharp\]
+```csharp
+public IEnumerable<Workout> GetAll() { var listModel = Repository.Workout.GetAll().ToList(); return listModel; } 
+```
 
 To enable the IntelliTrace or to change some option, go in the Tools>Options>Intellitrace.
 

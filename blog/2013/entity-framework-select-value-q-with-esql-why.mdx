@@ -8,12 +8,21 @@ categories:
 
 When you are using Entity Framework and want to pass a query string manually, you have to use SELECT VALUE XXX FROM ... why? This is a good question and often we see SELECT VALUE Q FROM, why Q? In fact, it can be anything but a single word. ESQL allow to do a select with a row wrapper or without. When using VALUE, it adds a wrapper which create a return of a materialized data record. Entity Framework handle this materialized data record to bind the result into a context object. Without the VALUE, you do not have any wrapper and you get back a set of rows.
 
-Here is an example with SELECT VALUE. We receive a strongly typed set of object. \[csharp\] string queryString = "SELECT VALUE q from table1.attr1 as q"; ObjectQuery<T> query = context.CreateQuery<T>(queryString); \[/csharp\]
+Here is an example with SELECT VALUE. We receive a strongly typed set of object. 
+```csharp
+ string queryString = "SELECT VALUE q from table1.attr1 as q"; ObjectQuery<T> query = context.CreateQuery<T>(queryString); 
+```
 
-You can also specify which field you return if you do not want every fields. \[csharp\] string queryString = "SELECT VALUE row (q.Field1 as Field1, q.Field2 as Field2) from table1.attr1 as q)"; ObjectQuery<T> query = context.CreateQuery<T>(queryString); \[/csharp\] This time, the keyword "row" is required because it's a reserved keyword by ESQL. ROW constructs an anonymous value.
+You can also specify which field you return if you do not want every fields. 
+```csharp
+ string queryString = "SELECT VALUE row (q.Field1 as Field1, q.Field2 as Field2) from table1.attr1 as q)"; ObjectQuery<T> query = context.CreateQuery<T>(queryString); 
+``` This time, the keyword "row" is required because it's a reserved keyword by ESQL. ROW constructs an anonymous value.
 
 And an example that return a set of rows. As you can see, we have a DbDataRecord.
 
-\[csharp\] string queryString = "SELECT q table1.attr1 as q"; ObjectQuery<DbDataRecord> query = context.CreateQuery<DbDataRecord>(queryString); \[/csharp\]
+
+```csharp
+ string queryString = "SELECT q table1.attr1 as q"; ObjectQuery<DbDataRecord> query = context.CreateQuery<DbDataRecord>(queryString); 
+```
 
 Most of the time, you will use the SELECT VALUE q FROM ... The use of ESQL must be as low as you can because it opens a door to have SQL Query inside your code, which the ORM is there to abstract. Nevertheless, sometime, for optimization, ESQL is perfect.

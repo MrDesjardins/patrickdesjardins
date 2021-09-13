@@ -100,7 +100,7 @@ const IndexPage = (): JSX.Element => {
             <StaticImage
               className={topPicture}
               alt="Patrick Desjardins sitting at Netflix Building F"
-              src="../images/patrickdesjardinsatnetflix.jpg"
+              src="../images/backgrounds/patrickdesjardinsatnetflix.jpg"
             />
           </div>
         </div>

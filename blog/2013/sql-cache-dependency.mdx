@@ -9,33 +9,54 @@ SQL Server since few years (2005) can push notifications when data has changed. 
 
 Once everything is installed property (Sql Server), you must enable your database to works with a service broker.
 
-\[sql\] ALTER DATABASE YourDatabase SET ENABLE\_BROKER GO \[/sql\]
 
-By doing this SQL statement, you may have error like this one : "error 9772: The Service Broker in database 'YourDatabase' cannot be enabled because there is already an enabled Service Broker with the same ID". If this happen, just execute : \[sql\] ALTER DATABASE YourDatabase SET ENABLE\_BROKER WITH ROLLBACK IMMEDIATE GO ALTER DATABASE YourDatabase SET NEW\_BROKER GO \[/sql\]
+```sql
+ ALTER DATABASE YourDatabase SET ENABLE\_BROKER GO 
+```
+
+
+By doing this SQL statement, you may have error like this one : "error 9772: The Service Broker in database 'YourDatabase' cannot be enabled because there is already an enabled Service Broker with the same ID". If this happen, just execute : 
+```sql
+ ALTER DATABASE YourDatabase SET ENABLE\_BROKER WITH ROLLBACK IMMEDIATE GO ALTER DATABASE YourDatabase SET NEW\_BROKER GO 
+```
+
 
 Next move is to enable notification with IIS.
 
-\[sql\] GRANT SUBSCRIBE QUERY NOTIFICATIONS TO "TESTSERVER\\ASPNET" \[/sql\]
+
+```sql
+ GRANT SUBSCRIBE QUERY NOTIFICATIONS TO "TESTSERVER\\ASPNET" 
+```
+
 
 The next step is within the code. You need to setup the notification to listen the database. This can be set in the global.asax
 
-\[csharp\] SqlDependency.Start(ConfigurationManager.ConnectionStrings\["yourConnectionString"\].ConnectionString); \[/csharp\]
+
+```csharp
+ SqlDependency.Start(ConfigurationManager.ConnectionStrings["yourConnectionString"].ConnectionString); 
+```
 
 You can also make it stop.
 
-\[csharp\] SqlDependency.Stop(ConfigurationManager.ConnectionStrings\["yourConnectionString"\].ConnectionString); \[/csharp\]
+
+```csharp
+ SqlDependency.Stop(ConfigurationManager.ConnectionStrings["yourConnectionString"].ConnectionString); 
+```
 
 In both case, this should be setup once for your application. Here is an example.
 
-\[csharp\]
 
-string tableName = "YourTable"; string connectionString = "..."; var result = HttpContext.Current.Cache\[tableName\] as List<T>;
+```csharp
+
+
+string tableName = "YourTable"; string connectionString = "..."; var result = HttpContext.Current.Cache[tableName] as List<T>;
 
 if (result == null) { using (var cn = new SqlConnection(connectionString)) { cn.Open(); var cmd = new SqlCommand("SELECT \* FROM ...", cn); cmd.Notification = null; cmd.NotificationAutoEnlist = true; SqlCacheDependencyAdmin.EnableNotifications(connectionString); if (!SqlCacheDependencyAdmin.GetTablesEnabledForNotifications(connectionString).Contains(tableName)) { SqlCacheDependencyAdmin.EnableTableForNotifications(connectionString, tableName); }
 
 var dependency = new SqlCacheDependency(cmd); SqlDataReader reader = command.ExecuteReader(); try { while (reader.Read()) { // Load the list into result } } finally { // Always call Close when done reading. reader.Close(); }
 
-HttpContext.Current.Cache.Insert(tableName, result, dependency); } } \[/csharp\]
+HttpContext.Current.Cache.Insert(tableName, result, dependency); } } 
+```
 
 As you can see, it checks if the table exist. If not, it creates a table called AspNet\_SqlCacheTablesForNotification where every table name will have a row. If a value change, the entry in this table will be removed.
 

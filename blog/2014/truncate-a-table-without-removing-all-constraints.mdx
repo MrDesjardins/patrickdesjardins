@@ -9,6 +9,10 @@ categories:
 
 Instead of removing all constraints, it is possible to tell SQL Server to not check foreign key.
 
-\[sql\] SET FOREIGN\_KEY\_CHECKS = 0; TRUNCATE TABLE \[Schema\].\[Table\]; SET FOREIGN\_KEY\_CHECKS = 1; \[/sql\]
+
+```sql
+ SET FOREIGN\_KEY\_CHECKS = 0; TRUNCATE TABLE [Schema].[Table]; SET FOREIGN\_KEY\_CHECKS = 1; 
+```
+
 
 This will result to remove data of the table in the fastest way possible. If you want to have more details you can check that article that I previously wrote about [Truncate vs Delete](http://patrickdesjardins.com/blog/the-difference-between-sql-delete-statement-and-sql-truncate-statement "The difference between SQL Delete statement and SQL Truncate statement").

@@ -10,11 +10,17 @@ In some scenario, you may want to add dynamically information to your object wit
 
 To do, you need to use the ExpandoObject.
 
-\[csharp\] public class YourClass { public int Id{ get; set; } public dynamic Attributes { get; set; }
 
-public MatriceRow() { Attributes = new ExpandoObject(); } } \[/csharp\]
+```csharp
+ public class YourClass { public int Id{ get; set; } public dynamic Attributes { get; set; }
 
-This is a working example. From there you can use the YourClass class and set attributes. \[csharp\] var myClass = new YourClass(); myClass.Id = 1; myClass.Attributes.IsBoolean = true; myClass.Attributes.MyName = "Patrick Desjardins"; \[/csharp\]
+public MatriceRow() { Attributes = new ExpandoObject(); } } 
+```
+
+This is a working example. From there you can use the YourClass class and set attributes. 
+```csharp
+ var myClass = new YourClass(); myClass.Id = 1; myClass.Attributes.IsBoolean = true; myClass.Attributes.MyName = "Patrick Desjardins"; 
+```
 
 You cannot define the Attributes property directly to the type of ExpandoObject. If you do, you will get an exception.
 

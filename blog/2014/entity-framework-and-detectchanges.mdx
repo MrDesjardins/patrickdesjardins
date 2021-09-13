@@ -7,11 +7,17 @@ categories:
 
 **DetectChanges** can be set to false inside the configuration of the **DbContext**.
 
-\[csharp\] public class YourContext : DbContext { public YourContext(): base("DefaultConnection") { this.Configuration.AutoDetectChangesEnabled = false; } } \[/csharp\]
+
+```csharp
+ public class YourContext : DbContext { public YourContext(): base("DefaultConnection") { this.Configuration.AutoDetectChangesEnabled = false; } } 
+```
 
 or can be turned off for the context life cycle:
 
-\[csharp\] using (var context = new YourContext()) { context.Configuration.AutoDetectChangesEnabled = false; } \[/csharp\] This will increase the overall performance of Entity Framework because it will not execute the verification of changes of the entities inside the **DbContext** and the database. Disabling the auto detection of changes come with the cost that if you do not call it manually that you will not have the good result.
+
+```csharp
+ using (var context = new YourContext()) { context.Configuration.AutoDetectChangesEnabled = false; } 
+``` This will increase the overall performance of Entity Framework because it will not execute the verification of changes of the entities inside the **DbContext** and the database. Disabling the auto detection of changes come with the cost that if you do not call it manually that you will not have the good result.
 
 In the case that the AutoDetectChangesEnabled is kept to true, or set to true again, than you can be sure that a verification is done when:
 
@@ -29,9 +35,15 @@ If you are doing few queries or that you add several new entities you may want t
 
 To tell Entity Framework to detect changes, you must use the **DbContext** and call the **ChangeTracker** property that has the **DetectChanges** method.
 
-The followed example will not update the user. \[csharp\] private static void DetectChangesExample() { using (var context = new YourContext()) { context.Configuration.AutoDetectChangesEnabled = false; var personToModify = context.Persons.Find(1); personToModify.BirthDate = new DateTime(3050,12,12); context.SaveChanges(); } } \[/csharp\] This is because the DbContext does not know about the change of the Person Id 1. If we change the above code by adding the DetectChanges than the database is notified of the changes.
+The followed example will not update the user. 
+```csharp
+ private static void DetectChangesExample() { using (var context = new YourContext()) { context.Configuration.AutoDetectChangesEnabled = false; var personToModify = context.Persons.Find(1); personToModify.BirthDate = new DateTime(3050,12,12); context.SaveChanges(); } } 
+``` This is because the DbContext does not know about the change of the Person Id 1. If we change the above code by adding the DetectChanges than the database is notified of the changes.
 
-\[csharp\] private static void DetectChangesExample() { using (var context = new YourContext()) { context.Configuration.AutoDetectChangesEnabled = false; var personToModify = context.Persons.Find(1); personToModify.BirthDate = new DateTime(3050,12,12); context.ChangeTracker.DetectChanges(); context.SaveChanges(); } } \[/csharp\]
+
+```csharp
+ private static void DetectChangesExample() { using (var context = new YourContext()) { context.Configuration.AutoDetectChangesEnabled = false; var personToModify = context.Persons.Find(1); personToModify.BirthDate = new DateTime(3050,12,12); context.ChangeTracker.DetectChanges(); context.SaveChanges(); } } 
+```
 
 It is also possible to get from the Entry collection the state of the entity. If we execute both example by adding a simple check of the state, the one that has auto detect changes to false will return an unmodified state while the other one will have a modified state.
 

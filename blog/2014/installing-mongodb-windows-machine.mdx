@@ -15,9 +15,13 @@ From here, it is time to open a Command Prompt with administration right. Let's 
 
 [![MongoDbConsole](http://patrickdesjardins.com/blog/wp-content/uploads/2014/09/MongoDbConsole-400x203.png)](http://patrickdesjardins.com/blog/3818/mongodbconsole)
 
-You can after that configure MongoDB. The next steps are taken directly from MongoDB documentation. You must create a directory to save the content. This can be anywhere so let's do a data folder at the root of the installation path. The md command let you create a directory. The code below is what you can write to create the default path that MongoDB uses. \[code\] cd "C:\\Program Files\\MongoDB 2.6 Standard" md \\data\\db \[/code\]
+You can after that configure MongoDB. The next steps are taken directly from MongoDB documentation. You must create a directory to save the content. This can be anywhere so let's do a data folder at the root of the installation path. The md command let you create a directory. The code below is what you can write to create the default path that MongoDB uses. ``` 
+ cd "C:\\Program Files\\MongoDB 2.6 Standard" md \\data\\db 
+``` 
 
-Then, you can start MongoDB. \[code\] cd bin mongo.exe \[/code\]
+Then, you can start MongoDB. ``` 
+ cd bin mongo.exe 
+``` 
 
 Me, the first time I start MongoDB I got a warning followed by an error saying that it was not possible to connect.
 
@@ -31,10 +35,20 @@ Do not forget to specify the **\--dbpath** when starting the **mongod.exe** beca
 
 ## Basic Commands
 
-Here is few commands that may be useful during the development. **dbs shows** the database you have \[code\] show dbs \[/code\] You can create new database or switch the a database by using the **use** command. \[code\] use mydb \[/code\] Information are added into collection. You can add data into a collection with the command **db..insert()**. Here is an example of three insert into a collection named "testdata" of the dotnet database.
+Here is few commands that may be useful during the development. **dbs shows** the database you have ``` 
+ show dbs 
+```  You can create new database or switch the a database by using the **use** command. ``` 
+ use mydb 
+```  Information are added into collection. You can add data into a collection with the command **db..insert()**. Here is an example of three insert into a collection named "testdata" of the dotnet database.
 
-\[code\] use dotnet db.testdata.insert({id:1}) db.testdata.insert({id:2}) db.testdata.insert({id:3,name:"three"}) \[/code\] It is possible to see if the collection of the active database really exist with **show collections** command.
+``` 
+ use dotnet db.testdata.insert({id:1}) db.testdata.insert({id:2}) db.testdata.insert({id:3,name:"three"}) 
+```  It is possible to see if the collection of the active database really exist with **show collections** command.
 
-\[code\] show collections \[/code\]
+``` 
+ show collections 
+``` 
 
-The last command that is really useful is to see the content of a collection. You can use the **find()** command. \[code\] db.testdata.find() \[/code\] Keep in mind that if you see nothing it might be because you typed the collection name with the wrong case sensitivity. MongoDB is case sensitive. Here is screenshot of the output of all commands that we just discussed. [![MongoBasicCommands](http://patrickdesjardins.com/blog/wp-content/uploads/2014/09/MongoBasicCommands-400x275.png)](http://patrickdesjardins.com/blog/3818/mongobasiccommands)
+The last command that is really useful is to see the content of a collection. You can use the **find()** command. ``` 
+ db.testdata.find() 
+```  Keep in mind that if you see nothing it might be because you typed the collection name with the wrong case sensitivity. MongoDB is case sensitive. Here is screenshot of the output of all commands that we just discussed. [![MongoBasicCommands](http://patrickdesjardins.com/blog/wp-content/uploads/2014/09/MongoBasicCommands-400x275.png)](http://patrickdesjardins.com/blog/3818/mongobasiccommands)

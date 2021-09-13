@@ -11,15 +11,21 @@ You cannot use .html() because it will return the inner html tag. You cannot use
 
 For example:
 
-\[html\] <ul> <li id="step1">This is Step 1 <ul> <li>This is inside Step 1</li> </ul> </li> <li id="step2">This is Step 2 </li> </ul> \[/html\]
+
+```html  <ul> <li id="step1">This is Step 1 <ul> <li>This is inside Step 1</li> </ul> </li> <li id="step2">This is Step 2 </li> </ul> 
+``` 
 
 If we use "step1.html()". The output is:
 
-\[html\] This is Step 1 <ul> <li>This is inside Step 1</li> </ul> \[/html\]
+
+```html  This is Step 1 <ul> <li>This is inside Step 1</li> </ul> 
+``` 
 
 If we use "step1.text()". The output is:
 
-\[html\] This is Step 1 This is inside Step 1 \[/html\]
+
+```html  This is Step 1 This is inside Step 1 
+``` 
 
 But if you want to get only "This is Step 1" you will have to use several Jquery calls.
 

@@ -10,19 +10,30 @@ categories:
 
 The objective of the Glimpse's extension we are building in this article is to add in Glimpse's timeline every cache calls starting time, ending time, duration and what was the method name and key used. Here is the end result: [![GlimpseExtension](http://patrickdesjardins.com/blog/wp-content/uploads/2015/07/GlimpseExtension-400x288.png)](http://patrickdesjardins.com/blog/how-to-extend-glimpse-for-redis/glimpseextension)
 
-The first thing is that extension will be not for Redis particularity but for any cache system. I have in the project I have a Cache.cs class that is abstract. My Redis implementation inherit from that cache. That class contains a lot of method like Set, Get, Delete etc. Here is the set method. \[csharp\] public void Set<T>(string key, T objectToCache, TimeSpan? expiry = null) { if (string.IsNullOrEmpty(key)) { throw new ArgumentNullException("key"); } if (this.isCacheEnable) { var serializedObjectToCache = Serialization.Serialize(objectToCache); if (!this.ExecuteUnderCircuitBreaker(()=>this.SetStringProtected(key, serializedObjectToCache, expiry),key)) { Log.Error(string.Format("Cannot Set {0}", key)); } } } \[/csharp\]
+The first thing is that extension will be not for Redis particularity but for any cache system. I have in the project I have a Cache.cs class that is abstract. My Redis implementation inherit from that cache. That class contains a lot of method like Set, Get, Delete etc. Here is the set method. 
+```csharp
+ public void Set<T>(string key, T objectToCache, TimeSpan? expiry = null) { if (string.IsNullOrEmpty(key)) { throw new ArgumentNullException("key"); } if (this.isCacheEnable) { var serializedObjectToCache = Serialization.Serialize(objectToCache); if (!this.ExecuteUnderCircuitBreaker(()=>this.SetStringProtected(key, serializedObjectToCache, expiry),key)) { Log.Error(string.Format("Cannot Set {0}", key)); } } } 
+```
 
 As you can see, the method serializes the object to cache, and calls the SetStringProtected method. Something particular is the method is called within a function called ExecuteUnderCircuitBreaker which is a design pattern. Whatever this pattern, every calls to the cache go through this function. At the end, if we remove all the circuit breaker pattern we can add the entry point for the Glimpse's extension.
 
-\[csharp\] protected bool ExecuteUnderCircuitBreaker(Action action, string key, \[CallerMemberName\]string callerMemberName="") { using (var glimpse = new GlimpseCache(key, callerMemberName)) { //Code removed here about circuit breaker action(); } } \[/csharp\]
+
+```csharp
+ protected bool ExecuteUnderCircuitBreaker(Action action, string key, [CallerMemberName]string callerMemberName="") { using (var glimpse = new GlimpseCache(key, callerMemberName)) { //Code removed here about circuit breaker action(); } } 
+```
 
 The important part for the moment is that every calls for the cache are proxied by this method which execute the Redis action between a **GlimpseCache** object creation and disposition. The GlimpseCache class start a timer when the class is constructed and stop the timer when it is disposed.
 
-\[csharp\] public class GlimpseCache:IDisposable { private readonly GlimpseCacheCommandTracer tracer; public GlimpseCache(string key, string commandName) { this.tracer = new GlimpseCacheCommandTracer(); tracer.CommandStart(commandName, key); }
 
-public void Dispose() { if (tracer != null) { tracer.CommandFinish(); } } } \[/csharp\] The core code is in the **GlimpseCacheCommadnTracer**. The tracer will use the IMessageBroker and IExecutionTimer to know the configuration. This will get from the configuration file (web.config) Glimpse's configurations but also if this one is active or not. It will also give you a hook to the timer start and stop. This will allow us to get into the timeline by publishing an event. This class also configure how to display the information. You can define the label, the color and the highlight.
+```csharp
+ public class GlimpseCache:IDisposable { private readonly GlimpseCacheCommandTracer tracer; public GlimpseCache(string key, string commandName) { this.tracer = new GlimpseCacheCommandTracer(); tracer.CommandStart(commandName, key); }
 
-\[csharp\] public class GlimpseCacheCommandTracer { private IMessageBroker messageBroker; private IExecutionTimer timerStrategy;
+public void Dispose() { if (tracer != null) { tracer.CommandFinish(); } } } 
+``` The core code is in the **GlimpseCacheCommadnTracer**. The tracer will use the IMessageBroker and IExecutionTimer to know the configuration. This will get from the configuration file (web.config) Glimpse's configurations but also if this one is active or not. It will also give you a hook to the timer start and stop. This will allow us to get into the timeline by publishing an event. This class also configure how to display the information. You can define the label, the color and the highlight.
+
+
+```csharp
+ public class GlimpseCacheCommandTracer { private IMessageBroker messageBroker; private IExecutionTimer timerStrategy;
 
 private IMessageBroker MessageBroker { get { return messageBroker ?? (messageBroker = GlimpseConfiguration.GetConfiguredMessageBroker()); } set { messageBroker = value; } }
 
@@ -36,14 +47,18 @@ var timerResult = TimerStrategy.Stop(start);
 
 var message = new CacheTimelineMessage(this.command, this.key) .AsTimelineMessage(command + ": " + key, new TimelineCategoryItem(LABEL, COLOR, COLOR\_HIGHLIGHT)) .AsTimedMessage(timerResult);
 
-MessageBroker.Publish(message); } } \[/csharp\]
+MessageBroker.Publish(message); } } 
+```
 
 The command finish method is called by the disposable method stop the timer for this event and build the message to be added to the timeline. In that example, we display the command and the key. The third and last class you need is the **CacheTimelineMessage**. This is the class that inherit from Glimpse's MessageBase and ITimelineMessage. This is what will be used to display information in the timeline.
 
-\[csharp\] public class CacheTimelineMessage : MessageBase, ITimelineMessage { public string Command { get; set; } public string Key { get; set; }
+
+```csharp
+ public class CacheTimelineMessage : MessageBase, ITimelineMessage { public string Command { get; set; } public string Key { get; set; }
 
 #region From Interface public TimelineCategoryItem EventCategory { get; set; } public string EventName { get; set; } public string EventSubText { get; set; } public TimeSpan Duration { get; set; } public TimeSpan Offset { get; set; } public DateTime StartTime { get; set; } #endregion public CacheTimelineMessage(string command, string key) { this.Command = command; this.Key = key;
 
-} } } \[/csharp\]
+} } } 
+```
 
 I am pretty sure we can do something better and even maybe show more information, but I am satisfy with the insight that I can have now with this few lines of code to Glimpse.

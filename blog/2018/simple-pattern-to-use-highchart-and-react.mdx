@@ -37,18 +37,18 @@ public render(): JSX.Element { const isChartVisible = this.props.source.graphDat
 The render will be executed once and then the componentDidMount function is executed once as well. Meanwhile, the componentDidMount function does the heavy lifting by instantiating the Highchart component. In reality, this function is way bigger than what I am providing. It contains all the configuration you can apply to a Highchart.
 
 ```typescript
-public componentDidMount() { const that = this; if (this.hightChartContainer !== null) { Highcharts.setOptions(theme); const options: Options = { chart: { type: "line", }, series: \[\], }; this.highChartControl = Highcharts.chart(this.hightChartContainer, options); if (this.props.source.graphData !== undefined) { this.componentDidUpdate(); } } } 
+public componentDidMount() { const that = this; if (this.hightChartContainer !== null) { Highcharts.setOptions(theme); const options: Options = { chart: { type: "line", }, series: [], }; this.highChartControl = Highcharts.chart(this.hightChartContainer, options); if (this.props.source.graphData !== undefined) { this.componentDidUpdate(); } } } 
 ``` 
 
 
 Finally, the componentDidUpdate has the role to push the values to the chart. The componentDidMount sets the series to an empty array because the data might not yet be available. However, the componentDidUpdate will be called every time new properties change which make it a good place to update the chart.
 
 ```typescript
-public componentDidUpdate() { if (this.hightChartContainer !== null && this.highChartControl !== undefined && this.props.source.graphData !== undefined) { const data = this.props... // Get your data const series: GraphData\[\] = \[\]; while (this.highChartControl.series.length > 0) { this.highChartControl.series\[0\].remove(false); }
+public componentDidUpdate() { if (this.hightChartContainer !== null && this.highChartControl !== undefined && this.props.source.graphData !== undefined) { const data = this.props... // Get your data const series: GraphData[] = []; while (this.highChartControl.series.length > 0) { this.highChartControl.series[0].remove(false); }
 
-// Values dimension represent each series scenarioUpdate.addMarker("CreateSeries"); rawValues.forEach((value: number\[\], index: number) => { const time = data.start + index \* data.step; for (let iSerie = 0; iSerie < value.length; iSerie++) { if (index === 0) { // Only first time we create series series.push({ seriesName: data.legend\[iSerie\], seriesValues: \[\] }); } series\[iSerie\].seriesValues.push({ time: time, value: value\[iSerie\] }); } });
+// Values dimension represent each series scenarioUpdate.addMarker("CreateSeries"); rawValues.forEach((value: number[], index: number) => { const time = data.start + index \* data.step; for (let iSerie = 0; iSerie < value.length; iSerie++) { if (index === 0) { // Only first time we create series series.push({ seriesName: data.legend[iSerie], seriesValues: [] }); } series[iSerie].seriesValues.push({ time: time, value: value[iSerie] }); } });
 
-let loopCount = 0; series.forEach((serieData: GraphData, index: number) => { if (this.highChartControl !== undefined) { const values = serieData.seriesValues.map((d: GraphDataValue) => { loopCount++; return \[d.time, d.value\]; }); this.highChartControl.addSeries({}, false, false); this.highChartControl.series\[index\].setData(values, false, false, false); this.highChartControl.series\[index\].update({ name: serieData.seriesName }, false); } });
+let loopCount = 0; series.forEach((serieData: GraphData, index: number) => { if (this.highChartControl !== undefined) { const values = serieData.seriesValues.map((d: GraphDataValue) => { loopCount++; return [d.time, d.value]; }); this.highChartControl.addSeries({}, false, false); this.highChartControl.series[index].setData(values, false, false, false); this.highChartControl.series[index].update({ name: serieData.seriesName }, false); } });
 
 window.requestAnimationFrame(() => { window.requestAnimationFrame(() => { if (this.highChartControl !== undefined) { this.highChartControl.reflow(); this.highChartControl.redraw(); } }); }); } } 
 ``` 

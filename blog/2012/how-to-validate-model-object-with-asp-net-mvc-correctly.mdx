@@ -11,37 +11,53 @@ In my last two years of development, I had to do development with Silverlight fe
 
 In the same time, Asp.Net MVC encourage a lot to not validate directly with the setter. What motivate me to like more and more the validation outside setter is that Microsoft has implemented since the first version of ASP.Net MVC the ModelState that handle all errors from the model binding, to annotation validation in your model to your own business logic error. This is built-in. This mechanism is used by the model binding to let you know if something has not be binded correctly if you use the automatic model binding. Here is an example of automatic model binding.
 
-\[csharp\] public ActionResult Edit(Car car){... \[/csharp\]
+
+```csharp
+ public ActionResult Edit(Car car){... 
+```
 
 .Net framework let you add you own error into the model binding. This way, inside the controller you will be able to validate if everything is fine before saving your creation or edition of your model.
 
-\[csharp\] \[HttpPost\] public ActionResult Edit(Car car) { if(ModelState.IsValid) { //Update code to be placed here
 
-return RedirectToAction("CarList"); } else { return View("CarEdit",car); } } \[/csharp\]
+```csharp
+ [HttpPost] public ActionResult Edit(Car car) { if(ModelState.IsValid) { //Update code to be placed here
+
+return RedirectToAction("CarList"); } else { return View("CarEdit",car); } } 
+```
 
 The code above, demonstrate the edition of a "Car" class. Two things appears in the first line. The **IsValid** function will return true if nothing has been added to the ModelState and will return false if Model Binding error occur OR if you have business logic error. That's right, Asp.Net MVC will call your object business logic validation IF you use a single specific interface called "**IValidatableObject**". This interface let you inherit from a method called **Validate**. Inside this method you need to validate your business logic. Every times an error is found, you need to add it to a collection to return it at the end of this method. This let you add many error if desired. Here is the example of the Car model object.
 
-\[csharp\] public class Car: IValidatableObject { public int Id { get; set; } public string Name { get; set; } public string Type { get; set; } public string Color { get; set; }
 
-public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) { if(string.IsNullOrEmpty(Name)) { yield return new ValidationResult("Name is mandatory", new\[\] {"Name"}); } if (string.IsNullOrEmpty(Type)) { yield return new ValidationResult("Type is mandatory", new\[\] { "Type" }); } if (string.IsNullOrEmpty(Color)) { yield return new ValidationResult("Color is mandatory", new\[\] { "Color" }); } } } \[/csharp\]
+```csharp
+ public class Car: IValidatableObject { public int Id { get; set; } public string Name { get; set; } public string Type { get; set; } public string Color { get; set; }
+
+public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) { if(string.IsNullOrEmpty(Name)) { yield return new ValidationResult("Name is mandatory", new[] {"Name"}); } if (string.IsNullOrEmpty(Type)) { yield return new ValidationResult("Type is mandatory", new[] { "Type" }); } if (string.IsNullOrEmpty(Color)) { yield return new ValidationResult("Color is mandatory", new[] { "Color" }); } } } 
+```
 
 As you can see, we have 3 errors that are added to the return collection with the yield statement. We could have declared a variable of IEnumerable but for the sake of the simplicity we can use yield. This collection of error is generic. The type is **ValidationResult**. The class ValidationResult let you add a message that will be go next to the control that has the erroneous property which is specified in the second parameter. This mean that you could set instead of "Color is mandatory" simply a star symbol and a second generic error message without specifying the property like the example below.
 
-\[csharp highlight="21,20"\] public class Car: IValidatableObject { public int Id { get; set; } public string Name { get; set; } public string Type { get; set; } public string Color { get; set; }
+```csharp
+public class Car: IValidatableObject { public int Id { get; set; } public string Name { get; set; } public string Type { get; set; } public string Color { get; set; }
 
-public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) { if(string.IsNullOrEmpty(Name)) { yield return new ValidationResult("Name is mandatory", new\[\] {"Name"}); } if (string.IsNullOrEmpty(Type)) { yield return new ValidationResult("Type is mandatory", new\[\] { "Type" }); } if (string.IsNullOrEmpty(Color)) { yield return new ValidationResult("\*", new\[\] { "Color" }); yield return new ValidationResult("Color is mandatory"}); } } } \[/csharp\]
+public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) { if(string.IsNullOrEmpty(Name)) { yield return new ValidationResult("Name is mandatory", new[] {"Name"}); } if (string.IsNullOrEmpty(Type)) { yield return new ValidationResult("Type is mandatory", new[] { "Type" }); } if (string.IsNullOrEmpty(Color)) { yield return new ValidationResult("\*", new[] { "Color" }); yield return new ValidationResult("Color is mandatory"}); } } } 
+```
 
 So, from here you have validation from the Model Binding and from the Model class. What's about validation that need to be done inside the action of the controller. This could be that maybe we do not want any one to edit a car that is not available. This require a call to the database and of course won't be inside the model object. The controller can be a good position to check. No problem for the ModelState because this one doesn't only have the IsValid property but also have the method "AddModelError" that let you add any error message.
 
-\[csharp highlight="6"\] \[HttpPost\] public ActionResult Edit(Car car) { if(IsCarAvailable()) { ModelState.AddModelError(string.Empty,"Car cannot be edited because not available anymore"); }
+```csharp
+[HttpPost] public ActionResult Edit(Car car) { if(IsCarAvailable()) { ModelState.AddModelError(string.Empty,"Car cannot be edited because not available anymore"); }
 
 if(ModelState.IsValid) { //Update code to be placed here
 
-return RedirectToAction("CarList"); } else { return View("CarEdit",car); } } \[/csharp\]
+return RedirectToAction("CarList"); } else { return View("CarEdit",car); } } 
+```
 
 Some scenario remain like what about partial view or **Ajax** call. For partial view, no problem, everything will be stored in the ModelView which contain a dictionary of all error during the life cycle of the request to the server. The Ajax situation is not really more complex because the Ajax call will call the action method which will store all error in the ModelState. The action method will return a JsonResult for most of the time which contain, for most of the time, a partial view in a string that will be injected into a Html div. For the case that you want to get back only a positive message if it's a success and all errors when it fails you can always return the collection of errors. Here is the way to retrieve a collection of String that contains all messages of the ModelState.
 
-\[csharp\] var allErrors = ModelState.Values.SelectMany(e => e.Errors).Select(gh => gh.ErrorMessage); \[/csharp\]
+
+```csharp
+ var allErrors = ModelState.Values.SelectMany(e => e.Errors).Select(gh => gh.ErrorMessage); 
+```
 
 [![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/04/allerrorsInOneCollection-400x51.png "allerrorsInOneCollection")](http://patrickdesjardins.com/blog/how-to-validate-model-object-with-asp-net-mvc-correctly/allerrorsinonecollection)
 

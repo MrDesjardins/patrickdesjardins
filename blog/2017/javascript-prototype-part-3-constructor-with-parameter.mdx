@@ -22,7 +22,9 @@ ChildClass1.prototype.constructor = BaseClass1; var instance1 = new ChildClass1(
 ``` 
 
 
-The output will be : \[code\] "instance1.childMember: C" "instance1.baseMember: B" \[/code\]
+The output will be : ``` 
+ "instance1.childMember: C" "instance1.baseMember: B" 
+``` 
 
 As you may have realize, since we are using a function to create class in JavaScript, this bring some limitations. The main one is that you can only have a single constructor. It means that if you need to pass different type of information you need to check the type of the object passed or have optional parameter.
 
@@ -33,4 +35,6 @@ var ChildClass1 = function(childMember, notalwaysprovided) { if(typeof childMemb
 ``` 
 
 
-The output is : \[code\] "The name was from a string with the value : Name1" "This parameter is not always provided: second optional param" "The name was from an object with the value :Name2" "This parameter is not always provided: Default Value" \[/code\]
+The output is : ``` 
+ "The name was from a string with the value : Name1" "This parameter is not always provided: second optional param" "The name was from an object with the value :Name2" "This parameter is not always provided: Default Value" 
+``` 

@@ -10,14 +10,23 @@ AutoMapper is a library that you can find now at [GitHub](https://github.com/Aut
 
 In this article, I'll show you how to handle a null property. This case occur if you have a source object that has a null property and you want to have in the destination a value. A simple example would be that you have a User class that can have a classe Address. If this one is null, you may want to have in the destination an empty string or a default string value.
 
-\[csharp\] public class UserSource { public Address Address{get;set;} }
 
-public class UserDestination { public string Address{get;set;} } \[/csharp\]
+```csharp
+ public class UserSource { public Address Address{get;set;} }
+
+public class UserDestination { public string Address{get;set;} } 
+```
 
 First, the mapping require to have the indication of your action.
 
-\[csharp\] AutoMapper.Mapper.CreateMap<UserSource, UserDestination>() .ForMember(dest => dest.Address , opt => opt.NullSubstitute("Address not found") ); \[/csharp\]
+
+```csharp
+ AutoMapper.Mapper.CreateMap<UserSource, UserDestination>() .ForMember(dest => dest.Address , opt => opt.NullSubstitute("Address not found") ); 
+```
 
 This indicate to map Address to Address (default behavior) but has the optional with NullSubstitute which let you specify an object to be used for the mapping if the source object is null. In the previous example, a string has been used but a default object could have been used without problem.
 
-Here is how to call the mapper. The mapping is done without any other option than normal mapping. \[csharp\] var model = AutoMapper.Mapper.Map<UserSource, UserDestination>(user); var models = AutoMapper.Mapper.Map<IEnumerable<UserSource>, IEnumerable<UserDestination>>(users); \[/csharp\]
+Here is how to call the mapper. The mapping is done without any other option than normal mapping. 
+```csharp
+ var model = AutoMapper.Mapper.Map<UserSource, UserDestination>(user); var models = AutoMapper.Mapper.Map<IEnumerable<UserSource>, IEnumerable<UserDestination>>(users); 
+```

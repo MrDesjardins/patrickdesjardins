@@ -28,13 +28,18 @@ The [factory method pattern](http://en.wikipedia.org/wiki/Factory_method_pattern
 
 ### Repository Factory
 
-The repository factory inherit from an interface. This interface will contain all entity repository. That mean that if you want to add new entity that you need to add a new entry into this interface. \[csharp\] public interface IRepositoryFactory { IWorkoutRepository Workout { get; } IUserProfileRepository UserProfile { get; } //...Other entities... } \[/csharp\] For example, in the code above, we have 2 entities. One is our domain, the Workout class, and the second is the UserProfile that is for the user (from the membership classes). If we wanted to add the Exercises entity, we would need to add a new property in the interface.
+The repository factory inherit from an interface. This interface will contain all entity repository. That mean that if you want to add new entity that you need to add a new entry into this interface. 
+```csharp
+ public interface IRepositoryFactory { IWorkoutRepository Workout { get; } IUserProfileRepository UserProfile { get; } //...Other entities... } 
+``` For example, in the code above, we have 2 entities. One is our domain, the Workout class, and the second is the UserProfile that is for the user (from the membership classes). If we wanted to add the Exercises entity, we would need to add a new property in the interface.
 
 You can also notice that IRepositoryFactory contain interface to repository. So, a new entity means a new interface for its repository and for the concrete implementation of this repository.
 
 Before going deeper with the repository class, let check a concrete implementation of IRepositoryFactory for Entity Framework 5.0 Code First approach.
 
-\[csharp\] public class RepositoryFactory:IRepositoryFactory { private readonly IDatabaseContext \_databaseContext; private IWorkoutRepository \_workoutRepository; private IUserProfileRepository \_userProfileRepository;
+
+```csharp
+ public class RepositoryFactory:IRepositoryFactory { private readonly IDatabaseContext \_databaseContext; private IWorkoutRepository \_workoutRepository; private IUserProfileRepository \_userProfileRepository;
 
 public RepositoryFactory(IDatabaseContext databaseContext) { \_databaseContext = databaseContext; }
 
@@ -44,7 +49,8 @@ public IWorkoutRepository Workout { get { return \_workoutRepository ?? (\_worko
 
 public IUserProfileRepository UserProfile { get { return \_userProfileRepository ?? (\_userProfileRepository = new UserProfileRepository(\_databaseContext)); } }
 
-#endregion } \[/csharp\]
+#endregion } 
+```
 
 This class takes in its constructor a IDatabaseContext. This will give us an interface to share between repository. Otherwise, the factory if very simple. It checks if the property has been already initialized, if not, it initialize it with the IDatabaseContext, otherwise, it simply reuse the repository. This class contains for every repository a property. That's it.
 
@@ -52,17 +58,25 @@ This class takes in its constructor a IDatabaseContext. This will give us an int
 
 Every repository inherit from **IRepository**.
 
-\[csharp\] public interface IRepository<T> { IQueryable<T> GetAll(); T Get(int id); int Insert(T entity); int Update(T entity); int Delete(T entity); } \[/csharp\]
+
+```csharp
+ public interface IRepository<T> { IQueryable<T> GetAll(); T Get(int id); int Insert(T entity); int Update(T entity); int Delete(T entity); } 
+```
 
 This give us the 80% repository method that we need. Other more specific method like searching with filter will be added directly into the concrete implementation of the class.
 
 Also, every Repository inherit from a BaseRepository which will hold the DataContext reference. This is required because every call to the repository is done by the DbContext. When the Repository factory pass the IDatabaseContext to the repository, all repository will simply pass the object to the base in their constructor.
 
-\[csharp\] public class BaseRepository { protected IDatabaseContext DatabaseContext { get; private set; }
 
-protected BaseRepository(IDatabaseContext databaseContext) { DatabaseContext = databaseContext; } } \[/csharp\]
+```csharp
+ public class BaseRepository { protected IDatabaseContext DatabaseContext { get; private set; }
 
-Here is the example with the Workout entity. \[csharp\] public class WorkoutRepository : BaseRepository, IWorkoutRepository { public WorkoutRepository(IDatabaseContext databaseContext) : base(databaseContext) { }
+protected BaseRepository(IDatabaseContext databaseContext) { DatabaseContext = databaseContext; } } 
+```
+
+Here is the example with the Workout entity. 
+```csharp
+ public class WorkoutRepository : BaseRepository, IWorkoutRepository { public WorkoutRepository(IDatabaseContext databaseContext) : base(databaseContext) { }
 
 #region Implementation of IRepository<Workout>
 
@@ -76,7 +90,8 @@ public int Update(Workout entity) { Workout fromDatabase = Get(entity.Id); Datab
 
 public int Delete(Workout entity) { DatabaseContext.SetOwnable<Workout>().Remove(entity); return DatabaseContext.SaveChanges(); }
 
-#endregion } \[/csharp\]
+#endregion } 
+```
 
 It's quite neat! You do not see any detail of database connection. The only thing we see is task concerning saving and loading entity. We have direct access to Entry and we can use the Set<> and SetOwnable<>. As you can see, we do not need to have any access to the current user, neither to specific to whom the Workout belong because Workout inherit from IUserOwnable. You will see the detail about how it works on the next article concerning the DbContext (see part 5).
 

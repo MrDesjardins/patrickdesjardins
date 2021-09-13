@@ -16,19 +16,28 @@ As you can see, the mapping between the view model and the model is simple, the 
 
 So, if you want to display a list of exercise you can get the whole list by getting from your database context the list of exercise. Here is the partial view that get a list of ExerciseViewModel and dress a list of all exercises inside an Html list.
 
-\[csharp\] @model IEnumerable<ViewModels.ExerciseViewModel> <ul class="exercises-container-source"> @foreach (var exercise in Model) { <li data-exercise-id="@exercise.Id"> <span class="exerciseName">@exercise.Name</span> </li> } </ul> \[/csharp\]
+
+```csharp
+ @model IEnumerable<ViewModels.ExerciseViewModel> <ul class="exercises-container-source"> @foreach (var exercise in Model) { <li data-exercise-id="@exercise.Id"> <span class="exerciseName">@exercise.Name</span> </li> } </ul> 
+```
 
 Let say that now you want to display exercises by their muscle group. This is not a problem from the class point of view because the ExerciseViewModel contain directly the MuscleId and MuscleName.
 
 The "old school" way to do it would be to sort the collection by the exercise name, then to loop through the collection and every time the muscle group change, to write the muscle name.
 
-\[csharp\] @model IEnumerable<ViewModels.ExerciseViewModel> <ul class="exercises-container-source"> int lastId = -1; @foreach (var exercise in Model.OrderBy(d=>d.MuscleId)) { if(lastId != exerciseMuscleId) { if(lastId != -1) { </ul> } <h3>@exercise.MuscleName</h3> <ul class="exercises-container-source"> lastId = exerciseMuscleId; } <li data-exercise-id="@exercise.Id"> <span class="exerciseName">@exercise.Name</span> </li> } </ul> \[/csharp\]
+
+```csharp
+ @model IEnumerable<ViewModels.ExerciseViewModel> <ul class="exercises-container-source"> int lastId = -1; @foreach (var exercise in Model.OrderBy(d=>d.MuscleId)) { if(lastId != exerciseMuscleId) { if(lastId != -1) { </ul> } <h3>@exercise.MuscleName</h3> <ul class="exercises-container-source"> lastId = exerciseMuscleId; } <li data-exercise-id="@exercise.Id"> <span class="exerciseName">@exercise.Name</span> </li> } </ul> 
+```
 
 This kind of code is not particularly great and invokes some logic to understand it correctly. First, we have to handle the last muscle id into a variable and change its value depending of a comparison. Second, we have to handle the creation of the Html tag "UL" because header tag (h3) cannot be inserted between "UL" tag. This mean that we need to open and close the "UL" tag every time we have an exercise.
 
 With **Linq and Grouping** we can simplify by a lot this whole process. The main advantage of the next methodology is that without modifying any backend classes the view page will be cleaner and easier to understand.
 
-\[csharp\] @model IEnumerable<ViewModels.ExerciseViewModel> @foreach (var exerciseGroup in Model.GroupBy(d => new { Id = d.MuscleId, Name = d.MuscleName })) { <h3>@exerciseGroup.Key.Name</h3> <ul class="exercises-container-source"> @foreach (var exercise in exerciseGroup) { <li data-exercise-id="@exercise.Id"> <span class="exerciseName">@exercise.Name</span> </li> } </ul> } \[/csharp\]
+
+```csharp
+ @model IEnumerable<ViewModels.ExerciseViewModel> @foreach (var exerciseGroup in Model.GroupBy(d => new { Id = d.MuscleId, Name = d.MuscleName })) { <h3>@exerciseGroup.Key.Name</h3> <ul class="exercises-container-source"> @foreach (var exercise in exerciseGroup) { <li data-exercise-id="@exercise.Id"> <span class="exerciseName">@exercise.Name</span> </li> } </ul> } 
+```
 
 Here you go. No more integer to know that last exercise, no anymore weird handling of the "UL". It's very clear so the maintainability of the code is easier. As you can see, we first group every exercise by MuscleId and MuscleName. We need to have both because we want to show the name. As you can see, we also display the name which is part of the key. With Visual Studio 2010 and 2012, your anonymous type will be handled by Microsoft Intellisense and you will see that your Key's property have the Id and the Name properties. After displaying the muscle name, you just need to loop through the collection of exercise and display the exercise name.
 

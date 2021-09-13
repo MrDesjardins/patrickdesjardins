@@ -12,18 +12,28 @@ Lambda Expression can be of two types:
 
 The **Code Delegate** is used a lot with Linq. Almost all extension like Where is a delegate function that is compiled into IL code. It's very fast because it's compiled. On the other hand, some situation when the data is not evaluate against direct memory or require some reflection against what is passed requires Expression Tree Object Lambda.
 
-In the code, you can know if it's a Code Delegate or Expression Tree with the declaration of the parameter. If the method you call use \[csharp\] Func<T,bool> predicate //bool can be something else \[/csharp\] It's because it's a code delegate. In fact, the Func method is a predefined delegate that take one or more parameter with a return value. This can be compiled. Conversely, Expression Tree Object use \[csharp\] Expression<Fun<T,bool>> predicate //bool can be something else \[/csharp\] Instead of compiling into IL, this generate code to let the framework analyse the expression. It lets the developer know the type, the name of the object and the value of it. This is why Linq To Sql requires to use expression instead of compiled because it needs to read the delegate information and translate it into SQL statement.
+In the code, you can know if it's a Code Delegate or Expression Tree with the declaration of the parameter. If the method you call use 
+```csharp
+ Func<T,bool> predicate //bool can be something else 
+``` It's because it's a code delegate. In fact, the Func method is a predefined delegate that take one or more parameter with a return value. This can be compiled. Conversely, Expression Tree Object use 
+```csharp
+ Expression<Fun<T,bool>> predicate //bool can be something else 
+``` Instead of compiling into IL, this generate code to let the framework analyse the expression. It lets the developer know the type, the name of the object and the value of it. This is why Linq To Sql requires to use expression instead of compiled because it needs to read the delegate information and translate it into SQL statement.
 
 ## Real Life Example
 
 I think a simple example could be the one of INotifiedPropertyChanged. This interface give a method that has for parameter a string that must be the name of the property that has changed. When using straight from this implementation, some problem may arise like not entering the name of the property correctly or when refactoring, the tool may not check the string value to change it. To solve this issue, you can use Expression Tree Object to get all methods of the current object and to select one of it.
 
-\[csharp highlight="11"\] protected virtual void OnPropertyChanged(string propertyName) { PropertyChangedEventHandler handler = this.PropertyChanged; if (handler != null) { var e = new PropertyChangedEventArgs(propertyName); handler(this, e); } }
+```csharp
+protected virtual void OnPropertyChanged(string propertyName) { PropertyChangedEventHandler handler = this.PropertyChanged; if (handler != null) { var e = new PropertyChangedEventArgs(propertyName); handler(this, e); } }
 
-protected void OnPropertyChanged<T>(Expression<Func<T>> propertyChanged) { if (propertyChanged != null) { var expression = (MemberExpression)propertyChanged.Body; this.OnPropertyChanged(expression.Member.Name); } } \[/csharp\]
+protected void OnPropertyChanged<T>(Expression<Func<T>> propertyChanged) { if (propertyChanged != null) { var expression = (MemberExpression)propertyChanged.Body; this.OnPropertyChanged(expression.Member.Name); } } 
+```
 
 The line 11 contain the Expression Tree Object that contain the delegate Func. This mean that it doesn't take any parameter and return a value of type .
 
-\[csharp highlight="7"\] private MyObject myObject; public MyObject MyObject { get { return myObject; } set { myObject = value; base.OnPropertyChanged(() => MyObject); // This was before used like this : base.OnPropertyChanged("MyObject"); } } \[/csharp\]
+```csharp
+ private MyObject myObject; public MyObject MyObject { get { return myObject; } set { myObject = value; base.OnPropertyChanged(() => MyObject); // This was before used like this : base.OnPropertyChanged("MyObject"); } } 
+```
 
 Line 7 contains the Lambda method and in the same line, in comment, you can see the original.

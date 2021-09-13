@@ -13,7 +13,11 @@ The 404 page is shown without any more information. To solve this issue, I creat
 
 The difference between the two projects was that the web.config file has different assemblies version in the config file.
 
-\[xml\] <compilation debug="true" targetFramework="4.0"> <assemblies> <add assembly="System.Web.Abstractions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" /> <add assembly="System.Web.Helpers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" /> <add assembly="System.Web.Routing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" /> <add assembly="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" /> <add assembly="System.Web.WebPages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" /> </compilation> \[/xml\]
+
+```xml
+ <compilation debug="true" targetFramework="4.0"> <assemblies> <add assembly="System.Web.Abstractions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" /> <add assembly="System.Web.Helpers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" /> <add assembly="System.Web.Routing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" /> <add assembly="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" /> <add assembly="System.Web.WebPages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" /> </compilation> 
+```
+
 
 As you can see I have in the code above the version 1.0 for **Helpers** and **Routing** and this is problematic because the assembly I have in the project has been converted to the version 2. So two options : migrate everything with MVC4 and use the version 2 or use MVC3 with the version 1.
 

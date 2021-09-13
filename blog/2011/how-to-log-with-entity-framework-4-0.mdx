@@ -7,24 +7,41 @@ categories:
 
 Logging with Entity Framework is not the same as [logging with Linq to Sql](http://patrickdesjardins.com/blog/how-to-log-with-linq-to-sql "How to log with Linq to Sql?"). First, you need to have a .edx file with at least one entity declared on it because to be able to log, a query must be executed. Like the Linq to Sql, to have a log the query needs to be run and for that it needs to be executed. Here is a snippet of code showing how to log with Entity Framework.
 
-\[csharp highlight="1,5"\] NorthwindEntities db = new NorthwindEntities(); var source = db.Customers.Where(c => c.CustomerID.StartsWith("A")); this.gridEF.DataSource = source; this.gridEF.DataBind(); sqlEF.Text = (source as ObjectQuery).ToTraceString(); \[/csharp\]
+```csharp
+NorthwindEntities db = new NorthwindEntities(); var source = db.Customers.Where(c => c.CustomerID.StartsWith("A")); this.gridEF.DataSource = source; this.gridEF.DataBind(); sqlEF.Text = (source as ObjectQuery).ToTraceString(); 
+```
 
 The first line contain the Entity Framework ObjectContext that need to be created first. This is done by adding with Visual Studio a new Item of ADO.NET Entity Data Model. To get the log file, after the execution a call to ToTraceString() is required. This require a cast to ObjectQuery to the Query. The reason is that the Where clause return a IQueryable. The ObjectQuery inherit the IQueryable and also a lot other interface :
 
-\[csharp\] public class ObjectQuery<T> : ObjectQuery, IOrderedQueryable<T>, IQueryable<T>, IEnumerable<T>, IOrderedQueryable, IQueryable, IEnumerable, IListSource \[/csharp\]
+
+```csharp
+ public class ObjectQuery<T> : ObjectQuery, IOrderedQueryable<T>, IQueryable<T>, IEnumerable<T>, IOrderedQueryable, IQueryable, IEnumerable, IListSource 
+```
 
 The ToTraceString() come from the inherited class ObjectQuery.
 
 The output of ToTraceString() is the SQL statement executed. Here is an example:
 
-\[sql\] SELECT \[Extent1\].\[CustomerID\] AS \[CustomerID\], \[Extent1\].\[CompanyName\] AS \[CompanyName\] FROM \[dbo\].\[Customers\] AS \[Extent1\] WHERE \[Extent1\].\[CustomerID\] LIKE N'A%' \[/sql\]
+
+```sql
+ SELECT [Extent1].[CustomerID] AS [CustomerID], [Extent1].[CompanyName] AS [CompanyName] FROM [dbo].[Customers] AS [Extent1] WHERE [Extent1].[CustomerID] LIKE N'A%' 
+```
+
 
 This is interesting if we compare the generated Sql from the Entity Framework and from the [Linq to Sql](http://patrickdesjardins.com/blog/how-to-log-with-linq-to-sql "How to log with Linq to Sql?"). The  main difference is that Linq to SQL will use parameters substitution instead of directly add the value to the query. You can see it in the Where clause of the Sql query. The Linq to Sql code looks like:
 
-\[sql\]WHERE \[t0\].\[CustomerID\] LIKE @p0\[/sql\]
+
+```sql
+WHERE [t0].[CustomerID] LIKE @p0
+```
+
 
 And the Entity Framework looks like:
 
-\[sql\]WHERE \[Extent1\].\[CustomerID\] LIKE N'A%'\[/sql\]
+
+```sql
+WHERE [Extent1].[CustomerID] LIKE N'A%'
+```
+
 
 To conclude, if you want to log Entity Framework generated Sql Query do not forget to add a condition statement when you move into your production environment.

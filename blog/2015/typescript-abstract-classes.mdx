@@ -10,7 +10,9 @@ The current version of TypeScript 1.4 does't not have the notion of abstraction.
 
 Before going with the detail, why would we want abstract with TypeScript? Imagine that you want to force some logic to be called every time a concrete implementation is called. The way to do it is to call the method from the base class that has the the implementation of the method, this one call the abstract method of the child class. Here is C# code for this pattern.
 
-\[csharp\] class Program { static void Main(string\[\] args) { var rendering = new ChildClass(); rendering.Render(); Console.ReadLine(); } }
+
+```csharp
+ class Program { static void Main(string[] args) { var rendering = new ChildClass(); rendering.Render(); Console.ReadLine(); } }
 
 public abstract class BaseClass { protected abstract void RenderChildImplementation();
 
@@ -18,7 +20,8 @@ public void Render() { Console.WriteLine("Base Start"); RenderChildImplementatio
 
 public class ChildClass:BaseClass { protected override void RenderChildImplementation() { Console.WriteLine("- Child -"); }
 
-} \[/csharp\]
+} 
+```
 
 The output is what expected, the base class control the final output by having the child implementation between its tags.
 

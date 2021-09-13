@@ -33,7 +33,7 @@ batchNotifications(next,
 I wrote a simple implementation for the batch notification that sets a variable to “on” before executing the first element of the batch and turn it off at the last element.
 
 export function batchNotifications<S>(next: Dispatch<S>,
-	...batchOfActions: Action\[\]): void {
+	...batchOfActions: Action[]): void {
 	next(SharedActions.actionUiBatchOn());
 	try {
 		batchOfActions.forEach((action: Action) => next(action));

@@ -12,7 +12,9 @@ Visual Studio Ultimate edition has an architecture diagram that can be validated
 
 The problem is that people tend not do validate the architecture for several reasons. The simplest one is that maybe not a lot of your developers has the Ultimate edition. Nevertheless, the good news is that Visual Studio Online lets you do what you can do locally with MsBuild. MsBuild with the argument /p:ValidateArchitecture=true will validate any architecture diagram you have.
 
-\[code\] msbuild /p:ValidateArchitecture=true \[/code\]
+``` 
+ msbuild /p:ValidateArchitecture=true 
+``` 
 
 This can also be setup when building on the cloud. Open Visual Studio, go in the **Builds** tab from the **Team Explorer**. Edit any of your **build definition**, select **Process** and go under **Build** and **Advanced**. You can set from there MsBuild's arguments. Use the same argument that you are using locally : /p:ValidateArchitecture=true.
 

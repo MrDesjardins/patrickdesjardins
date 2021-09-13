@@ -9,25 +9,36 @@ Entity Framework provide a method that remove the tracking ability of objects wh
 
 Let's start with a simple example. First the model which contain an ID (in BaseEntity) and a FirstName and LastName.
 
-\[csharp\] public class Customer:BaseEntity { public string FirstName { get; set; } public string LastName { get; set; } } \[/csharp\]
+
+```csharp
+ public class Customer:BaseEntity { public string FirstName { get; set; } public string LastName { get; set; } } 
+```
 
 We will add 5000 rows into the database to be able to get some time information about loading these 5000 customers into the view.
 
-\[sql\] DECLARE @count INT DECLARE @firstname varchar(100) DECLARE @lastname varchar(100)
+
+```sql
+ DECLARE @count INT DECLARE @firstname varchar(100) DECLARE @lastname varchar(100)
 
 SET @count = 0
 
-WHILE (@count < 5000) BEGIN SET @firstname = 'FirstName' + cast(@count as varchar) SET @lastname = 'LastName' + cast(@count as varchar) INSERT INTO \[Autoshop\].\[dbo\].\[Customers\] ( \[FirstName\] ,\[LastName\] ) VALUES ( @firstname , @lastname )
+WHILE (@count < 5000) BEGIN SET @firstname = 'FirstName' + cast(@count as varchar) SET @lastname = 'LastName' + cast(@count as varchar) INSERT INTO [Autoshop].[dbo].[Customers] ( [FirstName] ,[LastName] ) VALUES ( @firstname , @lastname )
 
-SET @count = (@count + 1) END \[/sql\]
+SET @count = (@count + 1) END 
+```
+
 
 Finally, we will time the time it takes to Entity Framework to generate the loading of the object into the view.
 
-\[csharp highlight="4,6"\] public ViewResult Index() { var watch = new Stopwatch(); watch.Start(); var customers = db.Customers.Include(c => c.License).ToList(); watch.Stop(); ViewBag.TimeElapsed = watch.ElapsedMilliseconds; return View(customers); } \[/csharp\]
+```csharp
+public ViewResult Index() { var watch = new Stopwatch(); watch.Start(); var customers = db.Customers.Include(c => c.License).ToList(); watch.Stop(); ViewBag.TimeElapsed = watch.ElapsedMilliseconds; return View(customers); } 
+```
 
 The result from several test give me (on my machine) **237ms**. Now, let's do the same test with AsNoTracking().
 
-\[csharp highlight="5"\] public ViewResult Index() { var watch = new Stopwatch(); watch.Start(); var customers = db.Customers.Include(c => c.License).AsNoTracking().ToList(); watch.Stop(); ViewBag.TimeElapsed = watch.ElapsedMilliseconds; return View(customers); } \[/csharp\]
+```csharp
+public ViewResult Index() { var watch = new Stopwatch(); watch.Start(); var customers = db.Customers.Include(c => c.License).AsNoTracking().ToList(); watch.Stop(); ViewBag.TimeElapsed = watch.ElapsedMilliseconds; return View(customers); } 
+```
 
 Now I have an average on **108ms**. **It's about 2 times faster** with 5000 rows of a simple Entity.
 
@@ -35,14 +46,22 @@ The Entity Framework's keyword **AsNoTracking()** give a big boost of speed if y
 
 What does AsNoTracking() behind the scene is a good question. First, AsNoTracking came from the **DbExtensions.cs** file. It's an extension method (static method) that will call the dbQuery.AsNoTracking() if the dbQuery is defined and if yes will call the AsNoTracking of this one which will simply return a new DbQuery with a parameter of **IInternalQuery** with the speciality of being AsNoTracking. This lead us to some implementation. The one that concern us is the InternalQuery that look like this:
 
-\[csharp\] public virtual IInternalQuery<TElement> AsNoTracking() { return (IInternalQuery<TElement>) new InternalQuery<TElement>(this.\_internalContext, (ObjectQuery) DbHelpers.CreateNoTrackingQuery((ObjectQuery) this.\_objectQuery)); } \[/csharp\]
+
+```csharp
+ public virtual IInternalQuery<TElement> AsNoTracking() { return (IInternalQuery<TElement>) new InternalQuery<TElement>(this.\_internalContext, (ObjectQuery) DbHelpers.CreateNoTrackingQuery((ObjectQuery) this.\_objectQuery)); } 
+```
 
 As you can see, it create a new InternalQuery with the second parameter who use **DbHelpers.CreateNoTrackingQuery(...)**. The second parameter should be ObjectQuery, so what does the DbHelpers.CreateNoTrackingQuery to remove the overhead?
 
-\[csharp highlight="5"\] public static IQueryable CreateNoTrackingQuery(ObjectQuery query) { IQueryable queryable = (IQueryable) query; ObjectQuery objectQuery = (ObjectQuery) queryable.Provider.CreateQuery(queryable.Expression); objectQuery.MergeOption = MergeOption.NoTracking; return (IQueryable) objectQuery; } \[/csharp\]
+```csharp
+public static IQueryable CreateNoTrackingQuery(ObjectQuery query) { IQueryable queryable = (IQueryable) query; ObjectQuery objectQuery = (ObjectQuery) queryable.Provider.CreateQuery(queryable.Expression); objectQuery.MergeOption = MergeOption.NoTracking; return (IQueryable) objectQuery; } 
+```
 
 Well it does the samething that if you has set at the **ObjectContext** property MergeOption to NoTracking. The only advantage is that it doesn't affect every **DbContext** but only the query specified. But in Code First, you no longer have access to MergeOption since you are no longer using the ObjectContext but the DbContext. **DbContext** is a lightweight version of ObjectContext. This is why you should use now the extension AsNoTracking() instead of configuring the ObjectContext (that even if you use DbContext could be accessed).
 
 For the curious, you could access the ObjectContext from the DbContext by casting the dbContext with IObjectContextAdapter.
 
-\[csharp\] ObjectContext objectContext = ((IObjectContextAdapter)dbContext).ObjectContext; \[/csharp\]
+
+```csharp
+ ObjectContext objectContext = ((IObjectContextAdapter)dbContext).ObjectContext; 
+```

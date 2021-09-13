@@ -12,22 +12,27 @@ There are a few options. The easiest one is to only display a subset of the whol
 
 In this article, I'll show how to transform a list built with a single UL and many LI. Clicking the LI, open add another React component inside that increase the height of the row. The full source code is coming from the [Data Access Gateway Chrome's Extension](https://github.com/MrDesjardins/dataaccessgatewaychromeextension). In the following image, you can see that we have many rows of 15px height followed with one that got expanded to 300px. The idea is that the code is smart enough to take the different heigh in its calculation.
 
-[![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/07/Rows.png)](https://patrickdesjardins.com/blog/?attachment_id=5920)
+![](images/Rows.png)
 
 Before explaining, the official library has many examples which are great. However, they are not all written in JSX which can be cumbersome to read. I hope that this article might help some people in understanding how you can do it with JSX as well as with your own React components. To explain my scenario, here how it was before and how we will modify the structure in term of React components hierarchy. The following diagram shows that I am simulating a header of the grid, outside the range of what can be scrolled with the first UL. The second UL, contains a collection of "ConsoleMessageLine" component which is a LI with many DIV. One DIV per column positioned with a FLEX display. When one row is clicked, it toggles the possibility to render an additional component the "ConsoleMessagesLineDetails" or to render undefined which do not display anything.
 
+![](images/VirtualizedDAGConsole.png)
 [![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/07/VirtualizedDAGConsole.png)](https://patrickdesjardins.com/blog/?attachment_id=5922)
 
 The division of the component satisfy my needs and I desired to alter the composition as little as possible. It ended that I only had to add two different components from the [React-Virtualized library](https://github.com/bvaughn/react-virtualized) without having to change the UL>LI>DIV composition.
 
-The first step is to get the library. This is straightforward if you are using NPM. Indeed, I am using TypeScript and the library has a @type package. ```typescript
+The first step is to get the library. This is straightforward if you are using NPM. Indeed, I am using TypeScript and the library has a @type package. 
+
+```
 npm install react-virtualized --save npm install @type/react-virtualized --save-dev 
 ``` 
 
 
 However, with TypeScript 3.0rc, I had an issue with the definition file. It has some conflicting type which required me to indicate to TypeScript to forgo analyzing the definition file. It doesn't remove the strength of having types, but TypeScript won't use it when compiling. In your tsconfig.json file, you shall add and enable "skipLibCheck".
 
-\[code\] "skipLibCheck": true \[/code\]
+``` 
+ "skipLibCheck": true 
+``` 
 
 The next step is to add the AutoSizer and the List component from the library to the existing code. Few important details. First, you must have a "ref" to the list. The reference gives us a pointer to force redraw when we know the user change the height of an existing component. We will see the code later. Second, we must provide a function that will return the row height. The property "rowHeight" is a must in the situation where the row can change depending of some characteristic of this one. In my case, the row will be either 15px or 300px depending if this one is collapsed or expanded.
 
@@ -58,21 +63,21 @@ public static getDerivedStateFromProps( props: ConsoleMessagesProps, state: Cons
 The next step was to create two functions. One for the dynamic height determination of each row and one to the actual render function of a single line that will use the data we just stored in the component's state. The dynamic height is a single line function, that use on its turn the list as well.
 
 ```typescript
-private calculateRowHeight(params: Index): number { return this.openMessages\[this.state.filteredData\[params.index\].uuid\] === undefined ? 15 : 300; } 
+private calculateRowHeight(params: Index): number { return this.openMessages[this.state.filteredData[params.index].uuid] === undefined ? 15 : 300; } 
 ``` 
 
 
 As you can see, it goes into the filtered list, it uses the parameter that has an index and determines whether the unique identifier of the object is in a map that we populate when the user clicks the row. I have a uuid field, but it could be anything that is proper to your logic and code. For the curious about the "openMessages" map, it is a private member of the component that adds and remove element depending on the toggle of each row. Small but important detail, because we are modifying the height of an element of the virtualization, we must expliclity and manually invoke a recalculus of the rows. This is possible by calling "recomputeRowHeights" from the list. The reference to the list is handy because we can invoked in the function that toggle the height.
 
 ```typescript
-private lineOnClick(msg: MessageClient, isOpen: boolean): void { const unique = msg.uuid; if (isOpen) { this.openMessages\[unique\] = unique; } else { delete this.openMessages\[unique\]; } if (this.list !== null) { this.list.recomputeRowHeights(); } } 
+private lineOnClick(msg: MessageClient, isOpen: boolean): void { const unique = msg.uuid; if (isOpen) { this.openMessages[unique] = unique; } else { delete this.openMessages[unique]; } if (this.list !== null) { this.list.recomputeRowHeights(); } } 
 ``` 
 
 
 The last crucial piece is the render of the element. Similarly to the function to determine the height of the row, the parameter gives the index of the element to render.
 
 ```typescript
-private renderRow(props: ListRowProps): React.ReactNode { const index = props.index; const m = this.state.filteredData\[index\]; return ( <ConsoleMessagesLine key={m.uuid} style={props.style} message={m} listMessages={this.props.listMessages} demoModeEnabled={this.props.demoModeEnabled} onClick={(msg, o) => this.lineOnClick(msg, o)} isOpen={this.openMessages\[m.uuid\] !== undefined} charTrimmedFromUrl={this.state.consoleMessageOptions.charTrimmedFromUrl} /> ); } 
+private renderRow(props: ListRowProps): React.ReactNode { const index = props.index; const m = this.state.filteredData[index]; return ( <ConsoleMessagesLine key={m.uuid} style={props.style} message={m} listMessages={this.props.listMessages} demoModeEnabled={this.props.demoModeEnabled} onClick={(msg, o) => this.lineOnClick(msg, o)} isOpen={this.openMessages[m.uuid] !== undefined} charTrimmedFromUrl={this.state.consoleMessageOptions.charTrimmedFromUrl} /> ); } 
 ``` 
 
 

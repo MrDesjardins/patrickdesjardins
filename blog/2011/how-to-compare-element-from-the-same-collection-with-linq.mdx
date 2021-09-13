@@ -10,10 +10,16 @@ Lets imagine that you have a collection with a class containing Images. All imag
 
 This can be done with Linq to Object pretty easily by using 2 from statement.
 
-\[csharp\] var hasDouble = (from s1 in this.Images from s2 in this.Images where s1.Key != s2.Key && s1.Caption == s2.Caption select new { Image1 = s1, Image2 = s2 }).Any(); \[/csharp\]
+
+```csharp
+ var hasDouble = (from s1 in this.Images from s2 in this.Images where s1.Key != s2.Key && s1.Caption == s2.Caption select new { Image1 = s1, Image2 = s2 }).Any(); 
+```
 
 This will loop through all the images and will compare the caption of all shape but not compare node with itself. I have created an anonymous object because in fact, I may want to get those 2 elements that have the same caption. In that case I just need to call the same code and remove the .Any().
 
-This can be translated to Lambda expression. \[csharp\] (this.Shapes.SelectMany(s1 => this.Images, (s1, s2) => new{s1, s2}) .Where(tt => tt.s1.Key != tt.s2.Key && tt.s1.Caption == tt.s2.Caption) .Select(tt => new { Image1 = tt.s1, Image2 = tt.s2} ) \[/csharp\]
+This can be translated to Lambda expression. 
+```csharp
+ (this.Shapes.SelectMany(s1 => this.Images, (s1, s2) => new{s1, s2}) .Where(tt => tt.s1.Key != tt.s2.Key && tt.s1.Caption == tt.s2.Caption) .Select(tt => new { Image1 = tt.s1, Image2 = tt.s2} ) 
+```
 
 But for this kind of task, Lambda is more confusing from my point of view.

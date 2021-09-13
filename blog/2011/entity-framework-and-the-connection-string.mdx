@@ -10,13 +10,19 @@ A connection string is a string with key value pair in it that indicate where to
 
 Here is an example of connection string that connect to a file database named "qwe".
 
-\[xml highlight="6,9"\] <add name="AdventureWorks\_DataEntities" connectionString="metadata=res://\*/MyEFModel.csdl|res://\*/MyEFModel.ssdl|res://\*/MyEFModel.msl; provider=System.Data.SqlClient; provider connection string=&quot; Data Source=.\\SQLEXPRESS; AttachDbFilename=|DataDirectory|\\qwe.mdf; Integrated Security=True; Connect Timeout=30; User Instance=True; MultipleActiveResultSets=True &quot;" providerName="System.Data.EntityClient" />
+```xml
+<add name="AdventureWorks\_DataEntities" connectionString="metadata=res://\*/MyEFModel.csdl|res://\*/MyEFModel.ssdl|res://\*/MyEFModel.msl; provider=System.Data.SqlClient; provider connection string=&quot; Data Source=.\\SQLEXPRESS; AttachDbFilename=|DataDirectory|\\qwe.mdf; Integrated Security=True; Connect Timeout=30; User Instance=True; MultipleActiveResultSets=True &quot;" providerName="System.Data.EntityClient" />
 
-\[/xml\]
+
+```
+
 
 Here is an example of connection string for entity framework 4 to a Sql Server:
 
-\[xml highlight="5"\] <add name="NorthwindEntities" connectionString="metadata=res://\*/NorthWindEntityDataModel.csdl|res://\*/NorthWindEntityDataModel.ssdl|res://\*/NorthWindEntityDataModel.msl; provider=System.Data.SqlClient; provider connection string=&quot; Data Source=.\\SQLEXPRESS; Initial Catalog=Northwind; Integrated Security=True; MultipleActiveResultSets=True&quot;" providerName="System.Data.EntityClient" /> \[/xml\]
+```xml
+<add name="NorthwindEntities" connectionString="metadata=res://\*/NorthWindEntityDataModel.csdl|res://\*/NorthWindEntityDataModel.ssdl|res://\*/NorthWindEntityDataModel.msl; provider=System.Data.SqlClient; provider connection string=&quot; Data Source=.\\SQLEXPRESS; Initial Catalog=Northwind; Integrated Security=True; MultipleActiveResultSets=True&quot;" providerName="System.Data.EntityClient" /> 
+```
+
 
 You can see one major difference that is the **AttachDbFilename** for one when the other has a **Initial Catalog**. Also, the file based database lets you to use the **User Instance** when the SQL server won't. But it's not a big deal because User Install just make the database use the current user as the runner of the database instance instead of the "NT AUTHORITY\\NETWORK SERVICE. Also you can see the use of |DataDirectory| keyword in the path of the database file. This keyword is read by the System.Data.Common.DbConnectionOptions and will translate this string with AppDomain.CurrentDomain.BaseDirectory. The base directory is the assembly directory.
 
@@ -24,10 +30,16 @@ You can see one major difference that is the **AttachDbFilename** for one when t
 
 Entity Framework generates the Object Context with multiple constructor. One of the constructor takes the name of the connection string where it should read it. This is the case of the first line of the code below. This name is an entry in the connectionString element inside the configuration element of the app.config (or web.config for web application).
 
-\[csharp\] public AdventureWorks\_DataEntities() : base("name=AdventureWorks\_DataEntities", "AdventureWorks\_DataEntities") public AdventureWorks\_DataEntities(string connectionString) : base(connectionString, "AdventureWorks\_DataEntities") public AdventureWorks\_DataEntities(EntityConnection connection) : base(connection, "AdventureWorks\_DataEntities") \[/csharp\]
+
+```csharp
+ public AdventureWorks\_DataEntities() : base("name=AdventureWorks\_DataEntities", "AdventureWorks\_DataEntities") public AdventureWorks\_DataEntities(string connectionString) : base(connectionString, "AdventureWorks\_DataEntities") public AdventureWorks\_DataEntities(EntityConnection connection) : base(connection, "AdventureWorks\_DataEntities") 
+```
 
 The second constructor let you put in a string format directly the connection string. You could also get the connection string from the .config file and to load it with this second constructor.
 
-\[csharp\] string connectionString = ConfigurationManager.ConnectionStrings\["qwe"\]; \[/csharp\]
+
+```csharp
+ string connectionString = ConfigurationManager.ConnectionStrings["qwe"]; 
+```
 
 The third constructor let you use an EntityConnection object. This object contain not only the traditional connection string but also the conceptual model data (CSDL, MSL, SSDL files). This let you create dynamically connection string with object. To use EntityConnection class, the help of EntityConnectionStringBuilder and SqlConnectionStringBuilder can be wise. You can get a MSDN Tutorial about [creating EntityConnection at Microsoft](http://msdn.microsoft.com/en-us/library/bb738533.aspx "MSDN Tutorial for EntityConnection construction").

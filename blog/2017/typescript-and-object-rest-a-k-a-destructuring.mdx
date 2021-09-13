@@ -53,10 +53,10 @@ const {id, email, ...allRemainingFields} = user;
 ### Copy array values into variable
 
 This scenario is handy if you accept an array for parameter and needs to extract values by position. For example, you expect to receive an array of 3 elements and that you want to store these 3 elements in a variable. ```typescript
-const myArray = \["patrick", "desjardins", true\]; const \[firstName, lastName, hasPaid\] = myArray; 
+const myArray = ["patrick", "desjardins", true]; const [firstName, lastName, hasPaid] = myArray; 
 ``` 
  You probably ask yourself about what if the array doesn't contain at least 3 items that won't work! Well, you can also use default value. Here is an example where the website was not passed in the array. ```typescript
-const myArray = \["patrick", "desjardins", true\]; const \[firstName, lastName, hasPaid, website="none"\] = myArray; 
+const myArray = ["patrick", "desjardins", true]; const [firstName, lastName, hasPaid, website="none"] = myArray; 
 ``` 
 
 
@@ -70,15 +70,15 @@ tempo = var1; var1 = var2; var2 = tempo;
 
 
 Now, you can do it in a single line without temporary variable. ```typescript
-let var1 = 100; let var2 = 300; \[var1, var2\] = \[var2, var1\]; 
+let var1 = 100; let var2 = 300; [var1, var2] = [var2, var1]; 
 ``` 
 
 
 ### Take the remaining of the values of an array into a new array
 
 This is similar to what we did with object's fields, but this time with an array. We can set some array values into variables and the remaining into a new array. ```typescript
-const myArray = \["patrick", "desjardins", true\]; const \[firstName, ...remaining\]; 
+const myArray = ["patrick", "desjardins", true]; const [firstName, ...remaining]; 
 ``` 
- In this example remaining is : \["desjardins", true\]
+ In this example remaining is : ["desjardins", true]
 
 We saw a lot of different scenario where destructuring could be interesting by avoiding several lines of code for simple object or array manipulation. In an upcoming article we will see about the second operator called spread and how this one can simplify even more your JavaScript/TypeScript code.

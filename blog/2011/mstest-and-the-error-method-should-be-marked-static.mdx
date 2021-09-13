@@ -11,14 +11,29 @@ With NUnit, you were using _TestFixtureSetUp_ as attribute to a class' method to
 
 So, if you are used to write :
 
-\[csharp highlight="2"\] \[TestFixtureSetUp\] public void Init() { //Some code executed once } \[/csharp\]
+```csharp
+[TestFixtureSetUp] 
+public void Init() { 
+  //Some code executed once 
+} 
+```
 
 You cannot simply use :
 
-\[csharp highlight="2"\] \[ClassInitialize\] public void Init() { //Some code executed once } \[/csharp\]
+```csharp
+[ClassInitialize] 
+public void Init() { 
+  //Some code executed once 
+} 
+```
 
 In fact, the Microsoft Unit Testing framework require to have this method public with a parameter of _TestContext_.
 
-\[csharp highlight="2"\] \[ClassInitialize\] public static void Init(TestContext ctx) { //Some code executed once } \[/csharp\]
+```csharp
+[ClassInitialize] 
+public static void Init(TestContext ctx) { 
+  //Some code executed once 
+} 
+```
 
 Once this is set as it should, with the statis method and the TestContext attribute, the error "Method should be marked static" will be removed and you will be all fine.

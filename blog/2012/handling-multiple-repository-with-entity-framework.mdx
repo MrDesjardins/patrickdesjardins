@@ -9,7 +9,9 @@ If you are using 1 dbcontext per repository, you may end by having problem with 
 
 The best way to solve this issue is to share the dbcontext between all your repositories. This can be easily done if you are using a repository factory (Abstract Factory pattern). When you create your repository factory you should create the database context and set it to all repository when they are instantiated.
 
-\[csharp\] public class RepositoryFactory : IRepositoryFactory { private IClassA a; private IClassB b; private IClassC c;
+
+```csharp
+ public class RepositoryFactory : IRepositoryFactory { private IClassA a; private IClassB b; private IClassC c;
 
 private readonly DatabaseContext dbContext;
 
@@ -19,4 +21,5 @@ public IClassA RepoA { get { return a ?? (a = new RepoA(this.dbContext)); } }
 
 public IClassB RepoB { get { return b ?? (b = new RepoB(this.dbContext)); } }
 
-public IClassC RepoC { get { return c ?? (c = new RepoC(this.dbContext)); } } } \[/csharp\]
+public IClassC RepoC { get { return c ?? (c = new RepoC(this.dbContext)); } } } 
+```

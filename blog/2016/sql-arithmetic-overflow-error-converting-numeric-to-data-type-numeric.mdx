@@ -9,26 +9,42 @@ When you are using straight ADO.Net with SQL you may come when using an operatio
 
 Here is two examples that show that even if you **convert** or **cast** it won't be enough.
 
-\[sql\] declare @dob1 as decimal(16,4) set @dob1 = cast(554656545465486786844864613 as decimal(16,4)) select @dob1
 
-declare @dob2 as decimal(16,4) set @dob2 = CONVERT(decimal(16,4),5455531234268.68423224224244864613 ) select @dob2 \[/sql\]
+```sql
+ declare @dob1 as decimal(16,4) set @dob1 = cast(554656545465486786844864613 as decimal(16,4)) select @dob1
+
+declare @dob2 as decimal(16,4) set @dob2 = CONVERT(decimal(16,4),5455531234268.68423224224244864613 ) select @dob2 
+```
+
 
 In my case, the problem was that I was performing an update in a field by executing a multiplication. field = field \* 1/2. The problem was that field was already, in some case, at 0 and sometime above the maximum which is 12 (16-4) digits. Even if the following code work fine.
 
-\[sql\] declare @dob3 as int set @dob3 = cast(0\*1/2 as int) select @dob3 \[/sql\]
+
+```sql
+ declare @dob3 as int set @dob3 = cast(0\*1/2 as int) select @dob3 
+```
+
 
 This one was not:
 
-\[sql\] declare @fromValue as int declare @toValue as int
+
+```sql
+ declare @fromValue as int declare @toValue as int
 
 set @fromValue = 1 set @toValue = 2
 
-SELECT cast(Quantity \* @fromValue/@toValue as int) as newQuantity FROM \[Trading\].\[Stock\] \[/sql\]
+SELECT cast(Quantity \* @fromValue/@toValue as int) as newQuantity FROM [Trading].[Stock] 
+```
+
 
 However, adding a **where** clause eliminates edge cases to be proceeded. The trick is to handle result of 0 and result above the limit.
 
-\[sql\] declare @fromValue as int declare @toValue as int
+
+```sql
+ declare @fromValue as int declare @toValue as int
 
 set @fromValue = 1 set @toValue = 2
 
-SELECT cast(Quantity \* @fromValue/@toValue as int) as newQuantity FROM \[Trading\].\[Stock\] WHERE Quantity > 0 AND Quantity < 999999999999 \[/sql\]
+SELECT cast(Quantity \* @fromValue/@toValue as int) as newQuantity FROM [Trading].[Stock] WHERE Quantity > 0 AND Quantity < 999999999999 
+```
+

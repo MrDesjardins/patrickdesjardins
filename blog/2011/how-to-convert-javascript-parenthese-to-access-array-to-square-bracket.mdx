@@ -7,14 +7,16 @@ categories:
 
 It can happen in old project that array objet are accessed with parentheses instead of square bracket.
 
-For example, MyArray\[0\] is in fact the first element of an array in Javascript. But, IE let you use MyArray(0). This is not a good practice and other browsers doesn't accept this syntax.
+For example, MyArray[0] is in fact the first element of an array in Javascript. But, IE let you use MyArray(0). This is not a good practice and other browsers doesn't accept this syntax.
 
 To convert easily, you can use a Regex expression. In my case, the array name was InTran.
 
-\[code\] InTran\\({(.+)}\\) //Find
+``` 
+ InTran\\({(.+)}\\) //Find
 
-InTran\\\[\\1\\\] //Replace
+InTran\\[\\1\\] //Replace
 
-\[/code\]
+
+``` 
 
 The curly bracket is required by Visual Studio to have a backreference but is not required by all Regex tool.

@@ -16,11 +16,11 @@ Concerning my conclusions, here they are; they are both very similar. TypeScript
 
 Flow exists since 18 November 2014. TypeScript exists in public since 1 October 2012, but its inception started 2 years before as an internal product (2010). This information doesn’t give us much other than TypeScript went through more active days of finding bugs, and that Flow may have leverage on the pros and cons of the former. The amount of time between the two is still relatively small, which makes both of them still young.
 
-Flow started at Facebook, TypeScript started at Microsoft. The motivation of Facebook was to create a system that is “sound”\[1\] while TypeScript is not totally as sound in respect to how JavaScript behaves\[2\]. Here is a quote from Microsoft TypeScript documentation:
+Flow started at Facebook, TypeScript started at Microsoft. The motivation of Facebook was to create a system that is “sound”[1] while TypeScript is not totally as sound in respect to how JavaScript behaves[2]. Here is a quote from Microsoft TypeScript documentation:
 
 > In practice, this sort of error is rare, and allowing this enables many common JavaScript patterns
 
-Microsoft goals and non-goals \[17\] are well defined. We can read:
+Microsoft goals and non-goals [17] are well defined. We can read:
 
 > Non-goal: Apply a sound or "provably correct" type system. Instead, strike a balance between correctness and productivity.
 
@@ -32,9 +32,9 @@ The idea of which one is better is subjective and I won’t go a lot deeper. As 
 
 TypeScript, being the precursor of a superset of JavaScript, brought the notion of the definition file. Definition file allows having typed libraries written in JavaScript. Flow has the same concept, but in a different format, which makes them incompatible, and they never did a conversion to leverage the TypeScript collection. TypeScript started using 2 different ways to store the definition file and ended up storing them with NPM instead of relying on a custom tool. Facebook decided to go with a custom tool.
 
-TypeScript has 3,429 \[3\] definition files and this doesn’t count a definition file bundled directly in an official JavaScript package. Flow has 302 \[4\]. Today, getting a definition file for JQuery-UI (250k downloads per month) or Redux-Thunk (1.7 million downloads per month) is not a problem with TypeScript, but it is unavailable with Flow. This is not a big problem if you are using libraries that Flow supports and is not a big deal if you do not need to have types for third parties. Flow could be used to check your own code without having Intellisense for code outside your project. Nevertheless, it is worth mentioning that TypeScript offers more in that aspect and may be more appealing for someone who enjoys having code completion and IntelliSense when coding for custom code as well as code written by someone else.
+TypeScript has 3,429 [3] definition files and this doesn’t count a definition file bundled directly in an official JavaScript package. Flow has 302 [4]. Today, getting a definition file for JQuery-UI (250k downloads per month) or Redux-Thunk (1.7 million downloads per month) is not a problem with TypeScript, but it is unavailable with Flow. This is not a big problem if you are using libraries that Flow supports and is not a big deal if you do not need to have types for third parties. Flow could be used to check your own code without having Intellisense for code outside your project. Nevertheless, it is worth mentioning that TypeScript offers more in that aspect and may be more appealing for someone who enjoys having code completion and IntelliSense when coding for custom code as well as code written by someone else.
 
-A small detail about definition files is that Microsoft offers a “pull request mechanism” \[5\] for a missing definition file as well as accepts a pull request on GitHub. Flow is also accepting a pull request from contributors outside Facebook, but I haven’t found a mechanism to request a library file to Facebook.
+A small detail about definition files is that Microsoft offers a “pull request mechanism” [5] for a missing definition file as well as accepts a pull request on GitHub. Flow is also accepting a pull request from contributors outside Facebook, but I haven’t found a mechanism to request a library file to Facebook.
 
 At the end, if you are choosing TypeScript you will have all your definition files under the common NPM directory node\_module. With Flow, it will be under a folder named flowtyped. It is not a big difference and on balance doesn’t change anything. If I can bring up my personal point of view, I would say that I like that Microsoft went in the existing and wellknown tool NPM and went away from their initial design. Even if it took them three iterations to achieve that goal, it’s now in a place that JavaScript developers know, using a tool that is known and doesn’t depend on a homemade solution.
 
@@ -61,7 +61,7 @@ That’s great, but what can we get from these numbers? I am not an expert on op
 
 ## What about the future?
 
-The future is hard to know. Microsoft is investing in TypeScript, Facebook is investing in Flow. What I like about TypeScript is that they have an open roadmap \[6\] available to consult. You can see what they have done and what they are planning to work on. Microsoft also has milestones \[7\] available in their GitHub account. Flow’s roadmap was not found at the time of this investigation, and no official delivery milestones \[8\] are available on GitHub. Microsoft has been developing languages since the beginning of the company with a good track record of having long support (10 years after active development). Even Silverlight got a life support by Microsoft up to 2021 \[18\]!
+The future is hard to know. Microsoft is investing in TypeScript, Facebook is investing in Flow. What I like about TypeScript is that they have an open roadmap [6] available to consult. You can see what they have done and what they are planning to work on. Microsoft also has milestones [7] available in their GitHub account. Flow’s roadmap was not found at the time of this investigation, and no official delivery milestones [8] are available on GitHub. Microsoft has been developing languages since the beginning of the company with a good track record of having long support (10 years after active development). Even Silverlight got a life support by Microsoft up to 2021 [18]!
 
 TypeScript is used by huge projects, and not only from Microsoft. Here is a quick list of companies using TypeScript.
 
@@ -73,7 +73,7 @@ TypeScript is used by huge projects, and not only from Microsoft. Here is a quic
 - Ericsson
 - UpWork (a.k.a Elance)
 - Bloomberg
-- Lyft \[19\]
+- Lyft [19]
 
 And it's used by many projects too.
 
@@ -108,15 +108,15 @@ For the moment, concerning the future of TypeScript or Flow, it seems to me that
 
 ## Developers
 
-In the same way as about language, here is a slight note about who is leading TypeScript. It’s managed by Anders Hejlsberg\[9\], creator of Turbo Pascal, Delphi, C# and now TypeScript. He graduated in the 80s, received many awards in his career and he is the person who committed the most on Github.
+In the same way as about language, here is a slight note about who is leading TypeScript. It’s managed by Anders Hejlsberg[9], creator of Turbo Pascal, Delphi, C# and now TypeScript. He graduated in the 80s, received many awards in his career and he is the person who committed the most on Github.
 
-Flow commits are led by Marshall Roch \[11\] by twice the next biggest contributor, who was the second developer on Flow. I assume that he is in charge of Flow (I might be wrong). He has been for seven years at Facebook and graduated in 2009 from Carnegie Mellon University.
+Flow commits are led by Marshall Roch [11] by twice the next biggest contributor, who was the second developer on Flow. I assume that he is in charge of Flow (I might be wrong). He has been for seven years at Facebook and graduated in 2009 from Carnegie Mellon University.
 
 While this might not be a game changer, it’s also a point for TypeScript. The experience behind the lead of this project is a positive for TypeScript. Flow has the advantage to have fresh eyes on new technologies, hence still not bad. At the end, both projects are not driven by a single man, but by a group of people, and are simply influenced by the spirit that leaders project.
 
 ## Integrations
 
-Visual Studio Code is the prefered language for TypeScript, but they offer a variety of plugin for many IDE. TypeScript and Flow has the same kind of architecture that let external program to communicate with the "local server" to get analyzed for type check. Here is the list of supported IDE for TypeScript \[11\]:
+Visual Studio Code is the prefered language for TypeScript, but they offer a variety of plugin for many IDE. TypeScript and Flow has the same kind of architecture that let external program to communicate with the "local server" to get analyzed for type check. Here is the list of supported IDE for TypeScript [11]:
 
 - alm.tools
 - Atom
@@ -132,7 +132,7 @@ Visual Studio Code is the prefered language for TypeScript, but they offer a var
 - Visual Studio Code (VSCode)
 - WebStorm
 
-Here is the list of supported IDE for Flow \[12\]:
+Here is the list of supported IDE for Flow [12]:
 
 - Visual Studio Code (VSCode)
 - Atom
@@ -142,7 +142,7 @@ Here is the list of supported IDE for Flow \[12\]:
 - Emacs
 - WebStorm
 
-Beyond the support of IDE, there is the experience of the type checker within the IDE. During this comparison, I used the editor that I use to work on a variety of languages, which is Visual Studio Code (VsCode). The integration with TypeScript is seamless. The integration with Flow requires an extension. This is how VSCode works (1 plugin per language) and it installed flawlessly as well. When starting to convert, I added a comment at the top of each JavaScript file to have Flow catching up on verification. I noticed that when fixing issues, it could take from two to five seconds to have the error getting away from the editor. Flow confirms \[13\] that VsCode lacks the on-the-fly linting and validates only on save, which is also a limitation on the Nuclide \[14\] editor that Facebook built.
+Beyond the support of IDE, there is the experience of the type checker within the IDE. During this comparison, I used the editor that I use to work on a variety of languages, which is Visual Studio Code (VsCode). The integration with TypeScript is seamless. The integration with Flow requires an extension. This is how VSCode works (1 plugin per language) and it installed flawlessly as well. When starting to convert, I added a comment at the top of each JavaScript file to have Flow catching up on verification. I noticed that when fixing issues, it could take from two to five seconds to have the error getting away from the editor. Flow confirms [13] that VsCode lacks the on-the-fly linting and validates only on save, which is also a limitation on the Nuclide [14] editor that Facebook built.
 
 Both languages have a suggestion when importing custom type which simplifies the writing of the import. However, Visual Studio Code allows with TypeScript to write the code and detect the missing type and auto-suggests which import to bring at the top of the file for you. This is a neat feature that wasn’t triggering while writing with Flow. This might be a limitation of the VsCode plugin.
 
@@ -178,9 +178,9 @@ I migrated one of my small projects, which is a React project. Here is the TypeS
 "allowSyntheticDefaultImports": true,
 "jsx": "react"
 },
-"include": \[
+"include": [
 "app/scripts/\*\*/\*"
-\]
+]
 }
 
 // NPM packages required
@@ -190,47 +190,49 @@ I migrated one of my small projects, which is a React project. Here is the TypeS
 
 Flow and BabelJs:
 
-\[code\]\[/code\]
+``` 
+
+``` 
 //.flowconfig
-\[ignore\]
+[ignore]
 .\*/node\_moduless/\*.\*
 .\*/deploy/\*.\*
 .\*/lib/\*.\*
 
-\[include\]
+[include]
 .\*/app/scripts
 
-\[libs\]
+[libs]
 
-\[lints\]
+[lints]
 
-\[options\]
+[options]
 esproposal.decorators=ignore
 esproposal.class\_static\_fields=ignore
 esproposal.class\_instance\_fields=ignore
 
 //.babelrc
 {
-"presets": \[
+"presets": [
 "env",
 "stage-0",
 "react",
 "es2015",
 "flow"
-\],
-"plugins": \[
-\[
+],
+"plugins": [
+[
 "flow-runtime",
 {
 "assert": true,
 "annotate": true
 }
-\],
+],
 "transform-flow-strip-types",
 "transform-es2015-arrow-functions",
 "Transform-decorators-legacy",
 "transform-class-properties"
-\]
+]
 }
 
 // NPM packages required
@@ -251,7 +253,7 @@ esproposal.class\_instance\_fields=ignore
 
 It has more boilerplate. TypeScript offers stage 2 and up feature from EcmaScript because their philosophy is to have all released feature backward compatible (which is true since version 1.0). Earlier stage EcmaScript features are more prone to die or change signatures. With Babel, you can decide which stage you want to subscribe. This freedom has a cost. TypeScript brings simplicity at the cost of a being a less cutting edge. But what does it really mean at the end? If we look at all EcmaScript 2016 features, Babel is supporting 40% of them, TypeScript 36%. At the end, it's only 2 features different.
 
-It's also interesting to note that BabelJs may support features that Flow doesn't. This doesn't occur with TypeScript since they are in symbios. For example, Flow doesn't support decorator \[16\], but BabelJs and TypeScript does.
+It's also interesting to note that BabelJs may support features that Flow doesn't. This doesn't occur with TypeScript since they are in symbios. For example, Flow doesn't support decorator [16], but BabelJs and TypeScript does.
 
 ### Conclusion
 
@@ -267,22 +269,22 @@ In this article, I illustrated the main difference of TypeScript being more than
 
 ## References
 
-\[1\] https://discuss.reactjs.org/t/if-typescript-is-so-great-how-come-all-notable-reactjs-projects-use-babel/4887  
-\[2\] https://www.typescriptlang.org/docs/handbook/type-compatibility.html  
-\[3\] https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types  
-\[4\] https://github.com/flowtype/flow-typed/tree/master/definitions/npm  
-\[5\] https://github.com/DefinitelyTyped/DefinitelyTyped/labels/Definition%3ARequest  
-\[6\] https://github.com/Microsoft/TypeScript/wiki/Roadmap  
-\[7\] https://github.com/Microsoft/TypeScript/milestones  
-\[8\] https://github.com/facebook/flow/milestones  
-\[9\] https://en.wikipedia.org/wiki/Anders\_Hejlsberg  
-\[10\] https://www.linkedin.com/in/mroch/  
-\[11\] https://github.com/Microsoft/TypeScript/wiki/TypeScript-Editor-Support  
-\[12\] https://flow.org/en/docs/editors/  
-\[13\] https://flow.org/en/docs/editors/vscode/  
-\[14\] https://nuclid1e.io/  
-\[15\] http://kangax.github.io/compat-table/es2016plus/  
-\[16\] https://github.com/facebook/flow/issues/3405  
-\[17\] https://github.com/Microsoft/TypeScript/wiki/TypeScript-Design-Goals  
-\[18\] https://support.microsoft.com/en-us/lifecycle/search?alpha=silver  
-\[19\] https://eng.lyft.com/typescript-at-lyft-64f0702346ea
+[1] https://discuss.reactjs.org/t/if-typescript-is-so-great-how-come-all-notable-reactjs-projects-use-babel/4887  
+[2] https://www.typescriptlang.org/docs/handbook/type-compatibility.html  
+[3] https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types  
+[4] https://github.com/flowtype/flow-typed/tree/master/definitions/npm  
+[5] https://github.com/DefinitelyTyped/DefinitelyTyped/labels/Definition%3ARequest  
+[6] https://github.com/Microsoft/TypeScript/wiki/Roadmap  
+[7] https://github.com/Microsoft/TypeScript/milestones  
+[8] https://github.com/facebook/flow/milestones  
+[9] https://en.wikipedia.org/wiki/Anders\_Hejlsberg  
+[10] https://www.linkedin.com/in/mroch/  
+[11] https://github.com/Microsoft/TypeScript/wiki/TypeScript-Editor-Support  
+[12] https://flow.org/en/docs/editors/  
+[13] https://flow.org/en/docs/editors/vscode/  
+[14] https://nuclid1e.io/  
+[15] http://kangax.github.io/compat-table/es2016plus/  
+[16] https://github.com/facebook/flow/issues/3405  
+[17] https://github.com/Microsoft/TypeScript/wiki/TypeScript-Design-Goals  
+[18] https://support.microsoft.com/en-us/lifecycle/search?alpha=silver  
+[19] https://eng.lyft.com/typescript-at-lyft-64f0702346ea

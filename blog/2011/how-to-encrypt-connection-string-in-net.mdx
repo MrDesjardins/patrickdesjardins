@@ -17,7 +17,10 @@ You can get help by using the /? parameter but you will rapidly see that this to
 
 To encrypt the connection string, you will need to use these parameters:
 
-\[csharp\] aspnet\_regiis.exe -pef "connectionStrings" "c:\\myProject\\myFolder\\web.config" \[/csharp\]
+
+```csharp
+ aspnet\_regiis.exe -pef "connectionStrings" "c:\\myProject\\myFolder\\web.config" 
+```
 
 But, what about the provider? You can also add "-prov DataProtectionConfigurationProvider" to use DataProtectionConfigurationProvider provider.
 

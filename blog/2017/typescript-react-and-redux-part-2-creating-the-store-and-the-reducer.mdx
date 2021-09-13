@@ -37,7 +37,7 @@ Below the imports, the file contains an initial state which is how the state sho
 ```typescript
 import { FILTER\_APPLIED, RESET, SHOW\_RESULT, FILTER\_CHANGED } from "./actions"; import { IAppState, IResults, IFilters } from "../models/filterModels"; import { IUpdateFilterActionCreator } from "./actionsCreator";
 
-const initialState = { filters: { tags: \[\], isBlackAndWhite: false, startingDate: new Date(), endingDate: new Date(), numberOfPeople: 100, smileLevel: 0, happinessLevel: 0, peopleName: \[\] } as IFilters , results: { pictureResults: \[\] } as IResults } as IAppState; 
+const initialState = { filters: { tags: [], isBlackAndWhite: false, startingDate: new Date(), endingDate: new Date(), numberOfPeople: 100, smileLevel: 0, happinessLevel: 0, peopleName: [] } as IFilters , results: { pictureResults: [] } as IResults } as IAppState; 
 ``` 
 
 

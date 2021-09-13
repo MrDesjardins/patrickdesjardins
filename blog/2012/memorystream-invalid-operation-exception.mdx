@@ -9,6 +9,9 @@ categories:
 
 The proper way to is to use the **Write** property after using the empty constructor.
 
-\[csharp\] var encoding= new UnicodeEncoding(); Byte\[\] bytesToCompress = encoding.GetBytes("Test123); var streamToCompress = new MemoryStream(); streamToCompress .Write(bytesToCompress, 0, bytesToCompress.Length); \[/csharp\]
+
+```csharp
+ var encoding= new UnicodeEncoding(); Byte[] bytesToCompress = encoding.GetBytes("Test123); var streamToCompress = new MemoryStream(); streamToCompress .Write(bytesToCompress, 0, bytesToCompress.Length); 
+```
 
 You can use Unicode encoding but also UTF8 or any other file encoding available.

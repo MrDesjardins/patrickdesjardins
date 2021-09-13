@@ -51,7 +51,7 @@ export class DataLoaders {
     private dataSources: GraphQLCustomDataSources;
     public getParentByParentId: DataLoader<number, Parent>;
     public getChildByChildId: DataLoader<number, Child>;
-    public getChildrenByParentId: DataLoader<number, Child\[\]>;
+    public getChildrenByParentId: DataLoader<number, Child[]>;
 
     public constructor(requestTyped: IUserRequest) {
         this.dataSources = {
@@ -59,10 +59,10 @@ export class DataLoaders {
             sourceApi2: new Api2HttpService(requestTyped)
         };
 
-        this.getParentByParentId = new DataLoader<number, Cache\[\]>(parentIds => {
-            const proms: Promise<Parent\[\]>\[\] = \[\];
+        this.getParentByParentId = new DataLoader<number, Cache[]>(parentIds => {
+            const proms: Promise<Parent[]>[] = [];
             for (let i = 0; i < parentIds.length; i++) {
-                proms.push(this.dataSource.sourceApi1.getParent(parentIds\[i\]));
+                proms.push(this.dataSource.sourceApi1.getParent(parentIds[i]));
             }
             return Promise.all(proms);
         });

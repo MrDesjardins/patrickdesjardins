@@ -11,7 +11,7 @@ A part of me wish that the flexibility of GraphQL would extend further in term o
 In this article, we will see how to create a query that take an input that can be used by an HTTP request against a web service in REST. The first thing is to define a GraphQL type definition, inside the query object, that accept the input. The following code adds a second function in GraphQL to request a particular book by id. 
 
 type Query {
-    books: \[Book\]
+    books: [Book]
     book(bookId: Int): Book
 }
 
@@ -23,7 +23,7 @@ export const bookResolversMap = {
             return books;
         },
         book: (obj: null, args: { bookId: number }, context: GraphQLCustomContext) => {
-            return books\[args.bookId\];
+            return books[args.bookId];
         }
     }
 };

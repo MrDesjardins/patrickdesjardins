@@ -15,24 +15,39 @@ But, you can simply create a method that use the Lambda Tree Expression to be ab
 
 How to do it is pretty straight forward.
 
-\[csharp\] protected void Modified(Expression<Func<string>> prop) { if (prop== null){ throw new ArgumentNullException("prop", @"You must have selected a method"); } var body = prop.Body as MemberExpression; if (body == null) throw new ArgumentException("The body must be a member expression"); //USE : body.Member.Name } } \[/csharp\]
+
+```csharp
+ protected void Modified(Expression<Func<string>> prop) { if (prop== null){ throw new ArgumentNullException("prop", @"You must have selected a method"); } var body = prop.Body as MemberExpression; if (body == null) throw new ArgumentException("The body must be a member expression"); //USE : body.Member.Name } } 
+```
 
 I put a comment in the above code that indicate how to get the property name. This way, you can add it to your own list or call the _PropertyChanged_ of **INotifyPropertyChanged** .
 
 The use of this method is pretty easy also:
 
-\[csharp\] Modified(()=>this.MyProperty); \[/csharp\]
+
+```csharp
+ Modified(()=>this.MyProperty); 
+```
 
 Another option is to use System.Reflection.MethodBase. This option let you get the current Method name. This is also a good option but with the disadvantage that you can only have the current Property/Method and not be able to notified others fields. Sometime, you may need to notified multiple Property of a change. This won't give you this flexibility.
 
-\[csharp\] System.Reflection.MethodBase.GetCurrentMethod().Name.Replace("set\_", string.Empty) \[/csharp\]
+
+```csharp
+ System.Reflection.MethodBase.GetCurrentMethod().Name.Replace("set\_", string.Empty) 
+```
 
 The code above give the string of the Property/Method that this line is executed. If it's inside a Property you will need to remove "set\_" if you use it inside the setter, or "get\_" if you use it inside the getter.
 
-\[csharp\] public string CustomerEmail { get { return \_customerEmail; } set{ \_customerEmail = value; Modified(System.Reflection.MethodBase.GetCurrentMethod().Name.Replace("set\_", string.Empty)); } } \[/csharp\]
+
+```csharp
+ public string CustomerEmail { get { return \_customerEmail; } set{ \_customerEmail = value; Modified(System.Reflection.MethodBase.GetCurrentMethod().Name.Replace("set\_", string.Empty)); } } 
+```
 
 Another method which is relatively similar to the previous one is to use the Stacktrace to get the method called. This give you the advantage to not have to set any name or property reference to the method/property and just having a method in the inherit class that handle the name of the previous stack method called. This has the disadvantage that you cannot have multiple fields to be notified. This is a good default approach but the one with Lambda Expression should also be implemented to give the developer the leverage to be able to call multiple properties changes.
 
-\[csharp\] private string GetPropertyName() { var callStackTrace = new StackTrace(); var propertyFrame = callStackTrace.GetFrame(1); var properyAccessorName = propertyFrame.GetMethod().Name; return properyAccessorName.Replace("get\_","").Replace("set\_",""); } \[/csharp\]
+
+```csharp
+ private string GetPropertyName() { var callStackTrace = new StackTrace(); var propertyFrame = callStackTrace.GetFrame(1); var properyAccessorName = propertyFrame.GetMethod().Name; return properyAccessorName.Replace("get\_","").Replace("set\_",""); } 
+```
 
 The code above could be in the top model class that all your model class inherit. This way, You just need to call another method like for example "Update()" which will refer to this GetPropertyName(). Do not forget, that if you call GetPropertyName() from a class in the model class to change GetFrame(1) by GetFrame(2) because the Stack will have YouProperty>Update()>GetPropertyName.

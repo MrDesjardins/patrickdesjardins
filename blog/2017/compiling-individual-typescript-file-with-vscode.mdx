@@ -17,17 +17,19 @@ gulp.task("buildsinglefile", () => { const pathWithFileNameToCompile = "src/fold
 ``` 
 
 
-As you can see from the 2 first lines, it needs to have 2 npm packages. \[code\] npm install gulp --save-savedev npm install gulp-typescript typescript --save-savedev npm install gulp-sourcemaps --save-dev \[/code\]
+As you can see from the 2 first lines, it needs to have 2 npm packages. ``` 
+ npm install gulp --save-savedev npm install gulp-typescript typescript --save-savedev npm install gulp-sourcemaps --save-dev 
+``` 
 
 The Gulp's script needs to take in parameter some information from Visual Studio Code. To pass this data, we need VSCode to sent its variable through arguments
 
 ```typescript
-{ "version": "0.1.0", "command": "gulp", "isShellCommand": true, "args": \[ "--workspaceRoot", "${workspaceRoot}", "--fileDirname", "${fileDirname}", "--file", "${file}" \], "tasks": \[ { "taskName": "buildsinglefile", "isBuildCommand": true, "args": \[\] } \] } 
+{ "version": "0.1.0", "command": "gulp", "isShellCommand": true, "args": [ "--workspaceRoot", "${workspaceRoot}", "--fileDirname", "${fileDirname}", "--file", "${file}" ], "tasks": [ { "taskName": "buildsinglefile", "isBuildCommand": true, "args": [] } ] } 
 ``` 
  To make it works, we need to pass the double dash for the name of the parameter, followed by special macro variable of VSCode. Then, the Gulp's task needs to consume the argument. The arguments passed are indexed and contains more than only what is passed down by the VSCode's task. The index 0 is the node.exe path, index 1 is the gulp.js path, index 2 starts to be out own argument, which in our case will contain "--workspaceroot" and so on. The index 7 is the first argument used and it contains the file on which the task is executed. We need it to give the file to TypeScript to compile. Next, we use argument 5 and 3 to create the output path. This need to be custom to your file structure. In the illustrated case we have a structure that looks like: _./src/same-structure-after_ that is compiled to _./output/same-structure-after_.
 
 ```typescript
-gulp.task("buildsinglefile", () => { const arguments = process.argv; const pathWithFileNameToCompile = arguments\[7\]; const pathWithoutFileNameForOutput = arguments\[5\].replace(arguments\[3\], ".").replace("\\\\src\\\\", "\\\\output\\\\");
+gulp.task("buildsinglefile", () => { const arguments = process.argv; const pathWithFileNameToCompile = arguments[7]; const pathWithoutFileNameForOutput = arguments[5].replace(arguments[3], ".").replace("\\\\src\\\\", "\\\\output\\\\");
 
 const step1 = gulp.src(pathWithFileNameToCompile) .pipe(sourcemaps.init()) .pipe(tsc({ "target": "es6", "module": "amd" }))
 

@@ -12,7 +12,9 @@ Previously, the action creator was returning an interface from the action. This 
 
 This is where the middleware concept of Redux get in place. For the purpose of this article, we won't go into detail about how middle-ware works, but will just use the open source middle-ware called "Thunk".
 
-\[code\] npm install --save redux-thunk npm install --save-dev @types/redux-thunk \[/code\]
+``` 
+ npm install --save redux-thunk npm install --save-dev @types/redux-thunk 
+``` 
 
 This will allow us to return a Thunk Action instead of an object, which allows us to dispatch as many responses we want.
 

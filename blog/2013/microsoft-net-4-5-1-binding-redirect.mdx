@@ -10,9 +10,15 @@ With the new version of the Microsoft .Net, the 4.5.1, you will be able to use a
 
 Here is an example of the web.config:
 
-\[xml\] <dependentAssembly> <assemblyIdentity name="assemblyWithDependencyProblem" publicKeyToken="32ab4ba45e0a69a1" culture="en-us" /> <bindingRedirect oldVersion="1.0.0.0" newVersion="2.0.0.0" /> </dependentAssembly> \[/xml\]
 
-\[code\] Project A --> Library A --> Dependency 1 (version1) |---------> Dependency 2 (version2) \[/code\]
+```xml
+ <dependentAssembly> <assemblyIdentity name="assemblyWithDependencyProblem" publicKeyToken="32ab4ba45e0a69a1" culture="en-us" /> <bindingRedirect oldVersion="1.0.0.0" newVersion="2.0.0.0" /> </dependentAssembly> 
+```
+
+
+``` 
+ Project A --> Library A --> Dependency 1 (version1) |---------> Dependency 2 (version2) 
+``` 
 
 The example above would have an entry in the web.config (or app.config) that tell the dependency to use version 1 if used by Library A and use the version 2 when directly used by the project.
 

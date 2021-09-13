@@ -13,4 +13,7 @@ To solve this issue we need to delete cascade instead of a simple remove. We hav
 
 In short, you have to specify the many side to the other side (required or optional) and then specify the delete cascade statement with the true parameter.
 
-\[csharp\] ...HasMany(e => e.ParentDetails) .WithOptional(s => s.Parent) .WillCascadeOnDelete(true); \[/csharp\]
+
+```csharp
+ ...HasMany(e => e.ParentDetails) .WithOptional(s => s.Parent) .WillCascadeOnDelete(true); 
+```

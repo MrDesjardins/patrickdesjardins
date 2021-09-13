@@ -10,14 +10,16 @@ Sometime, when the application is deployed to IIS server you may still need to d
 
 The first step is to be sure that you .xap file deployed on IIS is the same as the one that you have in your developer environment. This can be automated when a Post-Build condition like this:
 
-\[code\] copy $(TargetDir)YOURxapFILEname.xap c:\\wwwroot\\mywebsite\\ClientBin\\YOURxapFILEname.xap \[/code\]
+``` 
+ copy $(TargetDir)YOURxapFILEname.xap c:\\wwwroot\\mywebsite\\ClientBin\\YOURxapFILEname.xap 
+``` 
 
 The second step is to go in _Debug_ menu of Visual Studio and choose _Attach To Process_. This is a step that you would have to do to debug ASP pages. But, this will require a modification. When debugging .Net code, you usually set your debugging type to Managed. In the case of Silverlight, you must select _Silverlight_. This will automatically popup you a message saying that you cannot continue to debug in Managed. Just accept.
 
-\[caption id="attachment\_468" align="aligncenter" width="400" caption="The debugging type must be Silverlight"\][![](http://patrickdesjardins.com/blog/wp-content/uploads/2011/09/type-400x268.png "type")](http://patrickdesjardins.com/blog/how-to-debug-silverlight-application-with-only-xap-file/type)\[/caption\]
+[caption id="attachment\_468" align="aligncenter" width="400" caption="The debugging type must be Silverlight"][![](http://patrickdesjardins.com/blog/wp-content/uploads/2011/09/type-400x268.png "type")](http://patrickdesjardins.com/blog/how-to-debug-silverlight-application-with-only-xap-file/type)[/caption]
 
 The third step is to attach to the process. This also require a modification. When debugging a ASP page you usually select W3WP.exe (the IIS application pool). This time, you need to attack to your browser. This can be Internet Explorer, Firefox or Chrome. The reason is that Silverlight is not server side but client side.
 
-\[caption id="attachment\_469" align="aligncenter" width="400" caption="You must attach to the browser, not IIS"\][![](http://patrickdesjardins.com/blog/wp-content/uploads/2011/09/attach-400x324.png "attach")](http://patrickdesjardins.com/blog/how-to-debug-silverlight-application-with-only-xap-file/attach)\[/caption\]
+[caption id="attachment\_469" align="aligncenter" width="400" caption="You must attach to the browser, not IIS"][![](http://patrickdesjardins.com/blog/wp-content/uploads/2011/09/attach-400x324.png "attach")](http://patrickdesjardins.com/blog/how-to-debug-silverlight-application-with-only-xap-file/attach)[/caption]
 
 From there you just need to refresh your page and the breakpoint you have set will be trig once reached.

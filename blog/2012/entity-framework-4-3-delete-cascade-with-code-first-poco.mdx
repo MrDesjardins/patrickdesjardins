@@ -7,11 +7,15 @@ categories:
 
 If you have a parent->child relationship between two of your classes and you delete the parent, you may want to delete all children. To do, you need to have a "DELETE CASCADE" statement on your foreign key. Here is a simple example:
 
-\[sql\] CREATE TABLE \[Parent\]( \[ID\] \[int\] IDENTITY(1,1) NOT NULL, \[Description\] \[nvarchar\](100) NULL, CONSTRAINT \[PK\_Parent\] PRIMARY KEY CLUSTERED GO
 
-CREATE TABLE \[ParentDetail\]( \[ID\] \[int\] IDENTITY(1,1) NOT NULL, \[Parent\_ID\] \[int\] NOT NULL, CONSTRAINT \[PK\_ParentDetail\] PRIMARY KEY CLUSTERED GO
+```sql
+ CREATE TABLE [Parent]( [ID] [int] IDENTITY(1,1) NOT NULL, [Description] [nvarchar](100) NULL, CONSTRAINT [PK\_Parent] PRIMARY KEY CLUSTERED GO
 
-ALTER TABLE \[ParentDetail\] WITH CHECK ADD CONSTRAINT \[FK\_ParentDetail\_Parent\] FOREIGN KEY(\[Parent\_ID\]) REFERENCES \[Parent\] (\[ID\]) ON DELETE CASCADE GO \[/sql\]
+CREATE TABLE [ParentDetail]( [ID] [int] IDENTITY(1,1) NOT NULL, [Parent\_ID] [int] NOT NULL, CONSTRAINT [PK\_ParentDetail] PRIMARY KEY CLUSTERED GO
+
+ALTER TABLE [ParentDetail] WITH CHECK ADD CONSTRAINT [FK\_ParentDetail\_Parent] FOREIGN KEY([Parent\_ID]) REFERENCES [Parent] ([ID]) ON DELETE CASCADE GO 
+```
+
 
 The problem is that if you are using Entity Framework 4.3 and try to delete a Parent entity, you will end having this error :
 
@@ -25,19 +29,28 @@ So, what does it means? It tries to delete the Parent and to set into each Paren
 
 You can do it manually in your project:
 
-\[csharp\] var listDetail = parent.ParentDetails.ToList(); foreach (var ParentDetail in listDetail){ Database.ParentDetails.Remove(ParentDetail); }
 
-Database.Parents.Remove(Parent); Database.SaveChanges(); \[/csharp\]
+```csharp
+ var listDetail = parent.ParentDetails.ToList(); foreach (var ParentDetail in listDetail){ Database.ParentDetails.Remove(ParentDetail); }
+
+Database.Parents.Remove(Parent); Database.SaveChanges(); 
+```
 
 This will produce multiple amount of SQL statement on the SQL Server. One for each details and 1 for the Parent itself.
 
 But, if you go to your database context and you specify in the **OnModelCreating** a rule about the cascade it will work as it's suppose to do.
 
-\[csharp\] protected override void OnModelCreating(DbModelBuilder modelBuilder) { //... modelBuilder.Entity<Parent>().HasMany(e => e.ParentDetails).WithOptional(s => s.Parent).WillCascadeOnDelete(true); //... \[/csharp\]
+
+```csharp
+ protected override void OnModelCreating(DbModelBuilder modelBuilder) { //... modelBuilder.Entity<Parent>().HasMany(e => e.ParentDetails).WithOptional(s => s.Parent).WillCascadeOnDelete(true); //... 
+```
 
 That's it! Now you can simply delete the Parent without having to delete manually every children.
 
-\[csharp\] Database.Parents.Remove(Parent); Database.SaveChanges(); \[/csharp\]
+
+```csharp
+ Database.Parents.Remove(Parent); Database.SaveChanges(); 
+```
 
 On the SQL server side, you can see the database to have the same amount of delete statement executed. So, you do not save on the amount of query but save on the amount of logic to handle on the C# side because you do not have to care to delete every details.
 

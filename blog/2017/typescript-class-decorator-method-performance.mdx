@@ -16,7 +16,10 @@ The use of decorator is still very recent and it needs TypeScript to activate ex
 
 The decorator for the method is one of the most powerful decorator. It is executed when the method is called which allow you to do something before and after this one. If you are from .Net, it's a little bit like using a class that inherit IDisposable and have this one wrapping the whole method. The resemblance is that the Disposable method can do something in the constructor as a pre-execution code and do something in the dispose method as post-execution.
 
-\[csharp\] class MyCSharpClass{ public void TestMethod(){ using(new PseudoDecoratorButInsideMethod()){ //Code here } } } \[/csharp\]
+
+```csharp
+ class MyCSharpClass{ public void TestMethod(){ using(new PseudoDecoratorButInsideMethod()){ //Code here } } } 
+```
 
 In TypeScript, there is not something similar else than doing function function callback where you also wrap the code you want to decorate by executing a method that will do your pre and post code. The disadvantage is like with the .Net alternative which is that it needs intervention withing the method.
 
@@ -51,14 +54,14 @@ export function performanceLog(outputConsole: boolean, thresholdToDisplayErrorIn
 Next, we need to create the new function that will be swapped from the original. This is done by defining a new function in the descriptor.value. You should not use the arrow function syntax because it will mess up the "this" pointer. To get more data for the log, you can get all parameters passed by stringify all parameters. After, you can start a timer and get the user time and call the original method. You must collect the result (in case of method that return something else than void) and stop the timer.
 
 ```typescript
-// Redefine the method to this new method who will call the original method // Use the function's this context instead of the value of this when log is called (no arrow function) descriptor.value = function (...args: any\[\]) { const parametersAsString = args.map((parameter) => JSON.stringify(parameter)).join(","); const startTime = window.performance.now(); const result = originalMethod.apply(this, args); // Call the original method const endTime = window.performance.now(); const timespan = endTime - startTime; const stringResult = JSON.stringify(result); // To be continued } 
+// Redefine the method to this new method who will call the original method // Use the function's this context instead of the value of this when log is called (no arrow function) descriptor.value = function (...args: any[]) { const parametersAsString = args.map((parameter) => JSON.stringify(parameter)).join(","); const startTime = window.performance.now(); const result = originalMethod.apply(this, args); // Call the original method const endTime = window.performance.now(); const timespan = endTime - startTime; const stringResult = JSON.stringify(result); // To be continued } 
 ``` 
 
 
 The last step is to bring everything to live with showing in the console the performance by using the threshold. Here is the complete TypeScript decorator method. ```typescript
 export function performanceLog(outputConsole: boolean, thresholdToDisplayErrorInMs: number = 1000) { return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => { // Ensure we have the descriptor that might been overriden by another decorator if (descriptor === undefined) { descriptor = Object.getOwnPropertyDescriptor(target, propertyKey); }
 
-const originalMethod = descriptor.value; // Redefine the method to this new method who will call the original method // Use the function's this context instead of the value of this when log is called (no arrow function) descriptor.value = function (...args: any\[\]) { const parametersAsString = args.map((parameter) => JSON.stringify(parameter)).join(","); const startTime = window.performance.now(); const result = originalMethod.apply(this, args); // Call the original method const endTime = window.performance.now(); const timespan = endTime - startTime; const stringResult = JSON.stringify(result); if (outputConsole) { const message = "Call \[" + timespan + "ms\]: " + propertyKey + "(" + parametersAsString + ") => " + stringResult; if (timespan < thresholdToDisplayErrorInMs) { console.log(message); } else { console.error(message); } } return result; };
+const originalMethod = descriptor.value; // Redefine the method to this new method who will call the original method // Use the function's this context instead of the value of this when log is called (no arrow function) descriptor.value = function (...args: any[]) { const parametersAsString = args.map((parameter) => JSON.stringify(parameter)).join(","); const startTime = window.performance.now(); const result = originalMethod.apply(this, args); // Call the original method const endTime = window.performance.now(); const timespan = endTime - startTime; const stringResult = JSON.stringify(result); if (outputConsole) { const message = "Call [" + timespan + "ms]: " + propertyKey + "(" + parametersAsString + ") => " + stringResult; if (timespan < thresholdToDisplayErrorInMs) { console.log(message); } else { console.error(message); } } return result; };
 
 return descriptor; }; } 
 ``` 

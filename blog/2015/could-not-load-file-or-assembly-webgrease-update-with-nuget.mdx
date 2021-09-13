@@ -9,7 +9,11 @@ I decided to update all my Nuget's packages and one more time, WebGrease could n
 
 > Could not load file or assembly 'WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35' or one of its dependencies
 
-[![WebGreasePage](http://patrickdesjardins.com/blog/wp-content/uploads/2014/10/WebGreasePage-400x176.png)](http://patrickdesjardins.com/blog/could-not-load-file-or-assembly-webgrease-update-with-nuget/webgreasepage) The web.config seems legit: \[xml\] <dependentAssembly> <assemblyIdentity name="WebGrease" publicKeyToken="31bf3856ad364e35" /> <bindingRedirect oldVersion="0.0.0.0-1.6.5135.21930" newVersion="1.6.5135.21930" /> </dependentAssembly> \[/xml\]
+[![WebGreasePage](http://patrickdesjardins.com/blog/wp-content/uploads/2014/10/WebGreasePage-400x176.png)](http://patrickdesjardins.com/blog/could-not-load-file-or-assembly-webgrease-update-with-nuget/webgreasepage) The web.config seems legit: 
+```xml
+ <dependentAssembly> <assemblyIdentity name="WebGrease" publicKeyToken="31bf3856ad364e35" /> <bindingRedirect oldVersion="0.0.0.0-1.6.5135.21930" newVersion="1.6.5135.21930" /> </dependentAssembly> 
+```
+
 
 The .dll in the project is also with the version 1.6.5135.21930. [![WebGreaseDllVersion](http://patrickdesjardins.com/blog/wp-content/uploads/2014/10/WebGreaseDllVersion.png)](http://patrickdesjardins.com/blog/could-not-load-file-or-assembly-webgrease-update-with-nuget/webgreasedllversion)
 

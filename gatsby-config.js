@@ -19,10 +19,31 @@ module.exports = {
       },
     },
     "gatsby-plugin-styled-components",
+    `gatsby-remark-images`,
     "gatsby-plugin-image",
-    "gatsby-plugin-mdx",
+    {
+      resolve: `gatsby-plugin-mdx`,
+      options: {
+        gatsbyRemarkPlugins: [
+          {
+            resolve: `gatsby-remark-images`,
+            options: {
+              maxWidth: 1200,
+            },
+          },
+        ],
+      },
+    },
     "gatsby-plugin-sharp",
     "gatsby-transformer-sharp",
+    {
+      resolve: "gatsby-source-filesystem",
+      options: {
+        name: "images",
+        path: "./blog/2018/images/",
+      },
+      __key: "images",
+    },
     {
       resolve: "gatsby-source-filesystem",
       options: {

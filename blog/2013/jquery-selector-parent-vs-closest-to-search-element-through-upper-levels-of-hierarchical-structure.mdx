@@ -9,7 +9,9 @@ With JQuery you can use Parent, Parents and Closest to search element at a highe
 
 ## JQuery Parent selector
 
-Parent() will search one level up only. For example here is the html code of a situation where you can see two level deep of div and a paragraph. \[html\] <div class="parent1">; <div class="parent2">; <p>;Hello Again</p>; </div>; </div>; \[/html\]
+Parent() will search one level up only. For example here is the html code of a situation where you can see two level deep of div and a paragraph. 
+```html  <div class="parent1">; <div class="parent2">; <p>;Hello Again</p>; </div>; </div>; 
+``` 
 
 If we use the Parent selector on the paragraph it will select parent2 division.
 
@@ -61,7 +63,9 @@ If we summarize everything in bullet point:
 
 Finally, I often see code with multiple parent() called. For example, $("p").parent().parent()..css("background", "blue"). Instead, you can use _eq_ with _parents_.
 
-\[html\] <div>; <div>; <div>; <p>;Hello Again</p>; </div>; </div>; </div>; \[/html\] ```typescript
+
+```html  <div>; <div>; <div>; <p>;Hello Again</p>; </div>; </div>; </div>; 
+```  ```typescript
 $("p").parents().eq(2).css("background", "blue"); 
 ``` 
 

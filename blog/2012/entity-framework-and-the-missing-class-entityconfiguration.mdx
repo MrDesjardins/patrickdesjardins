@@ -11,8 +11,11 @@ If you need to do the mapping of your properties with table columns, you should 
 
 This will let you in your DbContext class to override the method "OnModelCreating" and to set the configuration desired.
 
-\[csharp\] protected override void OnModelCreating(DbModelBuilder modelBuilder) { //... modelBuilder.Configurations.Add(new MyClassConfiguration()); base.OnModelCreating(modelBuilder); }
 
-//In an other class: public class MyClassConfiguration: EntityTypeConfiguration<MyClass> { public MyClassConfiguration() { ToTable("MySuperOtherNameTable"); Property(c => c.Code).HasColumnName("Code\_Col1"); Property(c => c.Name"Name\_FR\_CANADA"); } } \[/csharp\]
+```csharp
+ protected override void OnModelCreating(DbModelBuilder modelBuilder) { //... modelBuilder.Configurations.Add(new MyClassConfiguration()); base.OnModelCreating(modelBuilder); }
+
+//In an other class: public class MyClassConfiguration: EntityTypeConfiguration<MyClass> { public MyClassConfiguration() { ToTable("MySuperOtherNameTable"); Property(c => c.Code).HasColumnName("Code\_Col1"); Property(c => c.Name"Name\_FR\_CANADA"); } } 
+```
 
 This let you have Entity Framework on a database that has been constructed without having the same name of your model. This use the Fluent interface of Entity Framework to accomplish this task. EF let you do it by attribute also (this will be discussed later). Of course, this require more manual labour but can be great to by pass some objects, one object or even a part of an object. Indeed, this can be use only on few properties of your object and let Entity Framework handle the rest of your object automatically.

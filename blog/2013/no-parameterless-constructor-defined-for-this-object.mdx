@@ -19,6 +19,10 @@ But, in my scenario, I was using [Unity.MVC3](http://unitymvc3.codeplex.com/) an
 
 The web.config has an attribute called "xmlns" with the value "http://schemas.microsoft.com/.NetConfiguration/v2.0" for the element configuration.
 
-\[xml\] <configuration xmlns="http://schemas.microsoft.com/.NetConfiguration/v2.0"> <configSections> ... \[/xml\]
+
+```xml
+ <configuration xmlns="http://schemas.microsoft.com/.NetConfiguration/v2.0"> <configSections> ... 
+```
+
 
 By removing the xmlns attribute (and its value) everything worked as before. No more exception "No parameterless constructor defined for this object", no more problem. So, if you have a parameterless constructor exception when using Asp.Net MVC and Unity, check out your configuration file to be sure that this attribute is not set.

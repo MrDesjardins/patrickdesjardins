@@ -15,25 +15,35 @@ This article shows you how to log every calls of WCF's methods. It will use Unit
 
 The first step is to modify your service definition. This can be done by editing the **.scv** (not the .svc.cs).
 
-\[csharp highlight="5"\] <%@ ServiceHost Language="C#" Debug="true" Service="MyNameSpace.MyServices.MyService" CodeBehind="MyService.svc.cs" Factory="MyNameSpace.MyServices.Common.MyServiceHostFactory " %> \[/csharp\]
+```csharp
+<%@ ServiceHost Language="C#" Debug="true" Service="MyNameSpace.MyServices.MyService" CodeBehind="MyService.svc.cs" Factory="MyNameSpace.MyServices.Common.MyServiceHostFactory " %> 
+```
 
 The important modification is the **Factory** attribute. This one is required to be able to use Unity. This act as the global.asax.cs. By this, I mean, it's called when the service is initialized and not at every calls. Behind this factory, you own class is instanced and you are able to return your own ServiceHost class. This is a door to initialize Unity (IoC), AutoMapper and many others utilities class that need to be instanced once.
 
-\[csharp\] public class MyServiceHostFactory : ServiceHostFactory { protected override ServiceHost CreateServiceHost(Type serviceType, Uri\[\] baseAddresses) { var serviceHost = new MyServiceHost(serviceType, baseAddresses); //ConfigureUnity(serviceHost.Container); //ConfigureAutoMapper(); return serviceHost; } } \[/csharp\]
+
+```csharp
+ public class MyServiceHostFactory : ServiceHostFactory { protected override ServiceHost CreateServiceHost(Type serviceType, Uri[] baseAddresses) { var serviceHost = new MyServiceHost(serviceType, baseAddresses); //ConfigureUnity(serviceHost.Container); //ConfigureAutoMapper(); return serviceHost; } } 
+```
 
 The **MyServiceHostFactory** creates a **MyServiceHost** and configure the inversion of control container. It also initialize the Automapper configuration. The MyServiceHost inherit from ServiceHost, which let you add the implementation of the IoC container and handle behaviors. To be able to log on every service's method, a new behavior need to be defined.
 
-\[csharp\] public class MyServiceHost : ServiceHost { public UnityContainer Container { get; set; } public MyServiceHost() { Container = new UnityContainer(); }
 
-public MyServiceHost(Type serviceType, params Uri\[\] baseAddresses): base(serviceType, baseAddresses) { Container = new UnityContainer(); }
+```csharp
+ public class MyServiceHost : ServiceHost { public UnityContainer Container { get; set; } public MyServiceHost() { Container = new UnityContainer(); }
+
+public MyServiceHost(Type serviceType, params Uri[] baseAddresses): base(serviceType, baseAddresses) { Container = new UnityContainer(); }
 
 protected override void OnOpening() { base.OnOpening();
 
-if (this.Description.Behaviors.Find<MyServiceBehavior>() == null) { this.Description.Behaviors.Add(new MyServiceBehavior(Container)); } } } \[/csharp\]
+if (this.Description.Behaviors.Find<MyServiceBehavior>() == null) { this.Description.Behaviors.Add(new MyServiceBehavior(Container)); } } } 
+```
 
 The MyServiceHost initializes the container and add a single behavior which handle the logging feature.
 
-\[csharp\] public class MyServiceBehavior : IServiceBehavior { public UnityInstanceProvider InstanceProvider { get; set; }
+
+```csharp
+ public class MyServiceBehavior : IServiceBehavior { public UnityInstanceProvider InstanceProvider { get; set; }
 
 public MyServiceBehavior() { InstanceProvider = new UnityInstanceProvider(); }
 
@@ -45,11 +55,14 @@ public void ApplyDispatchBehavior(ServiceDescription serviceDescription, Service
 
 var log = InstanceProvider.Container.Resolve<ILog>(); IOperationBehavior behavior = new LoggingOperationBehavior(log); foreach (ServiceEndpoint endpoint in serviceDescription.Endpoints) { foreach (OperationDescription operation in endpoint.Contract.Operations) { if (!operation.Behaviors.Any(d => d is LoggingOperationBehavior)) { operation.Behaviors.Add(behavior); } } } }
 
-public void Validate(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase) { } } \[/csharp\]
+public void Validate(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase) { } } 
+```
 
 This is where we attach for all endpoints, all operations (methods) the behavior to be executed. This is where we add the logging behavior. The first foreach is required for Unity to be the provider while the second foreach is there to add the logging behavior.
 
-\[csharp\] public class UnityInstanceProvider : IInstanceProvider { public IUnityContainer Container { set; get; } public Type ServiceType { set; get; }
+
+```csharp
+ public class UnityInstanceProvider : IInstanceProvider { public IUnityContainer Container { set; get; } public Type ServiceType { set; get; }
 
 public UnityInstanceProvider() : this(null) { }
 
@@ -63,28 +76,35 @@ public void ReleaseInstance(InstanceContext instanceContext, object instance) {
 
 var myInstance = instance as IDisposable;
 
-if (myInstance != null) { myInstance.Dispose(); } } } \[/csharp\]
+if (myInstance != null) { myInstance.Dispose(); } } } 
+```
 
-\[csharp\] public class LoggingOperationBehavior : IOperationBehavior { private readonly ILog \_myLog;
+
+```csharp
+ public class LoggingOperationBehavior : IOperationBehavior { private readonly ILog \_myLog;
 
 public LoggingOperationBehavior(ILog myLog) { \_myLog = myLog; }
 
 public void ApplyDispatchBehavior(OperationDescription operationDescription, DispatchOperation dispatchOperation) { dispatchOperation.Invoker = new LoggingOperationInvoker(\_myLog, dispatchOperation.Invoker, dispatchOperation); } public void Validate(OperationDescription operationDescription) { } public void ApplyClientBehavior(OperationDescription operationDescription, ClientOperation clientOperation) { }
 
-public void AddBindingParameters(OperationDescription operationDescription, BindingParameterCollection bindingParameters) { } } \[/csharp\]
+public void AddBindingParameters(OperationDescription operationDescription, BindingParameterCollection bindingParameters) { } } 
+```
 
 At this point, we need to invoke the log. We need to specify an invoker that will be executed. This is why, we need to create a logging invoker which take the log that come from Unity.
 
-\[csharp\] public class LoggingOperationInvoker : IOperationInvoker { private readonly IOperationInvoker \_baseInvoker; private readonly string \_operationName; private readonly string \_controllerName; private readonly ILog \_myLog;
 
-public LoggingOperationInvoker(ILog myLog, IOperationInvoker baseInvoker, DispatchOperation operation) { \_myLog = myLog; \_baseInvoker = baseInvoker; \_operationName = operation.Name; \_controllerName = operation.Parent.Type==null?"\[None\]":operation.Parent.Type.FullName; } public object Invoke(object instance, object\[\] inputs, out object\[\] outputs) { \_myLog.Log("Method " + \_operationName + " of class " + \_controllerName + " called"); try { return \_baseInvoker.Invoke(instance, inputs, out outputs); } catch (Exception ex) { \_myLog.Log(ex); throw; } }
+```csharp
+ public class LoggingOperationInvoker : IOperationInvoker { private readonly IOperationInvoker \_baseInvoker; private readonly string \_operationName; private readonly string \_controllerName; private readonly ILog \_myLog;
 
-public object\[\] AllocateInputs() {return \_baseInvoker.AllocateInputs(); }
+public LoggingOperationInvoker(ILog myLog, IOperationInvoker baseInvoker, DispatchOperation operation) { \_myLog = myLog; \_baseInvoker = baseInvoker; \_operationName = operation.Name; \_controllerName = operation.Parent.Type==null?"[None]":operation.Parent.Type.FullName; } public object Invoke(object instance, object[] inputs, out object[] outputs) { \_myLog.Log("Method " + \_operationName + " of class " + \_controllerName + " called"); try { return \_baseInvoker.Invoke(instance, inputs, out outputs); } catch (Exception ex) { \_myLog.Log(ex); throw; } }
 
-public IAsyncResult InvokeBegin(object instance, object\[\] inputs, AsyncCallback callback, object state) { \_myLog.Log("Method " + \_operationName + " of class " + \_controllerName + " called"); return \_baseInvoker.InvokeBegin(instance, inputs, callback, state); }
+public object[] AllocateInputs() {return \_baseInvoker.AllocateInputs(); }
 
-public object InvokeEnd(object instance, out object\[\] outputs, IAsyncResult result) {return \_baseInvoker.InvokeEnd(instance, out outputs, result); }
+public IAsyncResult InvokeBegin(object instance, object[] inputs, AsyncCallback callback, object state) { \_myLog.Log("Method " + \_operationName + " of class " + \_controllerName + " called"); return \_baseInvoker.InvokeBegin(instance, inputs, callback, state); }
 
-public bool IsSynchronous { get {return \_baseInvoker.IsSynchronous; } } } \[/csharp\]
+public object InvokeEnd(object instance, out object[] outputs, IAsyncResult result) {return \_baseInvoker.InvokeEnd(instance, out outputs, result); }
+
+public bool IsSynchronous { get {return \_baseInvoker.IsSynchronous; } } } 
+```
 
 This is where the log is really written. It uses the interface to log which came from Unity from the Factory. The log is written when the method is invoked.

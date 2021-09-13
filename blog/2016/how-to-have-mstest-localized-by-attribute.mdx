@@ -11,15 +11,23 @@ The problem is that in all your code you need to set the thread manually. It wou
 
 First, let's create a standard attribute that we will use on top of our test that need localization. We will use this one in combination of the TestMethod. The use will looks like this:
 
-\[csharp\] \[TestMethod\] \[LocalizedTest(LocalizedSection.EN\_NAME)\] public void MyTest() { //... Your test } \[/csharp\]
+
+```csharp
+ [TestMethod] [LocalizedTest(LocalizedSection.EN\_NAME)] public void MyTest() { //... Your test } 
+```
 
 The attribute has a parameter which is the **Culture Name** that we want to have the thread. The culture name is "en-us" for USA English or "fr-ca" Canadian French.
 
-\[csharp\] public class LocalizedTestAttribute:Attribute { public string CultureName {get; set;} public LocalizedTestAttribute(string cultureName) { this.CultureName = cultureName; } } \[/csharp\]
+
+```csharp
+ public class LocalizedTestAttribute:Attribute { public string CultureName {get; set;} public LocalizedTestAttribute(string cultureName) { this.CultureName = cultureName; } } 
+```
 
 A second attribute is required to be at the top of the class tested. This is the way to notify the Microsoft test framework that we want to hook inside the pipeline of tasks that the testing framework is going while executing tests. This attribute inherit from **ContextAttribute**, from **System.Runtime.Remoting.Contexts** namespace. The role of that class is to define a collection of possible hooks. In that case, we have only one hook that we call **LocalizedTestMessage**. Those hooks are called "messages". I am using a helper named TestProperty which handle generic code for every message. This generic class is inspired by the [MsTestExtension](http://mstestextensions.codeplex.com/SourceControl/latest#Trunk/Source/MSTestExtensions/TestAspect.cs) source code.
 
-\[csharp\] public class LocalizedTestContextAttribute: ContextAttribute { public LocalizedTestContextAttribute():base("LocalizedTest") {
+
+```csharp
+ public class LocalizedTestContextAttribute: ContextAttribute { public LocalizedTestContextAttribute():base("LocalizedTest") {
 
 }
 
@@ -29,21 +37,24 @@ public class TestProperty<T> : IContextProperty, IContributeObjectSink where T :
 
 private readonly string \_name = typeof(T).AssemblyQualifiedName;
 
-\[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)\] public bool IsNewContextOK(Context newCtx) { return true; }
+[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)] public bool IsNewContextOK(Context newCtx) { return true; }
 
-\[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)\] public void Freeze(Context newContext) { }
+[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)] public void Freeze(Context newContext) { }
 
-public string Name { \[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)\] get { return \_name; } }
+public string Name { [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)] get { return \_name; } }
 
-\[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)\] public IMessageSink GetObjectSink(MarshalByRefObject obj, IMessageSink nextSink) { T testAspect = new T(); testAspect.AddMessageSink(nextSink); return testAspect; } }
+[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)] public IMessageSink GetObjectSink(MarshalByRefObject obj, IMessageSink nextSink) { T testAspect = new T(); testAspect.AddMessageSink(nextSink); return testAspect; } }
 
-public interface ITestMessage { void AddMessageSink(IMessageSink messageSink); } \[/csharp\]
+public interface ITestMessage { void AddMessageSink(IMessageSink messageSink); } 
+```
 
 Finally, we need to have our LocalizedTest message hook (message) defined. This class defines what is done before and after the execution of the test. This class is able to access the tested method to check if **LocalizedTest** attribute is defined on the class. If yes, it proceeds, otherwise it executes the method without changing anything. When the attribute is present, it backup the current thread culture, get the culture name from the attribute and set it to the test thread. It executes the test, and set back the original thread.
 
-\[csharp\] public class LocalizedTestMessage : BaseTestMessage<LocalizedTestAttribute>, IMessageSink, ITestMessage { private IMessageSink nextSink;
 
-\[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)\] public IMessage SyncProcessMessage(IMessage msg) { if (msg == null) throw new ArgumentNullException("msg"); CultureInfo currentCultureInfo = null; CultureInfo currentUICultureInfo = null;
+```csharp
+ public class LocalizedTestMessage : BaseTestMessage<LocalizedTestAttribute>, IMessageSink, ITestMessage { private IMessageSink nextSink;
+
+[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)] public IMessage SyncProcessMessage(IMessage msg) { if (msg == null) throw new ArgumentNullException("msg"); CultureInfo currentCultureInfo = null; CultureInfo currentUICultureInfo = null;
 
 //Before test get value to set back after test LocalizedTestAttribute localizationAttribute = base.GetAttribute(msg); if (localizationAttribute != null) { currentCultureInfo = System.Threading.Thread.CurrentThread.CurrentCulture; currentUICultureInfo = System.Threading.Thread.CurrentThread.CurrentUICulture; System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(localizationAttribute.CultureName); System.Threading.Thread.CurrentThread.CurrentUICulture = System.Threading.Thread.CurrentThread.CurrentCulture; }
 
@@ -51,14 +62,15 @@ Finally, we need to have our LocalizedTest message hook (message) defined. This 
 
 //After test set back value if (localizationAttribute != null && currentCultureInfo!= null && currentUICultureInfo!=null) { System.Threading.Thread.CurrentThread.CurrentCulture = currentCultureInfo; System.Threading.Thread.CurrentThread.CurrentUICulture = currentUICultureInfo; } return returnMessage; }
 
-\[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)\] public IMessageCtrl AsyncProcessMessage(IMessage msg, IMessageSink replySink) { throw new InvalidOperationException(); }
+[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)] public IMessageCtrl AsyncProcessMessage(IMessage msg, IMessageSink replySink) { throw new InvalidOperationException(); }
 
-public IMessageSink NextSink { \[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)\] get { return nextSink; } }
+public IMessageSink NextSink { [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)] get { return nextSink; } }
 
 public void AddMessageSink(IMessageSink messageSink) { nextSink = messageSink; } }
 
 public abstract class BaseTestMessage<TAttribute> where TAttribute : Attribute {
 
-\[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)\] protected TAttribute GetAttribute(IMessage message) { string typeName = (string)message.Properties\["\_\_TypeName"\]; string methodName = (string)message.Properties\["\_\_MethodName"\]; Type callingType = Type.GetType(typeName); MethodInfo methodInfo = callingType.GetMethod(methodName); object\[\] attributes = methodInfo.GetCustomAttributes(typeof(TAttribute), true); TAttribute attribute = null; if (attributes.Length > 0) { attribute = attributes\[0\] as TAttribute; } return attribute; } } \[/csharp\]
+[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)] protected TAttribute GetAttribute(IMessage message) { string typeName = (string)message.Properties["\_\_TypeName"]; string methodName = (string)message.Properties["\_\_MethodName"]; Type callingType = Type.GetType(typeName); MethodInfo methodInfo = callingType.GetMethod(methodName); object[] attributes = methodInfo.GetCustomAttributes(typeof(TAttribute), true); TAttribute attribute = null; if (attributes.Length > 0) { attribute = attributes[0] as TAttribute; } return attribute; } } 
+```
 
 It would be even better if we could avoid having two different attributes on each test but this is a solution that still let us avoid having to handle thread on every test. It's also important to notice that this is only good for MsTest. If you are using other testing framework like nUnit or xUnit that this will not work. However, these frameworks have other mechanism to handle pre and post tests too. The documentation is very slim on Microsoft about there infrastructure classes. It comes from a pre-era where Microsoft where less open that it is now.

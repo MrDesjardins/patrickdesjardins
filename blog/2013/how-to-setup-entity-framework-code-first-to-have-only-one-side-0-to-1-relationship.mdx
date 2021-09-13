@@ -11,14 +11,23 @@ In this example, we show a scenario where we have one entity that has a relation
 
 At first, we may think than this code below works.
 
-\[csharp\] modelBuilder .Entity<EntityOne>() .HasOptional(d => d.EntityTwo) .WithOptionalDependent(); \[/csharp\]
+
+```csharp
+ modelBuilder .Entity<EntityOne>() .HasOptional(d => d.EntityTwo) .WithOptionalDependent(); 
+```
 
 The **WithOptionalDependent** tells EF (Entity Framework) that EntityOne is the one of the two entities that hold the reference which is optional as stated with the **HasOptional** property. No! This raise an error that tell that it cannot find EntityTwo\_ID key. This is problematic because in the scenario we are talking about the foreign key has a special name. So, we have to configure the foreign key. Of course, if your FK is named EntityTwo\_ID than you are all fine.
 
-\[csharp\] modelBuilder .Entity<EntityOne>() .HasOptional(d => d.EntityTwo) .WithOptionalDependent() .Map(d => d.MapKey("EntityTwoID"); \[/csharp\]
+
+```csharp
+ modelBuilder .Entity<EntityOne>() .HasOptional(d => d.EntityTwo) .WithOptionalDependent() .Map(d => d.MapKey("EntityTwoID"); 
+```
 
 The **HasForeignKey** is not available from **WithOptionalDependant**, but with Map we can setup the foreign key name. Unfortunately, this won't work either. The error is an invalid column name. From here, we can realise that the **MapKey** is used by the principal entity and not the dependent.
 
-Still, we want to have 0..1 relation. How can we setup this optional relation ship with Entity Framework without having on the other side the property to the other entity? We need to use HasOption and threat the whole situation not as 0..1 to 1 but 0..1 to many. \[csharp\] modelBuilder .Entity<EntityOne>() .HasOptional(d => d.EntityTwo) .WithMany() .HasForeignKey(d => d.EntityTwoID) ; \[/csharp\]
+Still, we want to have 0..1 relation. How can we setup this optional relation ship with Entity Framework without having on the other side the property to the other entity? We need to use HasOption and threat the whole situation not as 0..1 to 1 but 0..1 to many. 
+```csharp
+ modelBuilder .Entity<EntityOne>() .HasOptional(d => d.EntityTwo) .WithMany() .HasForeignKey(d => d.EntityTwoID) ; 
+```
 
 To make it works, we use **WithMany** without specifying the other side property (since we do not have it) and we use **HasForeignKey** to specify the correct foreign key. And that's it! It works!

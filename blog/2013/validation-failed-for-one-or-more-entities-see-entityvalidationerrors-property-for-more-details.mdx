@@ -11,6 +11,9 @@ The problem with the error "Validation failed for one or more entities. See 'Ent
 
 To see the exception details, you need to open the watch window, or the immediate window and type this line :
 
-\[csharp\] ((System.Data.Entity.Validation.DbEntityValidationException)$exception).EntityValidationErrors \[/csharp\]
+
+```csharp
+ ((System.Data.Entity.Validation.DbEntityValidationException)$exception).EntityValidationErrors 
+```
 
 From here, you will be able to see which entities are problematic and also what inner validation errors has been thrown.

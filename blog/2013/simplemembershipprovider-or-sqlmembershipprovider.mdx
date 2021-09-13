@@ -12,25 +12,33 @@ The main goal of this new library is to simplify the use of user-password applic
 
 [![sqlSimpleProviderTables](http://patrickdesjardins.com/blog/wp-content/uploads/2013/09/sqlSimpleProviderTables.png)](http://patrickdesjardins.com/blog/?attachment_id=2284)
 
-As you can see in the image above, you can add a Language field. This require only to add a property and let Entity Framework handle the rest. \[csharp highlight="18"\] \[Table("UserProfile")\] public class UserProfile : ICurrentUser { public UserProfile() { this.UserName = "Anonymous"; this.Language = "en-US"; }
+As you can see in the image above, you can add a Language field. This require only to add a property and let Entity Framework handle the rest. 
+```csharp
+ [Table("UserProfile")] public class UserProfile : ICurrentUser { public UserProfile() { this.UserName = "Anonymous"; this.Language = "en-US"; }
 
-\[Key\] \[DatabaseGenerated(DatabaseGeneratedOption.Identity)\] public int UserId { get; set; }
+[Key] [DatabaseGenerated(DatabaseGeneratedOption.Identity)] public int UserId { get; set; }
 
 public string UserName { get; set; }
 
 public string Email { get; set; }
 
-public string Language { get; set; } } \[/csharp\]
+public string Language { get; set; } } 
+```
 
 If you are using Entity Framework with the migration tool, you just need to add in your seed method a one liner.
 
-\[csharp\] WebSecurity.InitializeDatabaseConnection( "DefaultConnection", "UserProfile", "UserId", "UserName", autoCreateTables: true); \[/csharp\]
+
+```csharp
+ WebSecurity.InitializeDatabaseConnection( "DefaultConnection", "UserProfile", "UserId", "UserName", autoCreateTables: true); 
+```
 
 The first parameter is the Entity Framework connection string to your database, the second is the table name for the user then the column id for the user following by the name that is required when we logon.
 
 If you need to have default role and user in your seed you can add them by using the Api.
 
-\[csharp\] protected override void Seed(DatabaseContext context) { base.Seed(context);
+
+```csharp
+ protected override void Seed(DatabaseContext context) { base.Seed(context);
 
 WebSecurity.InitializeDatabaseConnection( "DefaultConnection", "UserProfile", "UserId", "UserName", autoCreateTables: true);
 
@@ -40,6 +48,7 @@ if (!Roles.RoleExists(Model.Roles.NORMAL)) Roles.CreateRole(Model.Roles.NORMAL);
 
 if (!WebSecurity.UserExists("123123")) WebSecurity.CreateUserAndAccount("123123", "123123", new { Email="123123@123.com", Language="fr-CA"}); if (!WebSecurity.UserExists("qweqwe")) WebSecurity.CreateUserAndAccount("qweqwe", "qweqwe", new { Email = "qweqwe@qwe.com", Language = "en-US" });
 
-if (!((IList<string>)Roles.GetRolesForUser("123123")).Contains(Model.Roles.ADMINISTRATOR)) Roles.AddUsersToRoles(new\[\] { "123123", "qweqwe" }, new\[\] { Model.Roles.ADMINISTRATOR }); if (!((IList<string>)Roles.GetRolesForUser("qweqwe")).Contains(Model.Roles.NORMAL)) Roles.AddUsersToRoles(new\[\] { "qweqwe" }, new\[\] { Model.Roles.NORMAL }); } \[/csharp\]
+if (!((IList<string>)Roles.GetRolesForUser("123123")).Contains(Model.Roles.ADMINISTRATOR)) Roles.AddUsersToRoles(new[] { "123123", "qweqwe" }, new[] { Model.Roles.ADMINISTRATOR }); if (!((IList<string>)Roles.GetRolesForUser("qweqwe")).Contains(Model.Roles.NORMAL)) Roles.AddUsersToRoles(new[] { "qweqwe" }, new[] { Model.Roles.NORMAL }); } 
+```
 
 I suggest you to read further on [Jon Galloway blog article](http://weblogs.asp.net/jgalloway/archive/2012/08/29/simplemembership-membership-providers-universal-providers-and-the-new-asp-net-4-5-web-forms-and-asp-net-mvc-4-templates.aspx).

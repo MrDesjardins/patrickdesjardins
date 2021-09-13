@@ -7,12 +7,25 @@ categories:
 
 The _SqlConnection_ object is an object that derive of _DbConnection_. It opens the connection between the application and the database. It's also inherit of _IDisposable_ because of _DbConnection_.
 
-\[csharp\] var connection = new SqlConnection(); connection.ConnectionString = @"Data Source=PATRICK-PC\\SQLEXPRESS;Initial Catalog=Northwind;Integrated Security=True"; connection.Open(); connection.Close(); \[/csharp\]
+
+```csharp
+ var connection = new SqlConnection(); connection.ConnectionString = @"Data Source=PATRICK-PC\\SQLEXPRESS;Initial Catalog=Northwind;Integrated Security=True"; connection.Open(); connection.Close(); 
+```
 
 or
 
-\[csharp\] using (var connection = new SqlConnection()) { connection.ConnectionString = @"Data Source=PATRICK-PC\\SQLEXPRESS;Initial Catalog=Northwind;Integrated Security=True"; connection.Open(); connection.Close(); } \[/csharp\]
+
+```csharp
+ using (var connection = new SqlConnection()) { connection.ConnectionString = @"Data Source=PATRICK-PC\\SQLEXPRESS;Initial Catalog=Northwind;Integrated Security=True"; connection.Open(); connection.Close(); } 
+```
 
 These two snippets of code illustrate the creation of a connection. Both of them were using connection string from a string but the value can be directly loaded from the app.config or web.config.
 
-\[csharp\] ConnectionStringSettings connectionStringSettings = ConfigurationManager.ConnectionStrings\["ApplicationServices"\]; using (var connection = new SqlConnection(connectionStringSettings.ConnectionString)) { connection.Open(); connection.Close(); } \[/csharp\] \[xml\] <configuration> <connectionStrings> <add name="ApplicationServices" connectionString="Data Source=PATRICK-PC\\SQLEXPRESS;Initial Catalog=Northwind;Integrated Security=True" providerName="System.Data.SqlClient" /> </connectionStrings> ... ... \[/xml\]
+
+```csharp
+ ConnectionStringSettings connectionStringSettings = ConfigurationManager.ConnectionStrings["ApplicationServices"]; using (var connection = new SqlConnection(connectionStringSettings.ConnectionString)) { connection.Open(); connection.Close(); } 
+``` 
+```xml
+ <configuration> <connectionStrings> <add name="ApplicationServices" connectionString="Data Source=PATRICK-PC\\SQLEXPRESS;Initial Catalog=Northwind;Integrated Security=True" providerName="System.Data.SqlClient" /> </connectionStrings> ... ... 
+```
+

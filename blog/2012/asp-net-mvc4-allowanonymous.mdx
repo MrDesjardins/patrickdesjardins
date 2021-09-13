@@ -11,12 +11,18 @@ With Asp.Net MVC 4, it's built in. You need to go inside the App\_Start folder w
 
 You need to add to this method the new folder called "AuthorizeAttribute".
 
-\[csharp\] public class FilterConfig { public static void RegisterGlobalFilters(GlobalFilterCollection filters) { filters.Add(new HandleErrorAttribute()); filters.Add(new AuthorizeAttribute()); } } \[/csharp\]
+
+```csharp
+ public class FilterConfig { public static void RegisterGlobalFilters(GlobalFilterCollection filters) { filters.Add(new HandleErrorAttribute()); filters.Add(new AuthorizeAttribute()); } } 
+```
 
 By now, all action require a valid authentification. If you want to allow anonymous person to see the action, you need to add the AllowAuthorize attribute to the action. In fact, it's already been setup for the login and register method of the AccountController.cs.
 
-\[csharp\] \[AllowAnonymous\] public ActionResult Login(string returnUrl) { ViewBag.ReturnUrl = returnUrl; return View(); }
 
-\[AllowAnonymous\] public ActionResult Register() { return View(); } \[/csharp\]
+```csharp
+ [AllowAnonymous] public ActionResult Login(string returnUrl) { ViewBag.ReturnUrl = returnUrl; return View(); }
+
+[AllowAnonymous] public ActionResult Register() { return View(); } 
+```
 
 That's it. Pretty simple and more secure!

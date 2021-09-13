@@ -20,7 +20,7 @@ import { StoreEnhancer, StoreEnhancerStoreCreator, Reducer, Store, Dispatch, Uns
 
 export function batchedSubscribeEnhancer<S>(hook: (notify: () => void, store: Store<S>) => void): StoreEnhancer<S> {
 
-let currentListeners: (() => void)\[\] = \[\]; let nextListeners: (() => void)\[\] = currentListeners;
+let currentListeners: (() => void)[] = []; let nextListeners: (() => void)[] = currentListeners;
 
 function ensureCanMutateNextListeners(): void { if (nextListeners === currentListeners) { nextListeners = currentListeners.slice(); } }
 
@@ -34,7 +34,7 @@ isSubscribed = false;
 
 ensureCanMutateNextListeners(); const index = nextListeners.indexOf(listener); nextListeners.splice(index, 1); }; }
 
-function notifyListeners(): void { const listeners = currentListeners = nextListeners; for (let i = 0; i < listeners.length; i++) { listeners\[i\](); } }
+function notifyListeners(): void { const listeners = currentListeners = nextListeners; for (let i = 0; i < listeners.length; i++) { listeners[i](); } }
 
 return (next: StoreEnhancerStoreCreator<S>): StoreEnhancerStoreCreator<S> => (reducer: Reducer<S>, preloadedState?: S): Store<S> => { const store = next(reducer); function dispatch(dispatchArgs: Dispatch<S>): Dispatch<S> { const dispatchResult: Dispatch<S> = store.dispatch(dispatchArgs); hook(notifyListeners, store); return dispatchResult; }
 

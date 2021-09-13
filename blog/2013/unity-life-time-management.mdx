@@ -11,7 +11,10 @@ When you use Unity to get an instance of a class, Unity pass through the life ti
 
 **TransientLifetimeManager** is the default life time manager used by Unity if none is specified. This is the simplest form of life time manager. It creates a new instance every time unity need an instance of the class.
 
-\[csharp\] var container = new UnityContainer(); container .RegisterType(typeof(IMyClass), typeof(MyClass), "namedMyClass") .RegisterType(typeof(IMyClass), typeof(MyClass), "named2MyClass", new TransientLifetimeManager()); \[/csharp\]
+
+```csharp
+ var container = new UnityContainer(); container .RegisterType(typeof(IMyClass), typeof(MyClass), "namedMyClass") .RegisterType(typeof(IMyClass), typeof(MyClass), "named2MyClass", new TransientLifetimeManager()); 
+```
 
 In the above example, you can see two registrations with unity of IMyClass interface with the concrete implementation of MyClass. Both of them are using the **TransientLifetimeManager**. The first one is implicit because it use the default life time manager, while the second is explicit by having a third parameters which specify to use **TransientLifetimeManager** life time manager.
 
@@ -19,7 +22,10 @@ In the above example, you can see two registrations with unity of IMyClass inter
 
 The singleton is pattern (or anti-pattern) that specify that only one instance will live in memory. With Unity, the singleton life time manager is called **ContainerControlledLifetimeManager**. The **ContainerControlledLifetimeManager** will instance on the first call the class into an object and all subsequent call will simply give a pointer (reference) to the same object.
 
-\[csharp\] var container = new UnityContainer(); container .RegisterType(typeof(IMyClass), typeof(MyClass), "SingletonMyClass", new ContainerControlledLifetimeManager()); \[/csharp\]
+
+```csharp
+ var container = new UnityContainer(); container .RegisterType(typeof(IMyClass), typeof(MyClass), "SingletonMyClass", new ContainerControlledLifetimeManager()); 
+```
 
 Of course, it's only possible to use the explicit registration for singleton since the implicit would create a **TransientLifetimeManager**. A small note before we pass to the next life time manager : if you are using a web application, beware that the object will be shared between all your users.
 

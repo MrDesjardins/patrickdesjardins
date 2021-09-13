@@ -11,10 +11,16 @@ This error occur only if you have 2 classes with the same name in different name
 
 For example, if you want to return a list of MyClassName (context) class which are inside a collection of MyClassName (domain model), you can have this problem.
 
-\[csharp\] var fromDatabase = \_dataContext.Set<MyClassName>().Where(p => listMyClass.Select(d => d.ID).Contains(p.ID)); \[/csharp\]
+
+```csharp
+ var fromDatabase = \_dataContext.Set<MyClassName>().Where(p => listMyClass.Select(d => d.ID).Contains(p.ID)); 
+```
 
 This won't work because listMyClass contain a list of MyClassName, but from the domain model not the context. It's easy to get wrong because usually the service layer and the repository layer receive as parameter domain object and not directly the context. To solve this issue, you need to proceed into two steps. The select to get the list of id must be done outside Linq To Entity. This way, the code will be executed as Linq to Object and won't affect Entity Framework.
 
-\[csharp\] var arrayId = listMyClass.Select(d => d.ID).ToArray(); var fromDatabase = \_dataContext.Set<MyClassName>().Where(p => arrayId.Contains(p.ID)); \[/csharp\]
+
+```csharp
+ var arrayId = listMyClass.Select(d => d.ID).ToArray(); var fromDatabase = \_dataContext.Set<MyClassName>().Where(p => arrayId.Contains(p.ID)); 
+```
 
 That's it! Now it works because listMyClass is transformed into an array of ID which Entity Framework understand.

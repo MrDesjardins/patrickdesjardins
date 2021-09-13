@@ -12,10 +12,17 @@ tags:
 
 You are working locally without a SSL certificate and in production with certificate,=. The simplest way to work handle both case is to have a configuration that switch depending of if you are in your production server or in your local dev box. Here is two solutions. The first one is well known on Internet but require to have IIS with the rewrite module. This is not a problem with Azure, and even locally it's not a big problem because it can be downloaded from IIS manager console, under Web Platform. But, you won't need that. The first solution is to change the web.release.config to add the redirection on the deployed files only. This is done like this:
 
-\[xml\] <?xml version="1.0"?> <configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform"> <system.webServer> <rewrite xdt:Transform="Insert"> <rules> <rule name="Redirect HTTP to HTTPS"> <match url="(.\*)" /> <conditions> <add input="{HTTPS}" pattern="off" ignoreCase="true" /> </conditions> <action type="Redirect" url="https://{HTTP\_HOST}/{R:1}" redirectType="Permanent"/> </rule> </rules> </rewrite> </system.webServer> </configuration>
 
-\[/xml\]
+```xml
+ <?xml version="1.0"?> <configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform"> <system.webServer> <rewrite xdt:Transform="Insert"> <rules> <rule name="Redirect HTTP to HTTPS"> <match url="(.\*)" /> <conditions> <add input="{HTTPS}" pattern="off" ignoreCase="true" /> </conditions> <action type="Redirect" url="https://{HTTP\_HOST}/{R:1}" redirectType="Permanent"/> </rule> </rules> </rewrite> </system.webServer> </configuration>
+
+
+```
+
 
 The second solution is simpler, because it's just a change in code. However, the request needs to go to the Asp.Net pipeline which is more demanding for your webserver. You should have the redirection as soon as you can and doing it at IIS level is the best place. Nevertheless, it's always good to have both solution on hands.
 
-In global.asax.cs: \[csharp\] if (!HttpContext.Current.IsDebuggingEnabled) { filters.Add(new RequireHttpsAttribute()); } \[/csharp\]
+In global.asax.cs: 
+```csharp
+ if (!HttpContext.Current.IsDebuggingEnabled) { filters.Add(new RequireHttpsAttribute()); } 
+```

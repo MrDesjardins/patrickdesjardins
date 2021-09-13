@@ -24,7 +24,7 @@ The idea will be to use jest.Mock which is generic. The problem that we want to 
 The next step is to create a variable that will hold the mocked interface where you can set returned value depending on what is tested in each test. Finally, we set the mock object to the class by injecting the mock by the constructor.
 
 ```typescript
-type Mockify<T> = { \[P in keyof T\]: jest.Mock<{}>; }; let mockInterfaceToInject: Mockify<IClassToInject> = { run: jest.fn() };
+type Mockify<T> = { [P in keyof T]: jest.Mock<{}>; }; let mockInterfaceToInject: Mockify<IClassToInject> = { run: jest.fn() };
 
 mockInterfaceToInject.run.mockReturnValue(false); const classToTest = new ClassToTest(mockInterfaceToInject); 
 ``` 

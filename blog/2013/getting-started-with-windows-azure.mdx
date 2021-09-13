@@ -19,13 +19,17 @@ To upload your website, you have several option. One of these is to use Visual S
 
 This profile can be imported inside your solution once downloaded on you development environment. Right click the web project and select publish, the first time you need to select import and select the downloaded file. Later, you will just need to select the configuration. The publish file is an Xml file.
 
-\[xml\] <publishData>
+
+```xml
+ <publishData>
 
 <publishProfile profileName="workoutplanner - Web Deploy" publishMethod="MSDeploy" publishUrl="waws-prod-blu-003.publish.azurewebsites.windows.net:443" msdeploySite="workoutplanner" userName="$workoutplanner" userPWD="XXX" destinationAppUrl="http://workoutplanner.azurewebsites.net" SQLServerDBConnectionString="" mySQLDBConnectionString="" hostingProviderForumLink="" controlPanelLink="http://windows.azure.com"><databases/></publishProfile>
 
 <publishProfile profileName="workoutplanner - FTP" publishMethod="FTP" publishUrl="ftp://waws-prod-blu-003.ftp.azurewebsites.windows.net/site/wwwroot" ftpPassiveMode="True" userName="workoutplanner\\$workoutplanner" userPWD="XXX" destinationAppUrl="http://workoutplanner.azurewebsites.net" SQLServerDBConnectionString="" mySQLDBConnectionString="" hostingProviderForumLink="" controlPanelLink="http://windows.azure.com"><databases/></publishProfile>
 
-</publishData> \[/xml\]
+</publishData> 
+```
+
 
 The generated publish profile contain two profiles. One use Web Deploy and one use FTP. Azure offer these two methods with publishing.
 
@@ -51,13 +55,19 @@ However, you might get some error like this one :
 
 > Msg 40514, Filegroup reference and partitioning scheme' is not supported in this version of SQL Server
 
-This is because you might have in you create table statement "ON \[PRIMARY\]" keywork which is not supported.
+This is because you might have in you create table statement "ON [PRIMARY]" keywork which is not supported.
 
-\[SQL highlight="9-10"\] CREATE TABLE \[dbo\].\[Exercises\]( \[Id\] \[int\] IDENTITY(1,1) NOT NULL, \[Name\_French\] \[nvarchar\](max) NULL, \[Name\_English\] \[nvarchar\](max) NULL, \[Muscle\_Id\] \[int\] NULL, CONSTRAINT \[PK\_dbo.Exercises\] PRIMARY KEY CLUSTERED ( \[Id\] ASC )WITH (PAD\_INDEX = OFF, STATISTICS\_NORECOMPUTE = OFF, IGNORE\_DUP\_KEY = OFF, ALLOW\_ROW\_LOCKS = ON, ALLOW\_PAGE\_LOCKS = ON) ON \[PRIMARY\] ) ON \[PRIMARY\] TEXTIMAGE\_ON \[PRIMARY\] \[/SQL\]
+```sql
+CREATE TABLE [dbo].[Exercises]( [Id] [int] IDENTITY(1,1) NOT NULL, [Name\_French] [nvarchar](max) NULL, [Name\_English] [nvarchar](max) NULL, [Muscle\_Id] [int] NULL, CONSTRAINT [PK\_dbo.Exercises] PRIMARY KEY CLUSTERED ( [Id] ASC )WITH (PAD\_INDEX = OFF, STATISTICS\_NORECOMPUTE = OFF, IGNORE\_DUP\_KEY = OFF, ALLOW\_ROW\_LOCKS = ON, ALLOW\_PAGE\_LOCKS = ON) ON [PRIMARY] ) ON [PRIMARY] TEXTIMAGE\_ON [PRIMARY] 
+```
+
 
 Should become
 
-\[SQL highlight="9-10"\] CREATE TABLE \[dbo\].\[Exercises\]( \[Id\] \[int\] IDENTITY(1,1) NOT NULL, \[Name\_French\] \[nvarchar\](max) NULL, \[Name\_English\] \[nvarchar\](max) NULL, \[Muscle\_Id\] \[int\] NULL, CONSTRAINT \[PK\_dbo.Exercises\] PRIMARY KEY CLUSTERED ( \[Id\] ASC ) ) \[/SQL\]
+```sql
+CREATE TABLE [dbo].[Exercises]( [Id] [int] IDENTITY(1,1) NOT NULL, [Name\_French] [nvarchar](max) NULL, [Name\_English] [nvarchar](max) NULL, [Muscle\_Id] [int] NULL, CONSTRAINT [PK\_dbo.Exercises] PRIMARY KEY CLUSTERED ( [Id] ASC ) ) 
+```
+
 
 From there, open your solution and change the connection string to setup your new database in the Release version. This need to have a connection string to the database your just created. With Windows Azure, it's easy because it generates for you the connection string.
 

@@ -31,7 +31,7 @@ Void
 
 And again, no difference.
 
-\[\] 
+[] 
 Array<T>
 
 ## Enum
@@ -181,7 +181,7 @@ function funct(cb: (e: string | null, v: string | number) => void) { }
 Both support the long and short version.
 
 function funct(...args: Array<number>) {}
-function funct2(...args: number\[\]) {}
+function funct2(...args: number[]) {}
 
 ## Type Alias
 
@@ -214,13 +214,13 @@ type TypeLetters = "A" | "B" | "C";
 The first part is the same. You can use a string between square bracket to access in read or write a member of an object.
 
 var o: { foo?:number } = {};
-o\["foo"\] = 0;
+o["foo"] = 0;
 
 However, TypeScript won’t allow dynamic adding of a member. In TypeScript, once a type is set to a variable, this one cannot change. The exception is the "any" type.
 
 var o: { foo?:number } = {};
-o\["foo"\] = 0;
-o\[“bar”\] = 2; //This will work in Flow, but not in TypeScript
+o["foo"] = 0;
+o[“bar”] = 2; //This will work in Flow, but not in TypeScript
 
   
 This is interesting since Flow is looser in this regard, and TypeScript is looser in term of the null/undefined. The justification of TypeScript to be strict is its structural typing.
@@ -229,27 +229,27 @@ This is interesting since Flow is looser in this regard, and TypeScript is loose
 
 Pretty similar except the case of allowing Null. Here are all the similar scenarios.
 
-var x = \[\];
-var y = \[1, 2, 3\];
+var x = [];
+var y = [1, 2, 3];
 var z = new Array();
-var w: boolean\[\] = \[true, false, true\];
-var v: Array<boolean> = \[true, false, true\];
+var w: boolean[] = [true, false, true];
+var v: Array<boolean> = [true, false, true];
 
 Here is how TypeScript does with null (nothing to do) and how to add the possibility of null in Flow.
 
-var s: number\[\] = \[1, 2, null\];
-var s: (?number)\[\] = \[1, 2, null\];
+var s: number[] = [1, 2, null];
+var s: (?number)[] = [1, 2, null];
 
 ## Tuple
 
 Same syntax for tuple.
 
-var tuple: \[number, boolean, string\] = \[1, true, "three"\];
+var tuple: [number, boolean, string] = [1, true, "three"];
 
 ## Key interpolation
 
 var obj1: { foo: boolean } = { foo: true };
-obj1\["foo"\] = false;
+obj1["foo"] = false;
 
 ## Opaque Type
 
@@ -265,7 +265,7 @@ interface Serializable {
  serialize(): string;
 }
 class Foo implements Serializable {
- serialize() { return '\[Foo\]'; }
+ serialize() { return '[Foo]'; }
 }
 
 ## Interface as map
@@ -273,7 +273,7 @@ class Foo implements Serializable {
 Both share the same syntax.
 
 interface MyInterface {
- \[key: string\]: number;
+ [key: string]: number;
 }
 var x: MyInterface;
 x.key = 3;

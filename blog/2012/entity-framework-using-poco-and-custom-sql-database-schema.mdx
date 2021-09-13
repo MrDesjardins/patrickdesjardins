@@ -11,11 +11,14 @@ Entity Framework use the default schema when accessing the database. It uses the
 
 You may need to use Entity Framework with different schema. This can be done by overriding the creation of the model that is done with the method "OnModelCreating". This can be done inside your custom DbObject class.
 
-\[csharp\] public string DefaultSchema { get; set; } protected override void OnModelCreating(DbModelBuilder modelBuilder) { if (!String.IsNullOrEmpty(DefaultSchema)) { var entityMethod = modelBuilder.GetType().GetMethod("Entity"); foreach (PropertyInfo dbSet in GetType().GetProperties().Where(t =>t.PropertyType.IsGenericType && t.PropertyType.GetGenericTypeDefinition().Equals(typeof (DbSet<>)))) { var entityType = dbSet.PropertyType.GetGenericArguments(); var entityMethodGeneric = entityMethod.MakeGenericMethod(entityType); var entityConfig = entityMethodGeneric.Invoke(modelBuilder, null); var toTableMethod = entityConfig.GetType().GetMethod("ToTable", new\[\]{typeof (string), typeof (string)}); var tableName = GetTableName(entityType.FirstOrDefault()); toTableMethod.Invoke(entityConfig, new object\[\]{tableName, DefaultSchema}); }
+
+```csharp
+ public string DefaultSchema { get; set; } protected override void OnModelCreating(DbModelBuilder modelBuilder) { if (!String.IsNullOrEmpty(DefaultSchema)) { var entityMethod = modelBuilder.GetType().GetMethod("Entity"); foreach (PropertyInfo dbSet in GetType().GetProperties().Where(t =>t.PropertyType.IsGenericType && t.PropertyType.GetGenericTypeDefinition().Equals(typeof (DbSet<>)))) { var entityType = dbSet.PropertyType.GetGenericArguments(); var entityMethodGeneric = entityMethod.MakeGenericMethod(entityType); var entityConfig = entityMethodGeneric.Invoke(modelBuilder, null); var toTableMethod = entityConfig.GetType().GetMethod("ToTable", new[]{typeof (string), typeof (string)}); var tableName = GetTableName(entityType.FirstOrDefault()); toTableMethod.Invoke(entityConfig, new object[]{tableName, DefaultSchema}); }
 
 } base.OnModelCreating(modelBuilder); }
 
-private string GetTableName(Type type) { var tableAttribute = type.GetCustomAttributes(false).OfType<System.ComponentModel.DataAnnotations.TableAttribute>().FirstOrDefault(); return tableAttribute == null ? type.Name : tableAttribute.Name; } \[/csharp\]
+private string GetTableName(Type type) { var tableAttribute = type.GetCustomAttributes(false).OfType<System.ComponentModel.DataAnnotations.TableAttribute>().FirstOrDefault(); return tableAttribute == null ? type.Name : tableAttribute.Name; } 
+```
 
 With the code above, you can set the DefaultSchema and the query will be made with the schema desired.
 

@@ -14,7 +14,10 @@ Here is an example that we try to save an entity which fail because a business l
 
 I am pretty sure that at this point, someone will say that the exception defeat the purpose in many scenario where you would like to handle particularly all errors from all models objects and display something to the user (or to log them). Well, you can skip the exception and go directly to the model error.
 
-\[csharp\] var fromDatabase = dContext.Cars.Single(p => p.Id == car.Id); dContext.Entry(fromDatabase).CurrentValues.SetValues(car); if (!dContext.GetValidationErrors().Any()) { dContext.SaveChanges(); } else { //Display the error in the list dContext.GetValidationErrors() } \[/csharp\]
+
+```csharp
+ var fromDatabase = dContext.Cars.Single(p => p.Id == car.Id); dContext.Entry(fromDatabase).CurrentValues.SetValues(car); if (!dContext.GetValidationErrors().Any()) { dContext.SaveChanges(); } else { //Display the error in the list dContext.GetValidationErrors() } 
+```
 
 As you can see, this way, you check if they are any problem and then you save if none. On the other side, if errors occur you can display them. This is very powerful because you have the entity which is problematic, all its properties that is in error and all its errors messages. This is possible because the **GetValidationErrors** function return a DbEntityValidationResult which contain the Entry itself, the state if it's valid or not and a collection of error in the DbValidationError format which mean that you know what property is in error with the message.
 

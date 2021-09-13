@@ -15,4 +15,7 @@ The solution is to name the file **Int32.cshtml**. CLR type name are used and no
 
 Another detail important to remember is that if you want to have **integer** and **nullable integer** you can only do it withing one template. So, always define the type with its nullable type. For example, the integer should be in the file Int32.cshtml and the template could be something like this (for DisplayTemplate):
 
-\[csharp\] @model int? @if (Model.HasValue) { @Html.Raw(Model) } else { @:- } \[/csharp\]
+
+```csharp
+ @model int? @if (Model.HasValue) { @Html.Raw(Model) } else { @:- } 
+```

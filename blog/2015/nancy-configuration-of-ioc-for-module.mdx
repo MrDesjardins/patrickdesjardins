@@ -7,10 +7,16 @@ categories:
 
 Nancy module constructor is by default without parameters. However, soon you will need to have your route match to some of your logic which should be under some business logic classes. In fact, the next step after routing should be to call your controllers or or service layer classes. To be able to inject your service layer class, you need to inject this class. Nancy **Bootstrap** class come to the rescue. You only need to override a single method to be in business. Nancy comes with a default small IoC. The method to override is named **ConfigureRequestContainer**.
 
-\[csharp\] public class YouBootstrapper : DefaultNancyBootstrapper { protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context) { base.ConfigureRequestContainer(container, context); container.Register<IServiceLayer, YourServiceLayer>(); } } \[/csharp\]
+
+```csharp
+ public class YouBootstrapper : DefaultNancyBootstrapper { protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context) { base.ConfigureRequestContainer(container, context); container.Register<IServiceLayer, YourServiceLayer>(); } } 
+```
 
 After this modification, you only need to remove the parameterless constructor and have the one with the interface defined in the request container of the BootStrap class.
 
-\[csharp\] public class IndexModule : NancyModule { public IndexModule(IServiceLayer serviceLayer, } \[/csharp\]
+
+```csharp
+ public class IndexModule : NancyModule { public IndexModule(IServiceLayer serviceLayer, } 
+```
 
 Concerning the boot strap class, Nancy will load automatically your class by scanning the assembly where you startup class reside.

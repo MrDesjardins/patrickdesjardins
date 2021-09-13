@@ -11,9 +11,12 @@ Entity Framework version 5, like its previous version doesn't map timespan. The 
 
 I thought that Entity Framework 5 was able with SQL Server 2008 R2 to map Timespan to Time. I was wrong. However, theirs a work around.
 
-\[csharp\] public Int64 TimeBetweenExercicesTicks{ get; set; }
 
-\[NotMapped\] public TimeSpan TimeBetweenExercices { get { return TimeSpan.FromTicks(TimeBetweenExercicesTicks); } set { TimeBetweenExercicesTicks= value.Ticks; } } \[/csharp\]
+```csharp
+ public Int64 TimeBetweenExercicesTicks{ get; set; }
+
+[NotMapped] public TimeSpan TimeBetweenExercices { get { return TimeSpan.FromTicks(TimeBetweenExercicesTicks); } set { TimeBetweenExercicesTicks= value.Ticks; } } 
+```
 
 First, you should want to still use in your code the TimeSpan type because it's convenient to manipulate time. But, on the other side Entity Framework doesn't map the type. Fortunately, we can map the ticks and simply ignore the property with the TimeSpan type.
 

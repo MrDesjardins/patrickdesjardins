@@ -8,7 +8,7 @@ categories:
 ## Null and array
 
 The type **null** or the type **array** are in fact of type object. You can verify this by using **typeof**. ```typescript
-console.log(typeof(null)); console.log(typeof(\[1,2,3\]); 
+console.log(typeof(null)); console.log(typeof([1,2,3]); 
 ``` 
 
 
@@ -18,7 +18,7 @@ Variables name can have illegal character if used with quote when defined. For e
 var yourObject = { "this-is-illegal":"but it works because of the quote", this\_is\_legal : "and does not require quote" }; 
 ``` 
  Even if the illegal character can be by-passed by the first approach, using quote, it is not recommended to write you code this way. Retreving the value require to use the array notation instead of the dot notation. ```typescript
-var v1 = yourObject\["this-is-illegal"\]; //instead of var v1 = yourObject.this\_is\_legal; 
+var v1 = yourObject["this-is-illegal"]; //instead of var v1 = yourObject.this\_is\_legal; 
 ``` 
 
 
@@ -27,14 +27,14 @@ var v1 = yourObject\["this-is-illegal"\]; //instead of var v1 = yourObject.this\
 Every function can access the **arguments** keyword. This variable is not an official JavaScript array (lack of Array method) but can access every elements with the square bracket.
 
 ```typescript
-function add(a,b) { return a + b; // or return arguments\[0\] + arguments\[1\]; } 
+function add(a,b) { return a + b; // or return arguments[0] + arguments[1]; } 
 ``` 
 
 
 But this goes far beyond that. You can define your function to not have any arguments and use it with multiple arguments. The **arguments** variable will hold all arguments passed to the function and not only those officially specified.
 
 ```typescript
-function add() { var index var sum = 0; for (index = 0; index < arguments.length; index += 1) { sum += arguments\[index\]; } return sum } var result = add(1,2,3,4,5); // 15 
+function add() { var index var sum = 0; for (index = 0; index < arguments.length; index += 1) { sum += arguments[index]; } return sum } var result = add(1,2,3,4,5); // 15 
 ``` 
 
 
@@ -69,7 +69,7 @@ Prototype is the concept in JavaScript that allow you to share information throu
 ## hasOwnProperty
 
 If you want to loop your object proprety (variables and functions) than you will stumble into prototype properties which you may not want to see. If you want to see only method that you have defined for the object and not those ones from the prototype you must use the function **hasOwnProperty('propertyToCheck')**. ```typescript
-var propertyName ; for (propertyName in yourObject) { if (yourObject.hasOwnProperty(propertyName\])) { //Do what you want with the property that is inside YourObject and not inside the its prototype } } 
+var propertyName ; for (propertyName in yourObject) { if (yourObject.hasOwnProperty(propertyName])) { //Do what you want with the property that is inside YourObject and not inside the its prototype } } 
 ``` 
  We used the for in statement to loop through all properties. This give us property in an non-specific order. If you want to have properties in the order defined in the code you must use a for with a integer that loop every properties in an array.
 
@@ -80,7 +80,7 @@ Using delete can remove a property. For example, if you define a property named 
 ## Adding Method to Prototype
 
 You can add methods to an object with the prototype. You just need to use the prototype keyword after the type you want to enhance. The example below add a trim method to any string. ```typescript
-String.prototype\['trim'\] = function () { return this.replace(/^\\s+|\\s+$/g, ''); }; This add the trim method to all String type. 
+String.prototype['trim'] = function () { return this.replace(/^\\s+|\\s+$/g, ''); }; This add the trim method to all String type. 
 ``` 
 
 
@@ -89,9 +89,12 @@ String.prototype\['trim'\] = function () { return this.replace(/^\\s+|\\s+$/g, '
 In JavaScript it is better to define variable in the beginning of the function instead of the best practice that suggest to declare the variable the nearest of its use. The reason is that JavaScript scope works differently than other languages. JavaScript variables defined in a scope can access others variables outside its scopes. ```typescript
 var Program = function() { var var1 = 1; var Program2= function() { var1 = var1 + 1; // This can access var1 function which is not the case in other scoped language. } Program2(); // Call f2 function //The value of var 1 is 2; } 
 ``` 
- For example, this does not work in C#: \[csharp\] class Program { private int a;
+ For example, this does not work in C#: 
+```csharp
+ class Program { private int a;
 
-private class Program2 { public Program2() { a = a + 1; // Do not compile } } } \[/csharp\]
+private class Program2 { public Program2() { a = a + 1; // Do not compile } } } 
+```
 
 ## Apply Keyword
 
@@ -101,7 +104,7 @@ You can call any function with by following this function with the method **appl
 function add(a,b) { return a + b; } 
 ``` 
  ```typescript
-//Can be called this way: var result1 = add(1,2); //3 //or var result2 = add.apply(null,\[1,2\]); //3 
+//Can be called this way: var result1 = add(1,2); //3 //or var result2 = add.apply(null,[1,2]); //3 
 ``` 
 
 

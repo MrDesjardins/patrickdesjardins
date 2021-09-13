@@ -64,7 +64,7 @@ const schemas = makeExecutableSchema({
 The class must inherit _SchemaDirectiveVisitor_. Then, because we have specified that it can be applied to a field and a type, we need to override two functions: _visitFieldDefinition_ and _visitObject_.
 
 export class InternalDataDirective extends SchemaDirectiveVisitor {
-    private static readonly INTERNAL\_APP = \["app1", "app2", "app3"\];
+    private static readonly INTERNAL\_APP = ["app1", "app2", "app3"];
 
     public visitObject(object: GraphQLObjectType): GraphQLObjectType | void | null {
         this.ensureFieldsWrapped(object);
@@ -88,7 +88,7 @@ export class InternalDataDirective extends SchemaDirectiveVisitor {
         const fields = objectType.getFields();
 
         Object.keys(fields).forEach(fieldName => {
-            const field = fields\[fieldName\];
+            const field = fields[fieldName];
             this.checkField(field);
         });
     }
@@ -107,13 +107,13 @@ export class InternalDataDirective extends SchemaDirectiveVisitor {
                 !InternalDataDirective.INTERNAL\_APP.includes(context.req.appOrigin)
             ) {
                 throw new Error(
-                    \`The field \[${field.name}\] has an internal scope and does not allow access for the application \[${
+                    \`The field [${field.name}] has an internal scope and does not allow access for the application [${
                         context.req.appOrigin
-                    }\]\`
+                    }]\`
                 );
             }
 
-            const result = await resolve.apply(this, \[source, args, context, graphQLResolveInfo\]);
+            const result = await resolve.apply(this, [source, args, context, graphQLResolveInfo]);
             return result;
         };
     }

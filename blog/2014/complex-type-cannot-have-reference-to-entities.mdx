@@ -7,7 +7,10 @@ categories:
 
 If you have a **complex type**, you cannot have within this one any reference to other entities. Let's imagine that I have a money class.
 
-\[csharp\] public class Money { public decimal Value { get; set; } public CurrencyType Currency { get; set; } } \[/csharp\]
+
+```csharp
+ public class Money { public decimal Value { get; set; } public CurrencyType Currency { get; set; } } 
+```
 
 Has you can see, it has a reference to another class, named CurrencyType. This type is abstract and must be set to a Currency class like USD or CND. However, this bring Entity Framework with a ModelValidationException.
 
@@ -23,7 +26,9 @@ The question is how to use **Entity Framework** and still have an association be
 
 A possible solution that I have used is to loss the strong Foreign Key but still have the data directly into the entity that use the money. This way, less tables, more speed, and in the code we use the value object pattern. Here is the money class and the value object class for currency.
 
-\[csharp\] public class Money { public decimal Value { get; set; } public int CurrencyTypeId { get { return this.Currency.Id; } set { this.Currency = CurrencyType.GetCurrencyFromId(value); } } /// /// This is ignored by EntityFramework /// public CurrencyType Currency { get; set; } }
+
+```csharp
+ public class Money { public decimal Value { get; set; } public int CurrencyTypeId { get { return this.Currency.Id; } set { this.Currency = CurrencyType.GetCurrencyFromId(value); } } /// /// This is ignored by EntityFramework /// public CurrencyType Currency { get; set; } }
 
 public abstract class CurrencyType : ValueObject {
 
@@ -31,24 +36,34 @@ public static readonly CurrencyType Canada = new CanadianCurrency(); public stat
 
 public static CurrencyType GetCurrencyFromId(int value) { Type type = typeof(CurrencyType);
 
-var fields = type.GetFields(BindingFlags.Public | BindingFlags.Static); foreach (var field in fields) { var fieldValue = field.GetValue(null) as CurrencyType; if (fieldValue != null) { if (fieldValue.Id == value) { return fieldValue; } } } throw new KeyNotFoundException(string.Concat(value, " cannot be found in any static fields.")); } } \[/csharp\]
+var fields = type.GetFields(BindingFlags.Public | BindingFlags.Static); foreach (var field in fields) { var fieldValue = field.GetValue(null) as CurrencyType; if (fieldValue != null) { if (fieldValue.Id == value) { return fieldValue; } } } throw new KeyNotFoundException(string.Concat(value, " cannot be found in any static fields.")); } } 
+```
 
 As you can see, the money class does have the value and the CurrencyType property. This property is ignored by Entity Framework so Money can be as **Complex Type**. However, we have an integer field that can be used but should not since we have a strongly typed currency property. Here is how to make it works with Entity configuration.
 
-\[csharp\] public class MoneyConfiguration : ComplexTypeConfiguration { public MoneyConfiguration() { this.Ignore(d => d.Currency); } } \[/csharp\]
+
+```csharp
+ public class MoneyConfiguration : ComplexTypeConfiguration { public MoneyConfiguration() { this.Ignore(d => d.Currency); } } 
+```
 
 How to use this money class? The best way is to check the unit tests.
 
-\[csharp\] \[TestMethod\] public void GivenAnInteger\_WhenIntegerIsAKeyOfACurrency\_ThenReturnConcreteCurrency() { // Arrange var idOfCanada = CurrencyType.Canada.Id; var expected = CurrencyType.Canada;
+
+```csharp
+ [TestMethod] public void GivenAnInteger\_WhenIntegerIsAKeyOfACurrency\_ThenReturnConcreteCurrency() { // Arrange var idOfCanada = CurrencyType.Canada.Id; var expected = CurrencyType.Canada;
 
 // Act var found = CurrencyType.GetCurrencyFromId(idOfCanada);
 
-//Assert Assert.IsInstanceOfType(found,typeof(CanadianCurrency)); Assert.AreEqual(expected.Id,found.Id); } \[/csharp\]
+//Assert Assert.IsInstanceOfType(found,typeof(CanadianCurrency)); Assert.AreEqual(expected.Id,found.Id); } 
+```
 
 This is required because when we will load from Entity Framework, we will only get the integer. But, in the business logic the code will use the property. This is why the property of CurrencyTypeId is tightly bound with Currency with the reflection code. In the case that the Id is not legit (does not exist), an exception is thrown. This should never occur but we should still test the case.
 
-\[csharp\] \[TestMethod\] public void GivenAnInteger\_WhenIntegerIsNotAnExistingKeyOfACurrency\_ThenThrowException() { // Arrange const int idNonExisting = -1;
 
-// Act & Assert TestExtensions.Thrown(() => CurrencyType.GetCurrencyFromId(idNonExisting)); } \[/csharp\]
+```csharp
+ [TestMethod] public void GivenAnInteger\_WhenIntegerIsNotAnExistingKeyOfACurrency\_ThenThrowException() { // Arrange const int idNonExisting = -1;
+
+// Act & Assert TestExtensions.Thrown(() => CurrencyType.GetCurrencyFromId(idNonExisting)); } 
+```
 
 [![UnitTestPassed](http://patrickdesjardins.com/blog/wp-content/uploads/2014/03/UnitTestPassed-400x38.png)](http://patrickdesjardins.com/blog/complex-type-cannot-have-reference-to-entities/unittestpassed) To conclude, this might not be the best solution since it would be cleaner not to have this integer in the class. It would also be better not to have this integer without a foreign key to the CurrencyType table. However, since the value will be filled up and handled by Entity Framework only, we still control the integrity with the code. It would be possible for us to add manually the foreign key too.

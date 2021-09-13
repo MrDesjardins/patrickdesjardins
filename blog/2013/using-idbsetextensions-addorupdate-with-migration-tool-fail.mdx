@@ -8,17 +8,21 @@ categories:
 
 Using **IDbSetExtensions.AddOrUpdate** with Migration Tool fail if you are using a custom **IDbSet**.
 
-> Unable to call public, instance method AddOrUpdate on derived IDbSet type 'DataAccessLayer.Database.FilteredDbSet\`1\[Model.Workout\]'. Method not found.
+> Unable to call public, instance method AddOrUpdate on derived IDbSet type 'DataAccessLayer.Database.FilteredDbSet\`1[Model.Workout]'. Method not found.
 
 The exception above is raised when using : _PM> update-database -verbose -force_. The class _**FilteredDbSet**_, inherit _**IDbSet**_ and should be able to use the method AddOrUpdate which is pretty useful when seeding data. But, the exception raise and the reason is that it try to get the method definition with a parameter.
 
-\[csharp highlight="14"\] public static void AddOrUpdate<TEntity>(this IDbSet<TEntity> set, params TEntity\[\] entities) where TEntity : class { RuntimeFailureMethods.Requires(set != null, (string) null, "set != null"); RuntimeFailureMethods.Requires(entities != null, (string) null, "entities != null"); DbSet<TEntity> set1 = set as DbSet<TEntity>; if (set1 != null) { InternalSet<TEntity> internalSet = (InternalSet<TEntity>) set1.InternalSet; IDbSetExtensions.AddOrUpdate<TEntity>(set1, IDbSetExtensions.GetKeyProperties<TEntity>(typeof (TEntity), internalSet), entities); } else { Type type = set.GetType(); MethodInfo method = type.GetMethod("AddOrUpdate", new Type\[1\] { typeof (TEntity\[\]) }); if (method == (MethodInfo) null) throw System.Data.Entity.Resources.Error.UnableToDispatchAddOrUpdate((object) type); method.Invoke((object) set, (object\[\]) new TEntity\[1\]\[\] { entities }); } } \[/csharp\]
+```csharp
+ public static void AddOrUpdate<TEntity>(this IDbSet<TEntity> set, params TEntity[] entities) where TEntity : class { RuntimeFailureMethods.Requires(set != null, (string) null, "set != null"); RuntimeFailureMethods.Requires(entities != null, (string) null, "entities != null"); DbSet<TEntity> set1 = set as DbSet<TEntity>; if (set1 != null) { InternalSet<TEntity> internalSet = (InternalSet<TEntity>) set1.InternalSet; IDbSetExtensions.AddOrUpdate<TEntity>(set1, IDbSetExtensions.GetKeyProperties<TEntity>(typeof (TEntity), internalSet), entities); } else { Type type = set.GetType(); MethodInfo method = type.GetMethod("AddOrUpdate", new Type[1] { typeof (TEntity[]) }); if (method == (MethodInfo) null) throw System.Data.Entity.Resources.Error.UnableToDispatchAddOrUpdate((object) type); method.Invoke((object) set, (object[]) new TEntity[1][] { entities }); } } 
+```
 
 Instead, we will call the _**GetMethod**_ without the second parameter.
 
-\[csharp highlight="11"\] public static void AddOrUpdate<TEntity>(this IDbSet<TEntity> set, params TEntity\[\] entities) where TEntity : class { var set1 = set as DbSet<TEntity>; if (set1 != null) { System.Data.Entity.Migrations.IDbSetExtensions.AddOrUpdate(set,entities); } else { Type type = set.GetType(); MethodInfo method = type.GetMethod("AddOrUpdate");
+```csharp
+ public static void AddOrUpdate<TEntity>(this IDbSet<TEntity> set, params TEntity[] entities) where TEntity : class { var set1 = set as DbSet<TEntity>; if (set1 != null) { System.Data.Entity.Migrations.IDbSetExtensions.AddOrUpdate(set,entities); } else { Type type = set.GetType(); MethodInfo method = type.GetMethod("AddOrUpdate");
 
-if (method == null) throw new Exception(""); var data = new object\[entities.Length\]; for (int i = 0; i < entities.Length; i++) { data\[i\] = entities\[i\]; } method.Invoke(set, data); } } \[/csharp\]
+if (method == null) throw new Exception(""); var data = new object[entities.Length]; for (int i = 0; i < entities.Length; i++) { data[i] = entities[i]; } method.Invoke(set, data); } } 
+```
 
 Also, you can see that we call Invoke by passing a single array of object. This is required to be able to call the method correctly.
 

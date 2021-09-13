@@ -45,7 +45,7 @@ The button is disabled and make sure that if a previous worker existed to remove
 The WebWorker is using the same algorithm that the one execute in the main script which was loading it from an other module. To do that with WebWorker, we need to get more barebone which mean we cannot use the import syntax, but directly use requirejs.
 
 ```typescript
-importScripts("../vendors/requirejs/require.js"); console.log("loaded"); requirejs.config({ baseUrl: ".", }); require(\["algo"\], function (algo\_1) { console.log("required"); //debugger; self.addEventListener("message", (message: MessageEvent) => { console.log("receive message begin"); const origin = message.origin; const iterations = message.data.iterations; const multiplier = message.data.multiplier; const algo = new algo\_1.Algorithm(); const result = algo.calculatePrimes(iterations, multiplier); console.log("receive message end"); (self as any).postMessage({ command: "done", primes: result }); }); }); 
+importScripts("../vendors/requirejs/require.js"); console.log("loaded"); requirejs.config({ baseUrl: ".", }); require(["algo"], function (algo\_1) { console.log("required"); //debugger; self.addEventListener("message", (message: MessageEvent) => { console.log("receive message begin"); const origin = message.origin; const iterations = message.data.iterations; const multiplier = message.data.multiplier; const algo = new algo\_1.Algorithm(); const result = algo.calculatePrimes(iterations, multiplier); console.log("receive message end"); (self as any).postMessage({ command: "done", primes: result }); }); }); 
 ``` 
 
 

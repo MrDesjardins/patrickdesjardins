@@ -12,15 +12,20 @@ categories:
 
 The database context is abstracting the connection between entity and Entity Framework. We won't abstract all method of the Entity Framework and Linq to Entity like "Where", "Select", "Find", "First", etc but we will abstract the entry point : DbSet. In fact, the reason is to be able to add ability to impersonate later and to be able to configure your entity that you need to have this DatabaseContext. The role of the factory is not to configure Entity Framework, neither to impersonate. The database context role is to do those task.
 
-\[csharp\] public interface IDatabaseContext { int SaveChanges(); IDbSet<TEntity> SetOwnable<TEntity>() where TEntity : class, IUserOwnable; DbSet<TEntity> Set<TEntity>() where TEntity : class; DbEntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class; void InitializeDatabase(); UserProfileImpersonate Impersonate(ICurrentUser userProfile); } \[/csharp\]
+
+```csharp
+ public interface IDatabaseContext { int SaveChanges(); IDbSet<TEntity> SetOwnable<TEntity>() where TEntity : class, IUserOwnable; DbSet<TEntity> Set<TEntity>() where TEntity : class; DbEntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class; void InitializeDatabase(); UserProfileImpersonate Impersonate(ICurrentUser userProfile); } 
+```
 
 For the moment, the interface of IDatabaseContext looks like this. We have a SaveChanges because we might want to do operation over several repository and want to manually commit changes in a specific time. This will be the role of SaveChanges method. The SetOwnable<> method will act like the default Set method but will automatically assign the user to the entity. This will be good for the loading and for the saving. When in the loading, we won't have to specify every time that we want the workout for the userA, etc. It will be automatically. This save us time, possibility of error and also improve the security because by default, everything will be bound the the current user. The InitializeDatabase method will be a method to configure extra database stuff. For example, in this project, I am using this method to setup the WebSecurity (membership layout for WebMatrix). The last method is the method that will give us some impersonation for the time of a query depending of another user profile.
 
-\[csharp\] public class DatabaseContext : DbContext, IDatabaseContext { public const string DEFAULTCONNECTION = "DefaultConnection";
+
+```csharp
+ public class DatabaseContext : DbContext, IDatabaseContext { public const string DEFAULTCONNECTION = "DefaultConnection";
 
 public DatabaseContext(IUserProvider userProvider) { UserProvider = userProvider;
 
-base.Database.Connection.ConnectionString = ConfigurationManager.ConnectionStrings\[DEFAULTCONNECTION\].ConnectionString; Configuration.ProxyCreationEnabled = false; }
+base.Database.Connection.ConnectionString = ConfigurationManager.ConnectionStrings[DEFAULTCONNECTION].ConnectionString; Configuration.ProxyCreationEnabled = false; }
 
 public IUserProvider UserProvider { get; set; }
 
@@ -32,15 +37,27 @@ public void InitializeDatabase() { WebSecurity.InitializeDatabaseConnection(DEFA
 
 protected override void OnModelCreating(DbModelBuilder modelBuilder) { base.OnModelCreating(modelBuilder); //Call here some other classes to build the configuration of Entity Framework }
 
-public UserProfileImpersonate Impersonate(ICurrentUser userProfile) { return new UserProfileImpersonate(this, userProfile); } } \[/csharp\] This is a small example. That talk for itself. The two interesting part is the SetOwnable that use a FilteredDbSet which the code has been trimmed from a version that you can find over the web and that we will discuss later. The other part is the Impersonate method that we will talk now.
+public UserProfileImpersonate Impersonate(ICurrentUser userProfile) { return new UserProfileImpersonate(this, userProfile); } } 
+``` This is a small example. That talk for itself. The two interesting part is the SetOwnable that use a FilteredDbSet which the code has been trimmed from a version that you can find over the web and that we will discuss later. The other part is the Impersonate method that we will talk now.
 
-Lets start with the end result. For now, if you want to insert into the database a new Workout entity you need in the WorkoutRepository to do : \[csharp\] DatabaseContext.SetOwnable<Workout>().Add(entity); \[/csharp\] This will automatically insert a new workout to the current logged user. If you want to change the user, you could use the Set but because we override the Set method and check if the it inherit from the **IUserOwnable** interface. This is the required interface to use SetOwnable method. This way, we can get the user id. But, to protect developer to by pass this mechanism, an exception is thrown if we use Set method with entity that are ownable. That doesn't mean that you cannot save to an other user, but will require more work with **impersonating**. Why adding some over head and not letting the developer directly use the Set when he want to save an entity to someone else authority? Simply because all entity will inherit from IUserOwnable because it will be a lot easier to work with without having to always specify the user inside the repository. Also, repository doesn't have access directly to the user id. That's say, it's a painful process. Not letting access directly to the Set avoid the mistake to simply user Set method for an entity. An exception will be thrown and the developer will automatically remember to user the SetOwnable method instead. If he really mean to use the Set method, than the impersonate method will be appropriate.
+Lets start with the end result. For now, if you want to insert into the database a new Workout entity you need in the WorkoutRepository to do : 
+```csharp
+ DatabaseContext.SetOwnable<Workout>().Add(entity); 
+``` This will automatically insert a new workout to the current logged user. If you want to change the user, you could use the Set but because we override the Set method and check if the it inherit from the **IUserOwnable** interface. This is the required interface to use SetOwnable method. This way, we can get the user id. But, to protect developer to by pass this mechanism, an exception is thrown if we use Set method with entity that are ownable. That doesn't mean that you cannot save to an other user, but will require more work with **impersonating**. Why adding some over head and not letting the developer directly use the Set when he want to save an entity to someone else authority? Simply because all entity will inherit from IUserOwnable because it will be a lot easier to work with without having to always specify the user inside the repository. Also, repository doesn't have access directly to the user id. That's say, it's a painful process. Not letting access directly to the Set avoid the mistake to simply user Set method for an entity. An exception will be thrown and the developer will automatically remember to user the SetOwnable method instead. If he really mean to use the Set method, than the impersonate method will be appropriate.
 
-For general entity, let say that we have a list of status that are shared across all entities or shared across all users, the entity won't inherit of **IUserOwnable** because it's not a user ownable entity. So in theory it works, let check in practice! \[csharp\] using (var db = DatabaseContext.Impersonate(new UserProfile { UserId = 1 })) { db.SetOwnable<Workout>().Add(entity); } \[/csharp\] This would be in the repository instead of the last piece of code. As you can see, we impersonate with a UserProfile with the Id 1. The code is around curly bracket and give us the scope of when the impersonation start and end.
+For general entity, let say that we have a list of status that are shared across all entities or shared across all users, the entity won't inherit of **IUserOwnable** because it's not a user ownable entity. So in theory it works, let check in practice! 
+```csharp
+ using (var db = DatabaseContext.Impersonate(new UserProfile { UserId = 1 })) { db.SetOwnable<Workout>().Add(entity); } 
+``` This would be in the repository instead of the last piece of code. As you can see, we impersonate with a UserProfile with the Id 1. The code is around curly bracket and give us the scope of when the impersonation start and end.
 
-The DatabaseContext class implementation of Impersonate simply call a new DbContext. \[csharp\] public UserProfileImpersonate Impersonate(ICurrentUser userProfile) { return new UserProfileImpersonate(this, userProfile); } \[/csharp\] A new class is used because we want to have a scope which is done by inherit from IDisposable interface. we will create a new instance of Impersonate and dispose it to come back with the real Current User and not the impersonate one. The class is mostly the same as the DbContext but has a reference to the user profile before the impersonate because we want to set it back once it's done.
+The DatabaseContext class implementation of Impersonate simply call a new DbContext. 
+```csharp
+ public UserProfileImpersonate Impersonate(ICurrentUser userProfile) { return new UserProfileImpersonate(this, userProfile); } 
+``` A new class is used because we want to have a scope which is done by inherit from IDisposable interface. we will create a new instance of Impersonate and dispose it to come back with the real Current User and not the impersonate one. The class is mostly the same as the DbContext but has a reference to the user profile before the impersonate because we want to set it back once it's done.
 
-\[csharp\] public class UserProfileImpersonate : IDatabaseContext, IDisposable { private readonly DatabaseContext \_databaseContext;
+
+```csharp
+ public class UserProfileImpersonate : IDatabaseContext, IDisposable { private readonly DatabaseContext \_databaseContext;
 
 private readonly IUserProvider \_oldUserProvider;
 
@@ -66,7 +83,8 @@ public void InitializeDatabase() { \_databaseContext.InitializeDatabase(); }
 
 public UserProfileImpersonate Impersonate(ICurrentUser userProfile) { return \_databaseContext.Impersonate(userProfile); }
 
-#endregion } \[/csharp\]
+#endregion } 
+```
 
 Simple isn't? We simply call the same database context method but only change the current logged user profile. Single task to do which respect the single responsibility principle.
 

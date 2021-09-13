@@ -11,11 +11,17 @@ To solve this problem, you need to use a special function that only Linq to Enti
 
 Instead of having something like this:
 
-\[csharp\] var data = (from i in Database.Users group i by new {y=i.InvoiceDate.Year,m = i.InvoiceDate.Month} into g select new UserStatistic{ Date = new DateTime(g.Key.y, g.Key.m, 1), Experience = g.Sum(o => o.Exp)); \[/csharp\]
+
+```csharp
+ var data = (from i in Database.Users group i by new {y=i.InvoiceDate.Year,m = i.InvoiceDate.Month} into g select new UserStatistic{ Date = new DateTime(g.Key.y, g.Key.m, 1), Experience = g.Sum(o => o.Exp)); 
+```
 
 You need to use the EntityFunctions.CreateDateTime :
 
-\[csharp\] var data = (from i in Database.Users group i by new {y=i.InvoiceDate.Year,m = i.InvoiceDate.Month} into g select new UserStatistic{ Date = EntityFunctions.CreateDateTime(g.Key.y, g.Key.m, 1, 0, 0, 0), Experience = g.Sum(o => o.Exp)); \[/csharp\]
+
+```csharp
+ var data = (from i in Database.Users group i by new {y=i.InvoiceDate.Year,m = i.InvoiceDate.Month} into g select new UserStatistic{ Date = EntityFunctions.CreateDateTime(g.Key.y, g.Key.m, 1, 0, 0, 0), Experience = g.Sum(o => o.Exp)); 
+```
 
 Both code do the same thing, but the second work with Entity Framework. This is because it uses Linq to Entity which convert its statement into SQL and hence, doesn't know how to create a .Net DateTime object.
 
