@@ -17,10 +17,10 @@ Theses files are handled by Entity Framework and for most of the time won't be r
 
 Nevertheless, it's always good good to know what's going on under the hood. To get those 3 files, the project with the entity model must have been compiled with the option to display the meta data of the conceptual model into the Bin folder. By default, all these 3 meta data files are embedded in the assembly. To change the embedded to an external output, you need to open the Visual Designer of the Entity model. Click anywhere in a blank spot (not an entity or an association) and open the property windows. One property of the ConceptualEntityModel is called "Metadata Artifact Processing" and by default is set to "Embed in Output Assembly". You need to change this to "Copy to Output Directory".
 
-[caption id="attachment\_127" align="aligncenter" width="379" caption="Property of the Conceptual Entity Model to output the 3 XML files"]![](images/output3filesedmx.png)
+![](images/output3filesedmx.png)
 
 This will output the CSDL, SSDL and MSL files in the bin folder.
 
-[caption id="attachment\_128" align="aligncenter" width="297" caption="Debug directory with the 3 XML files"]![](images/output3filesedmx2.png)
+![](images/output3filesedmx2.png)
 
 For more information about the CSDL, SSDL and MSL XML files, wait few days :)

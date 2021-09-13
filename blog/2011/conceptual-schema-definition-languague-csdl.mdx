@@ -9,7 +9,7 @@ The Conceptual schema definition language (CSDL) is an XML file generated while 
 
 The CSDL file is in fact a XML with three distinct sections. If we open the NorthWind database .csdl file (the conceptual entity model has been generated from the Microsoft Northwind database) we can see these 3 sections:
 
-[caption id="attachment\_132" align="aligncenter" width="400" caption="The 3 part of CSDL file"]![](images/csdl3part-400x290.png)
+![](images/csdl3part-400x290.png)
 
 The first section is the **Entity Container**. This section contain some information concerning the global container. In the example I created with the NorthWind database, I had chosen to call the NorthWind Conceptual Model "NorthWinContainer". This is the name that we would use inside the project to get the Object Context.
 
@@ -30,7 +30,7 @@ var db = new NorthWindContainer(); Console.WriteLine("Lazy loading : " + db.Cont
 
 This value can be set also in the Conceptual Entity Model.
 
-[caption id="attachment\_133" align="aligncenter" width="380" caption="Lazy Loading Property of the Conceptual Entity Modal"]![](images/lazyloadingenabled.png)
+![](images/lazyloadingenabled.png)
 
 This first part of the CSDL file contains also all entities and associations definition. It's not in this part of the files that properties of theses entities are defined. In fact, it contains only the name and namespace. For the associations, it also only contain the two entity related.
 

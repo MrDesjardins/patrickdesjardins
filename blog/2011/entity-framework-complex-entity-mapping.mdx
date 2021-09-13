@@ -7,19 +7,19 @@ categories:
 
 Entity Framework can have in its EDMX file complex entities. The "normal" property of an entity is a "Scalar entity". Scalar entity is a property of the CLR type.
 
-[caption id="attachment\_114" align="aligncenter" width="400" caption="Scalar types"]![](images/scalartype-400x300.png)
+![](images/scalartype-400x300.png)
 
 The complex entity is not a CLR type. In fact, it's a group of scalar entities. From the point of view of the database, nothing change either if it's a complex or scalar property. But, from the point of view of the Object Context, the entity will have an object with a group of scalar property.
 
 ## How to add Complex entity?
 
-In the AdventureWorks database once the model is generated from the database you get tables, views and stored procedure. For this exercise, lets take the generated entity "Department" [caption id="attachment\_115" align="aligncenter" width="254" caption="Department Entity"]![](images/DepartmentEntity.png)
+In the AdventureWorks database once the model is generated from the database you get tables, views and stored procedure. For this exercise, lets take the generated entity "Department" ![](images/DepartmentEntity.png)
 
-[caption id="attachment\_116" align="aligncenter" width="400" caption="Context Menu to add a Complex Type"]![](images/AddComplexType-400x247.png)
+![](images/AddComplexType-400x247.png)
 
 One the complexe type is created, this one will be added in the Model Browser under the Entity Model (.edmx file), under the folder "Complex types". From there, it's possible to right click the complex entity to add scalar entity or even other complex entity.
 
-[caption id="attachment\_117" align="aligncenter" width="364" caption="Complex type with properties"]![](images/complextypewithproperties.png)
+![](images/complextypewithproperties.png)
 
 Once the complex type is created, it's possible to add it as a complex property. Right clicking on the entity and selecting add and complex property. The last step is to select the complex property and to go to the property window to select the type of the created type.
 

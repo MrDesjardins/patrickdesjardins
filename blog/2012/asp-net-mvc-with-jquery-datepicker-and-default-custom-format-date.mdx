@@ -10,7 +10,7 @@ If you want to use a date picker I suggest you to use [JQuery UI Date Picker](ht
 
 The whole process of adding JQuery Date Picker result to download JQuery UI and to create an editor template that will add a class that will let you bind the date picker into it.
 
-[caption id="attachment\_1677" align="aligncenter" width="367"]![](images/datepickerjquery.png)
+![](images/datepickerjquery.png)
 
 First step, in the layout you need to add JQuery UI. If you are using Asp.Net MVC 4.0+ you can use the Bundles. This should be located inside the App\_Start folder of the project. The configuration is inside BundleConfig.cs.
 
@@ -38,7 +38,7 @@ If you go into the MVC framework we can see that it will check the TemplateInfo 
  private static MvcHtmlString InputHelper(HtmlHelper htmlHelper, InputType inputType, ModelMetadata metadata, string name, object value, bool useViewData, bool isChecked, bool setId, bool isExplicitValue, string format, IDictionary<string, object> htmlAttributes) { string fullHtmlFieldName = htmlHelper.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(name);^ //... 
 ```
 
-[caption id="attachment\_1678" align="aligncenter" width="333"]![](images/datetimewithoutformat.png)
+![](images/datetimewithoutformat.png)
 
 Last step is to bind JQuery DatePicker to the class ui-date-picker that we have set in the template. ```typescript
 $(document).ready(function () { $(".ui-date-picker").datepicker({ dateFormat: 'yy-mm-dd' }); } 

@@ -38,7 +38,7 @@ ESQL is more error prone than Linq to Entity because the query is in a string. Y
 
 This code use an _EntityDataReader_ that derive from _DbDataReader_. Like its inherited class, it can only be used to read forward. The major change is in the sqlQuery variable. As you can see, it does not do it's query against the table but against the Entity Model. You have to use the Entity Container Name.
 
-[caption id="attachment\_380" align="aligncenter" width="383" caption="Where to find the Entity Container Name."]![](images/entitycontainername.png)
+![](images/entitycontainername.png)
 
 Also, in SELECT, it's not the name of the column of the table that you have to use but the name of the property of the entity. So, people with a SQL background may feel comfortable with the syntax.
 

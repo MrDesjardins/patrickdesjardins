@@ -35,7 +35,7 @@ public class MuscleGroup:BaseModel { public string Name { get; set; } public ICo
 
 Indeed, I separate all these classes into individual file. Few modeling problem raised on my mind while I was writing those classes. First, every exercise need to be sorted for the user because every exercise are always done in a specific order. We need to add an Order property but we cannot add it to the Exercise class because the order will change depending of the workout session. For example, I may have the "Bicep Curl" exercise done in first on Monday and last on Friday. Also, we will create a directory of Exercise later so we need to have the "meta data" of exercise somewhere else from the exercise of the workout session. In fact, if we put out database glasses, this information would be in a junction table. If we put back our developer glasses, we will simply have a WorkouttSessionExecise that will have 1-1 relationship to an Exercise. So, let's modify the model diagram and the class.
 
-[caption id="attachment\_1503" align="aligncenter" width="400"] ![](images/modelClassDiagramVersion3-400x302.png)
+ ![](images/modelClassDiagramVersion3-400x302.png)
 
 The modification need to be reflected into the classes.
 

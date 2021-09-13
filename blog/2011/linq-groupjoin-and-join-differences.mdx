@@ -12,7 +12,7 @@ A GroupJoin is in SQL what we call a "Left Outer JOIN" while a Join in SQL refer
 
 To demonstrate the GroupJoin and the Join, a small example with Northwind Database will be used. This database schema and data is free at [Microsoft](http://www.microsoft.com/download/en/details.aspx?id=23654 "Microsoft's Northwind database"). Once downloaded, this will create a SQL file that require to be executed. Once executed, you will see multiples tables. For our example, only the table Customers and Orders will be used.
 
-[caption id="attachment\_38" align="aligncenter" width="257" caption="Northwind's Customers and Orders schema"]![](images/customersandordersNorthwind-257x300.png)
+![](images/customersandordersNorthwind-257x300.png)
 
 The Customers can contain multiple Orders. The Order contain a link to the Customer.
 
@@ -58,7 +58,7 @@ Alright, so the LINQ query select all client that start with the letter A to fil
 
 The output look like this:
 
-[caption id="attachment\_44" align="aligncenter" width="139" caption="Linq Join without On"]![](images/join-139x300.png)
+![](images/join-139x300.png)
 
 This is generated with almost the same code as before but instead of using GroupJoin only the Join is used. Also, since no grouping is done, the second foreach is not needed.
 
@@ -99,6 +99,6 @@ Both generate the exact same MSIL:
 
 The file compare result show exact same code:
 
-[caption id="attachment\_45" align="aligncenter" width="300" caption="MSIL are exactly the same for GroupJoin or Join"]![](images/filematch-300x164.png)
+![](images/filematch-300x164.png)
 
 To conclude, the GroupJoin is a short lamba version of the Join statement with the On and Into. It's possible to do a simple Join with only Join statement. Linq let you do other type of Join like Cross Join.

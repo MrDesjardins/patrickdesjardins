@@ -63,7 +63,7 @@ ConnectionStringSettings connectionStringSettings = ConfigurationManager.Connect
 
 The table name is important if you want to use other feature like insert, update and delete because the SqlAdapter will use this table to do the desired task. If you use a fake table name, you will get an exception. This exception is "Update unable to find TableMapping['Table'] or DataTable 'Table'.".
 
-[caption id="attachment\_334" align="aligncenter" width="400" caption="Invalid Operation with DataSet Update"]![](images/updateDataSetRowsFromDataTable-400x100.png)
+![](images/updateDataSetRowsFromDataTable-400x100.png)
 
 The correct code would be to provide in the InsertCommand property of the SqlDataAdapter a SQL statement with an Insert statement or a stored procedure. If you do not want to create every time the Insert, Update, Delete and Select statement, it's possible to use the SqlCommandBuilder.
 
@@ -73,7 +73,7 @@ ConnectionStringSettings connectionStringSettings = ConfigurationManager.Connect
 dataAdapter.Update(returnedValuesSet,"Customers"); } } connection.Close(); } 
 ```
 
-This will generate the InsertCommand as you can see in this screenshot: [caption id="attachment\_335" align="aligncenter" width="400" caption="Automatically create SQL statement with DbCommandBuilder"]![](images/createInsertStatementWithCommandBuilder-400x73.png)
+This will generate the InsertCommand as you can see in this screenshot: ![](images/createInsertStatementWithCommandBuilder-400x73.png)
 
 The created SQL statement use parameter style and is Sql injection protected.
 
