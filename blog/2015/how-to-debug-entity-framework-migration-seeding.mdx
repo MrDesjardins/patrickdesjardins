@@ -1,0 +1,12 @@
+---
+title: "How to Debug Entity Framework Migration Seeding"
+date: "2015-03-04"
+categories: 
+  - "entity-framework"
+---
+
+Debugging Entity Framework’s Migration Seeding can be confusing because you cannot just set a breakpoint and execute the Migration command to update your database. You must use a second Visual Studio to debug the first one. The easiest way is to use the **System.Diagnostics.Debugger.Launch** method. By calling that method, inside your code, a second Visual Studio will open and debug the first one that is executing the migration command. The second Visual Studio will be in debug mode. The trick is to keep this one attached to the first one until you are completely done. That mean that you can debug the first one with break point, stop it if you have error, edit the code, run the migration command again, etc. All that without stopping the second Visual Studio. If you stop the second Visual Studio that is attached to the first one, you will have to reattach which can take several times. However, by keeping the second Visual Studio always attached on the first one, you do not have any waiting time.
+
+\[csharp\] if (System.Diagnostics.Debugger.IsAttached == false) System.Diagnostics.Debugger.Launch(); \[/csharp\]
+
+The code shows what you should copy paste, right before where you expect the problem.

@@ -1,0 +1,25 @@
+---
+title: "Improving your Azure Redis performance and size with Lz4net"
+date: "2016-09-12"
+categories: 
+  - "azure"
+  - "redis"
+---
+
+The title is a little misleading. I could rewrite it has improving Redis performance by compressing the object your serialized. It's not related to Azure Redis particularly, neither to Lz4net which is a way to compress. However, I have learn that compression is improving Redis on Azure recently. It helps in two different ways. First, the Redis server and the website/webjobs needs to send the information to the Redis server. Having a smaller number of bytes to send it always faster. Second, you have a limit of size depending of the package you took on Azure with Redis. Compressing can save you some space. That space vary depending of what you cache. From my personal experience, any object serialized that takes more than 2ko gains from compression. I did some logging and the I have a reduction between 6% and 64% which is significant if you have object to cache that are around 100ko-200ko. Of course, this has CPU cost, but depending of the algorithm you use, you may not feel the penalty. I choose [Lz4net](https://github.com/MiloszKrajewski/lz4net) which is a loose-less, very fast compression library. It's open source and also available with [Nuget](https://www.nuget.org/packages/lz4net/).
+
+Doing it is also simple, but the documentation around **Lz4net** is practically non-existent and Redis.StackExchange doesn't provide detail about how to handle compressed data. The problem with StackExchange library is that it doesn't allow you to use byte\[\] directly. Underneath, it converts the byte\[\] into a RedisValue. It works well for storing, however, when getting, the RedisValue to byte\[\] return null. Since the compressed data format in an array of bytes, this cause a problem. The trick is to encapsulate the data into a temporary object. You can read more from Marc Gravell on [StackOverflow](http://stackoverflow.com/questions/26183727/stackexchange-redis-casting-redisvalue-to-byte-via-as-byte-returns-null).
+
+\[csharp\] private class CompressedData { public CompressedData() { } public CompressedData(byte\[\] data) { this.Data = data; } public byte\[\] Data { get; private set; } } \[/csharp\]
+
+This object can be serialized and used with StackExchange. It can also be restored from Redis, uncompressed, deserialized and used as object. Inside my Set method, the code looks like this:
+
+\[csharp\] var compressed = LZ4Codec.Wrap(Encoding.UTF8.GetBytes(serializedObjectToCache)); var compressedObject = new CompressedData(compressed); string serializedCompressedObject = Serialization.Serialize(compressedObject); //Set serializedCompressedObject with StackExchange Redis library \[/csharp\]
+
+The Get method do the other way around: \[csharp\] string stringObject = //From StackExchange Redis library var compressedObject = Serialization.Deserialize<CompressedData>(stringObject); var uncompressedData = LZ4Codec.Unwrap(compressedObject.Data); string unCompressed = Encoding.UTF8.GetString(uncompressedData); T obj = Serialization.Deserialize<T>(unCompressed); \[/csharp\]
+
+The result is really stunning. If you look at my personal numbers from a project that I applied this compression you can see that even for 5ko objects we have a gain.
+
+[![RedisSize](http://patrickdesjardins.com/blog/wp-content/uploads/2016/09/RedisSize-1024x350.png)](http://patrickdesjardins.com/blog/?attachment_id=4769)
+
+For example, the 50th percentile with has a 23ko size for one key. This one go down by more than half when compressed. If we look at the 95th percentile we realize that the gain is even more touching 90% reduction by being from 478ko to 44ko. Compressing is often the critic of being bad for smaller object. However, i found that even object as small as 6ko was gaining by being reduced to 3ko. 35ko to 8ko and so on. Since the compression algorithm used is very fast, the experience was way more positive than impacting the performance negatively.

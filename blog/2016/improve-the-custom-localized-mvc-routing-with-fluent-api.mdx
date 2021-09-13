@@ -1,0 +1,117 @@
+---
+title: "Improve the Custom Localized MVC Routing with Fluent API"
+date: "2016-01-04"
+categories: 
+  - "asp-mvc"
+---
+
+Fluent API is a pattern that wrap existing code to create you some helper to build a complex object. This is used by Entity Framework when configuring entities or used by a lot of Mocking framework. It's more verbose, more explicit about what we can do or not. You can recognize Fluent API because they have a form of almost sentence like : yourObject.WhenStock(typeA).IsHigher().Than(100).Then(doThis);
+
+In this article, we will add a Fluent API on top of [the custom localized code](http://patrickdesjardins.com/blog/improve-the-custom-localized-mvc-routing-with-fluent-api). Why I am saying "on top"? Because the [code previous](http://patrickdesjardins.com/blog/improve-the-custom-localized-mvc-routing-with-fluent-api) coded will still work and because it will not interfere at all with the existing code, we will work with this one without touching this one. But first, let's see what we had and what we will have after. Let's use this complex route that can look like this in English and like that in French:
+
+- /Administrator/investigate/reject/1
+- /Administrat**eur**/investigat**ion**/reje**ter**/1
+
+This is the standard ASP.Net MVC route in English only. To have it in French, you would have to repeat that with French string but it wouldn't have handled the culture thread problem. \[csharp\]
+
+context.MapRoute( Constants.Areas.ADMINISTRATOR + "\_OrdersController\_Reject" , "Administrator/Investigate/Reject/{" + Constants.RoutePortionName.ID + "}" , new RouteValueDictionary {{ Constants.RoutePortionName.ACTION, "Reject" }, { Constants.RoutePortionName.CONTROLLER, "Orders" }} , new RouteValueDictionary {{ Constants.RoutePortionName.ID,@"\\d+"}, }); \[/csharp\]
+
+In the previous article, we described a way to defined constraints, values, localized tokens and Area-Controller-Action. For our example here, this would look like the following code. \[csharp\] var areaRoutes = new List<AreaTranslation> { new AreaTranslation(Constants.Areas.ADMINISTRATION ,new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN, "administrator") ,new LocalizedSection(LocalizedSection.FR, "administrateur") } , new List<ControllerSectionLocalized> { new ControllerSectionLocalized("Orders" ,new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN, "Orders") ,new LocalizedSection(LocalizedSection.FR, "Ordres") } ,new List<ActionSectionLocalized> { new ActionSectionLocalized("Reject" ,new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN, "Reject") ,new LocalizedSection(LocalizedSection.FR, "rejeter") } , null , new RouteValueDictionary { { Constants.RoutePortionName.ID, @"\\d+" } } , Constants.Areas.ADMINISTRATION + "/{investi}/{action}/{" + Constants.RoutePortionName.ID + "}" , new Dictionary<string, List<LocalizedSection>> {{"investi" , new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN, "investigate") , new LocalizedSection(LocalizedSection.EN, "investigation")} } }; ) } ) }) }; \[/csharp\]
+
+This is the final form with the Fluent API that we will discuss. \[csharp\] var areaRoutes = FluentLocalizedRoute .BuildRoute() .ForBilingualArea(Constants.Areas.ADMINISTRATION, "administrator", "administrateur") .WithBilingualController("Orders", "Orders", "Ordres") .WithBilingualAction("Reject", "Reject", "rejeter") .WithConstraints(Constants.RoutePortionName.ID, @"\\d+") .WithUrl(Constants.Areas.ADMINISTRATION + "/{investi}/{action}/{" + Constants.RoutePortionName.ID + "}") .WithTranslatedTokens("investi", "investigate", "investigation") .ToAreaList(); \[/csharp\]
+
+I think it's pretty clear the benefit of using Fluent API in that particular case. However, do not get me wrong, Fluent API is not ideal in a lot of situation. First, as you will see, it add a lot of code if you want to have your Fluent API to restrict what operation you can do depending of which action you use. Second, it also creates additional codes to unit test, to support and to improve in the future.
+
+There is many different ways to use the "starting point" with a Fluent API. You could create an extension method that let you use an existing object to be enhance. Or, you can use a static object like a builder. I am using the second idea because I am not enhancing an existing object but create a new collection of objects. However, I could have extend the RouteCollection for example to do the same. The first class is the entry point, could have been simply flatten out directly inside the RouteBuilder. I built it this way to allow me to add later more route builder.
+
+\[csharp\] public static class FluentLocalizedRoute { public static RouteBuilder BuildRoute() { return new RouteBuilder(); } } \[/csharp\] The second one is the builder itself. I have two possibilities. One to create a list of route that doesn't have areas and one that has area support.
+
+\[csharp\] public class RouteBuilder: IRouteBuilder { public List<ControllerSectionLocalized> ControllerList { get; } public List<AreaSectionLocalized> AreaList { get; }
+
+public RouteBuilder() { this.ControllerList = new List<ControllerSectionLocalized>(); this.AreaList = new List<AreaSectionLocalized>(); }
+
+public IRouteBuilderController ForBilingualController(string controllerName, string controllerEnglishLocalizedString, string controllerFrenchLocalizedString) { var controllerSectionLocalized = new ControllerSectionLocalized(controllerName, new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN,controllerEnglishLocalizedString) ,new LocalizedSection(LocalizedSection.FR, controllerFrenchLocalizedString) } ,null); this.ControllerList.Add(controllerSectionLocalized); if (this.AreaList.Any()) { this.AreaList.Last().ControllerTranslations.Add(controllerSectionLocalized); } var rbc = new RouteBuilderController(controllerSectionLocalized, this); return rbc; }
+
+public IRouteBuilderArea ForBilingualArea(string areaName, string areaEnglishLocalizedString, string areaFrenchLocalizedString) { var areaLocalized = new AreaSectionLocalized(areaName, new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN,areaEnglishLocalizedString) ,new LocalizedSection(LocalizedSection.FR, areaFrenchLocalizedString) } , null); this.AreaList.Add(areaLocalized); var rbc = new RouteBuilderArea(areaLocalized, this); return rbc; } } \[/csharp\]
+
+So far, we can do : \[csharp\] var areaRoutes = FluentLocalizedRoute.BuildRoute() .ForBilingualArea(Constants.Areas.CONTEST, Constants.Areas.CONTEST, Constants.Areas.CONTEST)... \[/csharp\]
+
+You will notice that every methods return an Interface from that point of this article. This is how you define what will appears when you cascade the instruction. It also filters what you can do or not. For example, in the previous code, the _ForBilingualController_ returns a **IRouteBuilderController**, and the _ForBilingualArea_ returns **IRouteBuilderArea** . Hence, you cannot do the same actions. Here is what you can do in both case.
+
+\[csharp\] public interface IRouteBuilderController { IRouteBuilderAction WithBilingualAction(string actionName, string actionEnglishLocalizedString, string actionFrenchLocalizedString); } public interface IRouteBuilderArea { IRouteBuilderController WithBilingualController(string controllerName, string controllerEnglishLocalizedString, string controllerFrenchLocalizedString); } \[/csharp\]
+
+It's similar but not the same. The controller lets you create an action, while the area let you create a controller. As you can see, the return is IRouteBuilderController which converge both path to the controller. That make sense since Area > Controller > Action. This is interesting because it will help us limiting the number of interface. However, keep it mind that a rich API will probably have 1 interface per underlying method. The reason is that each method you have or property you want to set may have some restriction. For example, we will see that once you have setup an action, you can create an Url, a constraint or a value but not in the controller, neither in the area.
+
+Both Area and Controller builder takes care of defining the interface contract. It's pretty limited what they can do. They can only localize their name and define the collection of child (one will be controllers and the other one actions). \[csharp\] public class RouteBuilder: IRouteBuilder { public List<ControllerSectionLocalized> ControllerList { get; } public List<AreaSectionLocalized> AreaList { get; }
+
+public RouteBuilder() { this.ControllerList = new List<ControllerSectionLocalized>(); this.AreaList = new List<AreaSectionLocalized>(); }
+
+public IRouteBuilderController ForBilingualController(string controllerName, string controllerEnglishLocalizedString, string controllerFrenchLocalizedString) { var controllerSectionLocalized = new ControllerSectionLocalized(controllerName, new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN,controllerEnglishLocalizedString) ,new LocalizedSection(LocalizedSection.FR, controllerFrenchLocalizedString) } ,null); this.ControllerList.Add(controllerSectionLocalized); if (this.AreaList.Any()) { this.AreaList.Last().ControllerTranslations.Add(controllerSectionLocalized); } var rbc = new RouteBuilderController(controllerSectionLocalized, this); return rbc; }
+
+public IRouteBuilderArea ForBilingualArea(string areaName, string areaEnglishLocalizedString, string areaFrenchLocalizedString) { var areaLocalized = new AreaSectionLocalized(areaName, new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN,areaEnglishLocalizedString) ,new LocalizedSection(LocalizedSection.FR, areaFrenchLocalizedString) } , null); this.AreaList.Add(areaLocalized); var rbc = new RouteBuilderArea(areaLocalized, this); return rbc; } }
+
+public class RouteBuilderArea : IRouteBuilderArea {
+
+private readonly AreaSectionLocalized currentControllerSection; private readonly RouteBuilder routeBuilder;
+
+public RouteBuilderArea(AreaSectionLocalized controllerSection, RouteBuilder routeBuilder) { this.currentControllerSection = controllerSection; this.routeBuilder = routeBuilder; }
+
+public IRouteBuilderController WithBilingualController(string controllerName, string controllerEnglishLocalizedString, string controllerFrenchLocalizedString) { if (this.currentControllerSection.ControllerTranslations == null) { this.currentControllerSection.ControllerTranslations = new List<ControllerSectionLocalized>(); }
+
+var controllerSectionLocalized = new ControllerSectionLocalized(controllerName, new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN,controllerEnglishLocalizedString) ,new LocalizedSection(LocalizedSection.FR, controllerFrenchLocalizedString) }, null);
+
+if (this.routeBuilder.AreaList.Any()) { this.routeBuilder.AreaList.Last().ControllerTranslations.Add(controllerSectionLocalized); } this.currentControllerSection.ControllerTranslations.Add(controllerSectionLocalized); return new RouteBuilderController(controllerSectionLocalized, routeBuilder); } } \[/csharp\]
+
+The action interface is getting interesting because of the number of possible action. When the controller is defined, you can do several actions for an action. You can define default value, constraints, url, defines token, create a new action or create a new controller and of course outputting the whole list.
+
+\[csharp\] public interface IRouteBuilderAction : IRouteBuilderAction\_Defaults, IRouteBuilderAction\_Constraints, IRouteBuilderAction\_Url, ITranslatedTokens, IRouteBuilderAction\_ToList {
+
+}
+
+public interface IRouteBuilderAction\_Defaults: IRouteBuilderAction\_Constraints, IRouteBuilderAction\_Url, IRouteBuilderAction\_ToList { IRouteBuilderAction\_Defaults WithDefaultValues(object values); }
+
+public interface IRouteBuilderAction\_Constraints: IRouteBuilderAction\_Url, IRouteBuilderAction\_ToList { IRouteBuilderAction\_Constraints WithConstraints(object constraints); IRouteBuilderAction\_Constraints WithConstraints(string constraintName, object constraint); }
+
+public interface IRouteBuilderAction\_Url: IRouteBuilderAction\_ToList, IRouteBuilder {
+
+IRouteBuilderAction\_ToList WithUrl(string url); IRouteBuilderAction\_ToList UseEmptyUrl(); IRouteBuilderAction\_ToList UseDefaulUrl(); }
+
+public interface IRouteBuilderAction\_ToList: IRouteBuilder, IAndAction, ITranslatedTokens { List<ControllerSectionLocalized> ToList(); List<AreaSectionLocalized> ToListArea(); }
+
+public interface IAndAction { IRouteBuilderController And(); } public interface ITranslatedTokens { IRouteBuilderAction\_ToList WithTranslatedTokens(string tokenKey, string english, string french); } \[/csharp\]
+
+So for each scenario, you end up with interfaces, and also it's implementation. Most of these implementation return an interface that the Action class will inherit, thus we can return the same class. This is the reason that in the implementation, **RouteBuilderAction** , you will see that a lot of methods return this. This allows to chain actions on the same object. \[csharp\] public class RouteBuilderAction : IRouteBuilderAction , IRouteBuilderAction\_Defaults , IRouteBuilderAction\_Constraints , IRouteBuilderAction\_Url , IRouteBuilderAction\_ToList { private List<ActionSectionLocalized> listActions = new List<ActionSectionLocalized>(); private ControllerSectionLocalized currentControllerSection; private readonly ActionSectionLocalized currentAction; private RouteBuilderController routeBuilderController; private RouteBuilder routeBuilder;
+
+public RouteBuilderAction(ControllerSectionLocalized controllerSection , ActionSectionLocalized currentAction , RouteBuilder routeBuilder , RouteBuilderController routeBuilderController) { currentControllerSection = controllerSection; this.currentAction = currentAction; this.routeBuilder = routeBuilder; this.routeBuilderController = routeBuilderController; }
+
+public List<ControllerSectionLocalized> ToList() { return routeBuilder.ControllerList; }
+
+public List<AreaSectionLocalized> ToListArea() { return routeBuilder.AreaList; }
+
+public IRouteBuilderAction\_ToList UseEmptyUrl() { currentAction.Url = string.Empty; return this; }
+
+public IRouteBuilderAction\_ToList UseDefaulUrl() { currentAction.Url = "{area}/{controller}/{action}"; return this; }
+
+public IRouteBuilderAction\_Constraints WithConstraints(object constraints) { if (currentAction.Constraints == null) { currentAction.Constraints = new RouteValueDictionary(); } var rvd = currentAction.Constraints as RouteValueDictionary; if (rvd != null) { var c = constraints as RouteValueDictionary; if (c == null) { c = new RouteValueDictionary(constraints); } c.ToList().ForEach(x => rvd.Add(x.Key, x.Value)); } this.currentAction.Constraints = rvd; return this; }
+
+public IRouteBuilderAction\_Constraints WithConstraints(string constraintName, object constraint) { if (currentAction.Constraints == null) { currentAction.Constraints = new RouteValueDictionary(); } var rvd = currentAction.Constraints as RouteValueDictionary; if (rvd != null) { rvd.Add(constraintName, constraint); } return this; }
+
+public IRouteBuilderAction\_Defaults WithDefaultValues(object values) { currentAction.Values = values; return this; }
+
+public IRouteBuilderAction\_ToList WithUrl(string url) { currentAction.Url = url; return this; }
+
+public IRouteBuilderController And() { AddInActionList(); return this.routeBuilderController; }
+
+private void AddInActionList() { if (currentAction != null) { listActions.Add(currentAction); } }
+
+public IRouteBuilderController ForBilingualController(string controllerName, string controllerEnglishLocalizedString, string controllerFrenchLocalizedString) { AddInActionList(); return routeBuilder.ForBilingualController(controllerName, controllerEnglishLocalizedString, controllerFrenchLocalizedString); }
+
+public IRouteBuilderArea ForBilingualArea(string areaName, string areaEnglishLocalizedString, string areaFrenchLocalizedString) { AddInActionList(); return routeBuilder.ForBilingualArea(areaName, areaEnglishLocalizedString, areaFrenchLocalizedString); }
+
+public IRouteBuilderAction WithBilingualAction(string actionName, string actionEnglishLocalizedString, string actionFrenchLocalizedString) { AddInActionList(); return routeBuilderController.WithBilingualAction(actionName, actionEnglishLocalizedString, actionFrenchLocalizedString); }
+
+public IRouteBuilderAction\_ToList WithTranslatedTokens(string tokenKey, string english, string french) {
+
+if (currentAction != null) { if (this.currentAction.Tokens == null) { this.currentAction.Tokens = new Dictionary<string, List<LocalizedSection>>(); } var tokenToAdd = new Dictionary<string, List<LocalizedSection>>(); if (this.currentAction.Tokens.Keys.Any(g => g == tokenKey)) { //Already exist, tbd what we do here, for now nothing } else { this.currentAction.Tokens.Add(tokenKey, new List<LocalizedSection>() { new LocalizedSection(LocalizedSection.EN,english) ,new LocalizedSection(LocalizedSection.FR, french) }); } } return this; } } \[/csharp\]
+
+The Fluent API is not cheap to create, neither something to do on everything. However, in that particular scenario the benefices are tremendous. Not only the code is way shorter to write but it is also limit the duplication by having every collections and properties instantiated in a single place.

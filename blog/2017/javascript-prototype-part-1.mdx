@@ -1,0 +1,52 @@
+---
+title: "JavaScript Prototype Part 1"
+date: "2017-05-11"
+categories: 
+  - "javascript"
+---
+
+JavaScript is a prototype language. Every object has a prototype which share properties between the same kind of object.
+
+The minimal prototype an object has is the default Object.prototype. However, any object can add members or function to its own object prototype by using ".prototype.". The following code shows that an object type "myTest" with no member is having "member1" dynamically added as well as a member2 with the value "m2". We create a second instance and only member2, from the prototype is available. The member1 was added to the instance, not the prototype.
+
+```typescript
+var myTest = {}; var myTestInstance1 = Object.create(myTest); myTestInstance1.member1 = "m1"; myTestInstance1.\_\_proto\_\_.member2 = "m2"
+
+var myTestInstance2 = Object.create(myTest);
+
+console.log("instance1.member2:"+myTestInstance1.member2); //m2 console.log("instance2.member2:"+myTestInstance2.member2); //m2 console.log("instance1.member1:"+myTestInstance2.member1); //m1 console.log("instance2.member1:"+myTestInstance2.member1); //undefined 
+``` 
+
+
+Prototype inheritance bring method and function. At anytime, it's possible for the instance to override the prototype member. Here is an example that the prototype is defined in a member to show "m2" and the first instance override it with "Override" string. When a new instance is created, the member will have the value of the prototype.
+
+```typescript
+var myTest = {}; var myTestInstance1 = Object.create(myTest); myTestInstance1.\_\_proto\_\_.member2 = "m2" myTestInstance1.member2 = "OVERRIDE";
+
+var myTestInstance2 = Object.create(myTest);
+
+console.log("instance1.member2:"+myTestInstance1.member2);//Override console.log("instance2.member2:"+myTestInstance2.member2);//m2 
+``` 
+
+
+It's also possible to change the prototype at any time in the life of the object and have every object changed. In the following example, two instances are created and the prototype is defined afterward. The data is still accessible by both instance after the assignation.
+
+```typescript
+var myTest = {}; var myTestInstance1 = Object.create(myTest); var myTestInstance2 = Object.create(myTest); myTestInstance1.\_\_proto\_\_.member2 = "m2";
+
+console.log("instance1.member2:"+myTestInstance1.member2);//m2 console.log("instance2.member2:"+myTestInstance2.member2);//m2 
+``` 
+
+
+So far, the instance of the object was created by using create, but it's also possible to do it with "new".
+
+```typescript
+var MyClass1 = function() { this.member1 = "m1"; };
+
+MyClass1.prototype.function1 = function() { return "return from function1"; };
+
+var instance1 = new MyClass1();
+
+console.log("instance1.member1: "+ instance1.member1);//m1 console.log("instance1.function1: "+ instance1.function1());//return from function1 
+``` 
+

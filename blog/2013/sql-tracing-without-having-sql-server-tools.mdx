@@ -1,0 +1,27 @@
+---
+title: "SQL Tracing without having Sql Server Tools"
+date: "2013-04-11"
+categories: 
+  - "entity-framework"
+  - "sql"
+---
+
+It's always a good idea to be able to see what's happening behind when you are using ORM, like Entity Framework. If you have the possibility to have the full blow Sql Server with tools, than you have the Sql Profiler that can tell you every queries executed. Unfortunately, if you are using the Sql Express Edition, you won't have the Sql Profiler available.
+
+However, you still can get thoses queries outputted into a log file with the Sql Express edition. First of all, be sure to stop the SQL Express Service. This can be done by going into the Services.msc
+
+[![sqlexpressservice](http://patrickdesjardins.com/blog/wp-content/uploads/2013/03/sqlexpressservice-400x293.png)](http://patrickdesjardins.com/blog/sql-tracing-without-having-sql-server-tools/sqlexpressservice)
+
+Or you can use the command prompt with the command "net stop" with the parameter of the service which should be "MSSQL$SqlExpress". Of course, this must be done with the administrator privileges which can be
+
+[![sqlexpressservicecmd](http://patrickdesjardins.com/blog/wp-content/uploads/2013/03/sqlexpressservicecmd-400x81.png)](http://patrickdesjardins.com/blog/sql-tracing-without-having-sql-server-tools/sqlexpressservicecmd) To enable the service to run again but this time with the log we need to start the Sql Service with the flag "/T4032".
+
+> net start MSSQL$SQLEXPRESS /T4032
+
+The last thing to do is open the Sql Server Management Studio and to execute the following command.
+
+> dbcc traceon(3605, -1)
+
+From here, you just need to consult the log file. With Sql Server 2012 Express edition on a Windows 7 OS, you will find the log file here:
+
+> C:\\Program Files\\Microsoft SQL Server\\MSSQL11.SQLEXPRESS\\MSSQL\\Log

@@ -1,0 +1,34 @@
+---
+title: "Silverlight Binding Mode"
+date: "2011-10-07"
+categories: 
+  - "silverlight"
+---
+
+In Silverlight, you can bind data of the Xaml file to a C# file. In fact, the Xaml file has a context to which it can get or set value. Once the context is set (can be set with static resource or in the code behind using the Context property). you can set the binding.
+
+You can bind with a lot of different syntax. The smallest way to bind data to your Xaml control is to use only the binding keyword and the name of the source property.
+
+\[csharp\] <TextBlock Text="{Binding MyProperty}"></TextBlock> \[/csharp\]
+
+This is in fact the same as using the Path keyword of the Binding. It's implicit in the first example, and in the following it's explicit.
+
+\[csharp\] <TextBlock Text="{Binding Path=MyProperty}"></TextBlock> \[/csharp\]
+
+Both of these example hide explicit information that is the mode. The mode indicate how the binding should be done. Three possible values can be used for the mode
+
+- OneTime
+- OnWay
+- TwoWay
+
+The OneTime mode let you bind from your C# file to your Xaml only when the binding is initialized. That mean that the value won't change later even if the value change in the C# code.
+
+The OneWay mode let you bind from your C# file to you Xaml in read only. That mean that if the value is changed in the C# code that the value will be updated in the Xaml. But, if the user changes the value to the Xaml that the value won't be modified in the C# code. This is useful for read only field. Keep in mind that when you do not specify any mode (implicit) that the default value is the OneWay.
+
+The TwoWay binding mode let you get data from the C# file but also takes the change from the user to push it into the C#. This mode is useful to load data and then to let the user modify the value.
+
+Since Silverlight 3 some improvement has been done in the binding to be a little bit more like WPF. You can now bind a component to an other with the ElementName
+
+\[csharp\] <TextBlock Text="{Binding ElementName=MyOtherTextBox, Path=Text}"></TextBlock> \[/csharp\]
+
+Also, what about constant and binding? In some case, you could desire to bind OneTime a constant value. For example, the Slider control can have a SmallChange property that determine the increment of the slider. This can be set as a constant in our application. To be able to bind to this value you would have to create a Getter that will return the value. Silverlight binding won't let you bind directly to the constant variable.

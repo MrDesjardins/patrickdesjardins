@@ -1,0 +1,35 @@
+---
+title: "Asp.Net MVC Template EditorFor priorities"
+date: "2012-09-21"
+categories: 
+  - "asp"
+  - "asp-mvc"
+---
+
+When using EditorFor, the system search for the right html input to produce. This is done in a cascade fashion.
+
+First, if the user has used the the EditorFor with the signature that contain the template name, this one will be used in first priority.
+
+[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/09/EditorForSignatureWithTemplateName-400x91.png "EditorForSignatureWithTemplateName")](http://patrickdesjardins.com/blog/asp-net-mvc-template-editorfor-priorities/editorforsignaturewithtemplatename)
+
+At first, this html helper may look useless because instead of relying on a **parameter**, why not use directly the correct helper. For Example, instead of doing @Html.EditorFor(x=>x.Name, "Textbox") you should use @Html.TextBoxFor(x=>x.Name). Right? In fact, no. If you do so, you might see the textbox, but in reality, it doesn't show the textbox because you wrote it but more because it hasn't found the template in the EditorTemplates folder. If you want to use the named template EditorFor you need to ensure that this one is inside the EditorTemplates, otherwise, the Asp.Net MVC Framework will pass on the next priority.
+
+The second priority for the choice of the correct template is ModelMetadata.TemplateHint. This **attribute** is set at the top of the property. The attribute is inside the namespace _System.ComponentModel.DataAnnotations_. This one take 1 parameter which is the name of the template (in the EditorTemplates or DisplayTemplates depending of the situation of if EditorFor or DisplayFor is used). \[csharp\] \[UIHint("MyTemplate")\] public string FirstName { get; set; } \[/csharp\] This is quite simple to use but from my perspective smell bad. Why would you want to setup a UI element inside the model. It breaks the separation of concern (SOC). The model shouldn't care about how it will be represented. It would be better to specify the type of the data instead which is the third priority. Keep in mind that it's okay to use UIHint in the scenario that you are using ViewModel and not directly the Model.
+
+The third priority is another **attribute** called **DataType**.
+
+[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/09/datatypeattributeenum.png "datatypeattributeenum")](http://patrickdesjardins.com/blog/asp-net-mvc-template-editorfor-priorities/datatypeattributeenum)
+
+This come with a list of predefined values. This is interested for basic type and you can define a template for each of those type inside EditorTemplates and DisplayTemplates folder. The separation of concern is respected because the model only specify the type of its property and not how they will be represented.
+
+The fourth priority is the Model type. If you have defined a Template for one of your class, this one will be used automatically.
+
+[In a previous post, we had created a LocalizedString.cs](http://patrickdesjardins.com/blog/how-to-have-localized-string-with-mvc-and-entity-framework "How to have localized string with MVC and Entity Framework") which is displayed depending of the user culture differently. It requires to have its template. This is done by adding inside EditorTemplates a template that define the type.
+
+\[csharp\] @model EFCodeFirst.General.LocalizedString @Html.LabelFor(s => s.Current) \[/csharp\]
+
+This is also how UI library work to override basic template. For example, the Telerik or DevExpress suite will add their own template for String, Date, Int, Double to override the default input with their enhanced ones.
+
+The last priority will be the base type.
+
+So that's it with template for EditorFor (or for DisplayFor) and priorities.

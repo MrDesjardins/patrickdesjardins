@@ -1,0 +1,79 @@
+---
+title: "Entity Framework explicit loading, lazy loading and eager loading"
+date: "2011-09-04"
+categories: 
+  - "entity-framework"
+  - "sql"
+---
+
+Entityframework set lazing loading to false as a default mechanism for loading its entity data. In other words, this mean that the default value is set to eager loading or explicit loading. This behavior can be modified by the developer if a need is required by changing the _Lazy Loading Enable_ of the conceptual model's property or by code by changing the the _OptionContext_ property _LazyLoadingEnabled_.
+
+To understand correctly how the lazy loading works, let get an example from the NorthWind database. The model generated from this database give us a Customer entity that contain orders (of type Order).
+
+\[csharp highlight="3"\] var db = new NorthWindContainer(); //Instantiate the Object Context db.ContextOptions.LazyLoadingEnabled = false; //Default value var collectionData = db.Customers.First().Orders; Console.WriteLine("All orders from the first customer using lazy loaded to " + db.ContextOptions.LazyLoadingEnabled); foreach (var order in collectionData) { Console.WriteLine(order.OrderID); } Console.WriteLine(collectionData.Count + " shown"); \[/csharp\]
+
+In the example above, line 3 get all orders from the first customer. The lazy loading of the Object Context is set the false ([the default value](http://msdn.microsoft.com/en-us/library/system.data.objects.objectcontextoptions.lazyloadingenabled.aspx "Default value for the LazyLoadingEnabled of the ObjectContext")). The console will show nothing from the loop and a count of 0. This is because the lazy loading is not enabled.
+
+\[sql\] SELECT TOP (1) \[c\].\[CustomerID\] AS \[CustomerID\], \[c\].\[CompanyName\] AS \[CompanyName\], \[c\].\[ContactName\] AS \[ContactName\], \[c\].\[ContactTitle\] AS \[ContactTitle\], \[c\].\[Address\] AS \[Address\], \[c\].\[City\] AS \[City\], \[c\].\[Region\] AS \[Region\], \[c\].\[PostalCode\] AS \[PostalCode\], \[c\].\[Country\] AS \[Country\], \[c\].\[Phone\] AS \[Phone\], \[c\].\[Fax\] AS \[Fax\] FROM \[dbo\].\[Customers\] AS \[c\] \[/sql\]
+
+As you can see, the SQL reflect the result that we have. Nothing to take the orders.
+
+In fact, in this mode, to be able to get all the data a new line must have been written between the request to get all orders and the display. The following code contain the Load() method that will go to the database to load orders.
+
+\[csharp highlight="4"\] var db = new NorthWindContainer(); db.ContextOptions.LazyLoadingEnabled = false; //Default value var collectionData = db.Customers.First().Orders; collectionData.Load(); //Explicit loading Console.WriteLine("All orders from the first customer using lazy loaded to " + db.ContextOptions.LazyLoadingEnabled); foreach (var order in collectionData) { Console.WriteLine(order.OrderID); } Console.WriteLine(collectionData.Count + " shown"); \[/csharp\]
+
+This mean that when using the default value (eager loading/explicit loading) the value loaded is only the one of the object and not the object of the class. To load the object of the class, the developer needs to use _Load()_ on the desired object. This can be interesting if the object is big and you do not need to load the whole object.
+
+The _Load_ method is called. This mean that it's an explicit loading. Eager loading does not require the call to _Load_ method. Further example will show you. For the moment, let check the SQL statement generated to see how it reflect the change.
+
+\[sql\] SELECT TOP (1) \[c\].\[CustomerID\] AS \[CustomerID\], \[c\].\[CompanyName\] AS \[CompanyName\], \[c\].\[ContactName\] AS \[ContactName\], \[c\].\[ContactTitle\] AS \[ContactTitle\], \[c\].\[Address\] AS \[Address\], \[c\].\[City\] AS \[City\], \[c\].\[Region\] AS \[Region\], \[c\].\[PostalCode\] AS \[PostalCode\], \[c\].\[Country\] AS \[Country\], \[c\].\[Phone\] AS \[Phone\], \[c\].\[Fax\] AS \[Fax\] FROM \[dbo\].\[Customers\] AS \[c\]
+
+exec sp\_executesql N'SELECT \[Extent1\].\[OrderID\] AS \[OrderID\], \[Extent1\].\[CustomerID\] AS \[CustomerID\], \[Extent1\].\[EmployeeID\] AS \[EmployeeID\], \[Extent1\].\[OrderDate\] AS \[OrderDate\], \[Extent1\].\[RequiredDate\] AS \[RequiredDate\], \[Extent1\].\[ShippedDate\] AS \[ShippedDate\], \[Extent1\].\[ShipVia\] AS \[ShipVia\], \[Extent1\].\[Freight\] AS \[Freight\], \[Extent1\].\[ShipName\] AS \[ShipName\], \[Extent1\].\[ShipAddress\] AS \[ShipAddress\], \[Extent1\].\[ShipCity\] AS \[ShipCity\], \[Extent1\].\[ShipRegion\] AS \[ShipRegion\], \[Extent1\].\[ShipPostalCode\] AS \[ShipPostalCode\], \[Extent1\].\[ShipCountry\] AS \[ShipCountry\] FROM \[dbo\].\[Orders\] AS \[Extent1\] WHERE \[Extent1\].\[CustomerID\] = @EntityKeyValue1',N'@EntityKeyValue1 nchar(5)',@EntityKeyValue1=N'ALFKI'
+
+\[/sql\]
+
+### Using Lazy Loading
+
+But, this is pretty manual task and if want to use lazy loading instead of explicit loading it's possible. This will give the control of loading objects of the class to the system.
+
+The C# code will be like this: \[csharp highlight="2"\] var db = new NorthWindContainer(); //Instantiate the Object Context db.ContextOptions.LazyLoadingEnabled = true; //Default value var collectionData = db.Customers.First().Orders; Console.WriteLine("All orders from the first customer using lazy loaded to " + db.ContextOptions.LazyLoadingEnabled); foreach (var order in collectionData) { Console.WriteLine(order.OrderID); } Console.WriteLine(collectionData.Count + " shown"); \[/csharp\]
+
+This produce exactly the same output for the SQL.
+
+\[sql\] SELECT TOP (1) \[c\].\[CustomerID\] AS \[CustomerID\], \[c\].\[CompanyName\] AS \[CompanyName\], \[c\].\[ContactName\] AS \[ContactName\], \[c\].\[ContactTitle\] AS \[ContactTitle\], \[c\].\[Address\] AS \[Address\], \[c\].\[City\] AS \[City\], \[c\].\[Region\] AS \[Region\], \[c\].\[PostalCode\] AS \[PostalCode\], \[c\].\[Country\] AS \[Country\], \[c\].\[Phone\] AS \[Phone\], \[c\].\[Fax\] AS \[Fax\] FROM \[dbo\].\[Customers\] AS \[c\]
+
+exec sp\_executesql N'SELECT \[Extent1\].\[OrderID\] AS \[OrderID\], \[Extent1\].\[CustomerID\] AS \[CustomerID\], \[Extent1\].\[EmployeeID\] AS \[EmployeeID\], \[Extent1\].\[OrderDate\] AS \[OrderDate\], \[Extent1\].\[RequiredDate\] AS \[RequiredDate\], \[Extent1\].\[ShippedDate\] AS \[ShippedDate\], \[Extent1\].\[ShipVia\] AS \[ShipVia\], \[Extent1\].\[Freight\] AS \[Freight\], \[Extent1\].\[ShipName\] AS \[ShipName\], \[Extent1\].\[ShipAddress\] AS \[ShipAddress\], \[Extent1\].\[ShipCity\] AS \[ShipCity\], \[Extent1\].\[ShipRegion\] AS \[ShipRegion\], \[Extent1\].\[ShipPostalCode\] AS \[ShipPostalCode\], \[Extent1\].\[ShipCountry\] AS \[ShipCountry\] FROM \[dbo\].\[Orders\] AS \[Extent1\] WHERE \[Extent1\].\[CustomerID\] = @EntityKeyValue1',N'@EntityKeyValue1 nchar(5)',@EntityKeyValue1=N'ALFKI'
+
+\[/sql\]
+
+### Caching
+
+Also, if we run the all examples in the same method we will realize that even if the collectionData is accessed twice that the database will be called once because the object context has cached the collection. Here is a snippet of 3 calls. One with the lazy loading to false with a load call. One other with the lazy loading to true and one with false without the load. Interestingly, the last one will display value because the collection was already loaded.
+
+\[csharp\] var db = new NorthWindContainer(); db.ContextOptions.LazyLoadingEnabled = false; //Default value var collectionData = db.Customers.First().Orders; collectionData.Load(); Console.WriteLine("All orders from the first customer using lazy loaded to " + db.ContextOptions.LazyLoadingEnabled); foreach (var order in collectionData) { Console.WriteLine(order.OrderID); } Console.WriteLine(collectionData.Count + " shown");
+
+db.ContextOptions.LazyLoadingEnabled = true; collectionData = db.Customers.First().Orders; Console.WriteLine("All orders from the first customer using lazy loaded to " + db.ContextOptions.LazyLoadingEnabled); foreach (var order in collectionData) { Console.WriteLine(order.OrderID); } Console.WriteLine(collectionData.Count + " shown");
+
+db.ContextOptions.LazyLoadingEnabled = false; //Default value collectionData = db.Customers.First().Orders; Console.WriteLine("All orders from the first customer using lazy loaded to " + db.ContextOptions.LazyLoadingEnabled + " back to False"); foreach (var order in collectionData) { Console.WriteLine(order.OrderID); } Console.WriteLine(collectionData.Count + " shown");
+
+Console.ReadLine(); \[/csharp\]
+
+## Advanced example and eager loading
+
+Previous example does not show the real power of eager loading. Let go back quickly to the lazy loading code.
+
+\[csharp\] var db = new NorthwindEntities(); db.ContextOptions.LazyLoadingEnabled = true; //Default value
+
+foreach (var customer in db.Customers) { Debug.WriteLine("Customer " + customer.CustomerID); foreach (var order in customer.Orders) { Debug.WriteLine("|-->Order " + order.OrderID); } } \[/csharp\] This will produce 1 SQL to retrieve all Customers and then 1 SQL for each order. This is a problem called "N+1". You will have 1 initial SQL hit and additional hit for each customer. This lead to huge performance problem. The magic of lazy loading suddenly disappear. Of course, lazy loading is useful in some moment like accessing only 1 object and its objects like in all previous example. The same thing occur with explicit loading. To make it works, the Load should have been called between the two foreachs.
+
+\[csharp\] var db = new NorthwindEntities(); db.ContextOptions.LazyLoadingEnabled = false;
+
+foreach (var customer in db.Customers) { Debug.WriteLine("Customer " + customer.CustomerID); customer.Orders.Load(); //Explicit loading foreach (var order in customer.Orders) { Debug.WriteLine("|-->Order " + order.OrderID); } } \[/csharp\] The N+1 problem is still there. With eager loading, this would result to a single query. To notify which object to load inside the class, the use of _Include_ is required. Here is an example:
+
+\[csharp highlight="2,3"\] var db = new NorthwindEntities(); db.ContextOptions.LazyLoadingEnabled = true; var customers = db.Customers.Include("Orders"); foreach (var customer in customers) { Debug.WriteLine("Customer " + customer.CustomerID); foreach (var order in customer.Orders) { Debug.WriteLine("|-->Order " + order.OrderID); } } \[/csharp\]
+
+Line 2 and line 3 have changed. The line 2 tell to use eager loading while the line 3 indicates that it needs to load to object Orders inside the Customers. This produce a single SQL.
+
+\[sql\] SELECT \[Project1\].\[C1\] AS \[C1\], \[Project1\].\[CustomerID\] AS \[CustomerID\], \[Project1\].\[CompanyName\] AS \[CompanyName\], ... FROM ( SELECT \[Extent1\].\[CustomerID\] AS \[CustomerID\], \[Extent1\].\[CompanyName\] AS \[CompanyName\], \[Extent1\].\[ContactName\] AS \[ContactName\], ... 1 AS \[C1\], \[Extent2\].\[OrderID\] AS \[OrderID\], \[Extent2\].\[CustomerID\] AS \[CustomerID1\], \[Extent2\].\[EmployeeID\] AS \[EmployeeID\], ... FROM \[dbo\].\[Customers\] AS \[Extent1\] LEFT OUTER JOIN \[dbo\].\[Orders\] AS \[Extent2\] ON \[Extent1\].\[CustomerID\] = \[Extent2\].\[CustomerID\] ) AS \[Project1\] ORDER BY \[Project1\].\[CustomerID\] ASC, \[Project1\].\[C2\] ASC \[/sql\]
+
+This LEFT OUTER JOIN (also known as LEFT JOIN) do what you would have been doing in SQL to get additional information if available.

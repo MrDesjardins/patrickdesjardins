@@ -1,0 +1,20 @@
+---
+title: "Entity Framework Schema specified is not valid error"
+date: "2012-12-12"
+categories: 
+  - "entity-framework"
+---
+
+> {"Schema specified is not valid. Errors: \\r\\nThe mapping of CLR type to EDM type is ambiguous because multiple CLR types match the EDM type 'MyClassName'. Previously found CLR type 'MyNameSpaceContext.Context.MyClassName', newly found CLR type 'MyNameSpaceModel.Domain.MyClassName'."}
+
+This error occur only if you have 2 classes with the same name in different namespace. It can be quite easy to reproduce without having the goal to do it also. How it's done? It's done because the Linq to Entity use model classes instead of context classes. Entity Framework can only manipulate classes that are registered to it, context classes, and not other classes even if those one are very similar.
+
+For example, if you want to return a list of MyClassName (context) class which are inside a collection of MyClassName (domain model), you can have this problem.
+
+\[csharp\] var fromDatabase = \_dataContext.Set<MyClassName>().Where(p => listMyClass.Select(d => d.ID).Contains(p.ID)); \[/csharp\]
+
+This won't work because listMyClass contain a list of MyClassName, but from the domain model not the context. It's easy to get wrong because usually the service layer and the repository layer receive as parameter domain object and not directly the context. To solve this issue, you need to proceed into two steps. The select to get the list of id must be done outside Linq To Entity. This way, the code will be executed as Linq to Object and won't affect Entity Framework.
+
+\[csharp\] var arrayId = listMyClass.Select(d => d.ID).ToArray(); var fromDatabase = \_dataContext.Set<MyClassName>().Where(p => arrayId.Contains(p.ID)); \[/csharp\]
+
+That's it! Now it works because listMyClass is transformed into an array of ID which Entity Framework understand.

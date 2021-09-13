@@ -1,0 +1,51 @@
+---
+title: "How to Pass Value to useCallback in React Hooks"
+date: "2019-05-09"
+categories: 
+  - "react"
+  - "react-hooks"
+  - "typescript"
+---
+
+UseCallback allows having the same reference for a call back function which has the benefit of only changing when something changes. This is primordial when callbacks are passed down the React component chain to avoid component to be rendered without an actual real reason causing performance issue. The following snippet of code shows a simple button that when clicked invokes an action that set the name to "test". You can imagine that in a real scenario that the string would come from a real source instead of being hardcoded.
+
+<button
+  onClick={() => {
+    dispatch(AppActions.setName("test"));
+  }}
+>
+
+The action can often be handled without passing data, or by passing a React's property and hence can access it from the handler of the action. However, in some cases, where the value is not accessible directly from the outer scope of the handler function, it means that we need to pass by parameter the value. I am reusing a [Code Sandbox slightly modified](https://codesandbox.io/s/mj0o4l2y4x) to have the useCallback with a value passed down. The use of useCallback or simply the refactoring of the above snippet into a function that is not directly bound to the onClick is similar. We are moving the accessible scope. When the function is inline, the function can access anything that defined the button. It can be the React's properties, or the "map" index if it was inside a loop or else. However, extracting the function out require some minor change to still have access to the value.
+
+ const setName = useCallback(() => {
+    dispatch(AppActions.setName("test"));
+ }, \[\]);
+
+A quick change with React Hooks to produce the desired scenario is to use useCallback at the top of the component and access it directly in the onClick function callback.
+
+<button onClick={setName}>Change name</button>
+
+At the moment, it works. However, we are not passing any information. Let's imagine that we cannot access the data directly from the useCallback, how can we still invoke this one?
+
+const setName = useCallback((event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    dispatch(AppActions.setName("test"));
+  }, \[\]);
+
+The idea is to have a callback that return a function that as on its turn the input event.
+
+<button onClick={setName("Testing Name")}>Change name</button>
+
+The invocation code change by passing the data. In that example, it is a string, but you can imagine that you are passing the index of the map function or data coming from a source inaccessible from the callback function.
+
+  const setName = useCallback(
+    (name: string) => (
+      event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) => {
+      dispatch(AppActions.setName(name));
+    },
+    \[\]
+  );
+
+My rule of thumb is that I do not need to have this convoluted definition if I am accessing directly properties of the component. Otherwise, I am passing the data needed. I always define the type, which gives me a good quick view about what is passed (name is a string and the event is a mouse event) without having to rummage the code. Here is the code sand box to play with the code of this article.
+
+<iframe src="https://codesandbox.io/embed/mj0o4l2y4x?fontsize=14" title="TypeScript useReducer" style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;" sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"></iframe>

@@ -1,0 +1,42 @@
+---
+title: "How to unit test private method in TypeScript (part 2)"
+date: "2017-04-13"
+categories: 
+  - "test"
+  - "typescript"
+---
+
+I already posted about [how to write unit tests for private method with TypeScript](http://patrickdesjardins.com/blog/unit-testing-with-typescript-3-tricks-to-help-you-with-private-method) about one year ago. Few days ago, I had the same discussion that I had in my previous team concerning private method. The situation is similar. Developers don't test private method and rely on public method to reach those private methods. At first, it may sound that we are going inside those private methods, therefore we are doing proper unit testing.
+
+The problem by going through intermediate methods to access the one we want to test is that any change on intermediate methods will make multiple test to fail. When a unit tests fail, the goal is to know which unit of your code is failing. Imagine the situation where you have class **A** that has method **a1**, **a2**, **a3**. You want to to unit test **a3**, but the only entry point is **a1** which is the only method public. This one call **a2**, who call in some particular situation **a3**. You have multiple conditions in **a3** and you evaluate that you need 5 unit tests. The problem is that if **a1** or **a2** change in the future that all these 5 tests may fail, when they should not.
+
+At that point, most people understand the situation and agree to test the private methods. However, there is some good ways to do it and some bad ways. The worst way to do it to cast the class **A** to be of type any and call **a3** directly. Something like :
+
+```typescript
+// Bad way: var a = new A(); (a as any).a3(); 
+``` 
+
+
+The problem with the above code is that when you will refactor **a3** to have a better name that no tool will find out this instance. More, this open the door to access private fields or inject new functions and fields to the class. At the end, it become a nightmare to maintain. We are using TypeScript to be strongly typed, our tests should continue to be as strong.
+
+In the previous article I wrote, I talked about 2 patterns. The first one is about working around encapsulation with an interface. The second had two variations.
+
+Let's remember the first pattern. The first pattern is that class A should have an interface IA that is used everywhere. IA would only expose the method **a1**. Everywhere you use the interface and the only place where it doesn't it's when it's getting injected by the inversion of control container. However, we can leverage this abstraction to keep a strong encapsulation for the application and use the implementation that has every method public. This way, developers still have only access to a1 in our example, but in our test we have access to everything else. This might not sound a proper solution at first since we open the encapsulation on the implemented class, but it's the cheapest way to be able to test unit tests. That said, I am all with you that there is other solution like the pattern #2 presented in the previous article.
+
+The second pattern presented was about moving code around. In our example, **a2** and **a3** are private and could be moved outside an other class. For example, let's say that A was a user class, **a1** was a method to get the user information to display to the screen, **a2** a method to get the address information and **a3** a method to format the street address. This could be refactored from :
+
+```typescript
+class User{ public getUserInformationToDisplay(){ //... this.getUserAddress(); //... }
+
+private getUserAddress(){ //... this.formatStreet(); //... } private formatStreet(){ //... } } 
+``` 
+
+
+to: ```typescript
+class User{ private address:Address; public getUserInformationToDisplay(){ //... address.getUserAddress(); //... } } class Address{ private format: StreetFormatter; public format(){ //... format.ToString(); //... } } class StreetFormatter{ public toString(){ // ... } } 
+``` 
+
+
+Originally, we wanted to test the private method formatStreet (a3), and now it's very easy because I do not even need to care about all the classes or function that call it, just to unit test the StreetFormatter class (which was the original a3). this is the best way to unit test private method : to divide it correctly into specific class. This is also costly in term of time.
+
+I always prefer the second approach, but time constraints and the high velocity of shipping features is always that is a higher priority -- even in software shop where the message is quality first. That said, I prefer using the first approach than not having any unit tests at all. It's a good compromise that work well what ever your framework. I used both approach in TypeScript code that was using proprietary framework, as well with React and now with Angular. At the end, the important is to have the best coverage while being sure that everything tested are solid to help the software and not slow down the whole development.

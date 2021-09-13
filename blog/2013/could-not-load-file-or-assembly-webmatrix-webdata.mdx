@@ -1,0 +1,20 @@
+---
+title: "Could not load file or assembly 'WebMatrix.WebData'"
+date: "2013-07-23"
+categories: 
+  - "asp"
+---
+
+If you are creating an Asp.Net MVC website or an Asp.Net MVC Api Web Service, you may see yourself blocking on the execution with a missing file with WebMatrix.WebData.
+
+> Could not load file or assembly 'WebMatrix.WebData' or one of its dependencies. The system cannot find the file specified.
+
+This error can be fixed by being sure that you have the WebMatrix.WebData inside your references. This assembly should be located in Asp.Net Web Page folder of Microsoft Asp.Net (c:\\Program Files (x86)\\Microsoft ASP.NET\\ASP.NET Web Pages\\v2.0\\Assemblies\\WebMatrix.Data.dll). The best way to get the reference is simply to click Add Reference and doing a search for WebMatrix.
+
+[![webmatrixreference](http://patrickdesjardins.com/blog/wp-content/uploads/2013/03/webmatrixreference-400x119.png)](http://patrickdesjardins.com/blog/?attachment_id=2032)
+
+Once you are sure your have the WebMatrix DLL, be sure that this one have the property "Copy Local" to true.
+
+[![copylocal](http://patrickdesjardins.com/blog/wp-content/uploads/2013/03/copylocal.png)](http://patrickdesjardins.com/blog/?attachment_id=2033)
+
+This should solve the problem of having "Could not load file or assembly WebMatrix.WebData".

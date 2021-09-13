@@ -1,0 +1,33 @@
+---
+title: "Visual Studio Code with NPM and TypeScript (Part 6 : Lazy-loading)"
+date: "2017-03-20"
+categories: 
+  - "gulp"
+  - "javascript"
+  - "nodejs-web"
+  - "typescript"
+---
+
+To have the fastest website possible you must be wise to not load unnecessary JavaScript. In some scenario, it is the good strategy to not have everything in a bundle. For example, if a kind of action require different JavaScript files but that this one is not in the main scenario then it's better to lazy-load this module. This article will explain how to lazy-load TypeScript module.
+
+Let's fake the scenario that we want to load a module 2 seconds after a method is called:
+
+```typescript
+export class ClassB { public method1(): void { console.log("ClassB>method1"); setTimeout(() => { //Use code from fileToLazyLoad.ts }, 2000); } } 
+``` 
+
+
+The way to do it is to use directly the AMD loader instead of using the EcmaScript import. This might not be the case in the future, but this is how to do it at the time I am writing this post. From the previous article about TypeScript, we configured to use AMD (requirejs). To have the TypeScript lazy-loaded, we will need to use require directly in the file. The first step is to add at the top of the file a require to a reference to the type. This won't load the file at runtime, but let us in development time a reference to the type. The second step is to use requirejs() method at the time you need to module. The third step is to have the types aware in every modules. This last and third step is done by using : \[code\] npm install @types/requirejs --save-dev \[/code\]
+
+The first and second step can be seen in this transformed code form the initial snippet:
+
+```typescript
+import foo = require("folder1/fileToLazyLoad"); export class ClassB { public method1(): void { console.log("ClassB>method1"); setTimeout(() => { requirejs(\["folder1/fileToLazyLoad"\], (c: typeof foo) => { const co = new c.ClassC(); co.method1(); }); }, 2000); } } 
+``` 
+
+
+You can see that you can load multiple modules since the first parameter is an array. The second is a function that contains the same amount of argument that the length of the array. It's at this moment that the browser will do a HTTP request to get JavaScript file and execute the code. In that example, the method1() is called once the file is downloaded.
+
+Here is how the browser handles the HTTP request: [![](http://patrickdesjardins.com/blog/wp-content/uploads/2017/02/lazyloadingtypescriptmodule-1024x536.gif)](http://patrickdesjardins.com/blog/?attachment_id=4996)
+
+Lazy loading should be in your tool belt and be used anytime you can delay unnecessary module on the critical path. Good case are for dialog window, or deep hidden menu options. However, be careful not to degrade the user experience by having the user to wait on every click. Nothing is more annoying than clicking a menu and having a white space for few milliseconds. While not everything needs to be loaded, once the user is having what needed to work, you should eagerly load alternate scenario. At the end, the best strategy is to use lazy-loading at the right moment to have a good balance of performance and user experience.

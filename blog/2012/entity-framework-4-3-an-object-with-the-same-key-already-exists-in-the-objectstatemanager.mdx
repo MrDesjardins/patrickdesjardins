@@ -1,0 +1,17 @@
+---
+title: "Entity Framework 4.3:  An object with the same key already exists in the ObjectStateManager"
+date: "2012-04-16"
+categories: 
+  - "entity-framework"
+  - "general"
+---
+
+This situation occur if you have already the object inside the DbContext and you try to Attach your instance. Most of the time you can manage it but just remove the Attach method but in some case that you might not know if the instance is inside the DbContext you may would like to check it before attaching.
+
+This can be done with the help of **DbSet** and its **Local** property which is a collection of Locally attached entity.
+
+\[csharp\] if (!Database.Set<MyObject>().Local.Any(e => e.ID == myObject.ID)) Database.MyObjects.Attach(myObject); else myObject = Database.Set<MyObject>().Local.Single(e => e.ID == myObject.ID); \[/csharp\]
+
+The first line verify if the Local repositor contains or not your object. This line use the primary has identifier (ID). If it doesn't contain anything, the object is attached. Otherwise, your object will takes the reference of the one of the Local repository. This way, it won't create a new instance of your object. Without the fourth line, you could end up with a new entry into the database even if the primary key is the same as an existing one (Entity Framework will do an Insert and the ID will auto-increment).
+
+I am still curious to know why in some simple project, I can simply attach and never having the possibility to have twice the same object in the Local property.

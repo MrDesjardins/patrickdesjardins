@@ -1,0 +1,97 @@
+---
+title: "Resizing an Image with NodeJs"
+date: "2017-08-01"
+categories: 
+  - "azure"
+  - "cognitive-api"
+  - "javascript"
+  - "nodejs-web"
+  - "typescript"
+---
+
+This is the second post about project of creating a search tool for local pictures. As mentioned in the first post, this tool needs to use a web service to get information about the picture. This mean we need to upload the image that Microsoft Cognitive Vision/Face service will analyze and return a JSON object with information about the picture. Like most service, there is some constraints in term of the minimum and maximum of the size of what you can upload. Also, even for us, we do not want to send a 25 megs picture when it is not necessary. This article discuss about how to resize picture before sending a request to the web service. This will not only allow to be withing the range of the acceptable values, but also speed up the upload.
+
+I decide to take the arbitrary value of sending picture with the widest side of 640px. This produce in average a file 30kb which is tiny but still enough for the cognitive service to give very good result. This value may not be good if you are building something similar where people are far or if you are not using portrait pictures. In my case, the main subjects are always close range, hence very easy to get detail at that small resolution.
+
+Resizing a file requires to use a third-party library. This is something easy to find with JavaScript and NPM has a library named "Sharp" that do it perfectly. The TypeScript definition file is also available, so we are in business!
+
+```typescript
+npm install --save sharp npm install --save-dev @types/sharp 
+``` 
+
+
+Before anything, even if this project is for myself, I defined some configuration variables. Some rigor is required when it's cheap to do! The three first constant is the maximum size we want to output the image. I choose 640 pixel. The directory name is the constant of the folder where we will save the image we will send and where we will late save the JSON file with the analysed data. We save the resized image because on the website later, we will use this small image instead of the full resolution image. The website will be snappy and since we have the file, why not using this optimization for free. At 30kb for 2000 images, we only use 58 megs. The last constant is the glob pattern to get all underscore JPEG pictures. We will talk about glob very soon.
+
+```typescript
+const maxSize = 640; const directoryName = "metainfo"; const pathImagesDirectory = path.join(imagesDirectory, "\*\*/\_\*.+(jpg|JPG)"); 
+``` 
+
+
+The second pre-task is to find the images to resize. Again, this will require a third-party library to simplify our life. We could recursively navigate folders, but it would be nicer to have a singe glob pattern that handle it.
+
+```typescript
+npm install --save glob npm install --save-dev @types/glob 
+``` 
+
+
+From there, we need to import the module. We will bring the _path_ and _fs_ module of NodeJs to be able to create proper path syntax and to save file on disk. ```typescript
+import \* as g from "glob"; import \* as path from "path"; import \* as sharp from "sharp"; import \* as fs from "fs"; 
+``` 
+
+
+The first function that we need to create is the one that return a list of string that represent the file to resize. This will be all our underscore aka best pictures. We want to be sure that we can re-run this function multiple times, thus we need to ignore the output folder where we will save resized images. This function returns the list in a promise fashion because the glob library is asynchronous. Here is the first version which call the module function "Glob" and add everything into an array while sending in the console the file for debugging purpose.
+
+```typescript
+function getImageToAnalyze(): Promise<string\[\]> { const fullPathFiles: string\[\] = \[\]; const promise = new Promise<string\[\]>((resolve, reject) => { const glob = new g.Glob(pathImagesDirectory, { ignore: "\*\*/" + directoryName + "/\*\*" } as g.IOptions, (err: Error, matches: string\[\]) => { matches.forEach((file: string) => { console.log(file); fullPathFiles.push(file); }); resolve(fullPathFiles); }); }); return promise; } 
+``` 
+
+
+This can be simplified by just returning the _matches_ string array and returning the promise instead of using a variable. At the end, if you are not debugging you can use :
+
+```typescript
+function getImageToAnalyze(): Promise<string\[\]> { return new Promise<string\[\]>((resolve, reject) => { const glob = new g.Glob(pathImagesDirectory, { ignore: "\*\*/" + directoryName + "/\*\*" } as g.IOptions, (err: Error, matches: string\[\]) => { resolve(matches); }); }); } 
+``` 
+
+
+As mentioned, the quality of this code is average. In reality, some loves are missing around the error scenario. Right now, if something is wrong, the rejection promise bubble up.
+
+At this point, we can call the method with :
+
+```typescript
+console.log("Step 1 : Getting images to analyze " + pathImagesDirectory); getImageToAnalyze() .then((fullPathFiles: string\[\]) => { console.log("Step 2 : Resize " + fullPathFiles.length + " files"); return resize(fullPathFiles); }) 
+``` 
+ The code inside the "then" is the one executed if the promise is resolved successfully. It will start resizing the list of pictures and pass this list into the function that we will create in an instant.
+
+The _resize_ function is not the one that will do the resize. It will call the function that does the resize only if the picture has not been yet resized. This is great if something happen to fail and you need to re-run. The resize function will check in the "metainfo" folder, where we output the resized picture and only resize this one if not present. In both case, this function return a promise. The type of the promise is a list of _IImage_.
+
+```typescript
+export interface IImage { thumbnailPath: string; originalFullPathImage: string; } 
+``` 
+
+
+This type allows to have the detail about the full path of the thumbnail "resized" picture and the original picture. When we have already resized, we just create an instance, when we do not have an image we create this one and then return a new instance. This method waits all resize to occur before resolving. This is the reason of the _.all_. We are doing so just to have a clear cut before moving to the next step and since we are launching multiple resizes in parallel, we are waiting to have them all done before analyzing.
+
+```typescript
+function resize(fullPathFiles: string\[\]): Promise<IImage\[\]> { const listPromises: Array<Promise<IImage>> = \[\]; const promise = new Promise<IImage\[\]>((resolve, reject) => { for (const imagePathFile of fullPathFiles) { const thumb = getThumbnailPathAndFileName(imagePathFile); if (fs.existsSync(thumb)) { listPromises.push(Promise.resolve({ thumbnailPath: thumb, originalFullPathImage: imagePathFile } as IImage)); } else { listPromises.push(resizeImage(imagePathFile)); } } Promise.all(listPromises) .then((value: IImage\[\]) => resolve(value)); }); return promise; } 
+``` 
+
+
+This function use a function to get the thumbnail path to lookup if it's been already created or not. This function call another one too, and both of these methods are having the same goal of providing a path. The first one, the _getThumbnailPathAndFileName_ get the original full quality picture path and return the full image path of where the resized thumbnail is stored. The second one is a function that will be resused in some occasion and it gives the metainfo directory. This is where the resized picture are stored, but also the JSON file with the analytic data are saved.
+
+```typescript
+function getThumbnailPathAndFileName(imageFullPath: string): string { const dir = getMetainfoDirectoryPath(imageFullPath); const imageFilename = path.parse(imageFullPath); const thumbnail = path.join(dir, imageFilename.base); return thumbnail; }
+
+function getMetainfoDirectoryPath(imageFullPath: string): string { const onlyPath = path.dirname(imageFullPath); const imageFilename = path.parse(imageFullPath); const thumbnail = path.join(onlyPath, "/" + directoryName + "/"); return thumbnail; } 
+``` 
+
+
+The last method is the actual resize logic. The first line of the method create a "sharp" object for the desired picture. Then we invoke the "metadata" method that will give us access to the image information. We need this to get the actual width and height and do some computation to get the wider side and find the ratio of resizing. Once we know the height and the width of the thumbnail we need to create the destination folder before saving. Finally, we need to call the "resize" method with the height and width calculated. The "webp" method is the one that generate the image. From there, we could generate a buffered image and use a stream to handle it in memory or to store it on disk like we will do with the method "toFile". This return a promise that we use to generate and return the IImage.
+
+```typescript
+function resizeImage(imageToProceed: string): Promise<IImage> { const sharpFile = sharp(imageToProceed); return sharpFile.metadata() .then((metadata: sharp.Metadata) => { const actualWidth = metadata.width; const actualHeight = metadata.height; let ratio = 1; if (actualWidth > actualHeight) { ratio = actualWidth / maxSize; } else { ratio = actualHeight / maxSize; } const newHeight = Math.round(actualHeight / ratio); const newWidth = Math.round(actualWidth / ratio); const thumbnailPath = getThumbnailPathAndFileName(imageToProceed); // Create directory thumbnail first const dir = getMetainfoDirectoryPath(imageToProceed); if (!fs.existsSync(dir)) { fs.mkdirSync(dir); }
+
+return sharpFile .resize(newWidth, newHeight) .webp() .toFile(thumbnailPath) .then((image: sharp.OutputInfo, ) => { return { thumbnailPath: thumbnailPath, originalFullPathImage: imageToProceed } as IImage; }); }, (reason: any) => { console.error(reason); }); } 
+``` 
+
+
+This conclude the resize part of the project. It's not as straight forward as it may seem, but noting is space rocket science either. This code can be optimized to start resizing without having analyzed if all the image are present or not. Some refactoring could be done around the ratio logic within the promise callback of sharp's metadata method. We could also optimize the write to remain in memory and hence having not to reload the thumbnail from the disk but working the on the memory buffer. The last optimization wasn't done because I wanted every step to be re-executed what ever the state in which they were stopped. I didn't wanted to bring more logic to reload in memory if already generated. That said, it could be done. The full project is available on GitHub : [https://github.com/MrDesjardins/CognitiveImagesCollection](https://github.com/MrDesjardins/CognitiveImagesCollection)

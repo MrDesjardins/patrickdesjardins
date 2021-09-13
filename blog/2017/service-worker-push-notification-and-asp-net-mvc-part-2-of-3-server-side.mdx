@@ -1,0 +1,27 @@
+---
+title: "Service Worker, Push Notification and Asp.Net MVC - Part 2 of 3 Server Side"
+date: "2017-01-10"
+categories: 
+  - "asp-mvc"
+  - "azure"
+---
+
+In the part one, we saw how to register a service worker and how to handle incoming messages if the user is actively on the website. However, we didn't touch how to send a message through Google Firebase to receive the message. In this article, I'll show how to send a message from an Azure Webjob, written in C#. This is a common scenario where you have a backend job running and executing some logics that needs to have the user to an action. Since the user may or may not be on the website (or the wrong page), the push notification is great to indicate that something must be done. The other big advantage is that the push notification with Google Firebase offers an almost instant messaging service. Within few milliseconds, the message goes from the server to Google Firebase server to the service worker that will use the push notification API of the browser to display the message.
+
+The first thing, is to define a generic contract with an interface. I decided to create a simple one that return a simple boolean to indicate if the message sent is a success or a failure. The method signature allows to pass the "to" token, which is the unique identifier of the user for Firebase (the token saved from the Ajax call in the part 1). The remaining parameters are self explanatory with the title, message and url when the user click the notification.
+
+\[csharp\] public interface IPushNotification { bool QueueMessage(string to, string title, string message, string urlNotificationClick); } \[/csharp\]
+
+The implementation is also very simple. It relies on the REST endpoint of Google Firebase.
+
+\[csharp\] public class GoogleFirebaseNotification:IPushNotification { public bool QueueMessage(string to, string title, string message, string urlNotificationClick) { if (string.IsNullOrEmpty(to)) { return false; } var serverApiKey = "SuperLongKeyHere"; var firebaseGoogleUrl = "https://fcm.googleapis.com/fcm/send";
+
+var httpClient = new WebClient(); httpClient.Headers.Add("Content-Type", "application/json"); httpClient.Headers.Add(HttpRequestHeader.Authorization, "key=" + serverApiKey); var timeToLiveInSecond = 24 \* 60; // 1 day var data = new { to = to, data = new { notification = new { body = message, title = title, icon = "/Content/Images/Logos/BourseVirtuelle.png", url = urlNotificationClick } }, time\_to\_live = timeToLiveInSecond };
+
+var json = JsonConvert.SerializeObject(data); Byte\[\] byteArray = Encoding.UTF8.GetBytes(json); var responsebytes = httpClient.UploadData(firebaseGoogleUrl, "POST", byteArray); string responsebody = Encoding.UTF8.GetString(responsebytes); dynamic responseObject = JsonConvert.DeserializeObject(responsebody);
+
+return responseObject.success == "1"; } } \[/csharp\]
+
+The first piece of puzzle is to use the right server api key. It's under the Firebase console, under the setting's cog and under the **Cloud Messaging**. [![](http://patrickdesjardins.com/blog/wp-content/uploads/2016/12/ServerKeyFirebase-1024x415.png)](http://patrickdesjardins.com/blog/service-worker-push-notification-and-asp-net-mvc-part-2-of-3-server-side/serverkeyfirebase) The remaining of the code is configuring the **WebClient**. You must use a specific **content-type** to be **json**. The second header that must be defined is the authorization key. This is where you set the cloud messaging server key. Finally, we setup the data from the signature. Some information are hardcoded like the icon to display as well as the time that we want Firebase to hold the message if the user doesn't have a browser to collect the message. The last step is to retrieve the response and looks to see if the message got delivered successfully to the Firebase's server.
+
+When using with a webjob, you just need to use this implementation and pass the desired parameters. You can get from the token from a new column create in the AspNetUsers table and define a specific title and description depending of what the user must do.

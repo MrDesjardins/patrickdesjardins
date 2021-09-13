@@ -1,0 +1,75 @@
+---
+title: "JavaScript Prototype Part 2 : Inheritance (Classical Approach)"
+date: "2017-05-15"
+categories: 
+  - "javascript"
+---
+
+In this article, we will see how to create inheritance with JavaScript's prototype in a classical approach.
+
+We will create a base class and a child class. The base class will have 3 functions on its prototype. We will override one of these functions inside the child class in two different ways. The first one will override by a function attached to the instance, the second one will override the function attached to the prototype.
+
+To have inheritance with JavaScript there is two steps once the class are created.
+
+The first step is to call the base class constructor with the the this parameter. This is done by using the name of the function (the class) followed by "call" with "this" as parameter.
+
+The second step is to set the prototype of the child class to an instance of a new base object. This is done my calling assigning the prototype to Object.Create(.prototype). An important detail is that this must be set before you associate any new prototype to the object, otherwise, every prototype defined will be overridden.
+
+The third step is to set the prototype of the child class to be setup to the childclass. That is that the Object.create set the prototype to the base class which need to set back to the child. We can see that without setting this constructor that the value of console.log(ChildClass1.prototype.constructor) is the base class instead of the child class.
+
+```typescript
+var BaseClass1 = function() { this.memberbase = "base"; this.function4 = function(){ return "return function4 from base instance"; }; };
+
+BaseClass1.prototype.function1 = function() { return "return function1 from base prototype"; }; BaseClass1.prototype.function2 = function() { return "return function2 from base prototype"; }; BaseClass1.prototype.function3 = function() { return "return function3 from base prototype"; };
+
+var ChildClass1 = function() { BaseClass1.call(this); // Call the constructor of the base class \[Step1\] this.memberclass = "Child"; this.function2 = function(){ return "return function2 from child"; }; };
+
+ChildClass1.prototype = Object.create(BaseClass1.prototype); // \[Step2\] ChildClass1.prototype.constructor = ChildClass1; // \[Step3\] ChildClass1.prototype.function1 = function() { // Must be after previous line return "return from child"; };
+
+var instance1 = new ChildClass1();
+
+console.log("instance1.function1: "+ instance1.function1()); // override with prototype of child console.log("instance1.function2: "+ instance1.function2()); // override with instance function console.log("instance1.function3: "+ instance1.function3()); // Use base class function console.log("instance1.function4: "+ instance1.function4()); // Use base class function //console.log(ChildClass1.prototype.constructor) // uncomment to see what step 3 change. 
+``` 
+ The output is : \[code\] "instance1.function1: return from child" "instance1.function2: return function2 from child" "instance1.function3: return function3 from base prototype" "instance1.function4: return function4 from base instance" \[/code\]
+
+What we can see is that the chain of priority when calling a function start with the child instance function, move up to the child prototype function, then to the base prototype function. So, it's possible to redefine a base member in 3 different levels.
+
+The priority will always be : Child instance, Base instance, Child prototype, Base prototype.
+
+We can prove it with this example:
+
+```typescript
+var BaseClass1 = function() { this.function1 = function(){ return "Base Instance"; }; };
+
+BaseClass1.prototype.function1 = function() { return "Base Prototype"; };
+
+var ChildClass1 = function() { BaseClass1.call(this); // Call the constructor of the base class this.function1 = function(){ return "Child Instance"; }; };
+
+ChildClass1.prototype = Object.create(BaseClass1.prototype); ChildClass1.prototype.function1 = function() { // Must be after previous line return "Child Prototype"; };
+
+ChildClass1.prototype.constructor = BaseClass1; var instance1 = new ChildClass1(); console.log("instance1.function1: "+ instance1.function1()); 
+``` 
+ This will print : "instance1.function1: Child Instance".
+
+If we remove this instance function, this will print : "instance1.function1: Base Instance"
+
+If we remove the base instance function, this will print: "instance1.function1: Child Prototype"
+
+If we remove the base prototype function, this will print: "instance1.function1: Base Prototype"
+
+In this last example, we were using **Object.create**, but also **new** to create the instance that we manipulate the data. If we want to avoid completely the "new", we need to create the child class with Object.Create. This is possible, but will require to change the child class. For example, we won't specify function 1 inside ChildClass1 function, neither call BaseClass with call. The code would look like:
+
+```typescript
+var BaseClass1 = function() { this.function1 = function(){ return "Base Instance"; }; };
+
+BaseClass1.prototype.function1 = function() { return "Base Prototype"; };
+
+var ChildClass1 = Object.create(BaseClass1.prototype, { name3: { value: "MyName3" }, function1: { value: function () { return "Child Instance"; } } });
+
+ChildClass1.function1 = function() { // Must be after previous line return "Child Prototype"; };
+
+var instance1 = Object.create(ChildClass1, { memberclass : { value: "Child" } });
+
+console.log("instance1.function1: "+ instance1.function1()); 
+``` 
+

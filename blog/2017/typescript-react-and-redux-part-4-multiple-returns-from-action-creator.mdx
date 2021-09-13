@@ -1,0 +1,37 @@
+---
+title: "TypeScript, React and Redux Part 4 : Multiple Returns from Action Creator"
+date: "2017-09-27"
+categories: 
+  - "react"
+  - "typescript"
+---
+
+In this article, we will see how to execute more than a single action from a single call to an action creator. This will be useful for a scenario like requesting data where we expect the action creator to dispatch a loading state to have the user interface showing a loading animation and to invoke another dispatch when the data is received which stop the loading animation and load the information on the screen.
+
+Previously, the action creator was returning an interface from the action. This means that the action creator was calling the action and this one was returning the type and values. The problem with this approach is that most of the time, an action is executed with a fast response and a second one was sent with the actual result. The first call allows to setup the user interface to display a spinner or any kind of loading experience, while the second one will stop this loading state to display the actual content.
+
+This is where the middleware concept of Redux get in place. For the purpose of this article, we won't go into detail about how middle-ware works, but will just use the open source middle-ware called "Thunk".
+
+\[code\] npm install --save redux-thunk npm install --save-dev @types/redux-thunk \[/code\]
+
+This will allow us to return a Thunk Action instead of an object, which allows us to dispatch as many responses we want.
+
+```typescript
+import { ThunkAction } from "redux-thunk"; import { Dispatch } from "redux";
+
+export function applyFilter(): ThunkAction<void, IAppState, void> { return (dispatch: Dispatch<IUpdateFilterAction>, getState: () => IAppState, extra: any) => { setTimeout(() => { const fakePayload = {} as IResults; // Simulate date from response through Ajax response dispatch(actionApplyResponse(fakePayload)); }, 1500);
+
+return dispatch(actionApplyRequest()); }; } 
+``` 
+ In this example, we can see that we are referencing the ThunkAction class and Dispatch. The ThunkAction is the returned type which takes three type in its generic signature. The first one is the returned type we expect. In that case, I do not return anything, thus it is "void". The second parameter is the type of the state in the store. This is useful because it allows us to interrogate the store inside the action creator. This is useful for validation purposed but also to computer possible value from existing values. The last type is any extra value to use. The example shows that the actionApplyRequest action is dispatched immediately and that the actionApplyReponse is dispatched 1.5 seconds later.
+
+In this article, we brought a new dependency called Thunk that allows us to dispatch multiple actions instead of returning a single action. This allows us to handle an asynchronous scenario like fetching data from a remote source. This approach gave us the capability to consult the store as well which opens endless possibility in term of validations, data to use for data manipulation and so on.
+
+Articles of the series:
+
+1. [TypeScript, React and Redux](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-1-the-big-picture)
+2. [TypeScript and Redux Store](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-2-creating-the-store-and-the-reducer)
+3. [TypeScript Redux Store Binding](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-3-binding-the-store-and-component)
+4. [TypeScript Redux Action Creators](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-4-multiple-returns-from-action-creator)
+[](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-4-multiple-returns-from-action-creator)6. [](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-4-multiple-returns-from-action-creator)[TypeScript, React and Redux Part 5 : Reducer with Different Actions](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-5-reducer-with-different-actions)
+[](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-5-reducer-with-different-actions)

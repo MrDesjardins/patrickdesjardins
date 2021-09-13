@@ -1,0 +1,55 @@
+---
+title: "Silverlight communication with Javascript"
+date: "2011-10-16"
+categories: 
+  - "silverlight"
+---
+
+You may have some situation that you need to communicate with the page that your Silverlight reside.
+
+This can be done by three methods:
+
+- Passing parameter to Silverlight
+- Silverlight call a Javascript method of your page
+- The Javascript call a Silverlight method
+
+## Silverlight parameter
+
+All Silverlight application contain a startup method that has a StartupEventArgs. This class has a InitParam dictionary (IDictionary) that contains all parameters.
+
+\[csharp\] private void Application\_Startup(object sender, StartupEventArgs e) { if (e.InitParams.ContainsKey("debug")) { Debug.WriteLine(e.InitParams\["debug"\]); } } \[/csharp\]
+
+To pass parameters you need to add in the html a new element with the attribute name "initParams".
+
+\[csharp highlight="11"\] <div id="silverlightControlHost"> <object data="data:application/x-silverlight-2," type="application/x-silverlight-2" width="100%" height="100%"> <param name="source" value="ClientBin/MyProject.xap"/> <param name="onError" value="onSilverlightError" /> <param name="background" value="white" /> <param name="minRuntimeVersion" value="4.0.50826.0" /> <param name="autoUpgrade" value="true" /> <a href="http://go.microsoft.com/fwlink/?LinkID=149156&v=4.0.50826.0" style="text-decoration:none"> <img src="http://go.microsoft.com/fwlink/?LinkId=161376" alt="Get Microsoft Silverlight" style="border-style:none"/> </a> <param name="initParams" value="debug=false, secondParameter=2 " />
+
+</object> <iframe id="\_sl\_historyFrame" style="visibility:hidden;height:0px;width:0px;border:0px"></iframe> </div> \[/csharp\]
+
+As you can see in this example, if you need more than one parameter you need to use a comma between all parameter. The value is automatically a string. You will need to parse it to the desired type inside Silverlight.
+
+## Silverlight communicate with Javascript
+
+The communication between Silverlight and Javascript is straight forward. You need to use the Invoke method of HtmlPage.Window.
+
+\[csharp\] System.Windows.Browser.HtmlPage.Window.Invoke("MyFunction", "Parameter1"); System.Windows.Browser.HtmlPage.Window.Invoke("MyFunction", "Parameter1", "Parameter2"); \[/csharp\]
+
+The invoke method has a params\[\] for its second parameter. That let you add has many parameter value that the function in Javascript require. \[csharp\] public virtual object Invoke(string name, params object\[\] args); \[/csharp\]
+
+## Javascript to communicate with Silverlight
+
+Javascript can also call method inside a Silverlight application. To do, you need to first declare an entry point name.
+
+\[csharp\] System.Windows.Browser.HtmlPage.RegisterScriptableObject("Page123", this); \[/csharp\] This code can be added at the beginning of the constructor of the method that will be called. It specifies a unique identifier that will be used in the Javascript.
+
+The second thing that need to be done inside Silverlight is to add an attribute to the method that you want to expose to the external.
+
+\[csharp highlight="1"\] \[ScriptableMember\] public void JavascriptWillCallThisMethod(string textFromJavaScript) { Debug.WriteLine(textFromJavaScript); } \[/csharp\]
+
+The third and last step is to call this method from the Javascript code.
+
+```typescript
+var control = document.getElementById("silverlightControl"); control.Content.Page123.JavascriptWillCallThisMethod("Hello from Javascript!"); 
+``` 
+
+
+As you can see, you find the "Page123" again here. It's the name declared in the Silverlight application when calling the _RegisterScriptableObject_ method.

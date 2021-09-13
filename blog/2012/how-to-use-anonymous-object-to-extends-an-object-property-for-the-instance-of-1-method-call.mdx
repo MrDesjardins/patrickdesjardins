@@ -1,0 +1,16 @@
+---
+title: "How to use anonymous object to extends an object property for the instance of 1 method call."
+date: "2012-03-09"
+categories: 
+  - "c-sharp"
+---
+
+I had to use a method that with reflection would take the properties name and value to create a SQL query. The problem is that the library was limited to methods directly inside the object passed and not value of inner object. For example, if the class A contain an object B, we were not able to access B properties.
+
+We could have done something pretty much nicer like looping through all objects to get desired sub-properties but to make it short and because we wanted just to have the unique identifier of those object that we decided to overload the method of the library to extend the properties for the time of this method call.
+
+\[csharp\] MyMethod(myObject, new {MyNewPersonalMethodName1 = myObject.SubObject.Id1, MyNewPersonalMethodName2 = myObject.SubObject.Id2}); //or MyMethod(myObject, myOtherObjectToUseProperties); \[/csharp\] This is a representation of how it was done. The MyMethod was overloaded to accept a second parameter. This one will be used to receive an anonymous object. This way, it's easy to have a name <-> value relationship and it gives us the possibility to pass a complete real object if desired or simply pass an anonymous object as parameter.
+
+\[code\] public void MyMethod(object myObject, object extendedProperties) { //You can do something with all properties of myObject and its value here //Here you can do something with the extended properties if (extendedProperties != null) { var typeInfo = extendedProperties.GetType(); var propertyInfo = typeInfo.GetProperties(); foreach (PropertyInfo p in propertyInfo) { var nameToUpdate = p.Name; var valueToUpdate = (object)p.GetValue(extendedProperties, null); //Do somethind with nameToUpdate and valueToUpdate } } } \[/code\]
+
+The next step is to use reflection to be able to get all properties' names and values. It's after that easy to be able to get the name to build a SQL query or a JSON object from object.

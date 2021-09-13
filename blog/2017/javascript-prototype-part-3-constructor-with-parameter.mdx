@@ -1,0 +1,36 @@
+---
+title: "JavaScript Prototype Part 3 : Constructor with Parameter"
+date: "2017-05-17"
+categories: 
+  - "javascript"
+---
+
+Adding a parameter to a constructor in JavaScript is not complicated if you already have your object setup. It's also not much more work to have some values passed to the base class.
+
+The base class and the child class need to define their arguments they want to allow. To demonstrate, we will have 2 parameters for the child which one of this parameter will be set to the base class.
+
+The main change is to change the function that represent the class by adding a parameter. In the following code, we can see that BaseClass1 class function is now having a function with baseMember has a parameter. We can also see the ChildClass1 to have a function with two. The result is that we can now create with "new" an instance and specifying two parameters.
+
+```typescript
+var BaseClass1 = function(baseMember) { this.baseMember = baseMember; };
+
+var ChildClass1 = function(childMember, baseMember) { BaseClass1.call(this, baseMember); // Call the constructor of the base class this.childMember = childMember; };
+
+ChildClass1.prototype = Object.create(BaseClass1.prototype);
+
+ChildClass1.prototype.constructor = BaseClass1; var instance1 = new ChildClass1("C","B"); console.log("instance1.childMember: "+ instance1.childMember); console.log("instance1.baseMember: "+ instance1.baseMember); 
+``` 
+
+
+The output will be : \[code\] "instance1.childMember: C" "instance1.baseMember: B" \[/code\]
+
+As you may have realize, since we are using a function to create class in JavaScript, this bring some limitations. The main one is that you can only have a single constructor. It means that if you need to pass different type of information you need to check the type of the object passed or have optional parameter.
+
+Checking the type can be done with typeof to see if it's a number, string, array or an object. It's also possible to use instanceof to do logic depending of a specific type of object.
+
+```typescript
+var ChildClass1 = function(childMember, notalwaysprovided) { if(typeof childMember === "string"){ console.log("The name was from a string with the value : " + childMember); }else{ console.log("The name was from an object with the value :" + childMember.name); } console.log("This parameter is not always provided: " + (notalwaysprovided || "Default Value")); }; var instance1 = new ChildClass1("Name1", "second optional param"); var instance2 = new ChildClass1({name:"Name2"}); 
+``` 
+
+
+The output is : \[code\] "The name was from a string with the value : Name1" "This parameter is not always provided: second optional param" "The name was from an object with the value :Name2" "This parameter is not always provided: Default Value" \[/code\]

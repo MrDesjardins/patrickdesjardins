@@ -1,0 +1,22 @@
+---
+title: "Asp.Net MVC 4 and logging system"
+date: "2013-02-28"
+categories: 
+  - "asp-mvc"
+---
+
+Every application must have a logging system trace problem that occur when the system is up and running. In fact, most predictable error should be trapped and handled already inside your code but, in real life, we all know that we aren't protected against every errors. This is why, it's important to log errors into a persistence storage like files, database or event viewer of the machine.
+
+I personally like having the log into a database or files because it's easier to access it if this one is on a remote machine. I found that database is often the easiest way to get every traces because developers usually have access to the database remotely when it might not be the case for the event viewer or files.
+
+Microsoft has since many years published the Enterprise Library (Application Block) which contain a portion that handle logging. Unfortunately, in 2013, this doesn't to seem to be the favorite way to log even if the Enterprise Library offer a lots of flexibility. Nevertheless, I have used many time the Enterprise Library and it works flawlessly. However, I am using more and more [ELMAH logging](https://code.google.com/p/elmah) and really appreciate it. This is mainly because it takes 5 minutes to setup and it handle all unhandled error automatically without the need of any coding.
+
+[![nuget_elmah](http://patrickdesjardins.com/blog/wp-content/uploads/2013/01/nuget_elmah-400x266.png)](http://patrickdesjardins.com/blog/asp-net-mvc-4-and-logging-system/nuget_elmah)
+
+ELMAH installation could be summarized by "Nuget". This is almost the only thing you will need to do. Open NuGet Package Manager and install [ELMAH](https://code.google.com/p/elmah). This will add to your project the reference required and will modify the web.config. Then, if you need to store the log into your Microsoft SQL server you need to also use Nuget to download the MsSql portion.
+
+From there, you simply need to modify the web.config to give a credential to the database and run a script which create the proper table and stored procedures.
+
+The SQL script are available here to [download](https://code.google.com/p/elmah/downloads/list). You can download the script for the version of database you need. At this moment, you can download for Microsoft Sql Server, PostgreSQL, MySql, SQLite, MS Access, Oracle.
+
+By default, you can also have access from web page to the log stored into the database (http://yoursite/elmah.axd) if you are running it locally (this prevent users to see the log). If you aren't using a database, every log will be stored into the memory and will be flushed once the web server is restarted.

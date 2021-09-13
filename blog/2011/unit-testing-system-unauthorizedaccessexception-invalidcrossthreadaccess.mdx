@@ -1,0 +1,12 @@
+---
+title: "Unit testing  System.UnauthorizedAccessException: [InvalidCrossThreadAccess]"
+date: "2011-12-22"
+categories: 
+  - "c-sharp"
+---
+
+When unit testing you can get this kind of error if you try to use a class that use different thread of the main one.
+
+At first, I haven't realized that I were using another thread because I was testing my Shape class. After some minutes, I realized that I were using the System.Windows.Shape and not mine... once the reference set correctly I were able to remove this error and have my test working.
+
+> Test method UT.ShapeTest.CreateNewShape threw exception: System.UnauthorizedAccessException: \[InvalidCrossThreadAccess\] Arguments: ...

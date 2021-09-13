@@ -1,0 +1,29 @@
+---
+title: "Jquery Get Html Text Without Children Elements"
+date: "2013-10-03"
+categories: 
+  - "javascript"
+---
+
+Some time, you have a hmtl list inside an other html list or in fact any html element inside html and you want to have the text but not other html tag. How can you do?
+
+You cannot use .html() because it will return the inner html tag. You cannot use .text() because it will return the text of the html element with the text inside inner html element.
+
+For example:
+
+\[html\] <ul> <li id="step1">This is Step 1 <ul> <li>This is inside Step 1</li> </ul> </li> <li id="step2">This is Step 2 </li> </ul> \[/html\]
+
+If we use "step1.html()". The output is:
+
+\[html\] This is Step 1 <ul> <li>This is inside Step 1</li> </ul> \[/html\]
+
+If we use "step1.text()". The output is:
+
+\[html\] This is Step 1 This is inside Step 1 \[/html\]
+
+But if you want to get only "This is Step 1" you will have to use several Jquery calls.
+
+```typescript
+$("#step1").clone() .children() .remove() .end() .text(); 
+``` 
+ The **clone** instruction do a copy of the ul structure. It contains the whole structure with inner list. The **children** get everything under the step 1. This is the ul right under the step1 id. The remove take out all children. In our case, it removes only the ul under the step1 id. The **end** method tell Jquery to select back the initial selector which is the cloned element and get its text. Since we have removed every children, the **text** method will return only the text of the element.

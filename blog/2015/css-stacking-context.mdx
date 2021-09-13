@@ -1,0 +1,28 @@
+---
+title: "CSS Stacking Context"
+date: "2015-05-21"
+categories: 
+  - "css"
+---
+
+If you are only using z-index to set the depth position of html elements, than you may reach the situation of not having the final behavior your want. Z-index is a Css' property for the order top-bottom in the z axis. What most people do not know is that it is not an index that works for the entire page. It works only by context.
+
+Most of the time, z-index works as intended because you are not changing the Css **position** property. It is **static** by default, and since everything is static than the **z-index** is "global" to your webpage, in fact the context is set the the root element which is the **html** element tag. The behavior change when you start changing the **position** to something **absolute** or **relative**. Changing the position to either absolute or relative and by setting the z-index to something else than the default value "auto", generate a new **stacking context**. This mean that the z-order beyond that point is resetted. Everything inside the html element of this new position restart. You can see that like different containers. So, you can have your global html, and two elements that both of them have a position and z-index that create two new stacking context. Every z-index set inside these two containers are just for the container itself. That mean that if you have an element inside one of these container that is also set has relative or absolute and that this one goes beyond the boundary of the container that this one may appear behind the next container. Here is a small code to illustrate.
+
+\[html\] <div class="parent">Parent <div class="kid kid1">Kid1 <div class="kid-above-all"> <div class="aboveall">AboveAll</div> </div> </div> <div class="kid kid2">Kid2</div> </div> \[/html\]
+
+\[css\] .parent{ position:relative; background-color:blue; width:650px; height:400px; } .kid{ position:absolute; background-color:yellow; width:300px; height:100px; z-index:2; } .kid1{left:10px;} .kid2{left:330px;} .kid-above-all{ position:relative; width:20px; height:0; z-index:10000; } .aboveall{ position:fixed; width:550px; height:30px; left:150px; top:30px; background-color:green; border:solid 2px black; z-index:20000; } \[/css\] The result is that _kid2_ container is hidding the _AboveAll_ division. Even if _aboveall_ and _kid-above-all_ has a huge **z-index**, it is still behind _kid2_. The reason is that the z-index used by these two elements are only valid for the _kid1_ stacking context.
+
+[![CssStackingContextZ-index1](http://patrickdesjardins.com/blog/wp-content/uploads/2015/03/CssStackingContextZ-index1-400x239.png)](http://patrickdesjardins.com/blog/css-stacking-context/cssstackingcontextz-index1)
+
+To fix that, you need to set the container z-index to something bigger than the other stacking context. In that case, we want kid1 div to have a higher z-index value than kid2. \[css highlight="14"\] .parent{ position:relative; background-color:blue; width:650px; height:400px; } .kid{ position:absolute; background-color:yellow; width:300px; height:100px; z-index:2; } .kid1{left:10px; z-index:3}; .kid2{left:330px;} .kid-above-all{ position:relative; width:20px; height:0; } .aboveall{ position:fixed; width:550px; height:30px; left:150px; top:30px; background-color:green; border:solid 2px black; } \[/css\]
+
+[![CssStackingContextZ-index2](http://patrickdesjardins.com/blog/wp-content/uploads/2015/03/CssStackingContextZ-index2-400x235.png)](http://patrickdesjardins.com/blog/css-stacking-context/cssstackingcontextz-index2)
+
+Here is the JSFiddle: 
+
+<iframe width="100%" height="300" src="//jsfiddle.net/796yob22/6/embedded/html%2Ccss%2Cresult/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+There is other action than setting a **position** to absolute or relative with a z-index value that can trigger the creation of a new stacking context. If you are using **flex item** with a z-index, than you will have the same behavior: a new CSS stacking context. This one is less frequent. Another possibility is to set the **opacity** value less than 1 or use a transform with a value that is different than the default "auto". The opacity and transformation properties are more and more used which require even more to understand what is CSS stacking.
+
+To close the loop, z-index is only valid inside a CSS stacking context. A stacking context is created depending of how some specific CSS properties are set. If you want to have an inner html element above another element from another stacking context, than you must change the z-index of the stacking context itself and not the element one.

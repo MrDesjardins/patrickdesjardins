@@ -1,0 +1,20 @@
+---
+title: "CSS Sticky Position"
+date: "2017-03-29"
+categories: 
+  - "css"
+---
+
+Before going any further, this is supposed by Chrome 56+ and not many browser yet. The actual Chrome stable version is 56, hence it should be used with a good fallback.
+
+Sticky position is a new CSS position that allow to have a sticky element that is not sticky all the time. This is different from fixed which place an HTML element in a place and never move. With position to sticky, you define a threshold where the element will change from relative to "fixed".
+
+To illustrate, image a list that has a lot of element and once in a while you have title that you want to stick for the section. When scrolling, you want the title to unstick when you reach a new section. Every active section should have its own title fixed at the top. This can be achieved by JavaScript or now with Sticky. Here is a simple example of CSS that is applied to a class name "list-header" which should be used in each of section's title.
+
+\[css\] .list-header { position: sticky; top: 5px; } \[/css\]
+
+Every time the user scroll down, if the title reach the top by 5px (so not already touching the top but almost) the sticky get away until a new title reach the top. Normally, you want a very small number because otherwise, it will start getting sticky too early. In the example above, you would see a 5px game between the top of the title and the top of the container. A top of 1 or -1 would make more sense because the title would be almost flush to the top of the container.
+
+You can see an example (inspired by Mozilla's documentation) here : [https://codepen.io/mrdesjardins/pen/RpwLMy](https://codepen.io/mrdesjardins/pen/RpwLMy) which will produce this output:
+
+[![](http://patrickdesjardins.com/blog/wp-content/uploads/2017/02/CssPositionSticky.gif)](http://patrickdesjardins.com/blog/?attachment_id=5053)

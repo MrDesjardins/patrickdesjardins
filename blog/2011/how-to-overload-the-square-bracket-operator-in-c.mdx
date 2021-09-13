@@ -1,0 +1,16 @@
+---
+title: "How to overload the square bracket operator in C#?"
+date: "2011-11-03"
+categories: 
+  - "c-sharp"
+---
+
+This is pretty simple. In fact, I am writing this because most example show you this :
+
+\[csharp\] public object this\[int index\] { get { return collection\[index\]; } set { collection\[index\] = value; } } \[/csharp\]
+
+In fact, you should return the type of your collection. So, if your object contains a collection of _Person_ than you should write :
+
+\[csharp\] public Person this\[int index\] { get { return collection\[index\]; } set { collection\[index\] = value; } } \[/csharp\]
+
+This way, the value returned doesn't require to be casted.

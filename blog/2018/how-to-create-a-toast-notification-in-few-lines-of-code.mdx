@@ -1,0 +1,34 @@
+---
+title: "How to create a toast notification in few lines of code"
+date: "2018-07-06"
+categories: 
+  - "css"
+---
+
+I recently was about to ship a new system when I remember that many months ago I decided to create an error message at the top of the application which was having few constraints. My initial thought was that this error banner would be there only for an unhandled exception which wouldn't be the central error area. That still stands. For example, forms were getting their validation directly at the input level. However, the reality is that an Ajax error can happen and one of my forms could be out of range of the header. The result is that a user might not see the mistake at all which would be bewildered about why is the data not being processed.
+
+With very little time, I had to refactor the user interface. I first had the idea of using an on-the-shelf solution. But, after few minutes I thought that since it is an exceptional case, I can probably tinker simple CSS solution that would fit perfectly in my React application. Within one hour, I had the whole solution written and tested on many screen resolutions. This article has a simplified equivalence of what I created without being strongly associated to React or TypeScript.
+
+The first piece is that when an error occurs to create the HTML structure that will hold the message.
+
+\[html\] <div class="toast"> <p>Your message</p> </div> \[/html\] The idea is to have a container. The inside can be a simple message or an icon with a message. In my case, I had an icon, a header, a text and a dismiss button that can call a Redux action to remove the message from the Redux's store. As I said, this is all optional and is not required for the idea to work. The next step is to shape the end result of the error panel that would remain at the bottom of the browser windows regardless if the user is scrolling or has scrolled.
+
+\[css\] .toast{ position:fixed; bottom:10px; left: 10px; width:250px; border-radius: 4px; box-shadow: #310808 1px 1px 5px; background-color: rgba(177, 7, 15, 0.78); padding:10px; color: #f5bfbf; } \[/css\]
+
+The CSS is pretty basic and leverages the position "fixed". On the actual code, I had some media instruction to have the width to span the whole width of the browser if the resolution was low by setting the right value and width to auto.
+
+[![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/05/ErrorStaticMessage.png)](https://patrickdesjardins.com/blog/?attachment_id=5804)
+
+The second piece is to have the toast appearing gracefully. This can be done with purely CSS. The idea is to set an animation that will be executed once. The start of the animation should be that the container is hidden and out of the screen with the end of the animation to its final position with full opacity. The CSS needs to have 3 more lines.
+
+\[css\] opacity:1; animation: toast 500ms cubic-bezier(.23,.82,.16,1.46); animation-iteration-count: 1; \[/css\]
+
+The animation is called "toast" and iterate once and has a duration of 500ms. The cubic-bezier is set to create a bouncy effect.
+
+\[css\] @keyframes toast{ 0%{ opacity:0; transform: translateY(200px); }
+
+100%{ opacity:1; transform: translateY(0px); } } \[/css\]
+
+The end result is as planned which pop once when the error is added into the DOM. \[video width="344" height="226" mp4="https://patrickdesjardins.com/blog/wp-content/uploads/2018/05/2018-05-15\_16-13-44-1.mp4"\]\[/video\]
+
+Indeed, this solution is not elaborated and mundane to anyone using something more rich in feature. However, the size of this solution is tiny and for an edge case fit perfectly the situation. If you want to see the code in action I created a [CodePen](https://codepen.io/mrdesjardins/pen/BxOVNJ).

@@ -1,0 +1,26 @@
+---
+title: "How to know which button submit a form to an Asp.Net MVC controller"
+date: "2013-02-04"
+categories: 
+  - "asp-mvc"
+---
+
+You may want to have multiple button that submit your form and do something different in the action of your controller depending of which button has been used.
+
+An example that can raise is that you want to be able to create a new entity form the view but also be able to create in batch. One button will insert the entity into the database and return into the edit mode of the new added entity while a second button can simply reset the form to let you insert a new one.
+
+The secret is that the submit button is also an input which can have a name and a value. You simply need to have the same name and two different values.
+
+\[html\] <button type="submit" name="ActionSave" value="insert">Save</button> <button type="submit" name="ActionSave" value="insertAndContinue">Save and continue</button> \[/html\]
+
+You can from here change your view model to have a property ActionSave (string) or you can go directly into the Form collection.
+
+If you are using the Form Collection, the action inside your controller will look like this:
+
+\[csharp\] if (Request.Form\[CommandButtonName\] == SaveAndContinue) { // ... } else... \[/csharp\]
+
+As you can see, you will need to define 3 constants. One for the command button name, one for the Save and one for the SaveAndContinue.
+
+Otherwise, if you are using the ViewModel option, you need to check the value directly from the view model posted but also have 2 constants which will be Save and SaveAndContinue.
+
+\[csharp\] if (model.Action == SaveAndContinue) { // ... } \[/csharp\]

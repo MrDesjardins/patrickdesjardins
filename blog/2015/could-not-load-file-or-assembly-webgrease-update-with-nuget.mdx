@@ -1,0 +1,16 @@
+---
+title: "Could not load file or assembly WebGrease Update with Nuget"
+date: "2015-02-02"
+categories: 
+  - "asp-mvc"
+---
+
+I decided to update all my Nuget's packages and one more time, WebGrease could not update correctly. The solution's projects compile but when executing them website on IIS an error message raises.
+
+> Could not load file or assembly 'WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35' or one of its dependencies
+
+[![WebGreasePage](http://patrickdesjardins.com/blog/wp-content/uploads/2014/10/WebGreasePage-400x176.png)](http://patrickdesjardins.com/blog/could-not-load-file-or-assembly-webgrease-update-with-nuget/webgreasepage) The web.config seems legit: \[xml\] <dependentAssembly> <assemblyIdentity name="WebGrease" publicKeyToken="31bf3856ad364e35" /> <bindingRedirect oldVersion="0.0.0.0-1.6.5135.21930" newVersion="1.6.5135.21930" /> </dependentAssembly> \[/xml\]
+
+The .dll in the project is also with the version 1.6.5135.21930. [![WebGreaseDllVersion](http://patrickdesjardins.com/blog/wp-content/uploads/2014/10/WebGreaseDllVersion.png)](http://patrickdesjardins.com/blog/could-not-load-file-or-assembly-webgrease-update-with-nuget/webgreasedllversion)
+
+So why does the project does not want to execute? The problem was that the **Global Assembly Cache** had a version that was taking over. You can go into the GAC's folders, **C:\\Windows\\Microsoft.NET\\assembly\\** or **%windir%\\Microsoft.NET\\assembly** and see 3 folders. One for GAC\_32, GAC\_64 and GAC\_MSIL. After deleting the **WebGrease** folder ones in those folders and then be sure that none of WebGrease is into the **Asp.Net Temporary** folders. To be also sure that the cache of Asp is not having the wrong DLL, be sure to clear C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\Temporary ASP.NET Files\\.

@@ -1,0 +1,18 @@
+---
+title: "Entity Framework and conversion of a datetime2"
+date: "2013-06-22"
+categories: 
+  - "ado-net"
+  - "entity-framework"
+  - "sql"
+---
+
+Have you ever got a conversion error when saving an entity with Entity Framework? Even with Entity Framework 5.0, you may receive the following error message that the value is out of rage.
+
+> The conversion of a datetime2 data type to a datetime data type resulted in an out-of-range value.\\r\\nThe statement has been terminated.
+
+This is the case if you have a date time set to 0001-01-01 because it's out of range for SQL Server (even with Sql Server 2008 R2). In fact, SQL Server date can have a date only [after the year 1753](http://msdn.microsoft.com/en-us/library/bb675168.aspx).
+
+[![datelogo](http://patrickdesjardins.com/blog/wp-content/uploads/2013/05/datelogo.png)](http://patrickdesjardins.com/blog/entity-framework-and-conversion-of-a-datetime2/datelogo)
+
+The solution to this problem is to set a property date or to make nullable this field in the database and into your entity. This way, you could set to null if the date is not set. Otherwise, you can use instead of 0001-01-01 another date has a "not set date" which is over 1753-01-01.

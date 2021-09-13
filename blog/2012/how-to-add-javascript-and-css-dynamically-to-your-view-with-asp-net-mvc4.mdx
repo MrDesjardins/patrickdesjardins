@@ -1,0 +1,22 @@
+---
+title: "How to add Javascript and CSS dynamically to your view with Asp.Net MVC4"
+date: "2012-10-15"
+categories: 
+  - "asp-mvc"
+---
+
+In a previous post concerning [how to add CSS and Javascript file dynamically](http://patrickdesjardins.com/blog/how-to-add-css-file-or-javascript-file-by-action-of-controller "How to add CSS file or Javascript file by action of controller") depending of the action used, we have found a way to add those by setting a filter to the controller or the action of any controller. The problem with this approach is that it's the controller who choose client side element. In fact, the controller should just tell what view to use and the use itself should be able to handle what CSS or Javascript to load. Of course, adding CSS/Javascript directly into the View ain't the best solution because we want to put the CSS at the top of the Html header and we want to setup the Javascript at the bottom of the html.
+
+This is where Asp.Net MVC **section** can shine.
+
+## Named Section
+
+Asp.Net MVC have something called **Named Section**. It lets the developer setup optional placeholder inside the master page and if required, let the view inject some html code. \[csharp\] ... <script type="text/javascript" src="@Url.Content("/Scripts/javascriptAlwaysLoaded.js)"> @RenderSection("scripts", required: false) </html> \[/csharp\] The code above show you the idea of some code that could have been written to be in the master page. As you can see, we have 1 Javascript file hard coded, that will be loaded what so ever the page. This is good for JQuery or other Javascript file that require to be always there. Then, we have the **RenderSection**. RenderSection works a little bit like **RenderBody()**. We have set the parameter required to false, which mean that this place holder ain't required if no script need to be registered.
+
+The next step is to go into a view that need to have a specific script and to add the html to load this one. For example:
+
+\[html\] @section scripts { <script type="text/javascript" src="@Url.Content("/Scripts/ABC.js")"></script> } \[/html\]
+
+## Conclusion
+
+I think this approach is better than the Filter one because it let you handle client side directly inside the view without having to modify the controller. It's also not exactly to the controller the specify what design style (CSS) or script (Javascript) to display. In fact, the controller role is really to handle request and give a correct response to this one, not to implement detail for the view.

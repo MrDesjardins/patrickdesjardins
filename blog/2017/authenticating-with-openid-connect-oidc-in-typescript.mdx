@@ -1,0 +1,67 @@
+---
+title: "Authenticating with OpenID Connect (OIDC) in TypeScript"
+date: "2017-10-31"
+categories: 
+  - "react"
+  - "redux"
+  - "typescript"
+---
+
+Connecting to OpenID Connect (OIDC) and OAuth2 protocol support for browser-based applications is something that occurs more frequently. One well-known example is to use Google Auth to have your user authenticate instead of having to handle a custom password approach to your web application. My case was that I needed to authenticate against a private federated system.
+
+Before going into detail, the project I am building is using React, Redux and TypeScript. In this article, I'll bring an open-source library named [oicd-client-js](https://github.com/IdentityModel/oidc-client-js). It's open source on [Github](https://github.com/IdentityModel/oidc-client-js) and has a [NPM package](https://www.npmjs.com/package/oidc-client) available.
+
+First, you need to install the library, and second, you do not need any types for TypeScript -- the library contains the definition file. This is great because it means that it will be updated more frequently.
+
+```typescript
+npm install oidc-client --save 
+``` 
+
+
+A word of caution, the library's documentation is very thin. While having some samples, most of them don't explain which settings are required to have it work. In this article, I won't call any function to log out else than flushing on the client side the local storage. If you look at the library, there are potential functions that could be called -- it never worked for me.
+
+The first thing you need is to have your React component dispatching two events. One would be to log in, the other one to log out. I opted to have the dispatcher calling an action creator that looks like this:
+
+```typescript
+export function onAppLogin(): ThunkAction<void, AppRootReducer, {}> { return (dispatch: Dispatch<Actions<void>>, getState: () => AppRootReducer, extra: {}) => { dispatch(actionAppLoginStarted()); Auth.getInstance().login(); }; }
+
+export function onAppLogout(): ThunkAction<void, AppRootReducer, {}> { return (dispatch: Dispatch<Actions<void>>, getState: () => AppRootReducer, extra: {}) => { Auth.getInstance().logout().then(() => { dispatch(actionAppLogout()); }); }; } 
+``` 
+
+
+Both are actually calling the singleton Auth which contains a login and logout function. The Auth class is a singleton because it will be used in these two functions but also in a Redux's Middleware later. The way it works is that when we will call the login function that this one will invoke the third-party library and will receive from the server a URL that the client will need to navigate to. This is required in case the user is not authenticated yet with the OpenId server. When the navigation is done, the server will callback the application. This is where the Redux's Middleware will be interesting. Since Redux's Middleware listen to every action, if we have a custom middleware we are able to listen if we expect to do any work. This is why we will use a temporary entry inside a local storage to set a flag saying if we need to do any login or logout work. In the case of login, we will fetch the user's information and dispatch an action that will store the access token and user's name, email, etc into our store. For the logout, same thing. The middleware will remove the user from the store once this one is getting dismissed.
+
+```typescript
+import OIDC, { UserManagerSettings } from "oidc-client";
+
+export class Auth {
+
+private static OidcSettings: UserManagerSettings = { automaticSilentRenew: true, authority: "https://meechum.netflix.com", client\_id: "cdnadminpartner", redirect\_uri: window.location.protocol + "//" + window.location.host + "/index", post\_logout\_redirect\_uri: window.location.protocol + "//" + window.location.host + "/index", silent\_redirect\_uri: window.location.protocol + "//" + window.location.host + "/index", response\_type: "code token id\_token", scope: "openid profile", loadUserInfo: true, userStore: new OIDC.WebStorageStateStore({ store: window.localStorage }) };
+
+private static instance: Auth; private static readonly KEY\_FOLLOW = "my\_app\_follow\_action\_required"; private static readonly KEY\_PROCESS\_LOGIN = "login"; private static readonly KEY\_PROCESS\_LOGOUT = "logout";
+
+private user: OIDC.UserManager;
+
+public static getInstance(): Auth { if (Auth.instance === undefined) { Auth.instance = new Auth(); } return Auth.instance; }
+
+public process(): Promise<UserFromMeechum | undefined> { if (this.mustFollowAuthLogin()) { return this.processSigninResponse() .then((response) => { return response; }); } else if (this.mustFollowAuthLogout()) { return this.processSignoutResponse() .then((response) => { return undefined; }); } else { return this.getUser(); } }
+
+public getUser(): Promise<any | null> { return this.user.getUser(); }
+
+public login(): void { this.user.createSigninRequest() .then((response) => { this.getStorage().setItem(Auth.KEY\_FOLLOW, Auth.KEY\_PROCESS\_LOGIN); window.location.href = response.url; }); }
+
+public logout(): Promise<void> { return this.user .removeUser(); }
+
+private constructor(private storage: StorageType = StorageType.LocalStorage) { const level = Log.getOptions().logMaxLevelOfTracing; const verboseLevel = TraceType.Verbose; if (level >= verboseLevel) { OIDC.Log.logger = console; OIDC.Log.level = OIDC.Log.DEBUG; } this.user = new OIDC.UserManager(Auth.OidcSettings); } private processSigninResponse(): Promise<UserFromMeechum> { this.getStorage().removeItem(Auth.KEY\_FOLLOW); return this.user.signinRedirectCallback(); }
+
+private processSignoutResponse(): Promise<null> { this.getStorage().removeItem(Auth.KEY\_FOLLOW); return this.user .processSignoutResponse() .then((response) => { return null; });
+
+}
+
+private mustFollowAuthLogin(): boolean { return window.localStorage.getItem(Auth.KEY\_FOLLOW) === Auth.KEY\_PROCESS\_LOGIN; } private mustFollowAuthLogout(): boolean { return window.localStorage.getItem(Auth.KEY\_FOLLOW) === Auth.KEY\_PROCESS\_LOGOUT; } } 
+``` 
+
+
+The middleware is getting hammered, like any middleware. However, the only task it does is to check for the localstorage to see if a flag for action is required or not. If not, it calls the next middleware. It's pretty fast. Otherwise, it goes the final step for the authentication.
+
+Further work could be done in term of logout by calling "createSignoutRequest" for instance. I have created a [Github issue](https://github.com/IdentityModel/oidc-client-js/issues/419) and hope to get an answer by the time this article is published. At the moment, the problem is that the library response with "No end session endpoint url returned" which is awkward because if we look at the source code, the endpoint is optional. I do not set this one (and haven't found where it can be set). Nevertheless, the code of this article works well and you will have your token id and access id as well as all the user information.

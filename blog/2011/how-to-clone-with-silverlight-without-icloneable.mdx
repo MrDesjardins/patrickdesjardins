@@ -1,0 +1,19 @@
+---
+title: "How to clone with Silverlight without ICloneable?"
+date: "2011-10-13"
+categories: 
+  - "c-sharp"
+  - "silverlight"
+---
+
+The .Net Framework allow to clone _ICloneable_ interface. This interface has a single method that is _Clone_. This interface is not available in **Silverlight**. The reason is that [Microsoft](http://forums.silverlight.net/p/11495/36695.aspx#36695) have found that since it does not provide specification between deep copy or shallow copy that it was useless to port this interface into the Silverlight SDK. In fact, this interface has been [questionable since a long time ago](http://blogs.msdn.com/b/brada/archive/2004/05/03/125427.aspx).
+
+An other way to clone is to serialize and deserialize your object. By using this mechanism all references are not there but the value are. The problem, is that Silverlight does not have the _System.Runtime.Serialization_ has you may know in the .Net standard framework. You won't fine the the _IFormatter_ interface neither the _BinaryFormatter_ class.
+
+So, how to clone an object in Silverlight?
+
+Here is a cloning method that is an extension for every object. It uses reflection to do it's cloning. This is not a deep copy!
+
+\[csharp\] public static class CloningExtension { public static T Clone<T>(this T source) { T cloned = (T) Activator.CreateInstance(source.GetType()); foreach (PropertyInfo curPropInfo in source.GetType().GetProperties()) { if (curPropInfo.GetGetMethod() != null && (curPropInfo.GetSetMethod() != null)) { // Handle Non-indexer properties if (curPropInfo.Name != "Item") { // get property from source object getValue = curPropInfo.GetGetMethod().Invoke(source, new object\[\] {}); // clone if needed if (getValue != null && getValue is DependencyObject) getValue = Clone((DependencyObject) getValue); // set property on cloned curPropInfo.GetSetMethod().Invoke(cloned, new object\[\] {getValue}); } // handle indexer else { // get count for indexer int numberofItemInColleciton =(int)curPropInfo.ReflectedType.GetProperty("Count").GetGetMethod().Invoke(source, new object\[\] {}); // run on indexer for (int i = 0; i < numberofItemInColleciton; i++) { // get item through Indexer object getValue = curPropInfo.GetGetMethod().Invoke(source, new object\[\] {i}); // clone if needed if (getValue != null && getValue is DependencyObject) getValue = Clone((DependencyObject) getValue); // add item to collection curPropInfo.ReflectedType.GetMethod("Add").Invoke(cloned, new object\[\] {getValue}); } } } } return cloned; } } \[/csharp\]
+
+If you want more information you can read this [forum thread](http://forums.silverlight.net/t/1730.aspx).

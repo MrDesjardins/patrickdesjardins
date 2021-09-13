@@ -1,0 +1,28 @@
+---
+title: "ImmutableList and the namespace System.Collections.Immutable"
+date: "2013-10-24"
+categories: 
+  - "c-sharp"
+---
+
+An immutable list has the propriety of being not modifiable after its creation. String is immutable because each time you change its value a new instance is created. If you want to have the same behavior with a list, you need to use an immutable list.
+
+The creation of an ImmutableArray can be created from a method or from another list. But first, you need to use NuGet to download the package. You also need to use .Net Framework 4.5.
+
+[![MicrosoftImmutableCollection](http://patrickdesjardins.com/blog/wp-content/uploads/2013/10/MicrosoftImmutableCollection-400x335.png)](http://patrickdesjardins.com/blog/?attachment_id=2360)
+
+or with the package console with this line:
+
+Install-Package Microsoft.Bcl.Immutable
+
+\[csharp\]
+
+using System.Collections.Immutable;
+
+ImmutableList<int> array = ImmutableList.Create<int>(100, 101, 300);
+
+List<int> myList = new List<int> { 100, 101, 300 };ImmutableList<int> array2 = ImmutableList.ToImmutableList<int>(myList); \[/csharp\]
+
+As you can see, you need to use the namespace System.Collections.Immutable. The namespace contains more than only ImmutableList, but also contains an ImmutableDictionary, ImmutableQueue, ImmutableSet and ImmutableStack.
+
+[![ImmutableCollection](http://patrickdesjardins.com/blog/wp-content/uploads/2013/10/ImmutableCollection.png)](http://patrickdesjardins.com/blog/?attachment_id=2361)

@@ -1,0 +1,28 @@
+---
+title: "How to extend (or add) conditionnal clause to Expression<T>"
+date: "2012-09-27"
+categories: 
+  - "c-sharp"
+  - "dynamic"
+  - "linq"
+---
+
+If you need to concatenate two expressions (with OR or AND) this can be done easily with the help of the [LinqKit library](http://www.albahari.com/nutshell/linqkit.aspx).
+
+The idea is to Invoke both expression with the same model object.
+
+\[csharp\] Expression<Func<Customer, bool>> filter1 = customer => customer.FirstName == "Test"; Expression<Func<Customer, bool>> filter2 = customer => customer.LastName == "Test"; Expression<Func<Customer, bool>> filter3 = customer => filter1 .Invoke(customer) || filter2.Invoke(customer); \[/csharp\]
+
+The last step is to use AsExpendable() and to you Expand to the last filter (filter3). \[csharp\] IEnumerable<Customer> customers = CustomerRepository.GetAll().AsExpandable().Where(filter3.Expand()).OrderBy(c => c.Id); \[/csharp\]
+
+The AsExpendable() method simple create a wrapper around the IQueryable to create a ExpendableQuery. From here, the provider will change with the concrete provider ExpendableQueryProvider which inherit from IQueryProvider. This one will call the .Expand() of the expression.
+
+If you go check the source code of the method ExpendableQuery we can see the wrapping.
+
+\[csharp highlight="6"\] public static IQueryable<T> AsExpandable<T>(this IQueryable<T> query) { if (query is ExpandableQuery<T>) return query; else return (IQueryable<T>) new ExpandableQuery<T>(query); } \[/csharp\]
+
+The expand look like this : \[csharp\] public static Expression<TDelegate> Expand<TDelegate>(this Expression<TDelegate> expr) { return (Expression<TDelegate>) new ExpressionExpander().Visit((Expression) expr); } \[/csharp\] It call the Visit method of the ExpressionExpander from the Expression.
+
+In short, what you have to remember it the use of LinqKit.dll make you life really easier when you manipulate dynamic expression.
+
+So you have appended two Linq To Entity expression http://stackoverflow.com/questions/1266742/append-to-an-expression-linq-c

@@ -1,0 +1,58 @@
+---
+title: "Dissecting the createStore of Redux"
+date: "2018-01-30"
+categories: 
+  - "redux"
+---
+
+Creating a store in Redux is something at the core of the experience of the framework. In most cases, developers use the createStore function to specify the list of reducer and enhancer (middleware). In this article, we will see what is really happening when calling the function.
+
+First of all, it's important to know that this function can take two or three parameters even if it's mostly used with two. The first four lines of the function handle the situation. If you pass two parameters the second parameter will be the list of enhancers. If you use three parameters, the third one is the list of enhancers and the second parameter is the default state. In my opinion, this is an error of conception and the second and third parameters should be inverted which would remove the gymnastics required. The next validation is to make sure that the enhancer is a function. I said "list of enhancers" but it takes a function, how so? Has described in the previous article about the dissection of the compose method, Redux work with functions that call functions in a chain. Enhancers work this way as well. So, it means that to pass a collection of enhancer, you will need to compose them. This will give the capability to Redux to call the first method with a parameter and have the information pass through the list.
+
+```typescript
+export default function createStore(reducer, preloadedState, enhancer) { if (typeof preloadedState === 'function' && typeof enhancer === 'undefined') { enhancer = preloadedState preloadedState = undefined }
+
+if (typeof enhancer !== 'undefined') { if (typeof enhancer !== 'function') { throw new Error('Expected the enhancer to be a function.') }
+
+return enhancer(createStore)(reducer, preloadedState) } // ... function keeps going but cut for brevity 
+``` 
+
+
+The function is quite big, therefore I cut it down for the moment. The last line above is invoking recursively the createStore function has a parameter. However, this time the enhancer function is invoked by the enhancer. As we just mention, the enhancer is a function that calls another function and so on to finally come back and actually return the store which is the remaining of the function that we will see soon. However, before moving on the rest of the function, let's settle few things. The enhancer role is similar to a middleware which is to be a sequence of function to modify a behavior of Redux. However, this one goal is to modify the store. The most popular one is applyMiddleware which we will discuss later. applyMiddleware is a store enhancer. It enhances the store by providing a way to hook middleware between dispatch of action the reducer.
+
+```typescript
+const store = createStore( reducer, compose( applyMiddleware(thunk), DevTools.instrument() ) ) 
+``` 
+
+
+The code above should be familiar. The first parameter is the reducer and the second one is the store enhancer which contains two stores enhancer: applyMiddleware and Devtool.instrument. Let's continue the dissection of the createStore function. Before going any further, the code validates that reducer is a function. Once again, reducers are also composable function! Which mean that every reducer will call each of them in sequence. There are some variables that hold all reducers, the list of listeners and the state. The reducers list is required since everytime something will be dispatched, the action must go through the list. The list of listeners is used to inform any changes and the state is the final state at the end of a loop through all the reducers. The getState function lets you have access to Redux state, the subscribe method allows subscription to get notified when changes happen. Most React developer use the React-Redux package that subscribes beneath the scene and it renders the attached React control for you. ```typescript
+if (typeof reducer !== 'function') { throw new Error('Expected the reducer to be a function.') }
+
+let currentReducer = reducer let currentState = preloadedState let currentListeners = \[\] let nextListeners = currentListeners let isDispatching = false
+
+function getState() { return currentState }
+
+function subscribe(listener) { // Removed for brevity }
+
+function dispatch(action) { // Removed for brevity }
+
+if (typeof action.type === 'undefined') { throw new Error( 'Actions may not have an undefined "type" property. ' + 'Have you misspelled a constant?' ) }
+
+if (isDispatching) { throw new Error('Reducers may not dispatch actions.') }
+
+try { isDispatching = true currentState = currentReducer(currentState, action) } finally { isDispatching = false }
+
+const listeners = currentListeners = nextListeners for (let i = 0; i < listeners.length; i++) { const listener = listeners\[i\] listener() }
+
+return action } 
+``` 
+
+
+Finally, the dispatch method calls currentReducer(currentState, action) which is a pointer to the first reducer functions that will call one after the other each composed function with the current state and action. This is why reducers have the signature:
+
+```typescript
+function yourReducer(state = initialState, action) { // Reducer logic here return state } 
+``` 
+
+
+The dispatch method invokes all listener to be notified. That's it. The last detail around this method is how is constituted a store enhancer. We can deduct from how it's invoked that the function takes in parameter a single argument which is the createStore function itself which is a function that returns the store object we just analyzed. The enhancer lets you alter everything about the store. In this article, we saw that createStore function lets you create a basic store which is a bare function that accepts subscribers that are triggered when the dispatch method is called. Between the invocation of dispatch and the notification, it calls a reducer function (that can be composed). This is it! In the next article, we will see the store enhancer called "applyMiddleware" which is an enhancer that brings the notion of middleware in Redux.

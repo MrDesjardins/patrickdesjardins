@@ -1,0 +1,16 @@
+---
+title: "Git Combining Commit Not Pushed Yet"
+date: "2014-12-22"
+categories: 
+  - "git"
+---
+
+You are working on your computer, did several commit and you are ready to push. However, you may not want to push all the commit but only one that combine all your commit. Multiple cases exist like that you want all the code but not some of the comment related to commits. Another case could be that you the commit was not significant and you want to get ride of it. This is often the case of a commit without message. The change are required, but an empty commit is not.
+
+To combine commit you need to use the rebase method inside your own branch. This is done by using **rebase interactive** command.
+
+\[code\] git rebase -i #All since the last commit git rebase -i HEAD~5 #Last 5 commits \[/code\]
+
+I wrote two commands that are doing almost the same. the first one does not specify the commit to takes. By default, it will takes all commit not pushed. The second command take the last 5 commits. This will redirect you to the interactive rebase screen. From that screen, it is possible to squash, edit or pick a command. You will also notice that the screen display all commit from the more old to the newest commit. You will see one line per commit. This allow you to edit every line by choosing if you want to keep the commit, with **pick**, to get the code but not the message with **squash** or to edit the commit with **edit**.
+
+Let's take the scenario that we want to combine everything in one commit. In that case, you **pick** the first commit ans **squash** all the other ones. You save and Git will open your default editor to allow you to edit the final message. Save and you are all set. At any time, if conflict occur you can abort. You just need to do the abort method of the git rebase command. \[code\] git rebase --abort \[/code\]

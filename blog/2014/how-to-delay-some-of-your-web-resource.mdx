@@ -1,0 +1,14 @@
+---
+title: "How To Delay Some of your Web Resource"
+date: "2014-10-23"
+categories: 
+  - "javascript"
+---
+
+If you are working with JavaScript and Asynchronous Module Definition (AMD) you know that you have the possibility to have module that depend on others. At some point, you may want to test what would happen if one of your script takes a lot of time to load. For example, if you have a JavaScript module named "A" that depends on "B" and "C" and only when "A" is loaded can execute a task, you may want to test if the task required is really trigged when both dependencies are loaded.
+
+To be able to test that you can use Fiddler. Fiddler let's you see all Http traffic but it can also let you play with responses. To do, open the **AutoResponse** tab. [![FiddleAutoResponse](http://patrickdesjardins.com/blog/wp-content/uploads/2014/08/FiddleAutoResponse-400x210.png)](http://patrickdesjardins.com/blog/how-to-delay-some-of-your-web-resource/fiddleautoresponse)
+
+You need to set up for the URL you want a response action. You can use an exact math, a file name or use any Regex you want. When the url comparison is true by one of your matches than the respond is launched. For us, adding a delay is done by adding the following command **\*delay:####** followed by the number of millisecond to have the delay. \[code\] \*delay:5000 \[/code\]
+
+During your test, the code that must be executed after both dependencies load will be delayed if you have setup a delay for one or many of the dependencies.

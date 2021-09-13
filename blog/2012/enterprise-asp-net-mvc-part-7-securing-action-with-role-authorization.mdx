@@ -1,0 +1,36 @@
+---
+title: "Enterprise Asp.Net MVC Part 7: Securing action with role authorization"
+date: "2012-12-10"
+categories: 
+  - "asp"
+  - "asp-mvc"
+  - "enterprise"
+---
+
+In previous article of the enterprise asp.net mvc series we have choose to allow anonymous not by default and to secure to logged used most of the actions possible. This is great but not enough if we want to have some action available only for specific role. In this article, I'll show you how to authorize specific role to be mapped to action and to keep the security for anonymous. Also, we will see how to have custom error page for unauthorized action instead of the login screen that Asp.Net MVC redirect when the authorization is unsuccessful.
+
+First of all, we will need to create a new Authorize attribute. This is not because Asp.Net MVC 4 doesn't provide the attribute but because Asp.Net MVC 4 act the same way for **authorized access (401)** and a **forbidden access (403)**. We want when it's an authorized access (not logged) to redirect to the login screen and when it's the forbidden access (not being in the role) to be redirected to a view saying something and not the login form.
+
+\[csharp\] \[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)\] public sealed class AuthorizeAttribute : System.Web.Mvc.AuthorizeAttribute { public AuthorizeAttribute() { ErrorArea = string.Empty; ErrorController = "Error"; ErrorAction = "Index"; }
+
+public string ErrorArea { get; set; } public string ErrorController { get; set; } public string ErrorAction { get; set; }
+
+public override void OnAuthorization(AuthorizationContext filterContext) { base.OnAuthorization(filterContext); if (AuthorizeCore(filterContext.HttpContext)) return; if (filterContext.HttpContext.Request.IsAuthenticated) { if (ErrorController != null) { filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { action =ErrorAction, controller =ErrorController, area = ErrorArea })); } else { filterContext.Result = new HttpStatusCodeResult((int)HttpStatusCode.Forbidden); } } else { filterContext.Result = null; } } } \[/csharp\] This is the attribute class. This class check if the user is authenticated, if not, will redirect to the normal process and return a 401 http status with the login form. If the user is authenticated, the status code is changed to 403 if no controller is specified, otherwise, will redirect to a specific controller/action. By default, I have set a controller and action, this way, it's more user friendly to have a real page inside the page layout than the default 403 IIS page. Of course, it's up to you to choose what you prefer. However, I believe that not only it's more user friendly but this way give you the possibility to log forbidden access and to have custom message.
+
+To use this new **AuthorizeAttribute**, we need to change the default filter set to every action. In Asp.Net MVC 4, you need to search for FilterConfig.cs
+
+\[csharp highlight="6"\] public class FilterConfig { public static void RegisterGlobalFilters(GlobalFilterCollection filters) { filters.Add(new HandleErrorAttribute()); filters.Add(new Views.AuthorizeAttribute()); } } \[/csharp\]
+
+The line 6 has been replaced by or AuthorizeAttribute. This won't do such a big change since the access by default isn't set. But, when an action shall be protected by a specific role, this is where the custom authorize class shine.
+
+\[csharp highlight="3"\] \[HttpGet\] \[Views.Authorize(Roles = Models.Roles.ADMINISTRATOR)\] public ActionResult Create() { var x = ServiceFactory.Exercise.New(Model); return View("Create",x); } \[/csharp\] As you can see in the code above, if the use is not an administrator than this one will be redirected to the default error page.
+
+At anytime, you also can specify a specific controller and action if for a special case you need to do something else for a forbidden access. \[csharp\] \[Views.Authorize(Roles = Models.Roles.ADMINISTRATOR, ErrorController = "CustomerController", ErrorAction = "LogAndRedirect")\] public ActionResult Create() { var x = ServiceFactory.Exercise.New(Model); return View("Create",x); } \[/csharp\]
+
+To conclude, it's possible to have distinct page for authorized access and forbidden access. I strongly believe it's important to do something different since it's counter intuitive to display to login form when someone is already logged without the right role. It's fundamental that the user know what's going on and this is why a redirection to a custom error's controller seem the natural solution to this problem.
+
+### Series Articles
+
+[Article #1: Asp.Net MVC Enterprise Quality Web Application](http://patrickdesjardins.com/blog/enterprise-asp-net-part-1-mvc-the-planification) [Article #2: Asp.Net MVC Enterprise Quality Web Application Model](http://patrickdesjardins.com/blog/enterprise-asp-net-mvc-part-2-building-the-model) [Article #3: Asp.Net MVC Enterprise Quality Web Application Controller](http://patrickdesjardins.com/blog/enterprise-asp-net-mvc-part-3-controller) [Article #4: Asp.Net MVC Enterprise Quality Web Repository Layer](http://patrickdesjardins.com/blog/enterprise-asp-net-mvc-part-4-repository) [Article #5: Asp.Net MVC Enterprise Quality Web with Entity Framework](http://patrickdesjardins.com/blog/enterprise-asp-net-mvc-part-5-database-context-and-impersonate-data) [Article #6: Asp.Net MVC Enterprise Quality Layers](http://patrickdesjardins.com/blog/enterprise-asp-net-mvc-part-6-the-three-layers-of-validation) [Article #7: Asp.Net MVC Enterprise Quality Web Security](http://patrickdesjardins.com/blog/enterprise-asp-net-mvc-part-7-securing-action-with-role-authorization)
+
+[Source code on GitHub](https://github.com/MrDesjardins/GymWorkout)

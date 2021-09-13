@@ -1,0 +1,16 @@
+---
+title: "Validation failed for one or more entities. See 'EntityValidationErrors' property for more details."
+date: "2013-07-02"
+categories: 
+  - "entity-framework"
+---
+
+With EF4.1, EF4.3 and EF5.0 you may have an Entity Validation Error and you may not found how to get the detail of the error. Entity Framework encapsulate the error into a class named DbEntityValidationException which is not casted in the debugger.
+
+> Validation failed for one or more entities. See 'EntityValidationErrors' property for more details.
+
+To be able to get the information, you can add to your Watch Panel (inside Visual Studio) or into the Immediate Panel or Quick Watch the following line when the error occur:
+
+\[csharp\] ((System.Data.Entity.Validation.DbEntityValidationException)$exception).EntityValidationErrors \[/csharp\]
+
+From here, you will be able to get which entity is in error and what is the error. Data Annotation error or validation error will be clearly written inside the DbEntityValidationException.

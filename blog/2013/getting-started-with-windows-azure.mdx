@@ -1,0 +1,80 @@
+---
+title: "Getting Started With Windows Azure"
+date: "2013-08-19"
+categories: 
+  - "asp-mvc"
+tags: 
+  - "windows-azure"
+---
+
+This post show how to transport your Asp.Net MVC to Windows Azure. First of all, you need to create a Windows Azure account. This can be done by going into the [main website of Windows Azure](http://www.windowsazure.com). You can setup a trial account for 30 days.
+
+We won't create a Virtual Machine which is the ultimate control over your website (you can load any Virtual Machine), but use the Web Sites type of server. The creation is straight forward. You setup a name and you are up and running.
+
+[![windowsAzureWebSitesPortal](http://patrickdesjardins.com/blog/wp-content/uploads/2013/08/windowsAzureWebSitesPortal-400x121.png)](http://patrickdesjardins.com/blog/?attachment_id=2237)
+
+To upload your website, you have several option. One of these is to use Visual Studio with a Web Publish. Windows Azure gives an automatically generated publish file.
+
+[![DownloadPublishProfileWindowsAzure](http://patrickdesjardins.com/blog/wp-content/uploads/2013/08/DownloadPublishProfileWindowsAzure-400x261.png)](http://patrickdesjardins.com/blog/?attachment_id=2238)
+
+This profile can be imported inside your solution once downloaded on you development environment. Right click the web project and select publish, the first time you need to select import and select the downloaded file. Later, you will just need to select the configuration. The publish file is an Xml file.
+
+\[xml\] <publishData>
+
+<publishProfile profileName="workoutplanner - Web Deploy" publishMethod="MSDeploy" publishUrl="waws-prod-blu-003.publish.azurewebsites.windows.net:443" msdeploySite="workoutplanner" userName="$workoutplanner" userPWD="XXX" destinationAppUrl="http://workoutplanner.azurewebsites.net" SQLServerDBConnectionString="" mySQLDBConnectionString="" hostingProviderForumLink="" controlPanelLink="http://windows.azure.com"><databases/></publishProfile>
+
+<publishProfile profileName="workoutplanner - FTP" publishMethod="FTP" publishUrl="ftp://waws-prod-blu-003.ftp.azurewebsites.windows.net/site/wwwroot" ftpPassiveMode="True" userName="workoutplanner\\$workoutplanner" userPWD="XXX" destinationAppUrl="http://workoutplanner.azurewebsites.net" SQLServerDBConnectionString="" mySQLDBConnectionString="" hostingProviderForumLink="" controlPanelLink="http://windows.azure.com"><databases/></publishProfile>
+
+</publishData> \[/xml\]
+
+The generated publish profile contain two profiles. One use Web Deploy and one use FTP. Azure offer these two methods with publishing.
+
+[![DownloadPublishProfileWindowsAzure](http://patrickdesjardins.com/blog/wp-content/uploads/2013/08/DownloadPublishProfileWindowsAzure1-400x261.png)](http://patrickdesjardins.com/blog/?attachment_id=2239)
+
+The next step is to setup a database. You can create a database with the same name as yours in your computer.
+
+[![DatabaseCreationWindowsAzure](http://patrickdesjardins.com/blog/wp-content/uploads/2013/08/DatabaseCreationWindowsAzure-400x322.png)](http://patrickdesjardins.com/blog/?attachment_id=2242)
+
+If it's your first database on Windows Azure, you will have to create a database server which will require you to create a user and password to connect to. Next, you will have to allow your IP to be able to execute SQL Query from your computer to Windows Azure. This will let you create tables, stored procedures, views, etc.
+
+[![IpWindowsAzure](http://patrickdesjardins.com/blog/wp-content/uploads/2013/08/IpWindowsAzure-400x237.png)](http://patrickdesjardins.com/blog/?attachment_id=2241)
+
+Next, open Microsoft SQL Manager and enter the server address specified inside your Database DashBoard.
+
+[![AzureDatabaseServerAddress](http://patrickdesjardins.com/blog/wp-content/uploads/2013/08/AzureDatabaseServerAddress-400x118.png)](http://patrickdesjardins.com/blog/?attachment_id=2245)
+
+[![SqlServerManagerWithAzure](http://patrickdesjardins.com/blog/wp-content/uploads/2013/08/SqlServerManagerWithAzure-400x306.png)](http://patrickdesjardins.com/blog/?attachment_id=2244)
+
+Once you can connect, it's time to take your database to Azure. I found easy if you doesn't have too much data to right click your database and select Task>Generate Script and to create a Schema/Data script which will create all database tables and data.
+
+However, you might get some error like this one :
+
+> Msg 40514, Filegroup reference and partitioning scheme' is not supported in this version of SQL Server
+
+This is because you might have in you create table statement "ON \[PRIMARY\]" keywork which is not supported.
+
+\[SQL highlight="9-10"\] CREATE TABLE \[dbo\].\[Exercises\]( \[Id\] \[int\] IDENTITY(1,1) NOT NULL, \[Name\_French\] \[nvarchar\](max) NULL, \[Name\_English\] \[nvarchar\](max) NULL, \[Muscle\_Id\] \[int\] NULL, CONSTRAINT \[PK\_dbo.Exercises\] PRIMARY KEY CLUSTERED ( \[Id\] ASC )WITH (PAD\_INDEX = OFF, STATISTICS\_NORECOMPUTE = OFF, IGNORE\_DUP\_KEY = OFF, ALLOW\_ROW\_LOCKS = ON, ALLOW\_PAGE\_LOCKS = ON) ON \[PRIMARY\] ) ON \[PRIMARY\] TEXTIMAGE\_ON \[PRIMARY\] \[/SQL\]
+
+Should become
+
+\[SQL highlight="9-10"\] CREATE TABLE \[dbo\].\[Exercises\]( \[Id\] \[int\] IDENTITY(1,1) NOT NULL, \[Name\_French\] \[nvarchar\](max) NULL, \[Name\_English\] \[nvarchar\](max) NULL, \[Muscle\_Id\] \[int\] NULL, CONSTRAINT \[PK\_dbo.Exercises\] PRIMARY KEY CLUSTERED ( \[Id\] ASC ) ) \[/SQL\]
+
+From there, open your solution and change the connection string to setup your new database in the Release version. This need to have a connection string to the database your just created. With Windows Azure, it's easy because it generates for you the connection string.
+
+[![ConnectionStringWindowsAzureDatabase](http://patrickdesjardins.com/blog/wp-content/uploads/2013/08/ConnectionStringWindowsAzureDatabase-400x386.png)](http://patrickdesjardins.com/blog/?attachment_id=2247)
+
+My experience was that I was getting runtime error.
+
+[![ServerErrorWindowsAzure](http://patrickdesjardins.com/blog/wp-content/uploads/2013/08/ServerErrorWindowsAzure-400x71.png)](http://patrickdesjardins.com/blog/?attachment_id=2248)
+
+To get the log file, you need to have a FTP account. This can be done by creating a user/password in your website dashboard. Then, click the link that will bring you to a folder where all logs files are located.
+
+[![FtpDiagnosticLogsWindowsAzure](http://patrickdesjardins.com/blog/wp-content/uploads/2013/08/FtpDiagnosticLogsWindowsAzure-291x400.png)](http://patrickdesjardins.com/blog/?attachment_id=2250)
+
+If you do not see any logs file, you might need to enable logs. This can be done by going to "Configuration" of the Web Sites. I have enabled Web Server Logging and Detailed Error Messages.
+
+[![SiteDiagnosticWindowsAzure](http://patrickdesjardins.com/blog/wp-content/uploads/2013/08/SiteDiagnosticWindowsAzure-273x400.png)](http://patrickdesjardins.com/blog/?attachment_id=2251)
+
+This give us .html file with the error. In my case, I had this message following message.
+
+[![HttpError500WindowsAzure](http://patrickdesjardins.com/blog/wp-content/uploads/2013/08/HttpError500WindowsAzure-400x150.png)](http://patrickdesjardins.com/blog/?attachment_id=2252)

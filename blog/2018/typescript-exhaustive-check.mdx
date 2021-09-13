@@ -1,0 +1,21 @@
+---
+title: "TypeScript Exhaustive Check"
+date: "2018-05-08"
+categories: 
+  - "typescript"
+---
+
+There is a time where you have a range of value and a function that must act when all entries of the data. In TypeScript, an enum or a union of value can define the set. The problem is that these sets can change in time. The ideal treatment is having TypeScript to notice the developer that a value is missing. The removal of a choice is handled by default since the value doesn't exist, hence TypeScript won't compile. An exhaustive check needs to be placed to manage any new value.
+
+Exhaustive check leverage the "never" type. In TypeScript, we can create a default choice that calls a method that takes for parameter a "never" type. Since "never" primitive is a subtype of all type, you cannot pass the parameter of your function. TypeScript won't compile if a potential path, a missing value, slips into the function. However, it compiles in the case that all values of the set are present.
+
+```typescript
+public convertToHighChartType(type: MetricsChartType): string { switch (type) { case "Line": return "line"; case "AreaDiff": return "area"; default: return exhaustiveCheck(type); } }
+
+export function exhaustiveCheck(type: never): never { throw new Error("Missing type"); } 
+``` 
+
+
+The example takes a union type in a parameter that the system uses but must map it to another string before being used elsewhere. Adding a new value in the union type will fall into the default and hence cause TypeScript to go into the default case which calls a function that doesn't take the type passed -- it won't compile.
+
+This is important for any enum or union that is threated. The exhaustive check function can be written once and reused across your application. It's short to write and will help you not to have a runtime mismatch between during mapping of values.

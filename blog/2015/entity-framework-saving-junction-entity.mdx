@@ -1,0 +1,28 @@
+---
+title: "Entity Framework Saving Junction Entity"
+date: "2015-01-29"
+categories: 
+  - "entity-framework"
+---
+
+I was having a hard time for few hours with a case of an entity that has a list of an other kind of entity. The scenario was that the first entity has a collection of a junction entity because this one is planned to have junction data. The entity is called Contest and its having a collection of AllowedMarket that is a class having a **Market** Class and a **Contest** Class. **Market** classes are defined by the system and does not have a direct reference to any contest. Here is these classes simplified.
+
+\[csharp\] public class Contest { public Id{get;set;} public Collection<ContestMarket> AllowedMarkets { get; set; } }
+
+public class ContestMarket { public Contest Contest { get; set; } public int ContestId { get; set; }
+
+private int marketTypeId; private MarketType market;
+
+public MarketType Market { get { return market; } set { if (value != null) { this.marketTypeId = value.Id; } market = value; } }
+
+public int MarketId { get { return marketTypeId; } set { marketTypeId = value; Market = MarketType.GetFromId(value); } } } public class MarketType { public Id{get;set;} } \[/csharp\]
+
+The configuration for these entities are like the following. We do not want to do any configuration on the **MarketType** since this entity can be used at a lot of places. So we have to configure the entity to the **Contest** point of view and the **ContestMarket** class. In fact, we only need to configure the junction entity, the ContestMarket.
+
+\[csharp\] public class ContestMarketConfiguration : AssociationConfiguration<ContestMarket> { public ContestMarketConfiguration() : base(Constants.SchemaNames.Contest) { this.HasKey(c => new {MarketId = c.MarketId, ContestId = c.ContestId}); this.HasRequired(d => d.Market).WithMany().HasForeignKey(d => d.MarketId).WillCascadeOnDelete(false); this.HasRequired(d => d.Contest).WithMany().HasForeignKey(d => d.ContestId).WillCascadeOnDelete(false); } } public abstract class AssociationConfiguration<T> : EntityTypeConfiguration<T> where T : class { protected AssociationConfiguration(string schemaName) { ToTable(typeof(T).Name, schemaName); } } \[/csharp\]
+
+The important code is to define both junction entity's properties (associate entity) and to link the id properties to the class properties. This is done with the **HasRequired** method and **WithMany** method of Entity Framework. This configuration is required because when we insert a new entity and at the same time a new association entity, the _id_ will be to the default value which is 0 for integer. The problem is that if you do not specify _id_ and that we do not setup the link between, since we are setting the _id_ to be primary key, than it tries to insert these entities with the _id_ to 0. This raise an exception after the second insert. What we want is to insert the contest and than insert the contest market items. By the time we save, the contest is not yet saved (when it is a first save) and therefore not possible to set the contest's id correctly. This is why, we create the contest and assign it to the **ContestMarket** entity by the property.
+
+The associate class keeps synchronized the integer id and the class property by having in both properties' setter code to set one of each other. Finally, when you save the entity you need to create the entity and add to the collection the association entity. After, use the normal SaveChanges. In my particular case, the entity Market is always existing so if I try to add the new junction entity, this one will be set to **EntityState.Added** state. This is why the repository have some state manipulation required.
+
+\[csharp\] public override void Save(Contest model) { base.Save(model); foreach (var allowedMarket in model.AllowedMarkets) { UnitOfWork.Entry(allowedMarket).State = EntityState.Added; UnitOfWork.Entry(allowedMarket.Market).State = EntityState.Unchanged; UnitOfWork.Entry(allowedMarket.Contest).State = UnitOfWork.Entry(model).State; } } \[/csharp\] The first manipulation is to set the state depending if this one is a new or a modification. Then, we hardcode the _Market_ to _unchanged_. This is because we know for sure this one exist and do not want to add any new of this entity. Finally, the _Contest_ is set with the same state of the contest itself since we know that they are the same entity as the one saved. The code in this article is not full because in the case of modification, we would need to delete all the collection first. But, this is another stories.

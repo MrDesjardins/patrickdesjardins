@@ -1,0 +1,16 @@
+---
+title: "Linq to Entity doesn't load data right after calling the context"
+date: "2012-03-23"
+categories: 
+  - "entity-framework"
+---
+
+Linq to Entity doesn't execute directly the SQL query to the database when the query is done. This is called **Deffered execution**.
+
+The SQL will be executed when the code will loop through it with a foreach or if the code use .ToArray(), .ToList(), .ToDictionary() or .ToLookup().
+
+Here is an example, mostly taken from MSDN showing when the data is loaded from the SQL server. \[csharp\] using (AdventureWorksEntities context = new AdventureWorksEntities()) { IQueryable<Product> productsQuery = context.Products; //productsQuery is not loaded yet IQueryable<Product> largeProducts = productsQuery.Where(p => p.Size == "L"); //largeProducts is not loaded yet foreach (var product in largeProducts) //Execution is here at the beginning of this code { Console.WriteLine(product.Name); } } \[/csharp\]
+
+This is a second example where the deferred is not taking long since we are using ToList() which call the database. \[csharp\] using (AdventureWorksEntities context = new AdventureWorksEntities()) { var productsQuery = context.Products.Where(p=>p.Size =="L").ToList(); //Executed here } \[/csharp\]
+
+One advantage is that you can refined the query in a later stage without affecting the performance since it will be executed once. It also let you have the flexibility to build the query in multiple steps. Finally, it let you execute the query at the later stage possible which is good to have the latest version of the data.

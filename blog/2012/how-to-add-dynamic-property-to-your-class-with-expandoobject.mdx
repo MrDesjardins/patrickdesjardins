@@ -1,0 +1,23 @@
+---
+title: "How to add dynamic property to your class with ExpandoObject"
+date: "2012-12-05"
+categories: 
+  - "c-sharp"
+  - "dynamic"
+---
+
+In some scenario, you may want to add dynamically information to your object without having to define a specific type or interface. This type of scenario has been developed by Asp.Net MVC with the ViewBag which let you add any type of information dynamically. In a project, you may want to have this kind of behavior and be able to add information of different type and to access it later.
+
+To do, you need to use the ExpandoObject.
+
+\[csharp\] public class YourClass { public int Id{ get; set; } public dynamic Attributes { get; set; }
+
+public MatriceRow() { Attributes = new ExpandoObject(); } } \[/csharp\]
+
+This is a working example. From there you can use the YourClass class and set attributes. \[csharp\] var myClass = new YourClass(); myClass.Id = 1; myClass.Attributes.IsBoolean = true; myClass.Attributes.MyName = "Patrick Desjardins"; \[/csharp\]
+
+You cannot define the Attributes property directly to the type of ExpandoObject. If you do, you will get an exception.
+
+> 'IsBoolean' and no extension method 'IsBoolean' accepting a first argument of type 'System.Dynamic.ExpandoObject' could be found (are you missing a using directive or an assembly reference?)
+
+This functionality should be used rarely. It's always better to be strongly typed and not use dynamic because this one is only checked when the code is executed rather than when compiled.

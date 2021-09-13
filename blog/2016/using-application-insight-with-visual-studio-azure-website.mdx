@@ -1,0 +1,23 @@
+---
+title: "Using Application Insight with Visual Studio for Azure Website"
+date: "2016-09-05"
+categories: 
+  - "azure"
+  - "visual-studio"
+tags: 
+  - "applicationinsight"
+---
+
+Working with production code is not always easy when it comes the time to fix issue. Application Insight is a free service on Microsoft Azure that allow to do a lot and one of the feature is to integrate with Visual Studio. In this article, we will see how Application Insight can improve the speed to fix your issue.
+
+First of all, if you log in the Cloud Explorer panel into your Azure account and open the solution your deployed you will see Application Insight in CodeLens. [![ApplicationInsightCodeLen](http://patrickdesjardins.com/blog/wp-content/uploads/2016/08/ApplicationInsightCodeLen.png)](http://patrickdesjardins.com/blog/?attachment_id=4746)
+
+That mean that while coding, you may see that some exception go raised in your production server. From here, you can click Application Insight in CodeLens and see the number of exception as well as 2 links. The first one is **Search**. Search allows you to search in time the exception and get more information. It's possible to filter and search by exception type, country, ip, operation name (Asp.Net actions), etc. For example, here is a NullReferenceException thrown when users where accessing the Asp.Net MVC controller "UserContest" from the action "Detail". We can see in the stack trace and see who called the faulty method.
+
+[![ApplicationInsightDetail](http://patrickdesjardins.com/blog/wp-content/uploads/2016/08/ApplicationInsightDetail-1024x794.png)](http://patrickdesjardins.com/blog/?attachment_id=4747)
+
+The second link is called **Trend**. This one let you see when the exception was raised, as well as the amount of time the exception got thrown and the problem id. You can navigate in time and in exceptions and see what can cause this issue. It might be a webjob that run at a specific times or a period of high traffic.
+
+[![ApplicationInsightTrend](http://patrickdesjardins.com/blog/wp-content/uploads/2016/08/ApplicationInsightTrend-1024x792.png)](http://patrickdesjardins.com/blog/?attachment_id=4748)
+
+This is a short article, but it should give you the desire to go explore this free feature. It's clearly a powerful tool for developers that need to react fast to problem in production and remove a lot of fences between finding the right log and fixing the issue. With an easy tool, and natural integration, investigations are faster which lead to faster resolutions of problem.

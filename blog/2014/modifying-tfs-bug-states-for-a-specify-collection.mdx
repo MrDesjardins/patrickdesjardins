@@ -1,0 +1,16 @@
+---
+title: "Modifying TFS Bug states for a specify collection"
+date: "2014-09-17"
+categories: 
+  - "visual-studio"
+---
+
+If you want to modify workflow state in TFS for a specific collection you must use a command line tool name **witadmin**. This tool is located in the bin folder of Visual Studio.
+
+\[code\] %programfiles(x86)%\\Microsoft Visual Studio 12.0\\Common7\\IDE \[/code\] Here is an example for a collection name TEST. The first command named **listwith** give you the list of wit type. \[code\] witadmin listwitd /collection:http://yourtfsserver:8080/tfs/yourpath /p:TEST \[/code\]
+
+[![listwith](http://patrickdesjardins.com/blog/wp-content/uploads/2014/05/listwith-400x63.png)](http://patrickdesjardins.com/blog/modifying-tfs-bug-states-for-a-specify-collection/listwith)
+
+This is interesting because if you want to modify the state for the Bug than you have the confirmation with **witadmin** and **listwitd** that you will have all type that we can edit, like Bug.
+
+If you want to modify the state you need to export the definition into a XML file. You can apply your modification and then import it into TFS. It is a good practice to keep a version not altered before modifying the wit. In the case the importation goes wrong, you will be able to get it back to its previous state. \[code\] //Get the definition for BUG witadmin exportwitd /collection:http://yourtfsserver:8080/tfs/yourpath /p:TEST /n:BUG /f:"C:\\Code\\FileName.xml" //After your changes, you import back witadmin importwitd /collection:http://yourtfsserver:8080/tfs/yourpath /p:TEST /f:"C:\\Code\\FileName.xml" \[/code\] The file that you get from TFS allow you to specify states and transition between them. In the example above, we specify with the switch /n the type of TFS item we want to edit. The list of possible values come from **listwitd**. It is interesting to note that if you have already used some state that those one will continue to exist in TFS until it goes back to a state defined. \[xml\] <WORKFLOW> <STATES> <STATE value="Done"> <FIELDS> <FIELD refname="Microsoft.VSTS.Scheduling.Effort"> <READONLY /> </FIELD> </FIELDS> </STATE> <STATE value="New (1/4)" /> <STATE value="Resolved (2/4)" /> <STATE value="Deployed (3/4)" /> <STATE value="Closed (4/4)" /> </STATES> <TRANSITIONS> <TRANSITION from="" to="New (1/4)"> <REASONS> <DEFAULTREASON value="Nouveau bug" /> </REASONS> <FIELDS> <FIELD refname="Microsoft.VSTS.Common.BacklogPriority"> <DEFAULT from="value" value="1000" /> </FIELD> </FIELDS> </TRANSITION> <TRANSITION from="New (1/4)" to="Resolved (2/4)"> <REASONS> <DEFAULTREASON value="Solve" /> </REASONS> </TRANSITION> <TRANSITION from="Resolved (2/4)" to="Deployed (3/4)"> <REASONS> <DEFAULTREASON value="Need to be tested" /> </REASONS> </TRANSITION> <TRANSITION from="Deployed (3/4)" to="Closed (4/4)"> <REASONS> <DEFAULTREASON value="Fixed" /> </REASONS> </TRANSITION> <TRANSITION from="Deployed (3/4)" to="New (1/4)"> <REASONS> <DEFAULTREASON value="Bug still present" /> </REASONS> </TRANSITION> <TRANSITION from="New (1/4)" to="Closed (4/4)"> <REASONS> <DEFAULTREASON value="Not a real bug" /> </REASONS> </TRANSITION> </TRANSITIONS> </WORKFLOW> \[/xml\] This is is. After importing your modification into TFS your change will be reflected right after the command line is done.

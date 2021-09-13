@@ -1,0 +1,26 @@
+---
+title: "The difference between SQL Delete statement and SQL Truncate statement"
+date: "2013-07-04"
+categories: 
+  - "sql"
+---
+
+Some time, task that we do often seem easy but when we stop to go deeper we realize that we do action by reflex and that we have forgotten the meaning of the detail underneat the action.
+
+One action that we have to do quite often is to remove data from tables. This can be done with the keyword delete or truncate. Here is two examples. \[sql\] --Delete DELETE FROM Table123
+
+\--Truncate TRUNCATE TABLE Table123 \[/sql\]
+
+But behind those two statements, what really happenning? First of all, the delete statement is row oriented. This mean that it deletes one row after one. This mean that it has to lock the row, delete it, log it, etc... then unlock it. This whole process consume resources and times.
+
+On the other side, truncate statement is won't log anything, it won't go row by row. All these advantages come with the disadvantage of not beeing able to delete specific rows. Neither be able to restore what you have deleted.
+
+\[sql\] --This will work DELETE FROM Table123 WHERE startDate <= 2013-06-14
+
+\--This won't work TRUNCATE TABLE Table123 WHERE startDate <= 2013-06-14 -- Error! \[/sql\]
+
+It also doesn't trig any trigger. OnDelete or OnUpdate won't be trigged which could cause undesired behavior.
+
+Howerver, an other advantage that truncate does have it's that it will reset the seed for identity.
+
+To conclude, using delete it the way to go if you are inside an application and you need to remove an entity of your model. The business defined behind trigger will be executed while you will be able to specify which entry to delete. On the other side, truncate is a must to use if you need to reset a table or move several rows to a temporary table, truncate and reinsert rows.

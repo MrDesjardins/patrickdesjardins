@@ -1,0 +1,51 @@
+---
+title: "How to have custom role to use with the Authorize attribute of Asp.Net MVC"
+date: "2012-11-12"
+categories: 
+  - "asp-mvc"
+---
+
+If you are developing a website with Asp.Net MVC you might use the \[Authorize\] attribute over actions of your controllers. The Authorize attribute let you mark the method access to a user or a group of user (called role).
+
+\[csharp\] \[Authorize(Roles = "groupName1, groupeName2")\] public ActionResult Creation() { //... } \[/csharp\]
+
+The code in the example above illustrate the authorization of the creation method to the groupeName1 and groupeName2.
+
+The Authorize method use the IPrincipal to get the current username logged. It use the "IsInRole" method. Here is a part of the code from the MVC framework.
+
+\[csharp\] public bool IsInRole(string role) { if (\_Identity == null) throw new ProviderException(SR.GetString(SR.Role\_Principal\_not\_fully\_constructed));
+
+if (!\_Identity.IsAuthenticated || role == null) return false; role = role.Trim(); if (!IsRoleListCached) { \_Roles.Clear();
+
+string\[\] roles = Roles.Providers\[\_ProviderName\].GetRolesForUser(Identity.Name); foreach(string roleTemp in roles) if (\_Roles\[roleTemp\] == null) \_Roles.Add(roleTemp, String.Empty);
+
+\_IsRoleListCached = true; \_CachedListChanged = true; } return \_Roles\[role\] != null; } \[/csharp\]
+
+As we can see, it first check if the user is authenticated, if not, then no need to check anything. Then, it checks with the Roles.Providers\[\].**GetRolesForUser**(...).
+
+This code call the RoleProvider to get the complete list of roles for the logged user and check if the role specified by the attribute is inside the collection. If it is, then the access is granted, otherwise, a 401 errors will raise.
+
+So, to create a custom role provider, you need to create a new class that inherit from **System.Web.Security.RoleProvider**. This will let you override two important methods:
+
+- bool IsUserInRole(string username, string roleName)
+- string\[\] GetRolesForUser(string username)
+
+The first one will call the second one. The second one, **GetRolesForUser** is the one used by **IPrincipal** (and by this mean used by the attribute Authorized).
+
+From here, you can do what ever you want to do. For example, in a project, I had to use the WindowsTokenRoleProvider but to check for a specific suffix. If the user had the suffix "\_PROJECTNAME" than it was a possible role, other roles were not checked. That mean that if the user ABC has "admin\_PROJECT1" and "admin\_PROJECT3" and that this user log to the PROJECT3 that it shouldn't be authorized. Fine, but the problem was that I couldn't simply add the attribute over the method with the full name for some reason. I had to use \[admin\] and not \[admin\_PROJECT3\]. So, the task was to implement a custom RoleProvider, get the list of all available role for the user and then filter by project to return in fact a list of role for the project. Of course, I had to also remove the suffix to be able to return a clean list that would be comparable with the role name like "admin".
+
+\[csharp\] public class MyRoleProvider:System.Web.Security.RoleProvider { private readonly WindowsTokenRoleProvider \_windows;
+
+public MyRoleProvider() { \_windows = new WindowsTokenRoleProvider(); }
+
+public override void Initialize(string name, NameValueCollection config) { base.Initialize(name, config); //config can access attribute specified in the web.config }
+
+public override bool IsUserInRole(string username, string roleName) { return GetRolesForUser(username).FirstOrDefault(s => s == roleName)!=null; }
+
+public override string\[\] GetRolesForUser(string username) { var sufix = "PROJECT1"; return \_windows.GetRolesForUser(username).ToList().Where(s => s.EndsWith(sufix)).Select(s => s.Replace(sufix, string.Empty).ToArray(); } } \[/csharp\]
+
+Here is a short example, in fact the sufix was taken from a configuration file. From there, it's possible to use the attribute with the role without having to specify anything about the sufix. The sufix can be set to the configuration file. This could be useful for different deployment server where in some server user have different role. You could set "admin\_Testing" and "admin\_Production" where you can set developer to "Patrick" a developer the role of "admin\_Testing" but not to "admin\_Production". IN the web.config, you just set "\_Testing" for the testing environment and on the production "\_Production". So, if Patrick log to the testing environment, he should be able to do what ever this role give him access but no when he goes into production.
+
+The MyRoleProvider is specified in the web.config under system.web \[xml\] <roleManager enabled="true" defaultProvider="MyRoleProvider"> <providers> <clear /> <add name="MyRoleProvider" type="YourNameSpace.RoleProvider.MyRoleProvider" /> </providers> </roleManager> \[/xml\]
+
+The add of the provider element can have custom attribute to add information that can be read by the Role Provider inside the Initialize method.

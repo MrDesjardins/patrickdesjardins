@@ -1,0 +1,71 @@
+---
+title: "Jquery selector Parent vs Closest to search element through upper levels of hierarchical structure"
+date: "2013-01-23"
+categories: 
+  - "javascript"
+---
+
+With JQuery you can use Parent, Parents and Closest to search element at a higher level of the one selected. What are the differences?
+
+## JQuery Parent selector
+
+Parent() will search one level up only. For example here is the html code of a situation where you can see two level deep of div and a paragraph. \[html\] <div class="parent1">; <div class="parent2">; <p>;Hello Again</p>; </div>; </div>; \[/html\]
+
+If we use the Parent selector on the paragraph it will select parent2 division.
+
+```typescript
+$("p").parent().css("background", "yellow"); 
+``` 
+
+
+You can see this example in action here : [http://jsfiddle.net/C5Shz/](http://jsfiddle.net/C5Shz/)
+
+Even by specifying the class of the second level, nothing will be selected.
+
+```typescript
+$("p").parent('parent1').css("background", "yellow"); 
+``` 
+
+
+You can see the result : [http://jsfiddle.net/L953U/](http://jsfiddle.net/L953U/)
+
+The reason is that parent go only one level up.
+
+## JQuery Parents selector
+
+Parents will return an array of elements. It returns all element from root to the selected element.
+
+```typescript
+$("p").parents('div').css("background", "yellow"); 
+``` 
+ This return 2 divisions, the parent1 and the parent2. The reason is that the parent1 is the root parent and parent2 is the parent between the selected one (p) and the searched element.
+
+You can see the example in action here : [http://jsfiddle.net/u7SaF/](http://jsfiddle.net/u7SaF/)
+
+## JQuery Closest selector
+
+closest() looks up the tree like .parent() but stop when the search is found. It return a single element or nothing is nothing is found.
+
+```typescript
+$("p").closest("div").css("background", "blue"); 
+``` 
+
+
+This will color in blue the closest division from the p.
+
+Here is the example in action. [http://jsfiddle.net/ZNQ5Q/](http://jsfiddle.net/ZNQ5Q/)
+
+If we summarize everything in bullet point:
+
+**Parent**: - Begins with the current element and go only one level up - The returned jQuery object contains zero or one element - The returned jQuery object contains zero or one element **Parents**: - Begins with the parent element - Travels up the DOM tree but return element in reverse - The returned jQuery object contains zero, one, or multiple elements **Closest**: - Begins with the current element - Travels up the DOM tree until it finds a match for the supplied selector - The returned jQuery object contains zero or one element
+
+Finally, I often see code with multiple parent() called. For example, $("p").parent().parent()..css("background", "blue"). Instead, you can use _eq_ with _parents_.
+
+\[html\] <div>; <div>; <div>; <p>;Hello Again</p>; </div>; </div>; </div>; \[/html\] ```typescript
+$("p").parents().eq(2).css("background", "blue"); 
+``` 
+
+
+This will get all parents and since the order are from the parent selection the list will return the level up. Do not forget that the index your provide start with 0 which is the immediate parent element. In the example above, only the first div will have a background blue while the two inner divisions will remain white.
+
+Here is the [example in action](http://jsfiddle.net/U4msb/1/).

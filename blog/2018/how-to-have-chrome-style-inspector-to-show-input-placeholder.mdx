@@ -1,0 +1,20 @@
+---
+title: "How to have Chrome Style Inspector to Show Input Placeholder"
+date: "2018-04-24"
+categories: 
+  - "css"
+---
+
+One habit I have is to set the classes to my HTML elements and then go in Chrome to write all the style. Once I am satisfied, I copy paste everything in the style sheets. Recently, I had to modify the placeholder text to be in a specific color and style -- Chrome's inspector couldn't bring the style of the pseudo-element **::placeholder**.
+
+The reason is that the placeholder is hidden under the "shadow-root". The element hides in the Element Explorer, you cannot select the element to see or edit its styles. Chrome lets you configure the developer tool to bring the "shadow-root" into the Elements panel.
+
+The first step is to go in the three dots menu and select "Settings". Under the "Preferences" tab and the selection "Elements", you need to check the "Show user agent shadow DOM".
+
+[![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/03/ShadowDomPreferenceChrome.png)](https://patrickdesjardins.com/blog/?attachment_id=5720)
+
+Going back to the elements panel, you will see the shadow dom under the input.
+
+[![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/03/ChromeInspectorElementsShadowDom.png)](https://patrickdesjardins.com/blog/?attachment_id=5721)
+
+By clicking the "div" inside the "#shadow-root (user-agent)" you can see in the styles panel all the common styles as you would expect.

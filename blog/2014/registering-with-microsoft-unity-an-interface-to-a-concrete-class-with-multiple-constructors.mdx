@@ -1,0 +1,16 @@
+---
+title: "Registering with Microsoft Unity an interface to a concrete class with multiple constructors"
+date: "2014-03-13"
+categories: 
+  - "unity"
+---
+
+If you are using inversion of control, you may come into the scenario that you want to register your interface to a concrete class that has **multiple constructors**. Registering with Microsoft Unity an interface to a concrete class with multiple constructors is something that require to specify to Unity which of the constructor to use.
+
+\[csharp\] container .RegisterType<IMainDbContext, MainDbContext>(); \[/csharp\]
+
+The code above can work if MainDbContext has only one constructor. Even if this one require several parameters, it does not matter. Unity will try to solve every parameters. However, in the case that MainDbContext has several constructor, Unity does not know which one to evaluate. Well, that is not totally true. In fact, Microsoft Unity try the one with the most parameters. This can be problematic if you have more than one parameter with the same amount of parameters.
+
+To select which constructors you have to use the **InjectionConstructor** class. This class allows to specify parameters type. You can use the ResolvedParameter that is generic. You can specify for every parameters the type you want.
+
+\[csharp\] container .RegisterType<IMainDbContext, MainDbContext>( new InjectionConstructor( new ResolvedParameter<IRunningContext>() ) ); \[/csharp\] As you can see, this indicate to Microsoft Unity to resolve the IRunningContext from its container to inject the object into the single parameter constructor of MainDbContext. In that case, we take the single constructor of MainDbContext that has its parameter of IRunningContext.

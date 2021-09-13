@@ -1,0 +1,16 @@
+---
+title: "How to handle multiple global constants in an application"
+date: "2012-10-22"
+categories: 
+  - "asp"
+  - "c-sharp"
+  - "silverlight"
+---
+
+The best way to have something organized and having constants in a single place is to have a class that will have inner class. This way, you can organize by theme your constants.
+
+\[csharp\] public static class GlobalConstants { public static class Division1 { public const string Const1 = "123"; public const string Const2 = "qwe"; public const string Const3 = "asdfgh"; }
+
+public static class Division2 { public const string Const1 = "123"; } } \[/csharp\]
+
+Of course, it's always better to have your constant in the class that they are more related. For example, the default value for a specific property of a class should be directly inside this class. But, for global constants that are used across the application, than having a global constants class can do the job.

@@ -1,0 +1,50 @@
+---
+title: "Sending Telemetry from GraphQL under NodeJS without Spamming"
+date: "2019-06-11"
+categories: 
+  - "graphql"
+  - "nodejs-web"
+---
+
+I am running a GraphQL server hosted with NodeJS. Under the hood, it is an Express server with Apollo Middleware. I am collecting different information along with errors. The way it works is that I have an Elastic Search server fronted by a simple REST API facade. The endpoint on the REST accepts a single telemetry payload or a collection of them. The latter is recommended. When I use the REST facade for the web, I am collecting all call to the telemetry and batch the request every 5 seconds or when the browser send a beacon (when leaving the page). It reduces the load on the server by limiting the number of HTTP requests. For example, if there is 24 different telemetry within a few seconds, it performs a single HTTP request with 24 entries.
+
+![](https://patrickdesjardins.com/blog/wp-content/uploads/2019/04/Blog.png)
+
+Telemetry Information flow
+
+Under NodeJS, I could do something similar with a timer, but while reading how the [DataLoader](https://github.com/graphql/dataloader) library handles batching I thought I could code a similar pattern. Instead of leveraging on time, I could batch every telemetry on a single NodeJS event loop. In the NodeJS world, this is called a "tick". There are two ways to accomplish the batching, and I leaned on _setImmediate_.
+
+![](https://patrickdesjardins.com/blog/wp-content/uploads/2019/04/Blog-Page-2.png)
+
+NodeJS Event Loop
+
+The idea is that NodeJS runs in an infinite loop. It is possible to mention to the system to prepare the execution later, on the next loop with _setImmediate_ which execute when the "poll phase" is completed. _setImmediate_ is different from the _setTimeout_ because it does not rely on a time threshold. Often, libraries use _process.nextTick_. it processes the task after the event loop. I avoided using _process.nextTime_ because in some situation it can cause an infinite loop with recursivity. setImmediate is enough to delay the execution. In fact, after using it for more than two weeks, every telemetry collected within a single GraphQL request are batched together which is perfect in my case.
+
+The code in the NodeJS server is short. There is a class that consists of a boolean field that indicates if we have batched information. By default, the value is false until we invoke the first time the function to send the telemetry. When the flag is true, we keep calling the code that will add into an array all the telemetry but we do not call the function performing the HTTP request to the API; we wait that the setImmediate function callback is executed. When this one is executed and returned with a successful HTTP code, we copy the content of the array, flush the data from the list of telemetry, send the information and turn back the flag to false. Ready for the next round of batching. While the code is sending the telemetries, other telemetries can be collected. The data is added to the array to be sent. In case of failure, the data is added back to the next batch.
+
+public send(data: TelemetryPayload): void {
+    const dateToSend = { ...data };
+    this.listDataToSend.push(dateToSend);
+    if (!this.isTransmittingQueuedPayload) {
+        this.isTransmittingQueuedPayload = true;
+        setImmediate(() => {
+            this.send(); // Perform HTTP requests with all the this.listDataToSend
+        });
+    }
+}
+
+Overall, the code is pretty clean and under one hundred lines of code. It reduces drastically the number of HTTP requests while being easy to read once we get the _setImmediate_ detail clarified.
+
+## My Other GraphQL Blog Posts
+
+- [Install Apollo Server to host a GraphQL service](https://patrickdesjardins.com/blog/install-apollo-server-to-host-a-graphql-service)
+- [Apollo Server and Secured Playground](https://patrickdesjardins.com/blog/apollo-server-and-secured-playground)
+- [GraphQL Context](https://patrickdesjardins.com/blog/graphql-context)
+- [GraphQL Query with Argument](https://patrickdesjardins.com/blog/graphql-query-with-argument)
+- [Apollo GraphQL Resolvers and Data Source separation](https://patrickdesjardins.com/blog/apollo-graphql-resolvers-and-data-source-separation)
+- [How to setup a TypeScript, NodeJS, Express Apollo Server to easy debugging with VsCode](https://patrickdesjardins.com/blog/how-to-setup-a-typescript-nodejs-express-apollo-server-to-easy-debugging-with-vscode)
+- [GraphQL Resolvers with Apollo](https://patrickdesjardins.com/blog/graphql-resolvers-with-apollo)
+- [Configuring Apollo Playground and API on two different URL](https://patrickdesjardins.com/blog/configuring-apollo-playground-and-api-on-two-different-url)
+- [How to automatically generate TypeScript for consumers of your GraphQL](https://patrickdesjardins.com/blog/how-to-automatically-generate-typescript-for-consumer-of-your-graphql)
+- [GraphQL and HTTP Telemetry](https://patrickdesjardins.com/blog/graphql-extension-to-collect-http-and-resolvers-telemetry)
+- [GraphQL and TypeScript/React](https://patrickdesjardins.com/blog/how-to-consume-graphql-in-typescript-and-react)

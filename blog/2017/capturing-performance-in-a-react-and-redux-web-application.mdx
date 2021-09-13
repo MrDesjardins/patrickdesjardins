@@ -1,0 +1,21 @@
+---
+title: "Capturing Performance in a React and Redux Web Application"
+date: "2017-10-25"
+categories: 
+  - "javascript"
+  - "react"
+---
+
+Recently, I started working a project and wanted to gather information in regard to performance. I wanted to have insight about where code could be improved over time. This means that I need to have entry points where I can collect metrics and send them to the server. In this article, I won't discuss the detail of how to send the information, but more about where to set these markers.
+
+Before anything, let's clarify the situation. This is a React application, that uses Redux as the way to manipulate the data flow. The application has container components that are connecting to the store through the "connect" React-Redux function. Presentation components will delegate back to the container component. Once an action occurs, the "mapDispatchToProps" of the corresponding container component calls the dispatch method The exact flow that React dispatch a call to the action creator. This latter can do some business logic and Ajax call to finally dispatch an action that will be intercepted reducers. Between the beginning of the call to the reducer and the end, middlewares can act upon the state. Finally, the "mapStateToProps" of the connected component is called and change the state of the component which will call the shouldComponentUpdate, the render and the componentDidUpdate.
+
+I’ve seen many places on the Internet that were placing performance markers in a middleware. I can understand the appealing reason of being easily injectable, but that doesn't cover the whole flow as I just described.
+
+The confirm what my hypothesis of having to start performance log right before the dispatch and the performance log to stop at the update method, let's do an experience with some console.log in 6 different places. The first one right before “dispatching” to the action creator. One in the first line of the action creator, a third one in the render method of the component, and a fourth one in the componentDidUpdate. Finally, two console.log in a basic middleware invokes the console before and after the action.
+
+The order is:
+
+1- Dispatch 2- ActionCreator (first line) 3-Middleware before action 4-Middleware after action 5-Component Render 6-Component componentDidUpdate
+
+That being established, calling any kind of stop marker at a middleware level is preamptive. This is even truer if you are using [Perf.start() and Perf.stop()](https://facebook.github.io/react/docs/perf.html) at the Middleware level.

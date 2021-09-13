@@ -1,0 +1,22 @@
+---
+title: "CSS block, inline and inline-block comparison"
+date: "2012-08-27"
+categories: 
+  - "css"
+---
+
+What is the difference between an element with display block, display inline and display inline-block? It's all about the element way to take the space within the Html.
+
+## Display Block
+
+The display block let you specify a width, a height and act as a block of space. If you want to have something to its right, the element will need to float because by default, the block won't let anyone being around it. It also let you use margin attribute. By default, header tag like H1 use block and you won't be able to add anything to its right. It will goes automatically to under it. Same thing happen if you use the paragraph tag "p". [![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/08/displayBlock-400x192.png "displayBlock")](http://patrickdesjardins.com/blog/?attachment_id=1310)
+
+## Display Inline
+
+This is the opposite. It will take only the space required, won't let you set width or height. This is perfect if you want to have add tag within an element. This is the default value for "span" tag. But, this won't let you use margin and sizing feature. [![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/08/displayInline-400x140.png "displayInline")](http://patrickdesjardins.com/blog/?attachment_id=1311)
+
+## Display Inline-Block
+
+The main goal of inline block is to preserve its block capabilities such as width and height, top and bottom margins and paddings. [![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/08/displayInlineBlock-400x155.png "displayInlineBlock")](http://patrickdesjardins.com/blog/?attachment_id=1312)
+
+So that's it for display value. Of course you can set display:none if you want to remove the element and its space (inverse of visible which will remove the visual aspect while preserving the space). You can also use display:list-item if you want to act like list "li" which will add bullet to every rows. This is acting like display:block with bullet.

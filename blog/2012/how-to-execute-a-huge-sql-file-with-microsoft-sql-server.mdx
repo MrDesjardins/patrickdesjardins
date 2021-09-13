@@ -1,0 +1,12 @@
+---
+title: "How to execute a huge SQL file with Microsoft Sql Server"
+date: "2012-12-17"
+categories: 
+  - "sql-server-management-studio"
+---
+
+Here is a small article that could be more a note than something else. If you have a lot of SQL statement to execute, let say few gigs of statement, this won't load into SQL Server Manager. What you can do is to use the sqlcmd command. Open a DOS console and go where you have installed Sql Server Mananger. Mine is: \[code\] c:\\Program Files (x86)\\Microsoft SQL Server\\90\\Tools\\Binn \[/code\] In the console, you need to specify the server and instance you want to execute the file to. Optionnaly, you can write the output to a file.
+
+\[sql\] sqlcmd -S myServer\\instanceName -i C:\\myScript.sql -o C:\\log.txt \[/sql\]
+
+That's it. Nothing more complicated.

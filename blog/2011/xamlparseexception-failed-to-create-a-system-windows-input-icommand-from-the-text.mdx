@@ -1,0 +1,24 @@
+---
+title: "XamlParseException: failed to create a 'System.Windows.Input.ICommand' from the text"
+date: "2011-10-10"
+categories: 
+  - "silverlight"
+---
+
+> XamlParseException: failed to create a 'System.Windows.Input.ICommand' from the text
+
+This error can occur when binding a Command inside a Xaml file.
+
+\[xml\] <Button Command="MyCommand"> Click Me </Button> \[/xml\]
+
+In fact, the problem with this syntax reside in the way we call the command. The previous example were not using the Binding syntax.
+
+You need to use the Binding keyword.
+
+\[xml\] <Button Command="{Binding MyCommand}"> Click Me </Button> \[/xml\]
+
+Of course, you need bind to a ICommand property to the desired command.
+
+\[csharp\] public ICommand MyCommand { get { return .... } } \[/csharp\]
+
+Hope this help some body that has this error :)

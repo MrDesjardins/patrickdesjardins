@@ -1,0 +1,34 @@
+---
+title: "Parsing integer to enumerator with value out of the enumerator range"
+date: "2012-06-01"
+categories: 
+  - "c-sharp"
+---
+
+If you want to convert a integer value into the enumerator that contain this value you can explicit cast the value.
+
+\[csharp\] public enum MyEnumType { KeyA = 1, KeyB = 2 }
+
+class Program { static void Main(string\[\] args) { int myIntegerValue = 1; MyEnumType enu = (MyEnumType)myIntegerValue; Console.Read(); } } \[/csharp\]
+
+This will work if the value, in our example 1, is in the MyEnumType. It will also work if we use an integer over 2. [![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/05/enumOutOfRange-400x212.png "enumOutOfRange")](http://patrickdesjardins.com/blog/parsing-integer-to-enumerator-with-value-out-of-the-enumerator-range/enumoutofrange)
+
+Since the .Net Framework 4, we can use the Parse and TryParse on enumerator. The TryParse let you parse the name of the enumerator or the value. This mean, you can parse "KeyA" and it will retrieve the enum for the value 1 or you can parse 1 and it will retrieve the enum for the value 1.
+
+[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/05/EnumParse-400x134.png "EnumParse")](http://patrickdesjardins.com/blog/parsing-integer-to-enumerator-with-value-out-of-the-enumerator-range/enumparse)
+
+In real application, if the data is from outside, is always better to use TryParse because this one will indicate if it can parse without throwing an exception. Here is an example with Parse with wrong value followed by one with TryParse.
+
+[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/05/enumParse2-400x153.png "enumParse2")](http://patrickdesjardins.com/blog/parsing-integer-to-enumerator-with-value-out-of-the-enumerator-range/enumparse2)
+
+As you can see the Parse work with integer that is out of range but not for the named enumerator parsing, just for the value conversion.
+
+What about the TryParse? Samething! It will return TRUE even if the value is out of range.
+
+[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/05/enumTryParse-400x185.png "enumTryParse")](http://patrickdesjardins.com/blog/parsing-integer-to-enumerator-with-value-out-of-the-enumerator-range/enumtryparse)
+
+This can be problematic if you doesn't have the control over the value. For example, the value is passed from Ajax call from the client side to your server as an Integer. You want to convert this one into an enumerator to continue to proceed as usual on the server. The way to ensure that the value is legit is to use **Enum.IsDefined**.
+
+[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/05/enumDefined-400x237.png "enumDefined")](http://patrickdesjardins.com/blog/parsing-integer-to-enumerator-with-value-out-of-the-enumerator-range/enumdefined)
+
+So, every time you want to Parse an enumerator from the external (as an integer from an Ajax request) you should check if the value is defined correctly because only using the parsing tool won't tell you if you are out of range.

@@ -1,0 +1,24 @@
+---
+title: "Quick Static Page with Github, Namecheap and Cloudflare"
+date: "2018-04-30"
+categories: 
+  - "general"
+---
+
+I recently published a [TypeScript book](https://typescriptbook.com/) that cover all features of the language from its inception to version 2.8. I wanted to have a static page that presents the book without having to host it myself. My goal was to create and publish everything in the evening.
+
+The first step was to get a template online. Finding a template is quite easy these days. You can search for "free HTML template" and get thousands of free template. The second step is to get a domain name, I use NameCheap since many years, hence I registered [typescriptbook.com](https://typescriptbook.com/). I might have many TypeScript books so I like that the domain name is significative and give me some freedom to host many of my potential TypeScript books. The third step was to write the content of the website.
+
+The fourth step was to host the code on Github. I never used Github as a service to host a website, but they do have some configuration to use GitHub as a hosting platform. It is more straightforward than I thought. You need to create a public repository, push all your code and go to the repository's settings to add your domain.
+
+[![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/04/TypeScriptBookGitHubSetting.png)](https://patrickdesjardins.com/blog/?attachment_id=5780)
+
+I choose a custom branch because of some other tutorial, but you could select the master branch instead. Nevertheless, this can give a chance to push and test before having the static files being ported to the website. Regardless, the next step is to go to NameCheap (domain provider) to set up the site.
+
+[![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/04/namecheapsettings.png)](https://patrickdesjardins.com/blog/?attachment_id=5781)
+
+You need to specify Cloudflare nameserver in NameCheap. You could instead keep NameCheap nameserver and create a custom DNS A entry to Github, but that doesn't support HTTPS. Using Cloudflare brings the possibility to have HTTPS for free. To know which nameserver to use, you must set up a free Cloudflare account first. So, let's pause the configuration of NameCheap and go in Cloudflare. Under the "DNS" tab you can find the nameserver. DNS is also the place where you need to configure the two ips from GitHub (you can find these two ips in the documentation under "how to setup Apex domain with Github").
+
+[![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/04/CloudFlareSettings.png)](https://patrickdesjardins.com/blog/?attachment_id=5782)
+
+The current configuration allows having HTTPS and HTTP. The domain points to Cloudflare that handle the SSL certificate (HTTPS) and aim to GitHub that host the files. The three services have three specific roles and once in place work well. You may have some down period if you do a typo in the domain name or the ips -- be careful. Also, the DNS propagation can take many minutes if not hours. Nevertheless, so far, I am very satisfied with this setup and the website was all done in an evening as planned.

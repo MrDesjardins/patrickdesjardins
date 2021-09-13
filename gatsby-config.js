@@ -4,14 +4,22 @@ module.exports = {
     title: "Patrick Desjardins Blog",
   },
   plugins: [
-    "gatsby-plugin-styled-components",
-    "gatsby-plugin-image",
+    {
+      resolve: `gatsby-plugin-typescript`,
+      options: {
+        isTSX: true, // defaults to false
+        jsxPragma: `jsx`, // defaults to "React"
+        allExtensions: true, // defaults to false
+      },
+    },
     {
       resolve: "gatsby-plugin-google-analytics",
       options: {
-        trackingId: "UA-123120-4",
+        trackingId: "UA-123120-5",
       },
     },
+    "gatsby-plugin-styled-components",
+    "gatsby-plugin-image",
     "gatsby-plugin-mdx",
     "gatsby-plugin-sharp",
     "gatsby-transformer-sharp",
@@ -31,5 +39,13 @@ module.exports = {
       },
       __key: "pages",
     },
+    {
+      resolve: "gatsby-source-filesystem",
+      options: {
+        name: `blog`,
+        path: `./blog`,
+      },
+    },
   ],
 };
+// https://www.gatsbyjs.com/plugins/gatsby-remark-prismjs/

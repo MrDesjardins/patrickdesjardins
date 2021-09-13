@@ -1,0 +1,18 @@
+---
+title: "Linq to Entity to get the number of day between two dates"
+date: "2014-05-08"
+categories: 
+  - "entity-framework"
+---
+
+If you want to have the amount of day between two dates, you can get those dates back to C# and do the difference between them. However, it is possible to tell Sql Server to do it for you by Linq To Entity.
+
+It has change since **Entity Framework (EF) 6**. You have to use [**DbFunctions class**](http://msdn.microsoft.com/en-us/library/system.data.entity.dbfunctions_methods(v=vs.113).aspx) now to execute complex operations to Sql Server.
+
+The operation that interest us is named **DiffDays**. It takes two parameters. The first one is the smallest date, the second one is the biggest date. If you invert these parameters, the count will be negative.
+
+Here is an example of use:
+
+\[csharp highlight="5"\] var allActiveContest = GetAllActiveContestForUser(userId) .Select(d=>new ContestWithSmallStatistics(){ Id=d.Id, Name=d.Name, NumberOfDaysRemainingBeforeEndDate = DbFunctions.DiffDays(d.RegistrationRules.StartingTime,d.RegistrationRules.EndingTime).Value, NumberOfUsersRegistered = d.Contester.Count }); \[/csharp\]
+
+The main advantage is that you can have from the database exactly what you want instead of having a class that would have two dates. You could also use it for having some logics that will not return everything. For example, we could return only Active Contest for contest that has more than 30 days.

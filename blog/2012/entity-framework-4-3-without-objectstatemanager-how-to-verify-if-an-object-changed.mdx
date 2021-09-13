@@ -1,0 +1,18 @@
+---
+title: "Entity Framework 4.3 without ObjectStateManager, how to verify if an object changed?"
+date: "2012-03-19"
+categories: 
+  - "entity-framework"
+---
+
+Previously, few months ago, it was possible to access the ObjectStateManager and to use the method GetObjectStateEntry with the object desired to get the state.
+
+\[csharp\] Customer customer = //... ObjectStateEntry ose = context.ObjectStateManager.GetObjectStateEntry(customer); Console.WriteLine("Customer object state: {0}", ose.State); customer.Country = "USA"; Console.WriteLine("Customer object state: {0}", ose.State); \[/csharp\]
+
+The version of EF4.3 doesn't have the ObjectStateManager available. It's possible to get the state but with the property ChangeTracker.
+
+To see a specific object state you will need this property, the ChangeTracker, with a Linq query.
+
+\[csharp\] var e = dbContext.ChangeTracker.Entries<Customer>().Single(p=>p.Entity == myCustomer); Console.WriteLine("Customer state: " + e.State); \[/csharp\]
+
+ChangeTracker.Entries can be generic has the example above or not. In both case, it returns a lit of objects that is listened by the tracker. It doesn't mean that all objects inside the tracker has changed. The Linq query, with the Single() method, will search to get a Single correspondence to your object by comparing the Entity inside the Entry list to the customer that is wanted to get the state.

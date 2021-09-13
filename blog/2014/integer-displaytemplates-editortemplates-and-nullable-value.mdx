@@ -1,0 +1,18 @@
+---
+title: "Integer DisplayTemplates, EditorTemplates and Nullable Value"
+date: "2014-06-10"
+categories: 
+  - "asp-mvc"
+---
+
+You can define templates in the **DisplayTemplates** and **EditorTemplates**. If you define one template for integer your can have an error saying that the model item require a string.
+
+> The model item passed into the dictionary is of type 'System.Int32', but this dictionary requires a model item of type 'System.String'
+
+This error occurs if you name the template int.cshtml or integer.cshtml. Even if you have defined the _@model int_ or _@model int?_.
+
+The solution is to name the file **Int32.cshtml**. CLR type name are used and not C# alias.
+
+Another detail important to remember is that if you want to have **integer** and **nullable integer** you can only do it withing one template. So, always define the type with its nullable type. For example, the integer should be in the file Int32.cshtml and the template could be something like this (for DisplayTemplate):
+
+\[csharp\] @model int? @if (Model.HasValue) { @Html.Raw(Model) } else { @:- } \[/csharp\]

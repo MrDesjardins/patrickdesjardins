@@ -1,0 +1,52 @@
+---
+title: "NodeJs and MongoDb on Windows : Connecting and Inserting"
+date: "2017-08-07"
+categories: 
+  - "mongodb"
+  - "nodejs-web"
+---
+
+MongoDb is an interesting choice of permanent persistence when using NodeJs since it stores document which is ideal of JSON document to get stored.
+
+You can download a free version directly on MongoD : [https://www.mongodb.com/download-center#community](https://www.mongodb.com/download-center#community) Once it's downloaded, it's best to be sure that the system environment variable is set to have an entry in the path to point to the bin folder of the installation path of MongoDb.
+
+Before working out MongoDb with NodeJs, I recommend to download RoboMongo for free: [https://robomongo.org/download](https://robomongo.org/download). This tool allows to query MongoDb and explore the data. Before using RoboMongo or to use the MongoDb library, we need to run the MongoDb server. To do so, go in the development folder you are working and execute the **mongod** command with the dbpath. For example, the following command will store the MongoDb in the "data" folder in the development folder.
+
+\[code\] mongod --dbpath=.\\data \[/code\]
+
+Inside your NodeJs project, you needs sto have the mongodb library. If you are using TypeScript, you can get the type definition too.
+
+```typescript
+npm install mongodb --save npm install @types/mongodb --save-dev 
+``` 
+
+
+At this point, you can start using the library to access the information. First step, connecting to the server. Second step, connecting to the collection. The first step is the same as any other database, the second one is just that every documents are stored into a collection. Think about it as a table.
+
+From here, we need to import some classes. ```typescript
+import { MongoClient, MongoError, Db, InsertOneWriteOpResult } from "mongodb"; 
+``` 
+
+
+MongoClient is the main class to connect to Mongo. MongoError is the class that wrap the error which we will use to get information about the connection's error. Db is the class that hold information about MongoDb once connected. We need it to properly close the connection, but also to select the collection in which we want to invoke the action (find, insert, delete). The InsertOneWriteOpResult is the result on an insert.
+
+Here is the connection code: ```typescript
+MongoClient.connect(url, (errMongo: MongoError, db: Db) => { if (errMongo) { console.log(errMongo); } else { console.log("Connected successfully to server"); } }); 
+``` 
+
+
+To insert something in you need to get the collection name and use the insert method. Something I haven't yet figure out perfectly is how to handle Date from a .json file. In my case, I was opening file (.json) and inserting them into MongoDb. The Json parse method was returning the date as string, hence I needed to assign the value back with an instance of date
+
+\[javascript\]
+
+// To have a real date format in MongoDb objToInsert.fullDate = new Date(objToInsert.fullDate);
+
+// Access the collection we want to insert const collection = db.collection("documents"); // "documents" can be anything you want your collection to be named
+
+// Insert with a callback that has an error or the result data collection.insert(objToInsert, (err: MongoError, result: InsertOneWriteOpResult) => {
+
+}); 
+``` 
+
+
+The code above will add a new entry and alter the object to add an "\_id" with a GUID for the object. This way, every entry has a unique identifier automatically.

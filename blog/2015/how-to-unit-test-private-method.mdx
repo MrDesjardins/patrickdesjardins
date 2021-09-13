@@ -1,0 +1,132 @@
+---
+title: "How to unit test private method"
+date: "2015-08-10"
+categories: 
+  - "test"
+---
+
+This is something that I got asked from little start-up up to Microsoft. How to you test private method? I often see horrible things. For example, if your class as 1 public method that call 5 privates method and you want to unit test 1 of the 5 methods, calling the public method to do so is wrong. Something can change anywhere in the class and break that test. Also, creating test this way is painful because it takes time to setup all variables to value that make all others method not fail. Once you reach the method you want to test you can start really testing what you are there for. An other horrible thing is to start using advanced shimming stuff that rely on reflection. The solution is simple : create more cohesive classes.
+
+I think an example is better before continuing about how to divide code to help creating more efficient unit test. Here is a snippet that illustrate many problem. We have an Order class that has a list of item that can be bought. At some point, we want to pass a transaction so we have a method called Purchase which return the list of item that we can really purchase based on different business logic. For example, we allows only item that is between 0$ and 100$ to be bought, only item that is not discontinued, we can only buy 1 item of any kind per transaction, not more than 3 items at the same time can be in the basket and finally nothing above an order of 50$ is allowed (so we only add item to be purchase under 50$).
+
+\[csharp\] public class ShoppingBasket { public List<Item> Items { get; set; }
+
+public List<Item> Purchase() { var canBeBought = new List<Item>(); foreach (var item in Items) { bool canBuy = true; if (item.Money < 0 || item.Money > 100) { canBuy = false; }
+
+if (item.IsDiscontinued) { canBuy = false; }
+
+if (!this.IsUnique(item.Id)) { canBuy = false; }
+
+if (this.IsShoppingBasketFull()) { canBuy = false; }
+
+if (this.HasReachMaximumAmountPerOrder(canBeBought)) { canBuy = false;
+
+} if (canBuy) { canBeBought.Add(item); } } return canBeBought; }
+
+private bool IsUnique(int id) { return this.Items.Count(d => d.Id == id) > 1; }
+
+private bool IsShoppingBasketFull() { return this.Items.Count >= 5; }
+
+private bool HasReachMaximumAmountPerOrder(List<Item> canBeBought) { return canBeBought.Sum(d=>d.Money) > 50; } }
+
+public class Item { public int Id { get; set; }
+
+public double Money { get; set; }
+
+public bool IsDiscontinued { get; set; } } \[/csharp\]
+
+If you want to test if the Lambda expression is well formed for the _IsUnique_ method, you will have to create a list of items and pass it to the _ShoppingBasket_ class. So far, this is fine. However, you cannot call the method IsUnique because this one is private. You have two choices. You break the encapsulation of the _ShoppingBasket_ by changing the visibility from private to public or you refactor your class to something more testable, more cohesive and more object oriented. Changing the encapsulation is fine. In fact, in that case it does not really matter because it does not disrupt the system. Someone could call _IsUnique_ any time and it does not change any operational flow. However, is it really the responsability of the _ShoppingBasket_ to handle the unique?
+
+Let's start trying to unit test this actual code to illustrate how it is not a good idea to test through the public method to reach a private method.
+
+\[csharp\] \[TestMethod\] public void TestIfIsUniqueMethodWorksWhenListHasNotUniqueItem() { // Arrange var shoppingBasket = new ShoppingBasket(); var item1 = new Item() {Id = 1, IsDiscontinued = false, Money = 5}; var item2 = new Item() {Id = 2, IsDiscontinued = false, Money = 10}; var item3 = new Item() {Id = 3, IsDiscontinued = false, Money = 50}; var item4 = new Item() {Id = 1, IsDiscontinued = false, Money = 5}; shoppingBasket.Items = new List<Item> {item1, item2, item3, item4};
+
+// Act var itemThatWeCanPurchase = shoppingBasket.Purchase();
+
+// Assert Assert.AreEqual(2, itemThatWeCanPurchase.Count); } \[/csharp\]
+
+You will tell me that this is fine. In fact, it is. In that case the problem is not the amount of preparation. It is often the case, but not that time. The problem is that if tomorrow the threshold of 50$ go down to 10$ that this unit test will fail. Right now, the item id 2 and 3 are returned but if this limit goes from 50$ to 10$ than the id 2 is out which will return only one item. The unit test about unique fail because of the maximum amount per order. This is wrong.
+
+A unit test must test a unit. It has to test a single thing. It has to be atomic. This is why we need to refactor that code.
+
+The first thing to do is to ask who is the expert of the field for each logic. The first logic concern the logic about that we can only buy item with money between 0$ and 100$. This raise multiple questions.
+
+1. Is it a shopping basket logic?
+2. Does that logic is universal on the software we are building or just for specific case? Does this range may change during the lifetime of this software?
+3. Do we have different kind of Item?
+
+The first question make sense. Maybe depending of the type of shopping basket that logic can change. For example you could have "SmallShoppingBasket" and a "BigShoppingBasket" and depending of the basket the threshold change. This is why we cannot build a software without knowing the specification: the code changes depending of what are the rules. Creating a generic system for all case increase the time to build this one by a huge magnitude of time. That said, for that first condition, we need to extract that code out of the loop in all case. The reason is that this condition is independent of all items -- it is a condition on a single item. Since we are not planning to have multiple basket and the amount belong to an item, for that use case, it makes sense to set the condition inside the Item class. This change result having one more method in Item and the unit test to call that method.
+
+\[csharp\] public class Item { public int Id { get; set; }
+
+public double Money { get; set; }
+
+public bool IsDiscontinued { get; set; }
+
+public bool IsPriceLegitForPurchase() { return this.Money < 0 || this.Money > 100; } } \[/csharp\]
+
+The second condition is checking if the item is discontinued. The call is already on the item which is great. However, already have a condition on the item done one line above since our last refactoring on the price.
+
+\[csharp\] foreach (var item in Items) { bool canBuy = true; if (!item.IsPriceLegitForPurchase()) { canBuy = false; }
+
+if (item.IsDiscontinued) { canBuy = false; } // ... \[/csharp\]
+
+Instead of calling twice the item we should think. These two operations has something in common: it validates the item for purchase. We should have a method in the item that does that for us. Not only it will self-document what it is going on but that logic could be reused later without having to duplicate both calls. We end up having a single validation method for purchase in item. \[csharp\] public bool IsValidForPurchase() { if (!this.IsPriceLegitForPurchase()) { return false; }
+
+if (this.IsDiscontinued) { return false; } return true; } \[/csharp\] The test is also clearer. \[csharp\] //... if(!item.IsValidForPurchase()) { canBuy = false; } //... \[/csharp\]
+
+The third condition was to check if the shopping basket is full. The logic belong to the basket because this one is the one who know its size, which is 5. The problem is that when we will test that logic, we do not want to have to create items that necessary pass condition for "IsValidForPurchase" method. We just want to create a list of item and test the count. That said, this is a perfect case that this method should be public.
+
+The next condition is about if the list of item that is valid to purchase has still some place to add additional item. This is an interesting case. This logic does not belong to item, it belongs to the list. It means that this list is an entity which some properties, states, etc.
+
+\[csharp\] public class ItemValidToPurchase : List<Item> { public bool HasReachMaximumAmountPerOrder() { return this.Sum(d => d.Money) > 50; } } \[/csharp\]
+
+The condition in the Shopping Basket is just to call the method.
+
+\[csharp\] if (canBeBought.HasReachMaximumAmountPerOrder()) { canBuy = false; } \[/csharp\]
+
+So the final code looks like this for the test **about unique**. \[csharp\]
+
+private ShoppingBasket GetShoppingBasket() { var shoppingBasket = new ShoppingBasket(); var item1 = new Item() {Id = 1, IsDiscontinued = false, Money = 5}; var item2 = new Item() {Id = 2, IsDiscontinued = false, Money = 10}; var item3 = new Item() {Id = 3, IsDiscontinued = false, Money = 20}; var item4 = new Item() {Id = 1, IsDiscontinued = false, Money = 5}; shoppingBasket.Items = new List<Item> {item1, item2, item3, item4}; return shoppingBasket; }
+
+\[TestMethod\] public void TestIfIsUniqueMethodWorksWhenListHasNotUniqueItem() { // Arrange var shoppingBasket = this.GetShoppingBasket();
+
+// Act var isUnique = shoppingBasket.IsUnique(1);
+
+// Assert Assert.IsFalse(isUnique); }
+
+\[TestMethod\] public void TestIfIsUniqueMethodWorksWhenListHasUniqueItem() { // Arrange var shoppingBasket = this.GetShoppingBasket();
+
+// Act var isUnique = shoppingBasket.IsUnique(2);
+
+// Assert Assert.IsTrue(isUnique); } \[/csharp\]
+
+And the classes code look. \[csharp\] public class Item { public int Id { get; set; }
+
+public double Money { get; set; }
+
+public bool IsDiscontinued { get; set; }
+
+public bool IsPriceLegitForPurchase() { return this.Money < 0 || this.Money > 100; }
+
+public bool IsValidForPurchase() { if (!this.IsPriceLegitForPurchase()) { return false; }
+
+if (this.IsDiscontinued) { return false; } return true; } } public class ItemValidToPurchase : List<Item> { public bool HasReachMaximumAmountPerOrder() { return this.Sum(d => d.Money) > 50; } } public class ShoppingBasket { public List<Item> Items { get; set; }
+
+public ItemValidToPurchase Purchase() { var canBeBought = new ItemValidToPurchase(); foreach (var item in Items) { bool canBuy = true; if(!item.IsValidForPurchase()) { canBuy = false; }
+
+if (!this.IsUnique(item.Id)) { canBuy = false; }
+
+if (this.IsShoppingBasketFull()) { canBuy = false; }
+
+if (canBeBought.HasReachMaximumAmountPerOrder()) { canBuy = false; }
+
+if (canBuy) { canBeBought.Add(item); } } return canBeBought; }
+
+public bool IsUnique(int id) { return this.Items.Count(d => d.Id == id) == 1; }
+
+public bool IsShoppingBasketFull() { return this.Items.Count >= 5; } } \[/csharp\]
+
+As you can see, the condition has changed on the IsUnique method. Because and error was present and only could have been detected with a valid set of unit test on that method. We could go even further by refactoring even more this code. I'll write a second post about what we could have done with a more flexible code that allow to have dynamic validation using other design pattern.
+
+You can find the initial code and the final code in this [Git Repository](https://github.com/MrDesjardins/UnitTestPrivateMethods).

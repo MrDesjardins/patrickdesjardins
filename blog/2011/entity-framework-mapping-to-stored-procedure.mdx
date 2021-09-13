@@ -1,0 +1,61 @@
+---
+title: "Entity Framework mapping to stored procedure"
+date: "2011-09-13"
+categories: 
+  - "entity-framework"
+  - "sql"
+---
+
+Sometime logic are stored in a stored procedure and is still required to call it instead of using the normal entity framework way to update, delete or save. Fortunately, the entity framework let you change the basic behavior of the auto generated sql for those operations by Sql Stored Procedure call.
+
+An other scenario is that you may want to simply call a stored procedure without having to map them to a specific entity. This can called function import. This can return almost anything from the scalar, to a collection or a complex type. Even a call to a void stored procedure is possible.
+
+## Mapping Insert, Update, Delete
+
+Let's start with the mapping of the 3 basic Sql functions. The first thing to do is to go to the visual designer and right click on the entity you want to map the sql queries.
+
+\[caption id="attachment\_161" align="aligncenter" width="400" caption="Context dialog for mapping stored procedure"\][![Mapping Context Dialog](http://patrickdesjardins.com/blog/wp-content/uploads/2011/08/mappingstoredprocedure-400x340.png "mappingstoredprocedure")](http://patrickdesjardins.com/blog/entity-framework-mapping-to-stored-procedure/mappingstoredprocedure)\[/caption\]
+
+This will popup the "Mapping Details". From there, it will be possible to select a function for each functions. If nothing is present in the dropdown, you'll need to add the stored procedure to the entity model. To do, right click on the model, select to generate the model from the database and select under Stored Procedure the desired one. After, come back to the mapping details.
+
+To test, lets use the Microsoft Northwind database and add inside the Sql server manager this new stored procedure:
+
+\[sql\]
+
+CREATE PROCEDURE UpdateRegion ( @id INT ,@txt VARCHAR(50) ) AS BEGIN UPDATE region SET RegionDescription = @txt WHERE RegionID = @id END \[/sql\]
+
+After, lets add it into the entity model and map the stored procedure to the update function of the region table.
+
+\[caption id="attachment\_162" align="aligncenter" width="400" caption="Mapping update function with a custom stored procedure"\][![Visual Studio's mapping update screen](http://patrickdesjardins.com/blog/wp-content/uploads/2011/08/mappingUpdateStoredProcedure-400x132.png "mappingUpdateStoredProcedure")](http://patrickdesjardins.com/blog/entity-framework-mapping-to-stored-procedure/mappingupdatestoredprocedure)\[/caption\]
+
+Also, you do not need to modify all of the 3 functions, only those you want.
+
+To see the difference. Lets try to change the region without the stored procedure mapped and with to see how the generated SQL change.
+
+\[csharp\] var db = new NorthWindContainer(); var region = db.Region.First(); Console.WriteLine("The first region description is : " + region.RegionDescription); region.RegionDescription = "Est"; db.SaveChanges(); region = db.Region.First(); Console.WriteLine("The first region description is : " + region.RegionDescription); Console.ReadLine(); \[/csharp\]
+
+This produce without the stored procedure mapped:
+
+\[sql\] exec sp\_executesql N'update \[dbo\].\[Region\] set \[RegionDescription\] = @0 where (\[RegionID\] = @1) ',N'@0 nchar(50),@1 int',@0=N'Est',@1=1 \[/sql\]
+
+And with:
+
+\[sql\] exec \[dbo\].\[UpdateRegion\] @id=1,@txt='Est' \[/sql\]
+
+Before going to the next part of this post, in the mapping details theirs 2 columns that we have not talk yet. The first one is "Use Original Value" and the second one is "Rows Affected Parameter". The original value is a boolean that is to false by default. If you change it to true, this will pass to the database the original loaded value of the entity. This can be used in situation where multiple concurrences could have changed the value and you want the original one. The second columns is the "Rows Affected Parameter". This one can be used if you have an integer parameter with an output specification in the stored procedure that will return the number of rows that has been changed. In the example above, that would be the value 1 that would have been passed if we had changed the stored procedure to have an additional parameter of type Int ( @paramReturnValue integer OUTPUT).
+
+## Executing a function in Sql Server with Entity Framework
+
+The second way to use stored procedure is to call the stored procedure from the object context. To create the mapping, this time, it requires to go in the Model Browser and to open the Stored Procedure folder. From there, the context menu of the right click let you select the desired stored procedure.
+
+\[caption id="attachment\_166" align="aligncenter" width="400" caption="Add direct call to stored procedure or function"\][![](http://patrickdesjardins.com/blog/wp-content/uploads/2011/08/modelbrowseraffunction-400x327.png "modelbrowseraffunction")](http://patrickdesjardins.com/blog/entity-framework-mapping-to-stored-procedure/modelbrowseraffunction)\[/caption\]
+
+Once added, the stored procedure is set under the Function Imports of the Entity Framework Model.
+
+\[caption id="attachment\_167" align="aligncenter" width="379" caption="Result of adding a stored procedure"\][![](http://patrickdesjardins.com/blog/wp-content/uploads/2011/08/addedfunction.png "addedfunction")](http://patrickdesjardins.com/blog/entity-framework-mapping-to-stored-procedure/addedfunction)\[/caption\]
+
+When it's added, you can do the call by using directly the object context followed by the name of the function. At anytime you can change the name of it by going in the Model Browser and going in the property of the function.
+
+\[csharp\] db.UpdateRegion(1, "Estern!"); \[/csharp\]
+
+If the stored procedure return a complex entity, the wizard will let you create the complex entity and you will be able to use it from the code. If it's a scalar, the wizard will let you select the good one and you will be able to use it.

@@ -1,0 +1,36 @@
+---
+title: "Authentification with Active Directory (AD) with Asp.Net MVC"
+date: "2013-11-25"
+categories: 
+  - "asp-mvc"
+---
+
+With Visual Studio 2013, you cannot simply choose "Intranet WebSite" to create a default website that use **Active Directory**. Nevertheless, a wizard allow you to create it. First, select create a new project and select a web application.
+
+[![CreateNewWebApplication1](http://patrickdesjardins.com/blog/wp-content/uploads/2013/11/CreateNewWebApplication1-400x263.png)](http://patrickdesjardins.com/blog/authentification-with-active-directory-ad-with-asp-net-mvc/createnewwebapplication1)
+
+Second, you need to select MVC and to click change authentication.
+
+[![CreateNewWebApplication2](http://patrickdesjardins.com/blog/wp-content/uploads/2013/11/CreateNewWebApplication2-400x282.png)](http://patrickdesjardins.com/blog/authentification-with-active-directory-ad-with-asp-net-mvc/createnewwebapplication2)
+
+This will result to a page where you will be able to select Organisation Authentification. Select On-Promise. This will let you specify the active directory URI.
+
+[![CreateNewWebApplication3](http://patrickdesjardins.com/blog/wp-content/uploads/2013/11/CreateNewWebApplication3-400x280.png)](http://patrickdesjardins.com/blog/authentification-with-active-directory-ad-with-asp-net-mvc/createnewwebapplication3)
+
+And that's it.
+
+You can also do it more manually. It's good to know because if you have to configure IIS, you will have to do some configuration. First, you need to disable anonymous authentication and allow windows authentication.
+
+The web.config also need to tell that we use windows authentication. \[xml\] <system.web> <authentication mode="Windows" />
+
+<roleManager enabled="true" defaultProvider="AspNetWindowsTokenRoleProvider"> <providers> <clear /> <add name="AspNetWindowsTokenRoleProvider" type="System.Web.Security.WindowsTokenRoleProvider" applicationName="/" /> </providers> </roleManager> </system.web> \[/xml\]
+
+This allow the use of the **Authorize** attribute over controllers and methods.
+
+\[csharp\] \[Authorize(Roles = "YOURDOMAIN\\\\Group1, YOURDOMAIN\\\\Group2")\] public ActionResult YourMethod() { //... } \[/csharp\]
+
+If you want to allow the user to log with the form instead of being automatically logged in, you need to specify a connection string in the web.config. \[xml\] <connectionStrings> <add name="ADConn" connectionString="LDAP://YourConnection" /> </connectionStrings> \[/xml\]
+
+Then, you need to setup the membership provider.
+
+\[xml\] <membership defaultProvider="ADMembership"> <providers> <add name="ADMembership" type="System.Web.Security.ActiveDirectoryMembershipProvider, System.Web, Version=2.0.0.0, Culture=neutral, PublicToken=b03f5f7f11d50a3a" connectionStringName="ADConn" connectionUsername="domain/user" connectionPassword="pwd" /> </providers> </membership> \[/xml\]

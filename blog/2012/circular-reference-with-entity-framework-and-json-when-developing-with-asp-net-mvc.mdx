@@ -1,0 +1,59 @@
+---
+title: "Circular reference with Entity Framework and Json when developing with Asp.Net MVC"
+date: "2012-10-29"
+categories: 
+  - "asp-mvc"
+  - "entity-framework"
+  - "javascript"
+---
+
+A circular reference was detected while serializing an object of type ...
+
+Here come the problem of serializing. First of all, this occur because a parent object reference a child object and this one reference back to its parents. Sound familiar? Well, if you are working with Entity Framework and Code First, it should. Why? Because most of the Entity are cross referencing each others. This way, it's convenient for many operations. For example, if you are a Team entity that has a list of Player, won't it be convenient to have the User having a Team property to access his team name. It's also interesting to do myPlayer.Team.Id = 1 and save the myPlayer. This way you do not have to instantiate the Team 1 object and add the player and save the team. Anyways, that's how Entity Framework work and when it's time to serialize to Json, it can cause this behavior.
+
+The second problem is concerning the object itself. When trying to serialize, you are in fact serializing the Proxy also which is not what you want. In fact, you will get this error.
+
+> The RelationshipManager object could not be serialized. This type of object cannot be serialized when the RelationshipManager belongs to an entity object that does not implement IEntityWithRelationships.
+
+This is why you should disable the proxy creation and handle the state of your poco with the DbContext instead of relying on proxy. Disabling the proxy is a matter of setting to false your DbContext's property **ProxyCreationEnabled**.
+
+\[csharp\] \_dbContext.Configuration.ProxyCreationEnabled = false; \[/csharp\]
+
+Let's come back to the main purpose of this article. The problem with circular reference can be fixed by two solutions.
+
+The first one, is to broke those references when we send the information to Json. That mean that in your controller, before sending back the ActionResult, you loop problematic property to remove the reference. If we take back the example with Player and Team, we could simply loop the Team array of Player and set to Null all Player\[i\].Team.
+
+The second solution can be to use the attribute **ScriptIgnore** over the property of Team for example. So, it will serialize only from one side. I haven't try this solution that I have found at [StackOverflow.com](http://stackoverflow.com/questions/2002940/json-and-circular-reference-exception) because I do not think that I should alter the Model for the View this way. The serialization process shouldn't impact the model and for sure not to make something work only in half. At the end, we loss the reference on one side which will require to us to rebind it later on.
+
+A better solution is to use a different library of Json which can handle reference, by that I mean the [Newton King Library](http://james.newtonking.com/projects/json-net.aspx). This library support circular reference by add ID to object serialized.
+
+First, you need to remove the serialization from the default Json serializer and use the Json Newton King Library. This can be done in the Global.asax.cs file. with the following code.
+
+\[csharp highlight="6"\] GlobalConfiguration.Configuration.Formatters.Clear(); GlobalConfiguration.Configuration.Formatters.Add(new JsonNetFormatter(new JsonSerializerSettings()));
+
+var jsonSerializerSettings = new JsonSerializerSettings { PreserveReferencesHandling = PreserveReferencesHandling.Objects }; \[/csharp\]
+
+As you can see, we are setting up the PreserceReferencesHandling.Ojects. This will add the reference to object when circular dependencies are found.
+
+This setting add values into the Json structure that in the format "$id": "1" and instead of copying the object over and over (and creating a stack over flow), will use the syntax "$ref": "1" to refer to the object. For example, if we have an object Player that contain the Team and the Team contains the players, than we could have circular reference. The serialization with the library and the PreserceReferencesHandling will produce something similar to the code below if we serialize a single player.
+
+The C# code: \[csharp\] class Program { static void Main(string\[\] args) { var p = new Program(); }
+
+public Program() { var t1 = new Team() { TeamName = "MyTeam" }; var p1 = new Player { PlayerName = "Patrick" ,PlayerTeam = t1 }; var p2 = new Player() { PlayerName = "Melodie" , PlayerTeam = t1 }; t1.Players.Add(p1); t1.Players.Add(p2);
+
+var settings = new JsonSerializerSettings() { PreserveReferencesHandling = PreserveReferencesHandling.Objects }; string json = JsonConvert.SerializeObject(p1, settings); Console.WriteLine(json); Console.ReadLine(); //Product deserializedProduct = JsonConvert.DeserializeObject<Player>(json);
+
+} }
+
+public class Player { public string PlayerName { get; set; } public Team PlayerTeam { get; set; } }
+
+public class Team { public string TeamName { get; set; } public List<Player> Players { get; set; } public Team() { this.Players = new List<Player>(); } } \[/csharp\] The result: \[javascript highlight="2,6,11,14,18"\] { "$id":"1", "PlayerName":"Patrick", "PlayerTeam": { "$id":"2", "TeamName":"MyTeam", "Players": \[ { "$ref":"1" }, { "$id":"3", "PlayerName":"Melodie", "PlayerTeam": { "$ref":"2" } } \] } } 
+``` 
+
+
+If instead your serialize the team you will get: ```typescript
+{ "$id":"1", "TeamName":"MyTeam", "Players": \[ {"$id":"2","PlayerName":"Patrick","PlayerTeam":{"$ref":"1"}}, {"$id":"3","PlayerName":"Melodie","PlayerTeam":{"$ref":"1"}} \] } 
+``` 
+
+
+To conclude, you have to remember two things with Asp.Net MVC and Entity Framework. First, if you have not disabled proxy, than you will have this object serialized and it will cause problem when serializing. Second, you need to break those circular reference to stop the possibility of stack overflow. Using Json Newton library is simple and powerful when it came to handling references.

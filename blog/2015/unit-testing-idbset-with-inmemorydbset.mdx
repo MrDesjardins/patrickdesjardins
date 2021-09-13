@@ -1,0 +1,23 @@
+---
+title: "Unit Testing IDbSet with InMemoryDbSet"
+date: "2015-02-27"
+categories: 
+  - "entity-framework"
+  - "test"
+---
+
+Unit testing code near of your data access layer is not always easy. However, if you work design pattern like Unit of work or have at least regrouped your unit of DbSet in a centralized place, your unit tests can be not too hard to test. This is quite easy in fact if you are returning the IDbSet than you are in lock because you can Mock the DbSet and even use a nice Nuget's package called **[FakeDbSet](https://www.nuget.org/packages/FakeDbSet)** which has a **InMemoryDbSet**.
+
+You can install in your unit of test the FakeDbSet with this Nuget's command. \[code\] Install-Package FakeDbSet \[/code\]
+
+Here is a real example of a unit test that is intended to verify that when we call the repository that we get specific entity. The repository has in fact a filter -- Entity Framework **where** clause -- that return only stock that is with the **status** _Waiting_. This test verify that the Linq to Entity is really filtering correctly. The _stockOrderSet_ is the fake.
+
+\[csharp\] //Configuration in the constructor of the test machine this.stockOrderSet = new InMemoryDbSet<StockOrder>(true); this.UnitOfWork.Setup(d => d.Set<StockOrder>()).Returns(stockOrderSet); this.realTimeRepository = new RealTimeValuesRepository(base.UnitOfWork.Object); //... \[TestMethod\] public void GivenStocksSymbolToRefresh\_WhenOrderActiveWithStockExpired\_ThenGetOneToRefresh() { // Arrange this.stockOrderSet.Add(new StockOrder(){StockSymbol = "A", OrderStatus = OrderStatusType.Waiting}); this.stockOrderSet.Add(new StockOrder(){StockSymbol = "B", OrderStatus = OrderStatusType.Executed});
+
+// Act var stocks = realTimeRepository.GetStocksSymbolToRefresh();
+
+// Assert Assert.AreEqual(1, stocks.Count()); Assert.AreEqual("A", stocks.First()); } \[/csharp\]
+
+The initialization of the fake **DbSet** is set by specifying that we do not want to retain any value set between tests. The Linq is executed as it would with a **DbSet** connected to entity framework. As you can see, I am using a mocking framework to specify that every time the unit of work class's DbSet for the _StockOrder_ is used to use the fake DbSet. You can do the same if your repository has directly the the DbSet but these would require to be virtual to mock them. Everything is easy testable because of different pattern. Because we are injecting the unit of work (which contains the DbSet) into the repository, than it is easy to mock the unit of work to return the fake DbSet.
+
+The code of the FakeDbSet is available on GitHub ([https://github.com/a-h/FakeDbSet](https://github.com/a-h/FakeDbSet)).

@@ -1,0 +1,37 @@
+---
+title: "Using Transaction with WCF Services"
+date: "2013-12-20"
+categories: 
+  - "wcf"
+  - "webservices"
+---
+
+If you need to call two different WCF service and be sure that both are successful before committing, you'll need to use transaction. This will require that both service's operation contain the attribute **TransactionFlow** with the option to **Allowed**. Many other option could have been possible. NotAllowed is when you do not want to be part of transaction, which is the default value. Allowed allows to participate in a transaction if the client specify in his code a transaction scope. Finally, mandatory force that the operation is called within a transaction scope.
+
+\[csharp\] \[ServiceContract\] public interface IServiceContractOne { \[OperationContract\] \[TransactionFlow(TransactionFlowOption.Allowed)\] void Method1(); } \[/csharp\]
+
+The next step is the implementation of this contract. The method Method1() that has the TransactionFlow attribute needs to have also an attribute, this time it's **OperationBehavior**. \[csharp\]
+
+\[OperationBehavior(TransactionScopeRequired = true)\] public void Method1() { //Entity Framework here } \[/csharp\]
+
+The method of the contract has an operation behavior that tell that it's require to be inside a transaction scope.
+
+The next step is to configure the web.config. It needs to have for the binding the attribute transactionflow to true.
+
+\[xml\] <configuration> <system.serviceModel> <bindings> <wsHttpBinding> <binding name="MyBinding" transactionFlow="true" /> </wsHttpBinding> ... ... \[/xml\]
+
+Once the binding is created, you need to use this binding.
+
+\[xml\] <configuration> <system.serviceModel> <services> <service name="MyServiceA.Service1"> <endpoint address="" behaviorConfiguration="behavior1" binding="wsHttpBinding" bindingConfiguration="MyBinding" contract="MyServiceA.IService1" /> ... ... \[/xml\]
+
+I have chosen wshttpbinding because to use transaction you need to use a WS-Atomic Transaction or OleTransactions protocol.
+
+Finally, you can test the transaction by having an application that use the two services (or more) that you created with the contract that has transaction score required.
+
+\[csharp\] using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew)) { try { var obj = new ServiceReference1.Service1(); obj.Method1(); var obj1 = new ServiceReference2.Service1(); obj1.Method1(); ts.Complete(); //Commit everything! } catch (Exception ex) { ts.Dispose(); } } \[/csharp\]
+
+If any exception occur during the scope of the transaction, everything is rollback.
+
+You can add additional information to the service that has method with transaction mandatory or allowed. It's done with ServiceBehavior. You can specify the transaction time out and also the transaction isolation level. The timeout is a time that you allow for the service to be executed. The isolation level is the same as when you use transaction without services. It tells how to lock the information during the transaction. By default, it's serializable which block everything to be changed. It's the most protective and also the worst in term of performance. I won't discuss about every type of isolation level but some allow you to insert new data while other allow you to simply change everything. You have to figure out which one is the correct for your needs. Do not forget to add System.Transaction reference into your project if you do want to use transaction.
+
+\[csharp\] \[ServiceBehavior(TransactionIsolationLevel=System.Transactions.IsolationLevel.Serializable, TransactionTimeout="00:00:30")\] \[/csharp\]

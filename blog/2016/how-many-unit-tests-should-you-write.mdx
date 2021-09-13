@@ -1,0 +1,68 @@
+---
+title: "How many unit tests should you write?"
+date: "2016-07-07"
+categories: 
+  - "test"
+---
+
+I always found automated tests very powerful. On the long run, you accumulate a lot of values by having a fast way to see if something has changed that wasn't originally planned. It serves as a good living documentation (if tests are simple to understand). The current trend in the industry is to rely solely on automated tests. Whence, all tests need to be well written. Writing good unit tests is something that is harder that you can think. Since the last 2 years, I have been in multiple teams and I realized that most people do not really know how to unit test properly.
+
+One thing that need to be clear is that even if you touched a line with a test, it doesn't mean that this one doesn't need to be touched by multiple tests. I see often people running code coverage to know if they are done or not when testing. That is wrong.
+
+A second thing is that each method needs different amount of test depending of the complexity of those ones. You cannot have only one successful unit test, and one failure unit test and be done with your method.
+
+Another concept that seem to be not understood is that even if you "know" that the value in parameter will never be null, you have to test it for null if you allow it. You cannot discriminate scenario because you know what is the current use of the code.
+
+There is also the notion of the coverage not being a good metric to know if you have a well written plan. While I agree that 100% doesn't mean 100% free bug, I do not agree that it's acceptable to have 50% of coverage. If your software quality bar is to have only 50% of your code tested, than it means that you are not ready to not have human to test your software. In fact, you should probably test your code to have above 100% coverage -- multiple lines will get hit per multiple tests.
+
+Assertions is also debatable. Most of the time, people are asserting a lot of variable which make the test hard to maintain. Every tests should assert a minimum set of variable. In fact, you should aim to assert a specific scenario. If you are asserting a lot, than you are probably testing more than one thing, thus not testing a unit but a batch. Some exception are clear, for example, testing to map a class to another class. However, a rule of thumb is to identify these big tests and make them smaller by dividing the actual code into several methods.
+
+Preparing your unit tests should be clean. You shouldn't have to write 20 lines of code in each of your test to create your scenario to test. Divide that arrange code into builder class. This way, they can be reused across several tests. A bonus is that by doing so, you can use those building method to seed your development database.
+
+Naming your test is something important. The reason is that other developer won't be able to find specific scenario and might duplicate test or not look at them. If you have thousand and thousand of tests, it become even more important. I like following the name with GivenXXX\_WhenXXX\_ThenXXX. It forces to have a structure of **Given** a specific case **When** specific configuration is provided **Then** you expect a specific result.
+
+Here is a simple code. How many test should be created?
+
+\[csharp\] public class SimpleCode { public string Value { get; set; }
+
+public SimpleCode Merge(SimpleCode parameter) { var mergedObject = new SimpleCode(); if (parameter.Value != null || this.Value != null) { mergedObject.Value = parameter.Value ?? this.Value; } return mergedObject; } } \[/csharp\]
+
+Most people might see two or three tests, but the answer is six.
+
+\[csharp\] \[TestMethod\] public void GivenSimpleCode\_WhenMainInstanceValueNull\_AndParameterValueNull\_ThenValueNull() { // Arrange var mainInstance = new SimpleCode() {Value= null}; var simpleCodeParameter = new SimpleCode() { Value = null };
+
+// Act var result = mainInstance.Merge(simpleCodeParameter);
+
+// Assert Assert.IsNull(result.Value); }
+
+\[TestMethod\] public void GivenSimpleCode\_WhenMainInstanceValueNotNull\_AndParameterValueNull\_ThenMainInstanceValue() { // Arrange const string VALUE = "Test"; var mainInstance = new SimpleCode() { Value = VALUE }; var simpleCodeParameter = new SimpleCode() { Value = null };
+
+// Act var result = mainInstance.Merge(simpleCodeParameter);
+
+// Assert Assert.AreEqual(VALUE, result.Value); } \[TestMethod\] public void GivenSimpleCode\_WhenMainInstanceValueNull\_AndParameterValueNotNull\_ThenParameterValue() { // Arrange const string VALUE = "Test"; var mainInstance = new SimpleCode() { Value = null }; var simpleCodeParameter = new SimpleCode() { Value = VALUE };
+
+// Act var result = mainInstance.Merge(simpleCodeParameter);
+
+// Assert Assert.AreEqual(VALUE, result.Value); }
+
+\[TestMethod\] public void GivenSimpleCode\_WhenMainInstanceValueNotNull\_AndParameterValueNotNull\_ThenValueParameterValue() { // Arrange const string VALUE1 = "Test1"; const string VALUE2 = "Test2"; var mainInstance = new SimpleCode() { Value = VALUE1 }; var simpleCodeParameter = new SimpleCode() { Value = VALUE2 };
+
+// Act var result = mainInstance.Merge(simpleCodeParameter);
+
+// Assert Assert.AreEqual(VALUE2, result.Value); }
+
+\[TestMethod\] \[ExpectedException(typeof(NullReferenceException))\] public void GivenSimpleCode\_WhenParameterNull\_ThenException() { // Arrange var mainInstance = new SimpleCode(); SimpleCode simpleCodeParameter = null;
+
+// Act & Assert mainInstance.Merge(simpleCodeParameter); }
+
+\[TestMethod\] public void GivenSimpleCode\_DefaultValue\_ValueNull() { // Arrange & Act var mainInstance = new SimpleCode();
+
+// Assert Assert.IsNull(mainInstance.Value); } } \[/csharp\]
+
+Often, people do not test the default value of a class. This is something everyone should do. What happen if at some point a default value change but was required to be a specific value depending of the scenario. Without this test, you are not notified that something is breaking from the expected value. In that example, the expected value is NULL. If someone change it to an empty string, this might break other scenario that rely to compare on NULL to determine some state. Another testing scenario that I see often is about passing wrong value has parameter. In that particular example, null will break and return a null reference exception. Creating the test make you realize that you should probably handle that case and have a better code, like the following one:
+
+\[csharp highlight="3-6"\] public SimpleCode Merge(SimpleCode parameter) { if (parameter == null) { throw new ArgumentNullException(nameof(parameter)); } var mergedObject = new SimpleCode(); if (parameter.Value != null || this.Value != null) { mergedObject.Value = parameter.Value ?? this.Value; } return mergedObject; } \[/csharp\]
+
+In that case, I just thrown an exception and will need to assert that particular exception. Why is that better than just having the null reference exception. For three reasons, first, it's clear that it shows that the null parameter is a known scenario. Second, today it's an exception, tomorrow it could be that we return a value. A change will make this particular test that expect a specific exception to become red and thus having a change in the test. The third reason is that if another exception is thrown, that I'll get an error. I expect to only have an argument null exception, not a null reference or an overflow. Any other cases will be considered a bug, not the one handled.
+
+How many test should your write? As many as your code required. Is that time consuming? Of course. Automated tests take about 30-50% of the development time when well done. Your code base will have has many line of code for tests and for code. That is the cost of being able to run a lot of test multiple times per day as well as not having human resource to test. It's worth it because all these scenarios are hard to test for a human and since these tests are supposed to be fast, that you can run them often. The gain is enormous as the size of your code base increase. Your confidence in changing your code should remain high and new developer coming into the team won't be afraid to change something that disrupt the expectation. That said, I still strongly believe that automated tests should be paired with human testing before being released into the public, but this is another story. You can download and play with the code in this [Git Hub repository](https://github.com/MrDesjardins/SimpleUnitTestExample).

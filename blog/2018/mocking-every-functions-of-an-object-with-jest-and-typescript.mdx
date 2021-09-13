@@ -1,0 +1,41 @@
+---
+title: "Mocking Every Functions of an Object with Jest and TypeScript"
+date: "2018-10-18"
+categories: 
+  - "jest"
+  - "typescript"
+---
+
+Most of the time, it is enough to simply mock a handful amount of member of an object while performing unit tests. However, if you are using the dependency injection pattern, it is faster to not send an actual object and manually cherry-pick which function to test. Since you are injected an external object, you definitely do not want to test that object and you do not want to manually create a stub object which can be time consuming.
+
+```typescript
+class MyClass{ constructor(public myOtherInjectedClass: IMyInjectedClassTypeHere){ ...} } 
+``` 
+
+
+The idea is to use TypeScript mapped type to create a mirror of the type you inject but instead of having the raw function as a type to have the Jest's mocking type. Changing the type will allow having a strongly typed object that has the same members but the function to be a mock. It gives the ability to use safely the Jest's mocking features. 
+
+The first step is to create a custom type mapping. The type has a generic type that is the object you are injecting. In the example, the "IMyInjectedClasTypeHere" is the one containing functions and variables. We want to change all the function to become a Jest's mock type.
+
+```typescript
+type Mockify<T> = { \[P in keyof T\]: T\[P\] extends Function ? jest.Mock<{}> : T\[P\] }; 
+``` 
+
+
+The "Mockify" type is looping all the members and when found one that is a function return a new Mock object. Otherwise, it returns the member in its initial format.
+
+The next step is to create a function that transform an object into the Mockify one. So far, we only have a type translation, now we need to have the logic to transform.
+
+```typescript
+function mapToMockify<T extends Object>(obj: T): Mockify<T> { let newObject: Mockify<T> = {} as Mockify<T>; const properties = Object.getOwnPropertyNames(Object.getPrototypeOf(obj)); for (let i = 0; i &lt; properties.length; i++) { newObject\[properties\[i\]\] = jest.fn(); } return newObject; } 
+``` 
+
+
+From this point, you can invoke the function from your real instance and get a modified one ready to be injected and interrogated with all the Jest's mocking features.
+
+```typescript
+const toTest = new MyClass(mapToMockify(new MyInjectedClassTypeHere())); expect(toTest.function1).toHaveBeenCalled(); 
+``` 
+
+
+To recap, in this article we saw that with the combination of TypeScript's mapped type and basic JavaScript we created an easy way to create a replica of a class that has all its functions transformed to Mock.

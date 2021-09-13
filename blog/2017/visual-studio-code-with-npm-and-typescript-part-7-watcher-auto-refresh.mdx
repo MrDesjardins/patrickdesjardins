@@ -1,0 +1,52 @@
+---
+title: "Visual Studio Code with NPM and TypeScript (Part 7 : watcher & auto-refresh)"
+date: "2017-03-27"
+categories: 
+  - "gulp"
+  - "javascript"
+  - "nodejs-web"
+---
+
+Developing website front-end gives some habit to have a fast preview of the modification we do in the code. Mostly because HTML, CSS and JavaScript at the base doesn't require any compilation. Simply saving the file and refreshing the browser was enough to see the new code working in the browser. However, with TypeScript, we need to compile to have a new release of the output JavaScript. To do so, we need something to watch all TypeScript files, compile and refresh the browser.
+
+This basic example is not very optimized for a big code base because this new Gulp task will watch all TypeScript file and if one change, will rebuild every TypeScript. In a more enterprise scenario or big project, we would have smarter watch to work on branch of the code which would result to a fast build of file or section who need to get updated.
+
+Creating a task is done like usual. The trick is to have a dependent task at the "gulp.watch". This watch doesn't require any dependency to npm package, it's there with Gulp. It takes file pattern to know which files to look for changes and an array of other task to do when something change.
+
+```typescript
+gulp.task('watch', function() { gulp.watch(paths.typescript\_in + '/\*.ts', \['build'\]); }); 
+``` 
+
+
+The next step is to have the browser reload itself automatically. We were using ExpressJs, but we will use something else from that point. We will use gulp-connect. It's a very light-weight server with live reload integrated.
+
+\[code\] npm install gulp-connect --save-dev \[/code\]
+
+We can delete the server.js file we had before and add the following gulp task into gulpfile.js
+
+```typescript
+gulp.task('watch', function() { gulp.watch(paths.typescript\_in + '/\*.ts', \['build'\]); });
+
+gulp.task('server', function() { connect.server({ root: 'output', livereload: true, port: 8080 }); });
+
+gulp.task('go', \["server", "watch"\], function() {
+
+}); 
+``` 
+
+
+We also need to do two changes to actual task. The first one is once we are done building TypeScript, we notify the connector to reload. The second one is to move the index.html, boot page, in the output folder since we will run the server from this server. ```typescript
+gulp.task("build", function () { //... .pipe(connect.reload()); }); 
+``` 
+
+
+and
+
+```typescript
+gulp.task("copy", function () { //... gulp.src("./src/index.html").pipe(gulp.dest(paths.typescript\_out)); }); 
+``` 
+
+
+From that point, anytime we run the server, by executing : gulp go, the server will execute and wait for any changes since we have a dependency to watch who is looking for changes to compile. Once compilation is over, the connect call reload which is using a websocket to communicate to the webpage to reload.
+
+You can find the whole source code in GitHub : https://github.com/MrDesjardins/TypescriptNpmGulp

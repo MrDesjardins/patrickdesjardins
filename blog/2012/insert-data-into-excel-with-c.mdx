@@ -1,0 +1,30 @@
+---
+title: "Insert data into Excel with C#"
+date: "2012-02-16"
+categories: 
+  - "c-sharp"
+---
+
+It's possible with .Net to write data into Excel's cells. This can be done by using the library of **Microsoft.Office**.
+
+The first step is to add a reference into you project by right clicking on the References folder and add the COM of Microsoft Office Excel.
+
+Here is a small example that show you how to open an Excel worksheet and add value to 2 cells. It will save the content back the to same file. The first approach do not use the Dynamic keyword which will be more verbose. The second example, do the same thing in less code by using Dynamic.
+
+\[csharp\] \_Application docExcel = new Microsoft.Office.Interop.Excel.Application(); docExcel.Visible = false; docExcel.DisplayAlerts = false;
+
+\_Workbook workbooksExcel = docExcel.Workbooks.Open(@"C:\\test.xlsx", Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing); \_Worksheet worksheetExcel = (\_Worksheet)workbooksExcel.ActiveSheet;
+
+((Range)worksheetExcel.Cells\["1", "A"\]).Value2 = "aa"; ((Range)worksheetExcel.Cells\["1", "B"\]).Value2 = "bb";
+
+workbooksExcel.Save(); workbooksExcel.Close(false, Type.Missing, Type.Missing); docExcel.Application.DisplayAlerts = true; docExcel.Application.Quit();
+
+\[/csharp\]
+
+Second example: \[csharp\] \_Application docExcel = new Application{Visible = false};
+
+dynamic workbooksExcel = docExcel.Workbooks.Open(@"C:\\test.xlsx"); var worksheetExcel = (\_Worksheet)workbooksExcel.ActiveSheet;
+
+((Range)worksheetExcel.Cells\["1", "A"\]).Value2 = "test1"; ((Range)worksheetExcel.Cells\["1", "B"\]).Value2 = "test2";
+
+workbooksExcel.Save(); workbooksExcel.Close(false); docExcel.Application.Quit(); \[/csharp\]

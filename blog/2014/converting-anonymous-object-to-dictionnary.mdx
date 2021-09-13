@@ -1,0 +1,28 @@
+---
+title: "Converting anonymous object to Dictionnary<string, string>"
+date: "2014-06-12"
+categories: 
+  - "asp-mvc"
+  - "asp-net"
+  - "c-sharp"
+---
+
+Some Asp.Net MVC Html Helpers use the possibility to add **anonymous object** as parameter to assign key value. It is the case of HtmlAttributes parameter. If you want to create your own Html Helper or simply having the possibility to use anonymous object, you may stumble into the case that you need to **enumerate keys and values**.
+
+\[csharp\] public string Url(string action, string controller, string area = null, object routeValues = null) { //Code here } \[/csharp\]
+
+The code above is an example. You may want to have a method that generate an url from some parameters. The last parameter named "routeValues" is of type object. This one is created to be used for anonymous object.
+
+\[csharp\] Url("action", "controller", "area", new {Id = "123", Name="This is my name"}); \[/csharp\]
+
+The Url method can then loop through all the properties. Something that can help you is to create an anonymous method for object that convert everything into an IDictionary where it will be easy to manipulate keys (property name) and values.
+
+\[csharp\] public static class ObjectExtensions { public static IDictionary<string, object> AsDictionary(this object source, BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance) { return source.GetType().GetProperties(bindingAttr).ToDictionary ( propInfo => propInfo.Name, propInfo => propInfo.GetValue(source, null) ); } } \[/csharp\] It uses reflection to get all properties and from these properties to get all values.
+
+Here is a unit test for the AsDictionary extension method.
+
+\[csharp\] \[TestClass\] public class ObjectExtensionsTest { \[TestMethod\] public void GivenAnObject\_WhenThisOneHasMultipleProperties\_ThenDictionary() { // Arrange var objectToConvert = new {Id="Test", Name="Test2"};
+
+// Act var dictionary = objectToConvert.AsDictionary();
+
+// Assert Assert.AreEqual(2,dictionary.Keys.Count); Assert.AreEqual(objectToConvert.Id,dictionary\["Id"\]); Assert.AreEqual(objectToConvert.Name,dictionary\["Name"\]); } } \[/csharp\]

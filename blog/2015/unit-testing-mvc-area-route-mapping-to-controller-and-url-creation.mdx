@@ -1,0 +1,55 @@
+---
+title: "Unit Testing MVC Area Route Mapping to Controller and Url Creation"
+date: "2015-04-21"
+categories: 
+  - "asp-mvc"
+  - "test"
+---
+
+One of the key element of your website should be that every Url that you have should goes to the controller's action that you expect. This is also true when you are using an Asp.Net Html Helper that generate an URL. To be sure that you can rely that an Url links to the right action and that every Url generated have the right string structure, you must unit test them. This is far more important when your project start to become bigger and bigger. Routing rules can override a previous route and create unreachable code from your web interface. To solve that issue, every routes should be unit tested.
+
+[![UnitTestControllerRouting](http://patrickdesjardins.com/blog/wp-content/uploads/2015/04/UnitTestControllerRouting-400x262.png)](http://patrickdesjardins.com/blog/unit-testing-mvc-area-route-mapping-to-controller-and-url-creation/unittestcontrollerrouting)
+
+Asp.Net MVC routing system is quite interesting and easy to unit tests. I read that it is hard to unit test but this is not my experience. In this article, I will show you how to unit test routing from a specific AreaRegistration file. This is exactly the same process if you have your route inside the RouteConfig.cs file. Instead of using the area class, you use the **RouteConfig** class. They both use the System.Web.Routing.RouteTable and this is what we need to setup tests.
+
+So before going into the detail, here is an example to unit test and Url to a controller's action.
+
+\[csharp\] \[TestMethod\] public void GivenRouteForContest\_WhenPortefolioId() { // Arrange string url = Constants.Areas.CONTEST + "/1/Portefolio/2";
+
+// Act RouteData routeData = base.GetRouteDataForUrl(url).RouteData;
+
+// Assert Assert.IsNotNull(routeData); Assert.AreEqual("Portefolio", routeData.Values\[Constants.RoutePortionName.CONTROLLER\]); Assert.AreEqual("IndexById", routeData.Values\[Constants.RoutePortionName.ACTION\]); Assert.AreEqual("1", routeData.Values\[Constants.RoutePortionName.ACTIVE\_CURRENT\_CONTEST\_ID\]); Assert.AreEqual("2", routeData.Values\[Constants.RoutePortionName.ACTIVE\_CURRENT\_PORTEFEOLIO\_ID\]); } \[/csharp\]
+
+As you can see by this unit test example, the url is defined in the arrange section. The act part is a one liner that call a method that act as a proxy to call the real **GetRouteData**. To have access to that method, all my routing tests inherit from a testing class that allows me to call. I named that class _RouteTestBase_. It has a method is running between code which clear all routes and configures the route. This is where I have setup the configuration of the area I wanted to test. This is where you may want to use the global route configuration. This class has two public methods. The first one is used for unit testing string url to route data and the second one is to test Html Url helper to generate the string url.
+
+\[csharp\] public class RouteTestBase { \[TestInitialize\] public void BetweenTest() { RouteTable.Routes.Clear(); var areaRegistration = new ContestAreaRegistration(); var areaRegistrationContext = new AreaRegistrationContext(areaRegistration.AreaName, RouteTable.Routes); areaRegistration.RegisterArea(areaRegistrationContext); }
+
+/// <summary> /// From URL to Controller/Action, this method return the route and http context after passing the URL /// into the RouteTable. /// </summary> /// <param name="url"></param> /// <returns></returns> protected RouteAndContext GetRouteDataForUrl(string url) { var context = FakeHttpContext(requestUrl: "~/" + url); RouteData routeData = RouteTable.Routes.GetRouteData(context); return new RouteAndContext(context, routeData); }
+
+/// <summary> /// Generate an UrlHelper to be used to generate URL string. /// </summary> /// <param name="appPath">Define the application path. By default, if all routing start from the domain than this should not be set.</param> /// <returns>Html</returns> protected UrlHelper GetUrlHelper(string appPath = "~/") { HttpContextBase httpContext = FakeHttpContext(appPath:"/",requestUrl: appPath); var routeData = RouteTable.Routes.GetRouteData(httpContext) ?? new RouteData(); RequestContext requestContext = new RequestContext(httpContext, routeData); UrlHelper helper = new UrlHelper(requestContext, RouteTable.Routes); return helper; }
+
+private HttpContextBase FakeHttpContext(string appPath="~/", string requestUrl = "/") { // Mocks var context = new Mock<HttpContextBase>(); var request = new Mock<HttpRequestBase>(); var response = new Mock<HttpResponseBase>(); var session = new Mock<HttpSessionStateBase>(); var server = new Mock<HttpServerUtilityBase>(); var user = new Mock<IPrincipal>(); var identity = new Mock<IIdentity>();
+
+// Query String Parameters var routePart = requestUrl; var queryStringPart = requestUrl;
+
+if (routePart.Contains("?")) { var indexQueryString = routePart.IndexOf("?", StringComparison.InvariantCulture); routePart = requestUrl.Substring(0, indexQueryString); queryStringPart = requestUrl.Substring(indexQueryString + 1, requestUrl.Length - indexQueryString-1); NameValueCollection parameters = new NameValueCollection(); var parametersList = queryStringPart.Split('&'); foreach (var paramter in parametersList) { var keyAndvalue = paramter.Split('='); parameters.Add(keyAndvalue\[0\], keyAndvalue\[1\]); } request.Setup(req => req.Params).Returns(parameters); }
+
+// Setup all Http Context request.Setup(req => req.ApplicationPath).Returns(appPath); request.Setup(req => req.AppRelativeCurrentExecutionFilePath).Returns(routePart); request.Setup(req => req.PathInfo).Returns(string.Empty); request.Setup(req => req.ServerVariables).Returns(new NameValueCollection()); response.Setup(res => res.ApplyAppPathModifier(It.IsAny<string>())).Returns((string virtualPath) => virtualPath); user.Setup(usr => usr.Identity).Returns(identity.Object); identity.Setup(ident => ident.IsAuthenticated).Returns(true); context.Setup(ctx => ctx.Request).Returns(request.Object); context.Setup(ctx => ctx.Response).Returns(response.Object); context.Setup(ctx => ctx.Session).Returns(session.Object); context.Setup(ctx => ctx.Server).Returns(server.Object); context.Setup(ctx => ctx.User).Returns(user.Object);
+
+return context.Object; }
+
+/// <summary> /// Class used to return the RouteData and the HttpContextBase /// </summary> public class RouteAndContext { public RouteAndContext(HttpContextBase httpContextBase, RouteData routeData) { this.HttpContext = httpContextBase; this.RouteData = routeData; } public HttpContextBase HttpContext { get; private set; } public RouteData RouteData { get; private set; } } } \[/csharp\] Indeed this class has hard-coded area class in the _TestInitialize_ method. But, my project contains only few areas and I want to keep everything simple. I will all every area one by one in this method. However, you could make it generic very easily by passing to the constructor of that method a list of **AreaRegistrationContext**.
+
+The test concerning the Html's helper is also pretty simple once you have this class to inherit from. In you arrange you get the UrlHelper. You could set this initialization inside the method that run between each test, but this one allow to pass the application path. This parameter allows to not use the domain only has the base application path. The acting section of this unit test is the same as what is using when you are using the Html helper to generate an Url.
+
+\[csharp\] \[TestMethod\] public void ControllerUserContest\_ActionEnter() { // Arrange UrlHelper helper = base.GetUrlHelper(); var routeParameters = new RouteValueDictionary(new Dictionary<string, object>()) { {Constants.AREA, Constants.Areas.CONTEST}, {Constants.RoutePortionName.ACTIVE\_CURRENT\_CONTEST\_ID,1} };
+
+// Act string url = helper.Action("Enter", "UserContest", routeParameters);
+
+// Assert Assert.AreEqual("/" + Constants.Areas.CONTEST + "/1/Enter", url); } \[/csharp\]
+
+The [helper.Action](https://github.com/aspnet/Mvc/blob/9d5364cf9b5e1bd4961946ec26379500a4f7720f/src/Microsoft.AspNet.Mvc.Core/Rendering/Html/DefaultHtmlGenerator.cs#L69) calls the url helper **Action** method and this is why we are using this one to get the string Url to test.
+
+\[csharp\] public virtual TagBuilder GenerateActionLink( \[NotNull\] string linkText, string actionName, string controllerName, string protocol, string hostname, string fragment, object routeValues, object htmlAttributes) { var url = \_urlHelper.Action(actionName, controllerName, routeValues, protocol, hostname, fragment); return GenerateLink(linkText, url, htmlAttributes); } \[/csharp\]
+
+The code above is from Asp.Net MVC framework which shows what the _GenerateActionLink_ is using the url helper Action method. So, as you can see, once you have the inherit base class, it is a matter of a single calls and some assertion to test all your routes. I strongly suggest that for each of your routes you have a single unit test to avoid any huge impact on your website.

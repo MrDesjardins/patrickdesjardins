@@ -1,0 +1,22 @@
+---
+title: "How to use DateTime in Select with Linq to Entity (Entity Framework 4.3)"
+date: "2012-07-27"
+categories: 
+  - "entity-framework"
+---
+
+If you want to create in your SELECT a new DateTime within your Linq to Entity query, you will reach an exception telling you that you cannot use parameterless class.
+
+To solve this problem, you need to use a special function that only Linq to Entity can use. Entity Framework has some methods that will convert C# code into Sql function. In our case, the method is called "**_EntityFunctions.CreateDateTime(...)_**".
+
+Instead of having something like this:
+
+\[csharp\] var data = (from i in Database.Users group i by new {y=i.InvoiceDate.Year,m = i.InvoiceDate.Month} into g select new UserStatistic{ Date = new DateTime(g.Key.y, g.Key.m, 1), Experience = g.Sum(o => o.Exp)); \[/csharp\]
+
+You need to use the EntityFunctions.CreateDateTime :
+
+\[csharp\] var data = (from i in Database.Users group i by new {y=i.InvoiceDate.Year,m = i.InvoiceDate.Month} into g select new UserStatistic{ Date = EntityFunctions.CreateDateTime(g.Key.y, g.Key.m, 1, 0, 0, 0), Experience = g.Sum(o => o.Exp)); \[/csharp\]
+
+Both code do the same thing, but the second work with Entity Framework. This is because it uses Linq to Entity which convert its statement into SQL and hence, doesn't know how to create a .Net DateTime object.
+
+You can find the complete exhaustive list of entity functions at [Microsoft MSDN web site](http://msdn.microsoft.com/en-us/library/dd412643 "Entity Framework Functions to Sql").

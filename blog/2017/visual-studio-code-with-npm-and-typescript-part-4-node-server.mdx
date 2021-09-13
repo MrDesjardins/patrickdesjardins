@@ -1,0 +1,33 @@
+---
+title: "Visual Studio Code with NPM and TypeScript (Part 4 : Node Server)"
+date: "2017-03-06"
+categories: 
+  - "nodejs-web"
+  - "typescript"
+---
+
+So far, in this series, we have used TypeScript and Gulp but didn't executed in a browser any code. This time, we will look about how to launch a small HTTP server with node.js.
+
+Many solutions exist, but we will go with Express.
+
+\[code\] npm install --save express \[/code\]
+
+The next step is to create a file that nodejs will use as entry point to use Express. You can name it the name you want, in this example, we will call it server.js. The first step, a little bit like Gulp worked in the previous step, we need to require the library. The next code is to start listening to a specific port.
+
+```typescript
+var express = require('express') var app = express()
+
+app.get('/', function (req, res) { res.send('Hello World!') })
+
+app.use(express.static('.'))
+
+app.listen(3000, function () { console.log('Server listening on port 3000.') }) 
+``` 
+
+
+To be able to server our static file, the index.html, we need to use the static file and point the folder. Since we have index.html at the root, we can just use dot. Ideally, we would move the whole file structure into a single folder and not server all our configuration file, but for the moment, let's keep it this way.
+
+At that point, you can start the server in a Powershell console simply by using nodejs and the file we just created. ```typescript
+node server.js 
+``` 
+ You should see in the console "Server listening on port 3000." which is the console.log from the listen method. You can go in a browser and write : http://localhost:3000/index.html

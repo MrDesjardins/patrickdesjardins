@@ -1,0 +1,27 @@
+---
+title: "Entity Framework (EF) modifying an instance that is already in the context"
+date: "2015-05-28"
+categories: 
+  - "entity-framework"
+---
+
+If you set an entity state to modify without having this one loaded and you save everything then you have no problem. However, if you got the entity from a previous load, this one is inside the local context which can raise the following exception.
+
+> Attaching an entity of type 'Model.Entities.Users.ApplicationUser' failed because another entity of the same type already has the same primary key value. This can happen when using the 'Attach' method or setting the state of an entity to 'Unchanged' or 'Modified' if any entities in the graph have conflicting key values. This may be because some entities are new and have not yet received database-generated key values. In this case use the 'Add' method or the 'Added' entity state to track the graph and then set the state of non-new entities to 'Unchanged' or 'Modified' as appropriate.
+
+[![EventViewerEntityFrameworkModifyError](http://patrickdesjardins.com/blog/wp-content/uploads/2015/03/EventViewerEntityFrameworkModifyError-400x157.png)](http://patrickdesjardins.com/blog/entity-framework-ef-modifying-an-instance-that-is-already-in-the-context/eventviewerentityframeworkmodifyerror)
+
+This is very annoying and unfortunate that Entity Framework (ef) does not have something more intelligent to handle those case. In short, you have to detach the local version and set to modify the entity you are modifying. This scenario is pretty common if you receive the object from a web request and you want to save the entity. Between the request that contains the object and the time you change the state to modify (saving code) you may have loaded a list that contains your entity or you may have loaded a part of this entity for validation purpose. Nonetheless, you have to handle this case if you want to save this entity.
+
+A way to do it is to navigate inside the **local** of the **DbSet** to see if this one is there. If the entity is present, then you **detach**.
+
+var local = yourDbContext.Set<YourModel>()
+                         .Local
+                         .FirstOrDefault(f => f.Id == yourModel.Id);
+if (local != null)
+{
+  yourDbContext.Entry(local).State = EntityState.Detached;
+}
+yourDbContext.Entry(applicationModel).State = EntityState.Modified;
+
+As you can see, we first verify if the entity is present inside the **DbSet**. If it is null, then we detach the local entity. In all case, we set to modify the entity (applicationModel) to have this one considered by Entity Framework to be updated.

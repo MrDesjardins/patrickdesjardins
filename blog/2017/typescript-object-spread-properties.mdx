@@ -1,0 +1,75 @@
+---
+title: "TypeScript Object Spread Property"
+date: "2017-03-15"
+categories: 
+  - "javascript"
+  - "typescript"
+---
+
+If you see three little dots, you saw the object spread property. This property allows to do many different operations, like the Rest one. It allows you to do merge of objects, to do shallow copy of objects, transform an array into multiple fields of an object, be used as function arguments to allow array or to assign values to an array.
+
+### Shallow Copy
+
+If you want to have a copy of all values but a different object, you can use the spread operator.
+
+```typescript
+const user = { firstName: "Patrick", lastName : "Desjardins", isMarried: true }; const shallowCopy = { ...user }; 
+``` 
+
+
+This will create a copy. It means that if you compare user to shallowCopy (triple equal), it won't be the same object.
+
+### Merge
+
+One of the very interesting feature of the spread operator is the capability to merge object. To do the merge, you need to create a new variable that will get assigned by a new object (curly braces) that will take the spread operator followed by the name of the object. Then, a comma with the spread operator and the second object. The new object will get all fields of the first object followed by the second object. If the second object has the same fields has the first one, then this one will override the value.
+
+```typescript
+const defaultUser = { firstName: "NotDefined", lastName: "NotDefined", hasPaid: false };
+
+const user = { firstName: "Patrick", isMarried: true }; const finalUser = { ...defaultUser , ...user }; 
+``` 
+
+
+In this example, the final user first name is "Patrick", the last name is "NotDefined" and the "hasPaid" is false. Also, it contains the field set in the second object that wasn't set in the first one "isMarried" to "true". Like the shallow copy, this is shallow which mean that if you are limited to the object and not object of object. For example, if user has an array of object for the dependents that he may have, the list of dependencies won't get merged.
+
+### Array to object
+
+This is a shortcut to the well known trick of using apply to pass an array of parameter to a function that takes parameters. Instead of using yourFunction.apply(this, yourList) you can use yourFunction(...yourList).
+
+```typescript
+function yourFunction(x:number, y:number, z:number): void { //Use variable x, y and z. } var args:number\[\] = \[0, 1, 2\]; yourFunction(...args); 
+``` 
+
+
+### Function Parameter
+
+In the same way of "array to object" works, you can directly use the spread operator in the parameter. This is done by using the spread operator in front of the name of the parameter. This allow to pass parameter which will be stored into an array automatically.
+
+```typescript
+function yourFunction(...x: number\[\]) { console.log(JSON.stringify(x)); } yourFunction(1, 2, 3); 
+``` 
+
+
+### Destructuring
+
+This is a good scenario where you know some inputs but want to also take all other inputs that the user set into a subsequent array. For example, you know that the user can pass an array where the first parameter is the unique identifier, followed by a modified date and all other data will be new values to add. You could use the following code to have an array of data to add and two variables to manipulate into a query to save new data.
+
+```typescript
+var \[id, date, ...valuesToAdd\] = \[1, 2, 3, 4\]; console.log(id === 1); //true console.log(date === 2); //true console.log(valuesToAdd\[0\] === 3); //true console.log(valuesToAdd\[1\] === 4); //true 
+``` 
+
+
+We could replace var _\[id, date, ...valuesToAdd\] = \[1, 2, 3, 4\];_ by _var \[id, date, ...valuesToAdd\] = anotherArray;_ and _anotherArray_ wouldn't be affected by the operation.
+
+### Assign values to array
+
+This could also be called merging array. You take a first array, by adding it as an element with the spread operator inside the square bracket of the new array. This array element with the spread operator will transform all values of this array and make it like if you were using every values of this one as parameter.
+
+```typescript
+var list = \[1, 2\]; var list2 = \[...list, 3, 4\]; console.log(list); // \[1,2\] console.log(list2); // \[1,2,3,4\] 
+``` 
+
+
+In this article we saw how you can use the spread property into multiple scenarios. Like any new language features, it's always important to know when to use it and to not abuse it.
+
+<iframe style="height:166px" width="100%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/312649588&amp;color=00aabb&amp;auto_play=false&amp;hide_related=false&amp;show_comments=true&amp;show_user=true&amp;show_reposts=false"></iframe>

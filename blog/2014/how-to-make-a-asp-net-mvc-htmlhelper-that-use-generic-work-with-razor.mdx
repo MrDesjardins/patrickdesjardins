@@ -1,0 +1,26 @@
+---
+title: "How to make a Asp.Net MVC HtmlHelper that use generic work with Razor"
+date: "2014-04-17"
+categories: 
+  - "asp-mvc"
+---
+
+If you create a Html Helper with Asp.Net MVC that take a generic type, you may stumble into a problem when using it. An error concerning compilation of the page when executing raise with a yellow screen of death.
+
+> An exception of type 'System.Web.HttpCompileException' occurred in System.Web.dll but was not handled in user code Compiler Error Message: CS1502: The best overloaded method match for 'System.Web.WebPages.WebPageExecutingBase.Write(System.Web.WebPages.HelperResult)' has some invalid arguments
+
+This code is the result of simply calling this line:
+
+\[csharp\] @Html.Test<ContestListItemViewModel>() //Does not work \[/csharp\]
+
+The Html Helper is very simple.
+
+\[csharp\] public static MvcHtmlString Test<TEntityType>(this HtmlHelper htmlHelper) { return new MvcHtmlString("<p>Test</P>"); } \[/csharp\]
+
+To make it works, you have to have it inside a Razor statement like this: \[csharp\] @{ var x = Html.Test<ContestListItemViewModel>(); @Html.Raw(x); } \[/csharp\]
+
+The problem is it is not very clean. However, it is possible to fix this with a single line statement if you wrap the Html Helper within parentheses.
+
+\[csharp\] @(Html.Test<ContestListItemViewModel>()) \[/csharp\]
+
+How come? Well, Razor become confused if it has to render the result with Html or with C# variable because of the ContestListItemViewModel that is interpreted as Html. Adding parentheses help Razor to generate the Html output and remove the confusion, which remove the error.
