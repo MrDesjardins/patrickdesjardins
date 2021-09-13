@@ -38,7 +38,7 @@ The first thing we can notice is the inheritance of the class. It inherits from 
 
 This interface lets override a method named **IsValid** that take two parameters. The first one is the value non-typed. The second is information about the context. The property name, the instance of the the class being validated is also available and the pretty name too (the one that use the display attribute). The IsValid must return Validation.Success if everything is fine. However, if something is wrong, it must return a **ValidationResult** object. The ValidationResult accepts a message that will be used by Asp.Net MVC to acknowledge. It is also possible to mark not only the property that is being tested but to mark other properties of the class with ValidationResult with the same error.
 
-[![DataAnnotationError](http://patrickdesjardins.com/blog/wp-content/uploads/2014/01/DataAnnotationError-400x101.png)](http://patrickdesjardins.com/blog/asp-net-mvc-custom-data-annotation/dataannotationerror)
+![](images/DataAnnotationError-400x101.png)
 
 If you want to pass the ErrorMessage to the attribute, you can. By default, it use the the FormatErrorMessage method that takes the property name. So, if you pass a custom error with a {0} the parameter is substitute. In the code above, the property display name is used and replaced in the error message. 
 ```csharp
@@ -95,7 +95,7 @@ This need also to have some libraries installed and referenced in your Html page
 <script src="~/Scripts/jquery.validate.js"></script> <script src="~/Scripts/jquery.validate.unobtrusive.js"></script> <script src="~/Scripts/PrimeNumberOnlyValidation.js"></script> 
 ``` 
 
-You may need to add with NuGet the unobstructive.js. [![UnobstructiveJQuery](http://patrickdesjardins.com/blog/wp-content/uploads/2014/01/UnobstructiveJQuery-400x99.png)](http://patrickdesjardins.com/blog/asp-net-mvc-custom-data-annotation/unobstructivejquery)
+You may need to add with NuGet the unobstructive.js. ![](images/UnobstructiveJQuery-400x99.png)
 
 The validate.js must be before the unobstructive.js file.
 

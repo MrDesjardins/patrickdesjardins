@@ -12,7 +12,7 @@ If you are using Asp.Net MVC, your should have a BaseController that every contr
  protected override void OnException(ExceptionContext filterContext) { //1) Write log here //2) Redirect from the yellow screen of death to a custom nice error page } 
 ```
 
-At least, this is what it should have. The step one as nothing to do with the **ExceptionContext.HttpContext.IsCustomErrorEnabled**. The second step, yes. In fact, when you are developing the yellow screen is very informative. [![yellowscreenofdeath](http://patrickdesjardins.com/blog/wp-content/uploads/2013/12/yellowscreenofdeath-400x306.png)](http://patrickdesjardins.com/blog/when-to-use-iscustomerrorenabled-with-asp-net-mvc/yellowscreenofdeath)
+At least, this is what it should have. The step one as nothing to do with the **ExceptionContext.HttpContext.IsCustomErrorEnabled**. The second step, yes. In fact, when you are developing the yellow screen is very informative. ![](images/yellowscreenofdeath-400x306.png)
 
 This is why it can be interested to not
 

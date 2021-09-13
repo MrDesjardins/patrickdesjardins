@@ -9,10 +9,10 @@ WCF The maximum message size quota for incoming messages (65536) has been exceed
 
 This is because the MaxReceivedMessageSize is set by default to 65536 and that you are returning more than that. Most WCF Client let you edit this property :
 
-[![wshttpBinding](http://patrickdesjardins.com/blog/wp-content/uploads/2013/05/wshttpBinding-400x336.png)](http://patrickdesjardins.com/blog/?attachment_id=2097)
+![](images/wshttpBinding-400x336.png)
 
 Even the WCFTestClient let you edit the size. You just need to right client on _Config File_, then you select _Edit With SvcConfigEditor_.
 
-[![editConfigFile](http://patrickdesjardins.com/blog/wp-content/uploads/2013/06/editConfigFile.png)](http://patrickdesjardins.com/blog/?attachment_id=2139)
+![](images/editConfigFile.png)
 
 From here, you need to open the Bindings folder (of SvcConfiEditor) and to change to MaxReceivedMessageSize to something more related to the kind of size you are expected to receive.

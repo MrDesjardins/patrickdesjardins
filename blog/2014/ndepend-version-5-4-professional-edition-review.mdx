@@ -9,19 +9,19 @@ NDepend exists since many years and is one of the best static analytic tool arou
 
 For this review, I did a run on one project that I am working on that has 7 100 lines of code, 702 types, 34 assemblies and 3 900 lines of comment. I can tell you that because NDepend's dashboard give you all these information straight after your first run.
 
-[![NDependDashBoard](http://patrickdesjardins.com/blog/wp-content/uploads/2014/11/NDependDashBoard-400x297.png)](http://patrickdesjardins.com/blog/ndepend-version-5-4-professional-edition-review/ndependdashboard)
+![](images/NDependDashBoard-400x297.png)
 
 As you can see in the dashboard, code coverage is also possible. At the time I did my first run, I did not have the unit test configured for coverage. After specifying the coverage output file to NDepend, this one was able to show some information.
 
-[![CodeCoverageDashBoardNDepend](http://patrickdesjardins.com/blog/wp-content/uploads/2014/11/CodeCoverageDashBoardNDepend.png)](http://patrickdesjardins.com/blog/ndepend-version-5-4-professional-edition-review/codecoveragedashboardndepend) This is quite interesting if you are serious about the health of your coverage because you will be able to get a picture of how your coverage is during the development life time of your application. Since NDepend can be used from a console, you can use this tool to do daily report and than compare what happening. This is true not only for coverage but for every metric that NDepend gives you.
+![](images/CodeCoverageDashBoardNDepend.png)
 
-From the DashBoard, we can see that the project is having some rules violation. By default, NDepend comes wiht hundreds of pre-defined rules. [![CodeViolatedFromNDepend](http://patrickdesjardins.com/blog/wp-content/uploads/2014/11/CodeViolatedFromNDepend.png)](http://patrickdesjardins.com/blog/ndepend-version-5-4-professional-edition-review/codeviolatedfromndepend)
+From the DashBoard, we can see that the project is having some rules violation. By default, NDepend comes wiht hundreds of pre-defined rules. ![](images/CodeViolatedFromNDepend.png)
 
-Clicking the "Critical Rules Violated" opens the **Queries and Rules Explorer**. This filter all rules by the rule that has pass the reasonable threshold. [![10CriticalRulesViolatedFromNDepend](http://patrickdesjardins.com/blog/wp-content/uploads/2014/11/10CriticalRulesViolatedFromNDepend-400x287.png)](http://patrickdesjardins.com/blog/ndepend-version-5-4-professional-edition-review/10criticalrulesviolatedfromndepend)
+Clicking the "Critical Rules Violated" opens the **Queries and Rules Explorer**. This filter all rules by the rule that has pass the reasonable threshold. ![](images/10CriticalRulesViolatedFromNDepend-400x287.png)
 
 The next step is to match the rules' violation with the code. This is make easily by clicking the problem and NDepend opens the methods matched panel where every methods in violation appear. However, it might have some false positive. For example, NDepend found that I have 5 methods with too many arguments. The problem is that the 5 methods from an assembly that use Entity Framework's Migration Tool. Double clicking the method from NDepend
 
-[![NDependCannotOpenDeclarationSourceFile](http://patrickdesjardins.com/blog/wp-content/uploads/2014/11/NDependCannotOpenDeclarationSourceFile-400x195.png)](http://patrickdesjardins.com/blog/ndepend-version-5-4-professional-edition-review/ndependcannotopendeclarationsourcefile)
+![](images/NDependCannotOpenDeclarationSourceFile-400x195.png)
 
 This could be resolved by changing the CQLinq which is NDepend Linq language. The too many parameters look like this:
 
@@ -35,13 +35,13 @@ To fix the problem I edited the query to do not check the class in problem.
 
 What is interesting is that you have auto-completion and the result is live. That mean that whilst typing the query you see the result to the output panel. For me, the Queries and Rules Explorer is the panel that I use the most of all NDepend's feature. The only negative I have found is that I was expecting to move to Visual Studio when double clicking a method in problem inside the Visual NDepend. It does open the code but every time into a new Visual Studio instance. That mean that you can have 10 Visual Studio running if you double clicked 10 methods to be improved.
 
-Another tool that NDepend offers is the **Dependency Graph**. For me, that tool is not useful because it creates a spaghetti graph. [![NDependDependencyGraph](http://patrickdesjardins.com/blog/wp-content/uploads/2014/11/NDependDependencyGraph-213x400.png)](http://patrickdesjardins.com/blog/ndepend-version-5-4-professional-edition-review/ndependdependencygraph-3) I think the NDepend's team know about it because they warn you inside the software to use the Dependency Matrix for large structure. In my opinion, almost all serious software cannot use that tool. It would have been more interesting to see something like assembly dependency graph like those layers graph that can be read from top to bottom. This is why the **Matrix Dependency** is way better to use. [![NDependMatrixDependency](http://patrickdesjardins.com/blog/wp-content/uploads/2014/11/NDependMatrixDependency-400x281.png)](http://patrickdesjardins.com/blog/ndepend-version-5-4-professional-edition-review/ndependmatrixdependency) The software does a good job with hovering sensitive help to guide you with how to use the tool. For example, the image above indicates that the software is perfectly structured by layer. This can be found because the blue squares and the green squares are divided by the diagonal line.
+Another tool that NDepend offers is the **Dependency Graph**. For me, that tool is not useful because it creates a spaghetti graph. ![](images/NDependMatrixDependency-400x281.png)
 
 This tool can also shows you the coupling and cohesion of your code. More the squares are close together, more the code is high in cohesion. So a group of squares show the cohesion and the space between these group shows the coupling. More space they are, more the coupling is high. In the example of the Dependency Matrix, it's hard to get some result. We can see high cohesion at the top and low coupling. High cohesion because we have 6 squares near together and low coupling because these squares are very far away of the rest of the code.
 
 Another panel is the Metrics graph. This is a panel where pixel represent a metric. For example, you can display a Metric Graph for Cyclomatic Complexity. This one will blue every Cyclomatic Complexity that is high and that needs to be fixed.
 
-[![NDependCyclomaticMetrics](http://patrickdesjardins.com/blog/wp-content/uploads/2014/11/NDependCyclomaticMetrics-400x184.png)](http://patrickdesjardins.com/blog/ndepend-version-5-4-professional-edition-review/ndependcyclomaticmetrics)
+![](images/NDependCyclomaticMetrics-400x184.png)
 
 This can be useful but I prefer to use directly the **Queries and Rules Explorer** to have a list of methods.
 

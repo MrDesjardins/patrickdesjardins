@@ -12,7 +12,7 @@ I played with React in 2015 during a Microsoft hackathon. It was without any app
 
 This was a first big decision to go. Do we use Flux, Reflux, Redux, or any other variant that exist. The community seems to prefer Redux, but this come with some heavier knownledge. Everything needs to be immutable and more restriction about where to change the information. Today, I understand more all the advantage of it, but it still more work to do. Also, beaware that we are using TypeScript so it's more than just single NPM command to get the boilerplate for a new project. I decided to take a simpler approach that doesn't need much and that could be done in TypeScript with just React and React Dom library. It ends up being Flux and Reflux. Flux because we are using Action Creator, and Reflux because we do not use Dispatcher. Why Action Creator? Because we wanted to have all business logic, call to the server with Ajax to be made not by the UI component, neither the store. Why no dispatcher because we wanted to have strong dependency between action and the store.
 
-[![FluxCycle](http://patrickdesjardins.com/blog/wp-content/uploads/2016/08/FluxCucle-1024x393.png)](http://patrickdesjardins.com/blog/learning-from-my-first-enterprise-project-with-facebook-react/fluxcucle)
+![](images/FluxCucle-1024x393.png)
 
 The main concept is :
 

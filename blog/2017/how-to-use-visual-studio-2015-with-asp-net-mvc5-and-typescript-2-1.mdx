@@ -11,7 +11,7 @@ TypeScript is a wonderful language for front-end developing. It helps by make fr
 
 The first step is to download the latest version of TypeScript. This will install TypeScript in Program Files (C:\\Program Files (x86)\\Microsoft SDKs\\TypeScript). Be aware that you may already have some older version of TypeScript (like 1.6 and 1.8) but you want to have 2.1.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2017/01/TypeScriptVersionsInProgramFiles.png)](http://patrickdesjardins.com/blog/?attachment_id=4921)
+![](images/TypeScriptVersionsInProgramFiles.png)
 
 Installing TypeScript should take about 3 minutes. Once it's done, you need to add a tsconfig.json file at the root of your project. This second step add a file that gives configuration to TypeScript. For example, where to take the TypeScript and where to output the JavaScript result. Here is an example: ```typescript
 { "compilerOptions": { "sourceMap": true, "target": "es6", "outDir": "./Scripts/App" }, "files": [ "./src/app.ts" ] } 
@@ -27,7 +27,7 @@ Before going any further, let's talk about the tsconfig.json. The option are ver
 
 From here, you just need to have a TypeScript file called app.ts and write some code. Do as normally with C#, go in Visual Studio's menu under Build and do Build Solution. This will output JavaScript. You may not see the output file if you do not have "Show all Files" selected in the Solution Explorer.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2017/01/SolutionExplorer.png)](http://patrickdesjardins.com/blog/?attachment_id=4923)
+![](images/SolutionExplorer.png)
 
 At that point, you may ask yourself that it sounds cumbersome to manually add files if the project is big. This is why you can change the tsconfig.json to compile all TypeScript file of specific folders. ```typescript
 { "compilerOptions": { "sourceMap": true, "target": "es6", "outDir": "./Scripts/App" }, "include": [ "src/\*\*/\*" ] } 
@@ -36,8 +36,8 @@ At that point, you may ask yourself that it sounds cumbersome to manually add fi
 
 This will go through all .ts, .tsx, and .d.ts file and generate the right JavaScript.
 
-You may fall into the problem that while writing your TypeScript that Visual Studio 2015 tells you that you are using a version different from the version specified in the tsconfig.ts. [![](http://patrickdesjardins.com/blog/wp-content/uploads/2017/01/WrongEcmaScript.png)](http://patrickdesjardins.com/blog/?attachment_id=4926) This come with the problem of having the .csproject having the TypeScript options being disabled saying that two tsconfig.json exist. [![](http://patrickdesjardins.com/blog/wp-content/uploads/2017/01/TypeScriptBuildDisabled-1024x424.png)](http://patrickdesjardins.com/blog/?attachment_id=4928)
+You may fall into the problem that while writing your TypeScript that Visual Studio 2015 tells you that you are using a version different from the version specified in the tsconfig.ts. ![](images/TypeScriptBuildDisabled-1024x424.png)
 
-The problem is that Visual Studio is having TypeScript configuration directly into the .csproj file. You can open with a text editor the .csproj and search for TypeScript. [![](http://patrickdesjardins.com/blog/wp-content/uploads/2017/01/TypeScriptConfigurationInCsProj-1024x529.png)](http://patrickdesjardins.com/blog/?attachment_id=4930)
+The problem is that Visual Studio is having TypeScript configuration directly into the .csproj file. You can open with a text editor the .csproj and search for TypeScript. ![](images/TypeScriptConfigurationInCsProj-1024x529.png)
 
 There is two options here. The first one is to remove the tsconfig.json file and configure from Visual Studio project property. However, you will be limited in term of options. The second is to remove all TypeScript entries inside the .csproject and keep the tsconfig.json. You may have to restart Visual Studio to have Intellisense to work again.

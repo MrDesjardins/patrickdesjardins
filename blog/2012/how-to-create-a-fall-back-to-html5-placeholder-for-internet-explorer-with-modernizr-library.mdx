@@ -16,7 +16,7 @@ Once you added the Modernizr library to your webpage, you can now create a new j
 ```html  <script src="/Scripts/Libs/jquery-1.8.2.js" type="text/javascript"> </script> <script src="/Scripts/Libs/modernizr-1.7.min.js" type="text/javascript"> </script> 
 ``` 
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/11/placeholder.png "placeholder")](http://patrickdesjardins.com/blog/?attachment_id=1754) Here is the custom code that will put a placeholder when an input does have the placeholder attribute.
+![](images/placeholder.png)
 
 ```typescript
 jQuery(function () { // check placeholder browser support if (!Modernizr.input.placeholder) { // set placeholder values jQuery(this).find('[placeholder]').each(function () { if (jQuery(this).val() == '') // if field is empty { jQuery(this).val(jQuery(this).attr('placeholder')); jQuery(this).addClass('placeholder'); } }); // focus and blur of placeholders jQuery('[placeholder]').focus(function () { if (jQuery(this).val() == jQuery(this).attr('placeholder')) { jQuery(this).val(''); jQuery(this).removeClass('placeholder'); } } ).blur(function () { if (jQuery(this).val() == '' || jQuery(this).val() == jQuery(this).attr('placeholder')) { jQuery(this).val(jQuery(this).attr('placeholder')); jQuery(this).addClass('placeholder'); } } );

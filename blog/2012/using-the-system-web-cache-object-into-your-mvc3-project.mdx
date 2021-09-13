@@ -34,7 +34,7 @@ or to set it for 20 minutes
 
 If you try to use the absolute and sliding in the same time you will get the an Argument Exception.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/04/cannotuseSlidingwithabsolute-400x138.png "cannotuseSlidingwithabsolute")](http://patrickdesjardins.com/blog/using-the-system-web-cache-object-into-your-mvc3-project/cannotuseslidingwithabsolute)
+![](images/cannotuseSlidingwithabsolute-400x138.png)
 
 This mean you can only use one of the type in the same time. It's also possible to have a call back when the data is removed from the cache. This can be interesting if you need to act differently when something is access removed from the cache. To do, you need to set the CacheItemRemovedCallback. This method will be called whenever the cache is removed. If you set 1 minute, 1 minute after the call back will be raised. This is raised what ever happen on the server side, even if no client call the server.
 
@@ -45,6 +45,6 @@ This mean you can only use one of the type in the same time. It's also possible 
 
 This method will give you also the detail about why it has been removed. Your item might have been set to stay 30 minutes but because low memory is running that the cache system will removed it. You will get the reason with the enumerator **CacheItemRemovedReason**.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/04/reason-400x174.png "reason")](http://patrickdesjardins.com/blog/using-the-system-web-cache-object-into-your-mvc3-project/reason)
+![](images/reason-400x174.png)
 
 It's pretty much it about the Cache for basic use. Do not forget that the data is cached into the memory of the process and is not shared across multiple server if you have multiple Web Server. You should use server with affinity to be able to reuse the cache for a same client otherwise the cache will be good only for the Web Server who has inserted the values.

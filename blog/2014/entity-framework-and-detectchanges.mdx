@@ -47,9 +47,9 @@ The followed example will not update the user.
 
 It is also possible to get from the Entry collection the state of the entity. If we execute both example by adding a simple check of the state, the one that has auto detect changes to false will return an unmodified state while the other one will have a modified state.
 
-[![Unchanged](http://patrickdesjardins.com/blog/wp-content/uploads/2014/05/Unchanged-400x96.png)](http://patrickdesjardins.com/blog/entity-framework-and-detectchanges/unchanged)
+![](images/Unchanged-400x96.png)
 
-With DetectChanges: [![StateChanged](http://patrickdesjardins.com/blog/wp-content/uploads/2014/05/StateChanged-400x157.png)](http://patrickdesjardins.com/blog/entity-framework-and-detectchanges/statechanged)
+With DetectChanges: ![](images/StateChanged-400x157.png)
 
 Something interesting about **Complex Type** is that the whole class has a simple state. If you change one property of the whole class that is marked as complex type, the whole complex type is market has modified. The reason is that Entity Framework does not create a proxy object for complex type.
 

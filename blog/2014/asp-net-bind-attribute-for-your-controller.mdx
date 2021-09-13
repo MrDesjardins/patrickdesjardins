@@ -13,16 +13,16 @@ Asp.Net MVC lets you specify which properties that is allowed to be bound from a
 
 To demonstrate you this feature, I have create a simple model class that has 5 properties which can be nullable. These properties are all bound to an Html Form. For the purpose of this exercise, they are all bound to text boxes. In fact, as mentioned, some could not have been bound to a editable control and some one could forge the post later on. The first example send all properties back to the controller, and the controller set all information info a view bag and show again the view. The view should be filled up with the view bag information.
 
-Here is all steps. [![AspNetMVCControllerBind](http://patrickdesjardins.com/blog/wp-content/uploads/2014/01/AspNetMVCControllerBind-400x289.png)](http://patrickdesjardins.com/blog/asp-net-bind-attribute-for-your-controller/aspnetmvccontrollerbind)
+Here is all steps. ![](images/AspNetMVCControllerBind-400x289.png)
 
 If property1 and property2 should not be bound from the form, we need to blacklist them. To tell the Asp.Net MVC Model Binding to not use properties, the attribute **Bind** must be used with the property **Exclude**.
 
 In this screenshot, you can see that the property 1 and property 2 is not inside the view bag. The reason is that the model binder does not set the value to the model which kept the value to the default one. Since the model are nullable int for all properties, the default value remain NULL.
 
-[![AspNetMVCControllerBindExclude](http://patrickdesjardins.com/blog/wp-content/uploads/2014/01/AspNetMVCControllerBindExclude-400x215.png)](http://patrickdesjardins.com/blog/asp-net-bind-attribute-for-your-controller/aspnetmvccontrollerbindexclude)
+![](images/AspNetMVCControllerBindExclude-400x215.png)
 
 Finally, another scenario is available to white list properties. This option is interesting if you do have a lot of properties to exclude. Instead of having to specify a lot of properties in the exclude field, you just need to specify few in the **Include** field.
 
-[![AspNetMVCControllerBindInclude](http://patrickdesjardins.com/blog/wp-content/uploads/2014/01/AspNetMVCControllerBindInclude-400x199.png)](http://patrickdesjardins.com/blog/asp-net-bind-attribute-for-your-controller/aspnetmvccontrollerbindinclude)
+![](images/AspNetMVCControllerBindInclude-400x199.png)
 
 You can everything discussed in this blog post by download my [Asp.Net MVC Bind project](https://github.com/MrDesjardins/ControllerParameterBindExample "Asp.Net MVC Bind Example") on GitHub

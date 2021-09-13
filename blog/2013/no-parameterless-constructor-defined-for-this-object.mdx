@@ -11,7 +11,7 @@ Few times ago, I open up a solution that was perfectly working previously and re
 
 .
 
-[![parameterlessConstructor](http://patrickdesjardins.com/blog/wp-content/uploads/2013/09/parameterlessConstructor-400x130.png)](http://patrickdesjardins.com/blog/?attachment_id=2290)
+![](images/parameterlessConstructor-400x130.png)
 
 Usually, this exception occur when you are using Asp.Net MVC with Unity and this one cannot resolve the parameters of your constructor. This mean that you request a controller method but the parameters aren't provided. To solve this problem, usually people that develop with Asp.Net MVC and Unity use the [Unity.MVC3](http://unitymvc3.codeplex.com/) code that let you set the Unity dependency resolver to the framework that will resolve controller's parameters when Asp.Net do a http request. The second option is to have constructor without parameter, which is often not possible.
 

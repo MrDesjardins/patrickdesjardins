@@ -14,7 +14,7 @@ We need a HTML file to host the JavaScript files produced by TypeScript. We coul
 ``` 
 
 
-The compiler options are the sourcemap which will allow you to debug directly the TypeScript file, the target that indicate which version of EcmaScript will be written in TypeScript. Specifying a module tell TypeScript that we will substitute the module import/export by AMD which will be requirejs. OutDir is where the compiled TypeScript will output the JavaScript. Includes is the list of file to compile, excludes what to not touch. If you create 2 TypeScript file named file1.ts and fileToInclude.ts with the following code and compile you will see generated file in the right output folder. [![](http://patrickdesjardins.com/blog/wp-content/uploads/2017/01/TypescriptOutput2Files.png)](http://patrickdesjardins.com/blog/visual-studio-code-with-npm-and-typescript-part-2-typescript/typescriptoutput2files)
+The compiler options are the sourcemap which will allow you to debug directly the TypeScript file, the target that indicate which version of EcmaScript will be written in TypeScript. Specifying a module tell TypeScript that we will substitute the module import/export by AMD which will be requirejs. OutDir is where the compiled TypeScript will output the JavaScript. Includes is the list of file to compile, excludes what to not touch. If you create 2 TypeScript file named file1.ts and fileToInclude.ts with the following code and compile you will see generated file in the right output folder. ![](images/TypescriptOutput2Files.png)
 
 The next step is to use these scripts in Html. But foremost, two scripts will be needed as we normally do by using script tag. The first one is to get requirejs. This will allows to setup _require_ but also allow to call the entry point in the JavaScript (for us it's file1.js). The second script is JQuery. I am using JQuery directly in script because, often if not most of the app, needs JQuery but won't use it as a module. This way, we will be able to use it anywhere even in situation without AMD. 
 ```html  <html> <head> <title>Test</title> </head>
@@ -34,14 +34,14 @@ npm install typings -g typings install jquery --save --global
 ``` 
 
 
-The file structures should look like: [![](http://patrickdesjardins.com/blog/wp-content/uploads/2017/02/TypingsIndexDTS.png)](http://patrickdesjardins.com/blog/visual-studio-code-with-npm-and-typescript-part-2-typescript/typingsindexdts) The index.d.ts contains a link to the JQuery's index.d.ts: ``` 
+The file structures should look like: ![](images/TypingsIndexDTS.png)
  /// <reference path="globals/jquery/index.d.ts" /> 
 ```  Finally, let's change the fileToInclude.ts to use JQuery: ```typescript
 export class ClassA { public method1(): void { console.log("ClassA>method1"); let div = $("<div>"); div.html("From JQuery"); $("body").append(div); } } 
 ``` 
  At this point, we have TypeScript compiling by simply typing "tsc" in the root of our project. TypeScript with Intellisense on a library not made with TypeScript (JQuery), and a file importing a second one (File1.ts->fileToInclude.ts). There is still two problems. The first one concern the location of JQuery which is inside the node\_modules. The second one is that we are not running any web server for developing, hence cannot test the execution of what we are developing.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2017/02/JqueryIntellisense.png)](http://patrickdesjardins.com/blog/visual-studio-code-with-npm-and-typescript-part-2-typescript/jqueryintellisense)
+![](images/JqueryIntellisense.png)
 
 Concerning the first problem, having to move files, Gulp will help. Gulp mains goal is to automate tasks. It's like MsBuild if you are from .Net ecosystem. Why we do not want to have a direct reference of the node\_modules? Because most of the files in this directory won't be needed in your website, so we won't copy all those files in the deployment. A good pattern is to bring the library we need to use for the script, like JQuery, into a separated folder. In our case, we called that folder "vendors" where all third-party library will get referenced. That is why, we will create in the build task a sub-task to move JQuery into vendor folder. Then, we will tell requirejs to look into that folder every time we need JQuery. We will see in a future article more detail about how to work with Gulp.
 

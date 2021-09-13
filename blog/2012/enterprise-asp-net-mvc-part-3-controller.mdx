@@ -30,7 +30,7 @@ So, once we have receive the view model back to from the view to the controller,
 
 We will modify the BaseController and override the method **OnActionExecuting**. This will give us the opportunity to modify the code before entering the code of the action defined inside the controller.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/10/workoutcontroller1.png "workoutcontroller")](http://patrickdesjardins.com/blog/enterprise-asp-net-mvc-part-3-controller/workoutcontroller-2)
+![](images/workoutcontroller1.png)
 
 This is an overview of what we are going to do. First, we will have a concrete controller for every entity. In our case, the WorkoutController. Each controller inherit of the BaseController which is generic with 2 types. The first one is the model type, and the second is the view model type. The BaseController contain a reference to a IMapperFactory, which is a layer of abstraction to the AutoMapper implementation. We will come back later with the IMapperFactory. Finally, the BaseController contain a property of TModel type. That mean that for the WorkoutController that we will be able to use "this.Model" to get the model from the view model. For another entity, the Model will be of the entity type because it will use the TModel type defined by the BaseController. Here is the code that reflect the illustration above.
 

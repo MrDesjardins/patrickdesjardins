@@ -14,7 +14,7 @@ Before going any deeper, let's examine a second example that is from Eric Evans 
 
 Another example could be with a simple state that change between Active, Inactive, NotSet. Those three states can use value object to define the state of any entity that require to have a state defined. Or another example could be that you have several currencies that you want to handle in your program. Every amount is set to a currency. The list is well defined and do not change dynamically so you can create a class by currency. This is crucial to have your value object not dynamic. It is the cost of this pattern. You cannot have something dynamic because you need to have the value object defined in code, in a class.
 
-[![CurrencyTypeValueObjectExample](http://patrickdesjardins.com/blog/wp-content/uploads/2014/06/CurrencyTypeValueObjectExample-400x249.png)](http://patrickdesjardins.com/blog/how-to-work-with-value-object-in-c/currencytypevalueobjectexample)
+![](images/CurrencyTypeValueObjectExample-400x249.png)
 
 The image above shows that we have a value object named "CurrencyType". This mean that if you have a class that has a CurrencyType property.
 
@@ -89,7 +89,7 @@ This pattern works very well with Entity Framework.
  public abstract class ValueObjectConfiguration<T> : EntityTypeConfiguration<T> where T : ValueObject { protected ValueObjectConfiguration() { Map(a => a.MapInheritedProperties()); HasKey(p => p.Id); ToTable(typeof(T).Name, Constants.SchemaNames.ValueObject); } } 
 ``` The configuration set the inheritance to MapInheritedProperties. This create a single table with all classes. This mean that all value of your value object are in a single table named by the name of the generic class name. In our example, the table created by Entity Framework is named CurrencyType and has two entries. One with ID 1 and one with ID 2.
 
-[![ValueObjectTableExample](http://patrickdesjardins.com/blog/wp-content/uploads/2014/06/ValueObjectTableExample-400x71.png)](http://patrickdesjardins.com/blog/how-to-work-with-value-object-in-c/valueobjecttableexample)
+![](images/ValueObjectTableExample-400x71.png)
 
 As you can see in the code and also in the screen shot of the table, a primary key is created. This ensure that you have a unique value object identifier but also that if you use the value object into another entity that this one is strongly referenced.
 

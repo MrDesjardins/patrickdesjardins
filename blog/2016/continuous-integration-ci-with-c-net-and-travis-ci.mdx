@@ -16,7 +16,7 @@ I am a big fan of [Visual Studio Team Services (VSTS)](https://www.visualstudio.
 
 I am take for grant that you have a [GitHub](https://github.com/) account. If you do not, you can create one for free. The next step, is to go at [Travis-ci.org](https://travis-ci.org/) and signup. This is very easy since you can login with your GitHub account. This is a big win because it is so related and GitHub has so many services around it that the burden of handling multiple accounts is not a problem with Travis. The next step is to select which repository you want Travis to get notified by GitHub.
 
-[![TravisCiAddRepository](http://patrickdesjardins.com/blog/wp-content/uploads/2016/05/TravisCiAddRepository-1024x678.png)](http://patrickdesjardins.com/blog/?attachment_id=4642)
+![](images/TravisCiAddRepository-1024x678.png)
 
 Once that is done, you need to add something into your repository which will give instruction to the continuous integration system. This is where we will tell what to build and to run unit tests. The file must be set at the root of your repository with the name ".travis.yml". There is a lot of options. Here is a sample of my C# project.
 
@@ -26,10 +26,10 @@ Once that is done, you need to add something into your repository which will giv
 
 As you can see, it specify the language, and which solution to use. It defines what to do during the installation which is to restore all nuget packages and to install XUnit runner. XUnit is one supported type of unit tests that can be used. Visual Studio Test cannot be run because Travis run on Mono. That might be a show stopper for you if you have heavily invested in Visual Studio Test. The last section of the file is what to do. The first line, with xbuild, compile the code and the next one run the unit test. If at one of these steps something happen wrong, you will get an email. Otherwise, it's all fine!
 
-[![TravisCiSuccessfulBuild](http://patrickdesjardins.com/blog/wp-content/uploads/2016/05/TravisCiSuccessfulBuild-1024x479.png)](http://patrickdesjardins.com/blog/?attachment_id=4643)
+![](images/TravisCiSuccessfulBuild-1024x479.png)
 
 Travis-ci lets you see all logs in real time from the website. It is easy to access, easy to debug. It also let you have a dynamic image of the state of your build that you can embed in the readme file of GitHub. To do so, click the badge next to the repository and select markdown.
 
-[![TravisCiBadge](http://patrickdesjardins.com/blog/wp-content/uploads/2016/05/TravisCiBadge-1024x657.png)](http://patrickdesjardins.com/blog/?attachment_id=4644)
+![](images/TravisCiBadge-1024x657.png)
 
 I will cover soon how to generate your Nuget package by pushing on GitHub. That would be one more step on having automated your steps.

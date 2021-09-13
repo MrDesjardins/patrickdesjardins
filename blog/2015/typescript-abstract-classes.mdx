@@ -25,7 +25,7 @@ public class ChildClass:BaseClass { protected override void RenderChildImplement
 
 The output is what expected, the base class control the final output by having the child implementation between its tags.
 
-[![Abstract](http://patrickdesjardins.com/blog/wp-content/uploads/2015/03/Abstract.png)](http://patrickdesjardins.com/blog/typescript-abstract-classes/abstract)
+![](images/Abstract.png)
 
 When you want to use this pattern with TypeScript, you have some limitation. First of all, protected method does not yet exist (but will be there soon) and the abstract concept does not exist and is not planned to be part of TypeScript soon. The workaround is to use exception for method that should not be called from the outside and to use override methods to simulate the abstraction. ```typescript
 export class BaseClass {

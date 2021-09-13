@@ -11,7 +11,7 @@ We have already see the **default initializer**. It is named **CreateDatabaseIfN
 
 > Additional information: The model backing the 'YourContext' context has changed since the database was created. Consider using Code First Migrations to update the database.
 
-[![InvalidOperationExceptionModelBackingChanged](http://patrickdesjardins.com/blog/wp-content/uploads/2014/05/InvalidOperationExceptionModelBackingChanged-400x224.png)](http://patrickdesjardins.com/blog/entity-framework-database-initialization/invalidoperationexceptionmodelbackingchanged)
+![](images/InvalidOperationExceptionModelBackingChanged-400x224.png)
 
 If you want to use that type of initializer, you have to manually delete the whole database for every modification of your context. For your information, the default intializer could also be explicitly specify in the contructor of your DbContext.
 
@@ -43,7 +43,7 @@ The problem with all these initializer is that all of them at some point let you
 
 The CustomInitializer method override the Seed method. This is where you can use the context passed by parameter to insert data into your database. You do not have to call SaveChanges to save anything because the class that call the seed method call the **SaveChanges** right after calling the seeding method.
 
-[![CustomInitializer](http://patrickdesjardins.com/blog/wp-content/uploads/2014/05/CustomInitializer-400x178.png)](http://patrickdesjardins.com/blog/entity-framework-database-initialization/custominitializer)
+![](images/CustomInitializer-400x178.png)
 
 If the database already exist, you may stumble into the case of having an error. The exception "Cannot drop database because it is currently in use" can raise. This problem occurs when an active connection remains connected to the database that it is in the process of being deleting. A trick is to override the **InitializeDatabase** method and to alter the database. This tell the database to close all connection and if a transaction is open to rollback this one.
 

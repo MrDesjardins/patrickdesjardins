@@ -10,11 +10,11 @@ It's always a good idea to be able to see what's happening behind when you are u
 
 However, you still can get thoses queries outputted into a log file with the Sql Express edition. First of all, be sure to stop the SQL Express Service. This can be done by going into the Services.msc
 
-[![sqlexpressservice](http://patrickdesjardins.com/blog/wp-content/uploads/2013/03/sqlexpressservice-400x293.png)](http://patrickdesjardins.com/blog/sql-tracing-without-having-sql-server-tools/sqlexpressservice)
+![](images/sqlexpressservice-400x293.png)
 
 Or you can use the command prompt with the command "net stop" with the parameter of the service which should be "MSSQL$SqlExpress". Of course, this must be done with the administrator privileges which can be
 
-[![sqlexpressservicecmd](http://patrickdesjardins.com/blog/wp-content/uploads/2013/03/sqlexpressservicecmd-400x81.png)](http://patrickdesjardins.com/blog/sql-tracing-without-having-sql-server-tools/sqlexpressservicecmd) To enable the service to run again but this time with the log we need to start the Sql Service with the flag "/T4032".
+![](images/sqlexpressservicecmd-400x81.png)
 
 > net start MSSQL$SQLEXPRESS /T4032
 

@@ -21,6 +21,6 @@ I am pretty sure that at this point, someone will say that the exception defeat 
 
 As you can see, this way, you check if they are any problem and then you save if none. On the other side, if errors occur you can display them. This is very powerful because you have the entity which is problematic, all its properties that is in error and all its errors messages. This is possible because the **GetValidationErrors** function return a DbEntityValidationResult which contain the Entry itself, the state if it's valid or not and a collection of error in the DbValidationError format which mean that you know what property is in error with the message.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/04/allerror-400x84.png "allerror")](http://patrickdesjardins.com/blog/model-validation-and-entity-framework-4-3/allerror)
+![](images/allerror-400x84.png)
 
 That's it. At this point, you know that Entity Framework work in a team with MVC's ModelState. You do not need to add custom code in a generic model class that will contain validation method. It's already built in. Also, if you are using Entity Framework as ORM, you can benefit of extra security that your database won't be altered by wrong data because Entity Framework takes care to call the Validate method of all your object before using them.

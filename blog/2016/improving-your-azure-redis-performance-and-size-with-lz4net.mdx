@@ -29,6 +29,6 @@ The Get method do the other way around:
 
 The result is really stunning. If you look at my personal numbers from a project that I applied this compression you can see that even for 5ko objects we have a gain.
 
-[![RedisSize](http://patrickdesjardins.com/blog/wp-content/uploads/2016/09/RedisSize-1024x350.png)](http://patrickdesjardins.com/blog/?attachment_id=4769)
+![](images/RedisSize-1024x350.png)
 
 For example, the 50th percentile with has a 23ko size for one key. This one go down by more than half when compressed. If we look at the 95th percentile we realize that the gain is even more touching 90% reduction by being from 478ko to 44ko. Compressing is often the critic of being bad for smaller object. However, i found that even object as small as 6ko was gaining by being reduced to 3ko. 35ko to 8ko and so on. Since the compression algorithm used is very fast, the experience was way more positive than impacting the performance negatively.

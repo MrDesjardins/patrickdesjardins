@@ -11,7 +11,7 @@ Entity Framework version 4.35.0 (and since 4.1) can throw the exception that the
 
 To resolve this problem, you will find on the Web a lot of solution but most of them work with previous version of Entity Framework 4.35.0.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/03/modelBackingException-400x262.png "modelBackingException")](http://patrickdesjardins.com/blog/the-model-backing-the-context-has-changed-since-the-database-was-created-ef4-3/modelbackingexception)
+![](images/modelBackingException-400x262.png)
 
 The solution from this version is to use the static method SetInitializer and bind to the context a Null value. If you are working on a Web solution, the best position to write the code is in the Application\_Start of your Global.asax.cs file.
 

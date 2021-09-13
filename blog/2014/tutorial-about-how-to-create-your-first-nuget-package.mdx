@@ -6,7 +6,7 @@ categories:
   - "visual-studio"
 ---
 
-This is a tutorial about how to create your first Nuget package. [![NugetLogo](http://patrickdesjardins.com/blog/wp-content/uploads/2014/01/NugetLogo.png)](http://patrickdesjardins.com/blog/tutorial-about-how-to-create-your-first-nuget-package/nugetlogo)
+This is a tutorial about how to create your first Nuget package. ![](images/NugetLogo.png)
 
 ## Part 1 : Setupping basic information of Nuget
 
@@ -36,11 +36,11 @@ You can also use this open source project, the [Nuget Explorer](http://nuget.cod
 
 The next part is the content of the Nuget package. Create a folder with the name "content". Everything in this folder will be moved to the solution. This mean if you have inside the folder "content" a folder "Content" and inside this one you have "Images" and you set a file "forward.png" that when the Nuget package is installer, the image will be set at this position. For my example, here is the file structure.
 
-[![treeNugetPackage](http://patrickdesjardins.com/blog/wp-content/uploads/2013/12/treeNugetPackage.png)](http://patrickdesjardins.com/blog/tutorial-about-how-to-create-your-first-nuget-package/treenugetpackage)
+![](images/treeNugetPackage.png)
 
 The second step of this part is to have some pre-processing. Nuget allows to change part of every file dynamically. This can be done if you rename your file by adding .pp at the end. For example, I want to use the user namespace for 3 files. I change these three files extension and open them to add the namespace tag.
 
-[![ppFile](http://patrickdesjardins.com/blog/wp-content/uploads/2013/12/ppFile.png)](http://patrickdesjardins.com/blog/tutorial-about-how-to-create-your-first-nuget-package/ppfile)
+![](images/ppFile.png)
 
 
 ```csharp
@@ -55,6 +55,6 @@ When everything is setup, it's time to create the Nuget package. This can be don
  nuget pack C:\\Users\\Patrick\\Documents\\GitHub\\DragAndDropMutltiSelectorList\\DragAndDropMutltiSelectorList.nuspec 
 ```  This will create a file called DragAndDropMutltiSelectorList.1.0.0.nupkg (of course it will be your Nuget name and version). This can be published to Nuget's website or your own Nuget repository. To do a fast test, open Visual Studio and add a local folder that has your new Nuget package. This way, you will be able to install any local Nuget package inside this folder. To do, go to _Manage Nuget Packages For Solution_ that is located under Tools>Library Package Manager. Then, click Setting at the bottom of the screen. This will popup the option window for Nuget. Here, you can add your folder.
 
-[![NugetRepositoryLocal](http://patrickdesjardins.com/blog/wp-content/uploads/2013/12/NugetRepositoryLocal-400x238.png)](http://patrickdesjardins.com/blog/tutorial-about-how-to-create-your-first-nuget-package/nugetrepositorylocal)
+![](images/NugetRepositoryLocal-400x238.png)
 
 If you double click your package, it will be installed. This allow you to test your package before publishing it on the web. But, once it's tested, you can publish it on Nuget.org. This step is very fast. You need to create an account, then you upload the .nukg and that's it. You can find the package that I just created at this url now : https://www.nuget.org/packages/DragAndDropMultiSelectorList/

@@ -7,17 +7,17 @@ categories:
 
 Entity Framework uses the DbContext has a proxy to the connect to the database. This one keep information that came from the database but also information set from the code. It is the middle man between your entity in your code and your entity in your database. To be more accurate, it is the Local of the DbSet that contain the DbContext where the information remain for the life time of the DbContext.
 
-[![CodeDbContextDataBase](http://patrickdesjardins.com/blog/wp-content/uploads/2014/05/CodeDbContextDataBase-400x152.png)](http://patrickdesjardins.com/blog/entity-framework-dbcontext-local/codedbcontextdatabase)
+![](images/CodeDbContextDataBase-400x152.png)
 
 The DbContext has for every sets a local storage. This is a temporary place where information reside. It is possible to access this container to get information already queried.
 
-[![DbContextDbSetLocal](http://patrickdesjardins.com/blog/wp-content/uploads/2014/05/DbContextDbSetLocal.png)](http://patrickdesjardins.com/blog/entity-framework-dbcontext-local/dbcontextdbsetlocal)
+![](images/DbContextDbSetLocal.png)
 
 The **Finds** method use the Local to get for the primary key the entity before querying the database. However, method like Single and Where does not. But, it is possible to explicitly do a query against the Local. If we do a test, we see that using SingleOrDefault twice call the database twice. If we query the local with SingleOrDefault, no query is done to the database.
 
 ```csharp
 private static void QueryLocal() { using (var context = new YourContext()) { Console.WriteLine(context.Persons.Local.Count); //0 var newPerson = new Person { Id = 500, Name = "New Person", BirthDate = new DateTime(2000, 1, 2) }; context.Persons.Add(newPerson); Console.WriteLine(context.Persons.Local.Count); //1 var person = context.Persons.SingleOrDefault(d => d.Id == 1); //Query the database Console.WriteLine(context.Persons.Local.Count); //2 var person2 = context.Persons.SingleOrDefault(d => d.Id == 1); //Query the database again Console.WriteLine(context.Persons.Local.Count); //2 var person3 = context.Persons.Local.SingleOrDefault(d => d.Id == 1); //Does not query the database Console.WriteLine(context.Persons.Local.Count); //2 } } 
-``` [![LocalQueryDatabase](http://patrickdesjardins.com/blog/wp-content/uploads/2014/05/LocalQueryDatabase-400x102.png)](http://patrickdesjardins.com/blog/entity-framework-dbcontext-local/localquerydatabase)
+``` ![](images/LocalQueryDatabase-400x102.png)
 
 Querying with a where clause load information into the Local storage but does not load everything. If you want to load all entities into your local you can use **explicit loading**.
 

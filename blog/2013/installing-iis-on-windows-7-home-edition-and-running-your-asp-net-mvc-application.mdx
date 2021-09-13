@@ -7,23 +7,23 @@ categories:
 
 If you go to the administrator panel, you may not see IIS anywhere. To make sure, go to Control Panel\\All Control Panel Items\\Administrative Tools\\
 
-[![iisCongifurationPanel](http://patrickdesjardins.com/blog/wp-content/uploads/2013/08/iisCongifurationPanel-400x67.png)](http://patrickdesjardins.com/blog/?attachment_id=2227)
+![](images/iisCongifurationPanel-400x67.png)
 
 If you have IIS, you will see an icon with the text "Internet Information Services (IIS) Manager". If not, you will have to install it, which is already part of Windows 7, it's just not enabled. To install it, go to Control Panel\\All Control Panel Items\\ and select Programs and Features. In the left side bar, you will see a link called "Turn Windows features on or off". Select this open.
 
-[![turningOnFeatureWindows](http://patrickdesjardins.com/blog/wp-content/uploads/2013/08/turningOnFeatureWindows-400x102.png)](http://patrickdesjardins.com/blog/?attachment_id=2228)
+![](images/turningOnFeatureWindows-400x102.png)
 
 You have to select IIS and go into subfolder to select what you see in the following image.
 
-[![IISFeatures](http://patrickdesjardins.com/blog/wp-content/uploads/2013/08/IISFeatures-326x400.png)](http://patrickdesjardins.com/blog/?attachment_id=2229)
+![](images/IISFeatures-326x400.png)
 
 This will take several minutes depending of your machine. When everything is done, the control panel will now have in the administrative tools IIS.
 
-[![iisOpen](http://patrickdesjardins.com/blog/wp-content/uploads/2013/08/iisOpen-400x320.png)](http://patrickdesjardins.com/blog/?attachment_id=2230)
+![](images/iisOpen-400x320.png)
 
 So far, you have IIS, but you doesn't have your website linked to it. If you are a developer, the best way to make it works is to link IIS to the path where your code reside. I prefer not having my code in My Document because it will cause some security problem with default configuration. In fact, the user on which IIS will run the application pool won't have access to your file inside your My Document. Nevertheless, we can run IIS with an application pool that use your credential. First, open IIS and create a new website to which you will select the root of your web application (where the solution is). Be sure to have the website running on the good framework. I have found that it select framework 2.0 by default which should be the latest framework (4.0) if you run a MVC website. If you are using code inside your My Document, you also need to set your application pool to your account.
 
-[![identityAppPool](http://patrickdesjardins.com/blog/wp-content/uploads/2013/08/identityAppPool-400x316.png)](http://patrickdesjardins.com/blog/?attachment_id=2231)
+![](images/identityAppPool-400x316.png)
 
 Now, if you try to run your website, you should be able to see it. If you get this message :
 
@@ -37,16 +37,16 @@ An other point of failure may be that IIS is not running with all the new instal
 
 To have IIS uses all new modules, open a Console as an administrator and execute the following line: c:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\aspnet\_regiis.exe -i
 
-[![aspnetiisreg](http://patrickdesjardins.com/blog/wp-content/uploads/2013/08/aspnetiisreg-400x100.png)](http://patrickdesjardins.com/blog/?attachment_id=2233)
+![](images/aspnetiisreg-400x100.png)
 
 The last problem that may arrive is that you see your website but without Javascript and CSS loading. You can notify this not only because your website won't display correctly but also because Javascript and CSS errors will be marked in every browser tools.
 
-[![websiteCssJsErrorAuthorization](http://patrickdesjardins.com/blog/wp-content/uploads/2013/08/websiteCssJsErrorAuthorization-400x214.png)](http://patrickdesjardins.com/blog/?attachment_id=2234)
+![](images/websiteCssJsErrorAuthorization-400x214.png)
 
 To fix this, two things must be set. First, you have the have the Static Content to be installed. This has to be checked when installing IIS. If not, you can go in Control Panel\\All Control Panel Items\\ and select Programs and Features. In the left side bar, you will see a link called "Turn Windows features on or off" and under Commont Http function of IIS you will see the option.
 
 Second, you need to execute not only the application pool under your credential but also the set the authentification of the website under yours. To do it, select Basic Settings > Connect as... > Specific user.
 
-[![connectas](http://patrickdesjardins.com/blog/wp-content/uploads/2013/08/connectas-400x226.png)](http://patrickdesjardins.com/blog/?attachment_id=2261)
+![](images/connectas-400x226.png)
 
 From here, your website should work and from any location (even your My Document folder).

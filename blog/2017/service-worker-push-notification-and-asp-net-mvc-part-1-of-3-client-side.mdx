@@ -9,13 +9,13 @@ categories:
 
 Browsers involve very rapidly and since few years it's possible to write JavaScript that runs in the background of the browser. That means that it's possible to run code even if the user is not on the website. This is useful for many scenarios and today we will see one feature which is the **push notification**. The particular environment that we will describe is to use a service worker that wait a message from a Asp.Net Azure web job written in C# that will push a message at a particular time depending of some value to a specific user. The end result will be that the browser will popup a message box at the bottom right if the user is not on the website or if the user is on the website will display a HTML notification directly on the page.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2017/01/NotificationChromeWebPush.png)](http://patrickdesjardins.com/blog/service-worker-push-notification-and-asp-net-mvc-part-1-of-3-client-side/notificationchromewebpush)
+![](images/NotificationChromeWebPush.png)
 
 This article is the part one of two which concentrates on the front-end, not the C# code that runs on the server. We will cover the registration of [Google Firebase](https://firebase.google.com/), the service worker's code and the JavaScript code to add on your website.
 
 The first step if to register an account with Google Firebase. This is not very obvious since almost all example on the web (at this date) uses the raw Service Worker + Push Notification API with the legacy Google system instead of Firebase. Both are pretty compatible in term of server contracts to generate the message, however, on the client side, it's pretty different. Firebase acts as a wrapper on the native Service Worker API and Push Notification API. You can still use the API directly, and in some case, it's the only way to access advanced feature.
 
-To create a Firebase account, you need to https://console.firebase.google.com and create an account and a project. [![](http://patrickdesjardins.com/blog/wp-content/uploads/2016/12/CreateFirebaseProject-1024x736.png)](http://patrickdesjardins.com/blog/service-worker-push-notification-and-asp-net-mvc-part-1-of-3-client-side/createfirebaseproject)
+To create a Firebase account, you need to https://console.firebase.google.com and create an account and a project. ![](images/CreateFirebaseProject-1024x736.png)
 
 Firebase is a library that is accessible via API keys and JavaScript API. You can also invoke the API through a Rest API which we will see in the second part. The first challenge is to figure out where to get the right API key because the system has many. The first step is to create the Service Worker. This is registered when the user goes into your website to run in the background of the browser. The default is to create a file called "firebase-messaging-sw.js" and to put that file at the root of your website. The location of the file is important because the service worker can only access assert that are sibling or child to the script registered.
 
@@ -28,9 +28,9 @@ var messaging = firebase.messaging(); messaging.setBackgroundMessageHandler(func
 
 self.addEventListener("notificationclick", function (event) { var urlToRedirect = event.notification.data.url; event.notification.close(); event.waitUntil(self.clients.openWindow(urlToRedirect)); }); 
 ``` 
- In short, it uses 2 Firebase scripts. One for the Firebase and one for the messaging which is the wrapper around the push notification api. The configuration is tricky. The apiKey is taken from the Firebase's console, under the desired project, under the project settings gear, in the **General**tab. [![](http://patrickdesjardins.com/blog/wp-content/uploads/2016/12/WebApiKeyForFirebase-1024x572.png)](http://patrickdesjardins.com/blog/service-worker-push-notification-and-asp-net-mvc-part-1-of-3-client-side/webapikeyforfirebase)
+ In short, it uses 2 Firebase scripts. One for the Firebase and one for the messaging which is the wrapper around the push notification api. The configuration is tricky. The apiKey is taken from the Firebase's console, under the desired project, under the project settings gear, in the **General**tab. ![](images/WebApiKeyForFirebase-1024x572.png)
 
-The **messagingSenderId** is an id that is available tab next to the **General** tab, called **Cloud Messaging**. [![](http://patrickdesjardins.com/blog/wp-content/uploads/2016/12/SenderId-1024x505.png)](http://patrickdesjardins.com/blog/service-worker-push-notification-and-asp-net-mvc-part-1-of-3-client-side/senderid)
+The **messagingSenderId** is an id that is available tab next to the **General** tab, called **Cloud Messaging**. ![](images/SenderId-1024x505.png)
 
 The initialize command will connect the service worker to the server to listen to new messages. The **setBackgroundMessageHandler** function is called when a new message occurs when the user is not having the website in focus. It means that if the user has the website in a browser's tab that it not the current one, or if the user is not having the website open at all, or if the browser is minimized that this message will be invoked. The case about if the user is having focus will be treated later.
 
@@ -55,7 +55,7 @@ function updateSubscriptionOnServer(subscription) { var subscriptionDetail = { k
 
 To verify that all the previous steps are well executed, you can look in Chrome developer tool under **Application** and see for the service worker.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2016/12/ChromeApplicationTab-1024x226.png)](http://patrickdesjardins.com/blog/service-worker-push-notification-and-asp-net-mvc-part-1-of-3-client-side/chromeapplicationtab)
+![](images/ChromeApplicationTab-1024x226.png)
 
 It's important to understand that what we are doing only work under localhost or with HTTPS' website. From Chrome'S debug panel, you can unregister, or click "Update on reload" to force a reinstallation of the service worker. This can be handy when developing to be sure to always have the latest version of your service worker.
 

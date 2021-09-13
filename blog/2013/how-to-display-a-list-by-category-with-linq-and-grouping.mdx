@@ -8,11 +8,11 @@ categories:
 
 If you are using Asp.Net MVC, you could have a set of entities which are going to be mapped from your model to your view model. Here is a sample of a situation where we have an exercise that is related to a muscle. It's a 1 to n relationship where the exercise are linked to a single muscle, but the muscle could be trained by many exercises.
 
-[![MuscleAndExercise](http://patrickdesjardins.com/blog/wp-content/uploads/2013/02/MuscleAndExercise-400x250.png)](http://patrickdesjardins.com/blog/?attachment_id=1918)
+![](images/MuscleAndExercise-400x250.png)
 
 As you can see, the mapping between the view model and the model is simple, the side of the exercise, where only one instance of muscle could be attached, is merged into the view model of the exercise. This one is called ExerciseViewModel in the following class diagram.
 
-[![ExerciseViewModel](http://patrickdesjardins.com/blog/wp-content/uploads/2013/02/ExerciseViewModel.png)](http://patrickdesjardins.com/blog/?attachment_id=1917)
+![](images/ExerciseViewModel.png)
 
 So, if you want to display a list of exercise you can get the whole list by getting from your database context the list of exercise. Here is the partial view that get a list of ExerciseViewModel and dress a list of all exercises inside an Html list.
 

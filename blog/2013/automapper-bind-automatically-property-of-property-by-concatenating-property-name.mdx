@@ -20,6 +20,6 @@ public class ClassB { public int PropertyAId { get; set; } public string Propert
 [TestMethod] public void TestMethod1() { var c = new ClassA(); c.PropertyA.Id = 123; Mapper.CreateMap<ClassA, ClassB>(); var mapped = Mapper.Map<ClassA, ClassB>(c); Assert.AreEqual(c.PropertyA.Id,mapped.PropertyAId); Assert.AreEqual(c.PropertyA.Suffixe,mapped.PropertyASuffixe); Assert.IsNull(mapped.NotReallyTheSame); } } 
 ```
 
-[![AutoMapperSuccess](http://patrickdesjardins.com/blog/wp-content/uploads/2013/10/AutoMapperSuccess-400x68.png)](http://patrickdesjardins.com/blog/automapper-bind-automatically-property-of-property-by-concatenating-property-name/automappersuccess)
+![](images/AutoMapperSuccess-400x68.png)
 
 The code above show you this reality. The ClassA is mapped to ClassB. Class A doesn't specify any Automapper configuration, just a single CreateMap without options. Nevertheless, Automapper is bright enough to bind Id and Suffixe from ClassA to ClassB. This is because the name of those properties are present in the mapped ClassB class with the concatenation of the two properties name.

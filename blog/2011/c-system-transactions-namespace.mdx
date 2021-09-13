@@ -9,7 +9,7 @@ You can use you DbConnection to get your transaction but the System.Transactions
 
 This namespace work with SQL Server 2005 and later and offers support for **distributed transactions**. At first, this transactions namespace will handle the transaction has a **local lightweight transaction** but if detect that multiple connection is open that the transaction switch to **distributed transactions**. This behavior is also known as "implicit transaction" because the developer does not explicit how to handle it.
 
-[caption id="attachment\_350" align="aligncenter" width="382" caption="DTC's service needs to be started"][![](http://patrickdesjardins.com/blog/wp-content/uploads/2011/09/dtc.png "dtc")](http://patrickdesjardins.com/blog/c-transaction-for-sql-query/dtc)[/caption]
+[caption id="attachment\_350" align="aligncenter" width="382" caption="DTC's service needs to be started"]![](images/dtc.png)
 
 For example, here is the example we previously did with the SqlDbConnection with the use of the System.Transactions instead of the one provided by the connection.
 
@@ -23,7 +23,7 @@ ts.Complete(); } } connection.Close(); } return rowsAffected; }
 
 As you can see, few lines have been removed and some changed. You will notice that we do not have anymore any try-catch. That's right, the USING handle any problem and if the _Transaction.Complete()_ is not called, it's automatically a RollBack. If multiple connections are inside the transaction using, all of them will be under the scope of the transaction distributed transactions coordinator.
 
-[caption id="attachment\_360" align="aligncenter" width="400" caption="Ssytem.Transactions Reference DLL"][![](http://patrickdesjardins.com/blog/wp-content/uploads/2011/09/transactionDLL-400x339.png "transactionDLL")](http://patrickdesjardins.com/blog/c-system-transactions-namespace/transactiondll)[/caption]
+[caption id="attachment\_360" align="aligncenter" width="400" caption="Ssytem.Transactions Reference DLL"]![](images/transactionDLL-400x339.png)
 
 Unfortunately, this namespace is only pertinent if you use Sql Server 2005 and more. In fact, you should always use this one if you are in a Microsoft Sql server 2005, 2008 and more. The only time that it's not possible to use it is with other type of database. The reason to use this one instead of the ADO.NET transactions is the automatic handling of lightweight transaction and distributed transactions.
 
@@ -31,7 +31,7 @@ Unfortunately, this namespace is only pertinent if you use Sql Server 2005 and m
 
 System.Transactions let you set you set a type for you transaction via the enumeration TransactionScopeOption.
 
-[caption id="attachment\_370" align="aligncenter" width="400" caption="Transaction Scope Option"][![](http://patrickdesjardins.com/blog/wp-content/uploads/2011/09/transactionScopeOption-400x68.png "transactionScopeOption")](http://patrickdesjardins.com/blog/c-system-transactions-namespace/transactionscopeoption)[/caption]
+[caption id="attachment\_370" align="aligncenter" width="400" caption="Transaction Scope Option"]![](images/transactionScopeOption-400x68.png)
 
 - Required
 If a transaction exist, a new declaration of the a transaction will simply join the first one. If none is defined, a new transaction will be initiated. This can be useful in the scenario that you that you have 1 method that call 2 methods. You put the a transaction and inside you add the two methods. Inside those methods you can have some database call with or without transaction scope. At the end, all will be under the same transaction. This is very powerful and let you have atomic transaction over multiple methods.- RequiresNew

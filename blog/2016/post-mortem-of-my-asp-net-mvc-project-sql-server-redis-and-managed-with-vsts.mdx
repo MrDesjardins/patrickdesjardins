@@ -40,7 +40,7 @@ Using VSTS helped me to stay focus or at least prioritize my work. I have over 1
 
 My conclusion on the schedule is that a single person project can have his toll when you hit a problem and can change drastically a schedule. A project that is planned to be on year can rapidly have months added up. While the primary goal was to learn and keep my knowledge up, I would say that a smaller project is better. That said, I still believe that a project most be significant to understand the impact on the maintainability. This one has 30 100 lines of code + 13 900 lines of comment, so more than 44k lines.
 
-[![33monthsnumberlinesofcode](http://patrickdesjardins.com/blog/wp-content/uploads/2016/10/33MonthsNumberLinesOfCode.png)](http://patrickdesjardins.com/blog/?attachment_id=4821)
+![](images/33MonthsNumberLinesOfCode.png)
 
 Finally, I would say that motivation is a factor too. I am very motivated and I enjoy the code produced which even after a hard day at work was making me feel good. Owning everything may have the bad side of being stuck for days which unrail a feature from 10 hours to 40 hours, but also have the benefit of having a code base that look like you want.
 
@@ -48,9 +48,9 @@ Finally, I would say that motivation is a factor too. I am very motivated and I 
 
 The architecture was right from the start. I didn't do any major changes and the reason is that I knew how to do it. I not only maintained a lot of different projects, but also created a lot of them done in the past. PHP, Asp.Net webform, classic ASP, or Asp.Net MVC, at the end, a good architecture fits any languages.
 
-[![LayersBourseVirtuelle](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/LayersBourseVirtuelle.png)](http://patrickdesjardins.com/blog/asp-net-mvc-project-sql-server-redis-and-managed-with-vsts/layersboursevirtuelle) The division of the service, accessor and repository is a big win. It was a charm to add **Redis**, even if it was around sprint 16, because of the _accessor layer_ which guide the request in Redis or in the database (repository). It was also able to handle email by sending the email in file during development and to a third-party like _Send Grid_ in production, all that by using dependencies of injection.
+![](images/LayersBourseVirtuelle.png)
 
-[![DetailledArchitecture](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/DetailledArchitecture.png)](http://patrickdesjardins.com/blog/asp-net-mvc-project-sql-server-redis-and-managed-with-vsts/detailledarchitecture)
+![](images/DetailledArchitecture.png)
 
 The [unit of work](http://patrickdesjardins.com/blog/entity-framework-and-the-unit-of-work-pattern) wasn't that good. It's a recommended pattern by [Julie Lerman in her Pluralsight training](https://www.pluralsight.com/courses/efarchitecture). The idea is very good, but Entity Framework Context is a mess and having the unit of work lives between logic was causing all sort of problem. While this pattern is a charm to work for testing, it's a maintainability nightmare. Adding logic between a simple load of data and a save could result of having Entity Framework Context being out of synchronization. I won't go more in detail in this post but you can find [some details in this past post about why I wouldn't use Entity Framework](http://patrickdesjardins.com/blog/why-i-do-not-recommend-any-more-entity-framework-as-you-orm).
 
@@ -58,7 +58,7 @@ Having the configuration at the same level of the repository is great, it means 
 
 I started having all the layers and modules in different project. The solution had about 50 projects. For [performance](http://patrickdesjardins.com/blog/improving-visual-studio-and-msbuild-speed-for-large-solution) reason, I finished with 5 projects. The screenshot shows 8 buts one is the architecture models and one is the Mysql connector that was used during the migration and one is the Migration itself. Both of them are usually unloaded, hence 5 real projects.
 
-[![6realprojectsforboursevirtuelle](http://patrickdesjardins.com/blog/wp-content/uploads/2016/10/6RealProjectsForBourseVirtuelle.png)](http://patrickdesjardins.com/blog/?attachment_id=4820)
+![](images/6RealProjectsForBourseVirtuelle.png)
 
 I didn't loose any time in the architecture. Of course, the first sprint was more about planning with VSTS, creating some Visio document with classes, etc. But it was worth it. First of all, the work items got used. I didn't had all of them the first month, but most of them. The UML Visio diagrams was quite accurate to be honest. Of course, it misses about 50% of the classes since I involved and added more details. It misses them because they were not core classes and because I never took the time to updated it. During the development, I updated the [architecture diagram](http://patrickdesjardins.com/blog/how-to-automatic-have-your-architecture-validated-by-msbuild) that Visual Studio can produce in its Enterprise edition.
 
@@ -72,7 +72,7 @@ At some point, I decided to open sourced some codes of my application to be able
 
 So while the project has over 44 000 lines of code and comments, the real amount of code produced is approaching 50 000 lines of code. The idea of open sourcing code was good, but it added more overhead. First of all, extracting the code from the solution. Even if the code was well separated, logging and namespacing needed to change. Creating the Github repository, the Nuget package, the unit tests in xUnit instead of VsTest (which were not supported by Travis-ci) added some nights of work. Furthermore, debugging became harder too. From just adding a breakpoint in the code to having to reference the project and remove the Nuget, etc. For sure, it wasn't helping to get faster. That said, I am glad because these extracted library are well contained and tested.
 
-[![linesofcodetrend](http://patrickdesjardins.com/blog/wp-content/uploads/2016/10/LinesOfCodeTrend-1024x530.png)](http://patrickdesjardins.com/blog/?attachment_id=4822) During the development, I was following the code health with a tool called [NDepend](http://patrickdesjardins.com/blog/review-of-ndepend). It was a good "virtual friend" that tell you if you are going in the wrong direction. All trending images are from this tool.
+![](images/LinesOfCodeTrend-1024x530.png)
 
 Some time was lost but most of the work was done inside the main project, hence the debugging was not intensive. I would say that I lost maybe 3 weeks (25-30 hours).
 
@@ -80,11 +80,11 @@ Some time was lost but most of the work was done inside the main project, hence 
 
 I am a big fan of automated tests. Even more if it's a single man project that I will be the one to maintain. I started doing my tests almost at the same time of my code, but after few months (around 6th-7th) was doing my test just before commiting, as a way to make sure that what I did was right and a validation that my code was well encapsulated with unique purpose. There is definitely benefits. On the 1800 automated tests, 1300 are unit tests and 500 are integration tests. By unit tests I mean very fast test that test methods without any dependencies -- everything is mocked. By integration tests, I mean test that use database, they integrate many pieces of the puzzle.
 
-[![structuretests](http://patrickdesjardins.com/blog/wp-content/uploads/2016/10/structureTests.png)](http://patrickdesjardins.com/blog/?attachment_id=4826) The test files structure is the exact structure of the actual code, but inside a testing project. It increases the maintainability because it's easier to find the test associated with the code. Also, every test's folder end by "UnitTests" or "IntegrationTests" which allow to quickly know what type of test the file contains.
+![](images/structureTests.png)
 
 ### Unit tests
 
-One problem I had and have is that I am still having some bugs that I shouldn't with my coverage of 70%. The problem I have an still have is that I have a lot of expected exceptions that are thrown and tested but the code that use those methods doesn't handle those exceptions. That is totally my fault and I need to work on that. Why I didn't do it is mostly because I know these cases shouldn't happen, but they do, sometime. Those edge cases need user experiences that are not defined. The reason I didn't do it was that I was short on my work item schedule or even was already late. Not a good excuse, but still the reality. [![coverage](http://patrickdesjardins.com/blog/wp-content/uploads/2016/10/coverage-1024x507.png)](http://patrickdesjardins.com/blog/?attachment_id=4824)
+One problem I had and have is that I am still having some bugs that I shouldn't with my coverage of 70%. The problem I have an still have is that I have a lot of expected exceptions that are thrown and tested but the code that use those methods doesn't handle those exceptions. That is totally my fault and I need to work on that. Why I didn't do it is mostly because I know these cases shouldn't happen, but they do, sometime. Those edge cases need user experiences that are not defined. The reason I didn't do it was that I was short on my work item schedule or even was already late. Not a good excuse, but still the reality. ![](images/coverage-1024x507.png)
 
 If you look at the trend graph, you can see that around march 2015 (sprint 14) the coverage fell from 78% to now 70%. I can blame no one else than myself. That said, I was reaching little down in motivation (my first and only one among the first 30 months) by seeing that I was not even half way through that project, I just had a new baby and was working a lot of hours at Microsoft. I cheated on the unit tests instead of cutting features. I definitely plan to increase them slowly. The major area where unit tests are missing at this point is the all controllers and few repository classes. The choice was deliberated to focus on the _services_ and _models_ classes which hold the core of the logic and are more incline to fail.
 
@@ -184,7 +184,7 @@ My goal was to provide a more inline help experience. The legacy system had inli
 
 The new system allows you to connect with a single Facebook or Twitter account. Asp.Net MVC has some templates about it but still isn't all perfect with some hiccup depending of which provider you use. Twitter was the simpler to integrate for example. That said, I do not see a lot of user using it so far (still just 3 months since released and most people have already their account). This might has been released too fast and could have been delayed to a later stage. However, it wasn't a job of more than 2 nights. I am still very happy with my email inscription which require just a single email. The legacy system was also very simple but was requiring a password. Now, it's really just an email.
 
-[![registrationwindow](http://patrickdesjardins.com/blog/wp-content/uploads/2016/11/RegistrationWindow-1024x462.png)](http://patrickdesjardins.com/blog/?attachment_id=4846)
+![](images/RegistrationWindow-1024x462.png)
 
 The idea was to have the user as quick as possible in the system. An email is sent with a temporary password, that allow me to validate that it's a real user and thus remove the need of a [Captcha](http://patrickdesjardins.com/blog/how-to-add-recaptcha-to-your-asp-net-mvc4-register-form) that I used in the legacy system. I am using SendGrid to send email and I really like their interface where it tell you if the user has receive/open/click the email. I have a greater ratio of email delivered for people having Hotmail account so far which is great. Before, in the legacy system, I was using directly SMTP.
 

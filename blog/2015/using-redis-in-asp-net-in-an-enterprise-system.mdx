@@ -89,7 +89,7 @@ This is how to register the cache with Microsoft Unity. The first one register t
 
 From there, it's possible to use anywhere the interface. It's also easy to unit test since you can mock the **ICache** interface which is the only interface that you need to pass through all your code. About what need to be used, it's clear from the dependency injection code that we use **ICache** as the interface to use and not the concrete **RedisCache** class. The cache shouldn't be used in the controller class, neither in your service class or in your repository class. This belong to the accessory classes which are between your service and repository class. Here is the a graphic of the layers that is recommended to have when using a cache system and a database.
 
-[![Layers](http://patrickdesjardins.com/blog/wp-content/uploads/2015/07/Layers-400x277.png)](http://patrickdesjardins.com/blog/using-redis-in-asp-net-in-an-enterprise-system/layers-3)
+![](images/Layers-400x277.png)
 
 The idea is that that the only layer to know about the cache is the accessor. The service layer does not know about the cache or the database -- it only know about to get and set from the accessor. The repository does not know about caching, it's responsibility is to get from the persistence storage the data. This can be with Entity Framework (or any other ORM) or directly with Ado.Net. On the other hand, the cache does not know about the database, it only know how to store data in a fast access way. This mean that the accessor class is the only one to get the cache injected. Here is a small example.
 

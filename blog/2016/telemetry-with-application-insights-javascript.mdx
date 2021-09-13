@@ -29,10 +29,10 @@ function attachTelemetries() { $('#all-contests').click(function () { appInsight
 ``` 
 
 
-You can use the _appInsights_ variable, defined when setuping Application Insights with the method _trackEvent_. The method take a name for the telemetry captured following by properties and if needed some metric. In our case, we can just sum the each properties (each link location) and determine which one is the most popular. Something not clear in the documentation is that it is required to call the _flush_ method. The reason is that once the click event is done, the browser move to the next page. Flush ensures that the telemetry is sent. [![MetricExplorer](http://patrickdesjardins.com/blog/wp-content/uploads/2016/01/MetricExplorer.png)](http://patrickdesjardins.com/blog/?attachment_id=4483) The third step is to analyse the result. Simply go to portal.azure.com, under the Application Insights. [![Events](http://patrickdesjardins.com/blog/wp-content/uploads/2016/01/Events.png)](http://patrickdesjardins.com/blog/?attachment_id=4481)
+You can use the _appInsights_ variable, defined when setuping Application Insights with the method _trackEvent_. The method take a name for the telemetry captured following by properties and if needed some metric. In our case, we can just sum the each properties (each link location) and determine which one is the most popular. Something not clear in the documentation is that it is required to call the _flush_ method. The reason is that once the click event is done, the browser move to the next page. Flush ensures that the telemetry is sent. ![](images/Events.png)
 
 You can add a chart in the Metric blade, see a the top. Select Sum, in a grid, and group by the property you want to get the data. In our example, it is the property that change which is the location of the link. What can be confusing is to be able to select the property you need to go at the bottom of that blade and select the metric **event**.
 
-[![GridTelemetry](http://patrickdesjardins.com/blog/wp-content/uploads/2016/01/GridTelemetry.png)](http://patrickdesjardins.com/blog/?attachment_id=4482)
+![](images/GridTelemetry.png)
 
 The result is a table that contains only the data that has been collected. Hence, you need to have people clicking the buttons to see anything. Also, it can take some time (about 30 minutes) to see the information into the Azure portal.

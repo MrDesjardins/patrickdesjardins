@@ -18,17 +18,17 @@ First of all, let define the project that we will create. Since I workout at the
 
 If we try to translate this application into a static UML diagram, like the UML Class diagram we have something like below.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/09/modelClassDiagram.png "modelClassDiagram")](http://patrickdesjardins.com/blog/enterprise-asp-net-part-1-mvc-the-planification/modelclassdiagram)
+![](images/modelClassDiagram.png)
 
 As we can see, we will have user that will be identified by the system which could have zero or many workout. Every workout will have at least one session (in the case a user want to do the same workout every training session) or could have multiple session (in case the user split his training in multiple session for example 4 different training per week). Workout session contain multiple exercise which are all associated to a muscle. Every muscle are grouped in group. For example, the bicep muscle and tricep muscle could be in the arm's group. For the moment, let stay simple and not elaborate further more. Later, we will be able to give advice to user depending of objectives or muscles desired to train.
 
 ## Creating a new Asp.Net MVC 4 project with Visual Studio 2012
 
-[![New project screen in Visual Studio 2012](http://patrickdesjardins.com/blog/wp-content/uploads/2012/09/newproject2012-400x142.png "New project in Visual Studio 2012")](http://patrickdesjardins.com/blog/enterprise-asp-net-part-1-mvc-the-planification/newproject2012)
+![](images/newproject2012-400x142.png)
 
 A new project is created with the **MVC 4 project** type. The next step is to select the MVC4 template to be applied with **Razor View Engine**.
 
-[![Visual Studio 2012's project template screen.](http://patrickdesjardins.com/blog/wp-content/uploads/2012/09/newProject_2_2012-400x361.png "Visual Studio 2012, new project template selection")](http://patrickdesjardins.com/blog/enterprise-asp-net-part-1-mvc-the-planification/newproject_2_2012)
+![](images/newProject_2_2012-400x361.png)
 
 I have selected the Unit Test project to be created cause as any serious enterprise project, we will unit test most of what we will develop. Not only it will secure us but it will ensure us to develop with interface and good habit.
 

@@ -26,7 +26,7 @@ The last step is to create a view that is using both rendering technical choice.
  @model TemplateVsPartialView.Models.Parent <div class="row"> <div class="col-sm-6"> <h2>Editor For</h2> @Html.EditorFor(d=>d) </div> <div class="col-sm-6"> <h2>Partial View</h2> @Html.Partial("\_parentPartialView", Model) </div> </div> 
 ```
 
-The output looks like the same but the source code generated is different. Here is a screenshot of the Html output. [![EditorTemplateVsPartialView](http://patrickdesjardins.com/blog/wp-content/uploads/2014/10/EditorTemplateVsPartialView-400x197.png)](http://patrickdesjardins.com/blog/asp-net-mvc-editorfor-vs-partial-view/editortemplatevspartialview)
+The output looks like the same but the source code generated is different. Here is a screenshot of the Html output. ![](images/EditorTemplateVsPartialView-400x197.png)
 
 Here is the Html markup. We can see a difference in the name and the id of the input for the child name. The reason is that the partial view does not know about where the model is used. This is a major drawback when you need to send back everything to the server because the html query string name does not contain the property name of the child class. This mean that is cannot bind the information to the inner class.
 

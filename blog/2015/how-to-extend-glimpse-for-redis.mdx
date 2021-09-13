@@ -8,7 +8,7 @@ categories:
 
 [Glimpse](http://getglimpse.com/) is the best real time profiler/diagnostic add-on you can have for your Asp.Net MVC solution. I will not describe in that article all the capabilities but in one sentence, Glimpse allows to have for you Asp.Net MVC project all times for each calls like filter, action, db call, etc. Unfortunately, no extension has been done for Redis. Nevertheless, creating a custom extension for the Timeline is not too hard. However, the documentation is very dry and it is not obvious about what you can extend or not. This is really sad and the extensibility model of Glimpse is pretty limited. For example, you cannot extend the HUD.
 
-The objective of the Glimpse's extension we are building in this article is to add in Glimpse's timeline every cache calls starting time, ending time, duration and what was the method name and key used. Here is the end result: [![GlimpseExtension](http://patrickdesjardins.com/blog/wp-content/uploads/2015/07/GlimpseExtension-400x288.png)](http://patrickdesjardins.com/blog/how-to-extend-glimpse-for-redis/glimpseextension)
+The objective of the Glimpse's extension we are building in this article is to add in Glimpse's timeline every cache calls starting time, ending time, duration and what was the method name and key used. Here is the end result: ![](images/GlimpseExtension-400x288.png)
 
 The first thing is that extension will be not for Redis particularity but for any cache system. I have in the project I have a Cache.cs class that is abstract. My Redis implementation inherit from that cache. That class contains a lot of method like Set, Get, Delete etc. Here is the set method. 
 ```csharp

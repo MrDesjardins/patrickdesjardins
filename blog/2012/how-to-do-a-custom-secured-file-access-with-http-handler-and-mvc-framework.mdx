@@ -52,11 +52,11 @@ public bool IsReusable { get; private set; } }
 
 If we debug we can see that if the request is sent with the good url that the http handler catch the request with the good value.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/09/ExternalFileHandlerSimple-400x123.png "ExternalFileHandlerSimple")](http://patrickdesjardins.com/blog/?attachment_id=1398)
+![](images/ExternalFileHandlerSimple-400x123.png)
 
 The next step is to check if the file really exist. In fact, we need to check if the unique identifier match a file. If it's not the case, in a scenario of a people trying to get some body else file, it should return a message.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/09/filenotfound.png "filenotfound")](http://patrickdesjardins.com/blog/?attachment_id=1399) This can be done by simply writing in the Response a string.
+![](images/filenotfound.png)
 
 
 ```csharp
@@ -86,11 +86,11 @@ FileInformation file = GetFromPersistenceStorage(uniqueFileIdentifier);
 } 
 ```
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/09/filenotfoundserver.png "filenotfoundserver")](http://patrickdesjardins.com/blog/?attachment_id=1400)
+![](images/filenotfoundserver.png)
 
 Finally, if the file is present, we will receive its content.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/09/messagefromfile.png "messagefromfile")](http://patrickdesjardins.com/blog/?attachment_id=1401)
+![](images/messagefromfile.png)
 
 You can now secure the file. This can be done in many ways. First, I suppose that the database table that contain every files will have some kind of relation between the user and files. Let say that every files has the possibility to allow many users, that mean the you should have 3 tables : User, UsersFiles and Files. UsersFiles table contain the id of the User that can access the file and the id of the file.
 

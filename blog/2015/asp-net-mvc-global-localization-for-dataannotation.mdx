@@ -7,7 +7,7 @@ categories:
 
 If you are using for example the popular **[Required]** attribute you may stumble into the situation that you do not want to setup the name of the resource and the name of the file every time. A quick way to fix that is to use your own Required attribute that inherit from the default Mvc one.
 
-[![RequireFileSetup](http://patrickdesjardins.com/blog/wp-content/uploads/2015/04/RequireFileSetup.png)](http://patrickdesjardins.com/blog/asp-net-mvc-global-localization-for-dataannotation/requirefilesetup)
+![](images/RequireFileSetup.png)
 
 I create this attribute inside the namespace that has cross layer relationship. This way, I can use it inside my Model assembly, my ViewModel assembly. This is also where I setup the resource file. The attribute is very simple. It takes the display name to replace use this one inside the require message. Then, it loads the resource, do the string format to put the display name into the message.
 

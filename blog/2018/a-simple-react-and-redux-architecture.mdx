@@ -8,13 +8,13 @@ categories:
 
 There are a lot of different ways to have a system built around React and Redux. The freedom is mainly because both frameworks are not opinionated on how developers leverage them. In this article, I’ll present a simple architecture that uses React and Redux. The idea is to not complicate the lifecycle by avoiding an excess of third-party libraries and instead focus on some core ones.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2018/01/ReactReduxLifeCycle.png)](https://patrickdesjardins.com/blog/a-simple-react-and-redux-architecture/reactreduxlifecycle)
+![](images/ReactReduxLifeCycle.png)
 
 ### UI Components
 
 The premise of having a simple code starts with having simple UI elements. Simplicity follows the React philosophy of having small and simple components. It makes code reading easier for developers who need to change it, makes writing unit tests faster, as well as reduces the side-effects that occur when modifying a piece of code. Most of the components won’t have a state at all. By most, I mean more than 95%.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2018/01/ComponentTopDown.png)](https://patrickdesjardins.com/blog/a-simple-react-and-redux-architecture/componenttopdown)
+![](images/ComponentTopDown.png)
 
 Most of the stateless components will be presentation components. These do no connect to Redux – they get their data from their properties and display it. When needing to take action, they dispatch using the properties as well. There are multiple reasons for this, the main reason being reusability. You can reuse these components regardless of the lifecycle. They are not tied to Redux or any other framework you may migrate to in the future. The second reason is simplicity. It is simpler not to be dependent on the store for testing.
 
@@ -38,7 +38,7 @@ Data comes in many formats, and sometimes some entities are part of many data br
 
 Every time an action is dispatched, the lifecycle flow of information goes from React component to middlewares to reducers to the store which then notifies the React component. The pre and post middleware are middlewares located before and after the domain middleware.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2018/03/Middlewares.png)](https://patrickdesjardins.com/blog/a-simple-react-and-redux-architecture/middlewares)
+![](images/Middlewares.png)
 
 Pre-Middlewares in this architecture are middlewares for Thunk, operational, routing and authentication. Post-Middlewares are for normalization and telemetry. Let’s take a look at some of them to have a better idea. Post-Middleware prepares the data for business logic ones where the domain logic will be executed.
 

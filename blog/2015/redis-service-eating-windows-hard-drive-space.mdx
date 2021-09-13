@@ -7,7 +7,7 @@ categories:
 
 I noticed my hard drive losing space faster than usually. I decided to run a tool named "WinDirStat" which is free and allow to get a portrait of your hard drive. Within few seconds, the culprit was inside Windows folder, to be more accurate: **C:\\Windows\\ServiceProfiles\\NetworkService\\AppData\\Local\\Redis**.
 
-[![RedisServerWindowsSpaceHarddrive](http://patrickdesjardins.com/blog/wp-content/uploads/2015/09/RedisServerWindowsSpaceHarddrive.png)](http://patrickdesjardins.com/blog/?attachment_id=4353)
+![](images/RedisServerWindowsSpaceHarddrive.png)
 
 I am running Redis as a service on my machine since about 2 months and never realized that this one store the size of the ram of your machine in multiple files. Each files are named with "RedisQFork\_9076.dat" and the number vary. Each of them were 8 gigs because I had a 8 gig ram machine.
 

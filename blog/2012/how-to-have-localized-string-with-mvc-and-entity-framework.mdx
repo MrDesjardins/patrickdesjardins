@@ -58,7 +58,7 @@ The second attribute is the NotMapped over the Current property. The Current pro
 
 From here, we are almost done. The last step is to create templates. We need one **EditorTemplates** and one **DisplayTemplates**. Both of them are here let know Asp.Net MVC how to display the new type **LocalizedString**.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/09/SharedTemplates.png "SharedTemplates")](http://patrickdesjardins.com/blog/how-to-have-localized-string-with-mvc-and-entity-framework/sharedtemplates)
+![](images/SharedTemplates.png)
 
 Both DisplayTemplates and EditorTemplates require to be into the Shared folder. You need to create 1 file per folder with the name of your new type. In our case, it's **LocalizedString**.
 
@@ -88,15 +88,15 @@ The generated html contain a valid name that link to the Current property of Ava
 
 The controller will use the model binding to be able to set the Current value to the good language. This is automatically done because of the setter of Current that check the current language and set the value into the good property.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/09/controllerLocalizedString-400x120.png "controllerLocalizedString")](http://patrickdesjardins.com/blog/how-to-have-localized-string-with-mvc-and-entity-framework/controllerlocalizedstring)
+![](images/controllerLocalizedString-400x120.png)
 
 Once saved, the data is inserted into the avatar table.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/09/avatartable.png "avatartable")](http://patrickdesjardins.com/blog/how-to-have-localized-string-with-mvc-and-entity-framework/avatartable)
+![](images/avatartable.png)
 
 And the data :
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/09/avatarData-400x53.png "avatarData")](http://patrickdesjardins.com/blog/how-to-have-localized-string-with-mvc-and-entity-framework/avatardata)
+![](images/avatarData-400x53.png)
 
 That's it. The model is clean with 1 property, the view is clean because it uses template so it's a one liner like normal string. The controller is clean because it doesn't have any logical for the language. The database is clean because the information is stored what ever which class will use **LocalizedString**. Those additional rows are automatically create by Entity Framework and doesn't require any.
 

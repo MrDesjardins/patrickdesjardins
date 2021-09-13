@@ -13,7 +13,7 @@ This is where Visual Studio can be very useful with the integrated **Diagnostic 
 
 Here is an example of the output that I got from my performance problem.
 
-[![DiagnosticTool](http://patrickdesjardins.com/blog/wp-content/uploads/2016/02/DiagnosticTool-782x1024.png)](http://patrickdesjardins.com/blog/how-to-diagnostic-visual-studio-slow-code/diagnostictool)
+![](images/DiagnosticTool-782x1024.png)
 
 Visual Studio Diagnostic tools events include Entity Framework SQL statements. This is where I realized that the user's table was updated but also hundred of others which looks to be a table linked to this one. Here was the performance bottleneck, the culprit! I never expected to update anything related to that table -- just the main user's table.
 

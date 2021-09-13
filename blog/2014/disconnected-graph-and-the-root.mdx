@@ -16,7 +16,7 @@ A simple example is this one. You have an entity that has a list of another type
 
 In this example, all Person entity does not exist in the database. The House entity does not exist. Rather to add the House entity and all Person, we just need to add the root element: the House. This is what the code is doing. This execution produces three entries into the database : one for the House, one for the Owner (a Person) and a last one for the Resisdent (a Person).
 
-[![DatabaseRootAdd](http://patrickdesjardins.com/blog/wp-content/uploads/2014/06/DatabaseRootAdd-400x128.png)](http://patrickdesjardins.com/blog/disconnected-graph-and-the-root/databaserootadd)
+![](images/DatabaseRootAdd-400x128.png)
 
 It is important to notice that Entity Framework is enough bright to no mark a children as "Added" if this one is already been tracked by its context. For example, you load from the database a Person entity and add it to the collection. This one will not be added but will be attached.
 

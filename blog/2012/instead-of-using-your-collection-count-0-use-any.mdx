@@ -11,6 +11,6 @@ But, if you are using IEnumerator<> which contain GetEnumerator() and MoveNext()
 
 LINQ-to-Objects implementation of Count() will call the .Count property for optimisation but if you have used LINQ with WHERE statement or any other Linq filter function, you will have an iterator-block based sequence and this Count() optimisation won't be applied. In fact, it will loop all the collection to get the count. That mean that the performance is O(n).
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/03/countProperty-400x125.png "countProperty")](http://patrickdesjardins.com/blog/instead-of-using-your-collection-count-0-use-any/countproperty)
+![](images/countProperty-400x125.png)
 
 To keep it simple, for performance wise and maintenability wise, .Any is the best to use to know if something is inside a list.

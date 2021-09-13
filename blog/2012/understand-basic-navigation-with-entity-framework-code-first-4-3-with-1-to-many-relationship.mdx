@@ -33,7 +33,7 @@ First, lets configure the dealer by stating that we have many cars associated to
  public class DealerConfiguration : EntityTypeConfiguration<Dealer> { public DealerConfiguration() { HasMany(x => x.CarToSale); //One to many } } 
 ```
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/08/fkDealerOfCars-241x400.png "fkDealerOfCars")](http://patrickdesjardins.com/blog/?attachment_id=1366)
+![](images/fkDealerOfCars-241x400.png)
 
 But, let say that we want to add in our model the property Dealer inside the car. For the car, the relation is **1 to 0..1**.
 
@@ -44,7 +44,7 @@ So, it's now possible to join to the car the dealer by setting the car to the de
  //Add to the database from the car using (var db = new DatabaseContext()) { var dealer = new Dealer() {Name = "Patrick"}; var car = new Car {Brand = new CarBrand(), Seller = dealer}; db.Dealers.Add(dealer); db.Cars.Add(car); db.SaveChanges(); } 
 ```
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/08/dealerSeller-400x265.png "dealerSeller")](http://patrickdesjardins.com/blog/?attachment_id=1367)
+![](images/dealerSeller-400x265.png)
 
 or
 
@@ -57,14 +57,14 @@ In both case, the table still has the foreign key inside the car and the dealer 
 
 ## Required relation of one to many
 
-For the moment, if we take a look at the database, the generated table contain a NULL at the dealer\_id foreign key. [![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/08/CarDealerOptional.png "CarDealerOptional")](http://patrickdesjardins.com/blog/?attachment_id=1368)
+For the moment, if we take a look at the database, the generated table contain a NULL at the dealer\_id foreign key. ![](images/CarDealerOptional.png)
 
 Let say that we want to have this field has a required field. We want **"Not NULL"** to be generated into the table column property.
 
 
 ```csharp
  public CarConfiguration() { HasRequired(x => x.Seller); //One to many is now a required field. It's really 1 to \* and not 0 to \* } 
-``` Will produce: [![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/08/notnullseller.png "notnullseller")](http://patrickdesjardins.com/blog/?attachment_id=1369)
+``` Will produce: ![](images/notnullseller.png)
 
 Not bad! Now we have what we want, a required field for the Dealer (called seller from the car perspective). Could we have configure this from the Dealer's entity instead of using the Car configuration? Of course!
 

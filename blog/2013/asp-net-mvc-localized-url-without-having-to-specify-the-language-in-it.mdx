@@ -32,7 +32,7 @@ As you can see, it can be very exhaustive to define every actions of every contr
 
 We are using a lot of classes that you will need. First of all, let's define all classes that are used to structure the controllers and actions translation. I have separated all classes in 4 files.
 
-[![RoutingClasses](http://patrickdesjardins.com/blog/wp-content/uploads/2013/11/RoutingClasses.png)](http://patrickdesjardins.com/blog/asp-net-mvc-localized-url-without-having-to-specify-the-language-in-it/routingclasses)
+![](images/RoutingClasses.png)
 
 
 ```csharp
@@ -89,6 +89,6 @@ var requestedController = values["controller"]; var requestedAction = values["ac
 
 For both method, if we do not find the controller name or action name, it falls back to the default name. This way, nothing crash. I have also added two lines that change the thread language. This is not require if you do not want to change the language of the whole application but it seems logical to do it. If you send an url in French, you certainly want to have the whole page to use French resources.
 
-[![TranslatedUrlAndLinks](http://patrickdesjardins.com/blog/wp-content/uploads/2013/11/TranslatedUrlAndLinks-400x210.png)](http://patrickdesjardins.com/blog/asp-net-mvc-localized-url-without-having-to-specify-the-language-in-it/translatedurlandlinks)
+![](images/TranslatedUrlAndLinks-400x210.png)
 
 You can have the complete source code on [GitHub](https://github.com/MrDesjardins/WebForLocalizedUrl).

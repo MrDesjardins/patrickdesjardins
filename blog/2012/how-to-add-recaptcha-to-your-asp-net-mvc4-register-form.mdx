@@ -7,11 +7,11 @@ categories:
 
 To prevent bot (automatic program that act like a human without being a real one) to register account to your website, you can use what we can captcha. Captcha is image that only human can read. They have letters that need to be input in a text box when the form is filled up. Today, I'll show you how to implement ReCaptcha, a popular Captcha service that is totally free and owned by Google.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/09/recaptchaMVCScreen-331x400.png "recaptchaMVCScreen")](http://patrickdesjardins.com/blog/?attachment_id=1576)
+![](images/recaptchaMVCScreen-331x400.png)
 
 The first step is to register a API key for your website. You can go to [http://www.google.com/recaptcha](http://www.google.com/recaptcha) and create a new one. I suggest you to not check the check box of "Enable this key on all domains" to be able to debug with localhost. So, after this step, you will have a private and public key that will be required to use the ReCaptcha service.
 
-The second step is to have library to access ReCaptcha. Inside your project, add the two following NuGet Package. One is the Recaptcha API service and the other one will give you **Html helper**. [![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/09/recaptchaMVC1-400x131.png "recaptchaMVC")](http://patrickdesjardins.com/blog/?attachment_id=1574)
+The second step is to have library to access ReCaptcha. Inside your project, add the two following NuGet Package. One is the Recaptcha API service and the other one will give you **Html helper**. ![](images/recaptchaMVC1-400x131.png)
 
 The third step is to configure your project with the public and private key. This can be done by adding 2 appsettings in the web.config.
 

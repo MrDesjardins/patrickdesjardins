@@ -7,11 +7,11 @@ categories:
 
 [Passing a message](https://developer.chrome.com/extensions/messaging) from a website to a Chrome Extension is not routine job. Not only the communication between a specific piece of code from the browser to a specific browser is unusual, it is also confusing by the potential type of extension. In this article, I'll focus on an extension that goes into the Chrome Extension Developer tools. Similar to the "Elements" or "Network" tab, the extension will have its own tab that will be populated by the website. To be more accurate, it could be any website using a specific library.
 
-[![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/07/ChromeExtensionDeveloperTools.png)](https://patrickdesjardins.com/blog/?attachment_id=5901)
+![](images/ChromeExtensionDeveloperTools.png)
 
 The illustration is the concept of what is happening. The reality is a little bit more complicated. There is more communication boundary that is required which can be confusing at first. The documentation is great but it lacks guidance for a first time user. The following illustration is what happens in term of communication and with that in mind, the flow should be easier to understand.
 
-[![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/07/ChromeExtensionDeveloperTools-RealityView.png)](https://patrickdesjardins.com/blog/?attachment_id=5902)
+![](images/ChromeExtensionDeveloperTools-RealityView.png)
 
 Your library that is sending information to your extension is very simple. It consists of using the "window.postMessage" to send an object. The extension will read and parse your payload depending on the source. For my library and extension, named [Data Access Gateway](https://github.com/MrDesjardins/dataaccessgateway), I decided to have the source name "dataaccessgateway-agent". The name could be anything. Keep in mind that later, you will reuse the name at the extension code to verify that the message is coming from your source.
 

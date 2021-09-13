@@ -11,10 +11,10 @@ A solution is to use IIS instead of IIS Express. This way, every compilation, on
 
 > This configuration section cannot be used at this path. This happens when the section is locked at a parent level. Locking is either by default.
 
-[![Error500ConfigurationSectionFail](http://patrickdesjardins.com/blog/wp-content/uploads/2014/08/Error500ConfigurationSectionFail-400x142.png)](http://patrickdesjardins.com/blog/developing-with-iis-express-to-full-iis/error500configurationsectionfail)
+![](images/Error500ConfigurationSectionFail-400x142.png)
 
 This error occurs if you have not added some of IIS features. To add those features, open the Windows Feature by typing "Turn Windows features on or off" in the start menu. This open a window with some Windows feature. Select "Internet Information Services", "World Wide Web Services" and all of them.
 
-[![IISFeaturesEnabled](http://patrickdesjardins.com/blog/wp-content/uploads/2014/08/IISFeaturesEnabled.png)](http://patrickdesjardins.com/blog/developing-with-iis-express-to-full-iis/iisfeaturesenabled)
+![](images/IISFeaturesEnabled.png)
 
 From there, be sure that your web application in IIS point to the web project and the other one to the web api project. Not the DLL folder, but the folder where the project is located. You just need to compile and you are up and running. If you need to debug with break point, you need to go in Visual Studio and go to Debug > Attach To Process. Click "Show Process from all user" and select the w3wp.exe process. Click attach and you are ready to debug.

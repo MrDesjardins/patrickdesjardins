@@ -8,7 +8,7 @@ categories:
 
 One of the key element of your website should be that every Url that you have should goes to the controller's action that you expect. This is also true when you are using an Asp.Net Html Helper that generate an URL. To be sure that you can rely that an Url links to the right action and that every Url generated have the right string structure, you must unit test them. This is far more important when your project start to become bigger and bigger. Routing rules can override a previous route and create unreachable code from your web interface. To solve that issue, every routes should be unit tested.
 
-[![UnitTestControllerRouting](http://patrickdesjardins.com/blog/wp-content/uploads/2015/04/UnitTestControllerRouting-400x262.png)](http://patrickdesjardins.com/blog/unit-testing-mvc-area-route-mapping-to-controller-and-url-creation/unittestcontrollerrouting)
+![](images/UnitTestControllerRouting-400x262.png)
 
 Asp.Net MVC routing system is quite interesting and easy to unit tests. I read that it is hard to unit test but this is not my experience. In this article, I will show you how to unit test routing from a specific AreaRegistration file. This is exactly the same process if you have your route inside the RouteConfig.cs file. Instead of using the area class, you use the **RouteConfig** class. They both use the System.Web.Routing.RouteTable and this is what we need to setup tests.
 

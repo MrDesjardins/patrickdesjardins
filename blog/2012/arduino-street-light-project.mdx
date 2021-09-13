@@ -13,15 +13,15 @@ I am done with my personal project that was to built a system of light to tell m
 
 The electronic part consist of an Arduino Diecimila that I already had (I think it has cost me around 35$ in the past). This will be used to have the logic that are to open the light, to evaluate the distance and to have some logic of "sleep" because we do not want the system to be always open. Also, I added the possibility to configure on the fly the machine with 2 buttons that will record in the permanent memory the distance for the yellow and red light.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/08/planLumiereGarage-376x400.png "planLumiereGarage")](http://patrickdesjardins.com/blog/?attachment_id=1323)
+![](images/planLumiereGarage-376x400.png)
 
 So, you need an Arduino board with at least 12kb of ram memory. Diecimila is more than enough and the new popular one is over what we need. You need to have a relay to open 110 volts light bulb. I took one on Ebay called Yurobot that has 4 relay and handle the current/volt for Arduino to 110volt. It has worked flawless and it's pretty great to debug because it has 4 leds that indicate when the current is distributed. The cost is 8$.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/08/relay.png "relay")](http://patrickdesjardins.com/blog/?attachment_id=1325)
+![](images/relay.png)
 
 Then, you need the input sensor for the distance. I have used the Ultrasonic Module HC-SR04, which work nice in straight line within a distance of 1 cm to 2 meters. The cost is 2$ on Ebay. For that price, you can be really picky. Of course.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/08/ultrasonic-400x261.png "ultrasonic")](http://patrickdesjardins.com/blog/?attachment_id=1324)
+![](images/ultrasonic-400x261.png)
 
 Finally, I bought 1 60 watts red, yellow and green build for about 5$. The rest of the stock are wires (14 gaugs for 110 volts, and 22 gaugs for 5 volts) I had for around 5$. I bought 3 switchs (1 power switch and 2 pushbuttons) for about 3$. Finally, since I wanted 1 wire to be connectec to the 110 volts of my house, I bought an electric extension for 2$ and cut the end to use it as main electricity source. I needed also to have something to convert 110 volts to 9 volts for Arduino. I bought on Ebay a power supply for 5$. So, this cost me around 65$ to build + the wood/paint/nail that I already have. I guess you can get this project done under 80$ without a problem.
 
@@ -72,7 +72,7 @@ if(lastActivity != 0 && lastActivity < currentTime) //Check if we had an activit
 
 You can see the final version on [YouTube](http://youtu.be/O3TtWqblM9I). The physical enclosure may has be done more beautifully but I am not a carpenter. I am happy of the end result. Some thing that you might know : the power cable is too short. I bought a 1.5 meters extension cord and I think you should get at least 2.5 meters. Also, I had the idea to have the ultrasonic sensor outside the main enclosure and this is a good idea. The only error I did is that I bought a plastic enclosure too big for the purpose of having only the ultrasonic sensor (not a big deal). Last thing, the wood enclosure is too small, I had difficulty to put the relay, the Arduino, all the wire and the power supply.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/08/woodenclosure-216x400.png "woodenclosure")](http://patrickdesjardins.com/blog/?attachment_id=1329)
+![](images/woodenclosure-216x400.png)
 
 As you can see, the space between the back of the light and the wood is about 1 inch.
 

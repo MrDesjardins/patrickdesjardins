@@ -7,7 +7,7 @@ categories:
 
 If you are using Visual Studio Team Services (VSTS) for your continuous integration (CI) you may want to run only specific tests. In the past, I had a project that were dividing tests that needed database and not. One was integration tests, the other one unit tests. In the CI you want only to run unit tests. The reason is that they doesn't not require any infrastructure like databases, cached, third-party services or external API. That said, if you cannot specify an assembly name (or pattern) how can you tell the CI to run only the unit test?
 
-VSTS' build system can run the Visual Studio Test step with **test filter criteria**. This is where you can define which **TestCategory** you want to execute. [![VstsTestCategory](http://patrickdesjardins.com/blog/wp-content/uploads/2016/04/VstsTestCategory.png)](http://patrickdesjardins.com/blog/?attachment_id=4607)
+VSTS' build system can run the Visual Studio Test step with **test filter criteria**. This is where you can define which **TestCategory** you want to execute. ![](images/VstsTestCategory.png)
 
 This is not really obvious from VSTS website what you can put there. The "i" icon gives you some information but this is quite limited. A better user interface (UI) would have been to have a quick cheat sheet available on the "i". Nevertheless, you can type "TestCategory=YOUR\_CATEGORY" where YOUR\_CATEGORY is the one defined in the test.
 

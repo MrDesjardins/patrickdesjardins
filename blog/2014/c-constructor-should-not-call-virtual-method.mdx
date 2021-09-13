@@ -10,7 +10,7 @@ Instantiating an object calls obviously the controller of the class. In the case
  class Program { static void Main(string[] args) { var classA = new ClassA(); Console.ReadLine(); } }
 
 public class ClassA:ClassB { public ClassA() { Console.WriteLine("ClassA Constructor"); } } public class ClassB { public ClassB() { Console.WriteLine("ClassB Constructor"); } } 
-``` [![ConstructorOrderCalls](http://patrickdesjardins.com/blog/wp-content/uploads/2014/06/ConstructorOrderCalls-400x345.png)](http://patrickdesjardins.com/blog/c-constructor-should-not-call-virtual-method/constructorordercalls)
+``` ![](images/ConstructorOrderCalls-400x345.png)
 
 Having a method virtual allow the derived class to override the method. If the base class call the method, this one call, if overrided, call the one in the derived class. This mean that if you are instantiating value in the derived class that this one will not have the data instantiated yet. This can produce unexpected error like having null reference or working with a set of data that is not initialized with the desired value. The problem is that in the life time of the class, this one could be inherited which create new unexpected scenarios of where the virtual method is defined.
 
@@ -25,6 +25,6 @@ public override string TestMethod() { return currentProcess.ProcessName; } } pub
 public virtual string TestMethod() { return "Test"; } } 
 ``` The result is that the TestMethod() from the base class call the TestMethod() of the derived class and crash at the currentProcess line.
 
-[![CallingVirtualMethodInConstructorError](http://patrickdesjardins.com/blog/wp-content/uploads/2014/06/CallingVirtualMethodInConstructorError-400x240.png)](http://patrickdesjardins.com/blog/c-constructor-should-not-call-virtual-method/callingvirtualmethodinconstructorerror)
+![](images/CallingVirtualMethodInConstructorError-400x240.png)
 
 A simple way to solve this issue is to seal the class, but on the other hand, limit the possibility of expending your class and force you to not have virtual method on this sealed class. Or, you can limit the calls of virtual method inside constructor.

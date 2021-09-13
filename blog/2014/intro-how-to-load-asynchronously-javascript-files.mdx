@@ -36,7 +36,7 @@ Let's dive in a short demo. Create a simple Html file with that call the bootstr
 
 This imply that we set the require.js file, that you can download from the official website, to be installed into a scripts directory. In that directory we will set the main.js file and a folder that will contain another JavaScript file. This will let you demo JavaScript files in different folders.
 
-[![requireExample](http://patrickdesjardins.com/blog/wp-content/uploads/2014/08/requireExample.png)](http://patrickdesjardins.com/blog/intro-how-to-load-asynchronously-javascript-files/requireexample)
+![](images/requireExample.png)
 
 The main JavaScript will require the use of the other JavaScript in the other folder. ```typescript
 console.log("Main: Before Require"); require(["helper/util"], function(util) { console.log("Main: After Util loaded"); }); console.log("Main: After Require"); 
@@ -48,15 +48,15 @@ console.log("Util: Util file is loaded");
 
 The end result is what we expect, the two logs of main.js are executed before the one in util.js. The last log is the one defined in the function inside the require which is trigged only when the util.js is finally loaded.
 
-[![requireOutput](http://patrickdesjardins.com/blog/wp-content/uploads/2014/08/requireOutput.png)](http://patrickdesjardins.com/blog/intro-how-to-load-asynchronously-javascript-files/requireoutput)
+![](images/requireOutput.png)
 
 So far we have seen the possibility of the modularity but not the asynchronous feature. To show this in action, let's create some more JavaScript file and modify the main.js to load more than only a single file.
 
 ```typescript
 console.log("Main: Before Require"); require(["helper/util","helper/util2","helper/util3"], function(util) { console.log("Main: After all Util loaded"); }); console.log("Main: After Require"); 
 ``` 
- The output is about the same but now we have three JavaScript file loaded in parallel. [![requireAsync](http://patrickdesjardins.com/blog/wp-content/uploads/2014/10/requireAsync-400x127.png)](http://patrickdesjardins.com/blog/intro-how-to-load-asynchronously-javascript-files/requireasync)
+ The output is about the same but now we have three JavaScript file loaded in parallel. ![](images/requireAsync-400x127.png)
 
-Let's do a comparison of these JavaScript files loaded without Require.js to see how it would have looks. [![requireNoRequireOuputPerformance](http://patrickdesjardins.com/blog/wp-content/uploads/2014/10/requireNoRequireOuputPerformance-400x119.png)](http://patrickdesjardins.com/blog/intro-how-to-load-asynchronously-javascript-files/requirenorequireouputperformance)
+Let's do a comparison of these JavaScript files loaded without Require.js to see how it would have looks. ![](images/requireNoRequireOuputPerformance-400x119.png)
 
 It is not really different because these file are small but they are not loaded in the same time. However, we see that using Require.js has a performance penalty for small JavaScript file. The time is almost the double when using Require.js in this very small test. It worth to check it out with bigger library. It is also important to keep in mind that it is not only about performance but about modules.

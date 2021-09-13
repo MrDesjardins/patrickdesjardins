@@ -5,7 +5,7 @@ categories:
   - "entity-framework"
 ---
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/08/ID-10022565-150x150.jpg "ID-10022565")](http://patrickdesjardins.com/blog/dropcreatedatabaseifmodelchanges-will-create-your-database-every-time-you-start-your-application/id-10022565) **DropCreateDatabaseIfModelChanges** is an implementation of IDatabaseInitializer that will delete, recreate, and optionally re-seed the database with data only if the model has changed since the database was created.
+![](images/ID-10022565-150x150.jpg)
 
 That mean that if you are developing something and want to have the database updated to your model changes that you need to create your class that inherit **DropCreateDatabaseIfModelChanges** . This implementation require you to use the type of the Database Context because it's a generic class. The class that you will create will inherit from DropCreateDatabaseIfModelChanges.
 

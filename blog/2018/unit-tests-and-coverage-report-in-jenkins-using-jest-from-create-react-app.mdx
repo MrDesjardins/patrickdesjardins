@@ -44,10 +44,10 @@ The second step is also an "Execute Shell". This one calls the python code that 
  python tools/lcov\_cobertura.py coverage/lcov.info --base-dir src/ --output coverage/coverage.xml 
 ``` 
 
-[![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/05/BuildStep-1024x387.png)](https://patrickdesjardins.com/blog/?attachment_id=5812)
+![](images/BuildStep-1024x387.png)
 
 The next two steps are "Post-Build". This time, two different types. The first one is "Publish JUnit test result report". It has a single parameter which is the XML file. Mine is set to "coverage/junit.xml". The second task is a "Publish Cobertura Coverage Report". It also takes a single parameter which is the coverage.xml file. Mine is set to "coverage/coverage.xml".
 
-[![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/05/CoverageStep-1024x417.png)](https://patrickdesjardins.com/blog/?attachment_id=5813)
+![](images/CoverageStep-1024x417.png)
 
 At that point, if you push the modification from the package.json and the Python script you will see Jenkins running the unit tests and doing the conversion. It is possible to adjust the threshold of how many tests your allow to fail to not break the build as well as setting the percentage of coverage you expect. You will get a report on the build history that allows you to sort and drill into the coverage report.

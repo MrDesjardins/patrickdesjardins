@@ -8,11 +8,11 @@ categories:
 
 Redux is a state manager that allows flowing the data from component to the store and from the store to components. It is one of the most popular flux cycles at this moment. The reason for its popularity is mostly because of how everything is well separated and have its own unique goal. Once set up, it's a chart to maintain and to extend. While Redux has a lot of documentations in term of videos, text tutorials and examples. However, Redux can be intimidating because of its steep learning curve. TypeScript is also not as well documented with Redux and require some more work to make it work. This is part 1 of many that will describe how to use TypeScript, React and Redux.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2017/07/SimplifiedReactReduxCycle-1024x406.png)](http://patrickdesjardins.com/blog/?attachment_id=5307)
+![](images/SimplifiedReactReduxCycle-1024x406.png)
 
 The first thing to understand is some of the terms used. The first one is "provider". The provider is coming from the "react-redux" library. It's a React's component that wraps your main component.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2017/07/SimplifiedReactRedux-1024x578.png)](http://patrickdesjardins.com/blog/?attachment_id=5303)
+![](images/SimplifiedReactRedux-1024x578.png)
 
 For example, if your application main entry point is "App.tsx", which use ReactDom. Render, then you need to import the "provider" component and wrap your "App" container.
 
@@ -28,11 +28,11 @@ const store = createStore(appReducer); ReactDOM.render( <Provider store={store}>
 ``` 
 
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2017/07/ReduxDispatchToStore-1-1024x256.png)](http://patrickdesjardins.com/blog/?attachment_id=5314)
+![](images/ReduxDispatchToStore-1-1024x256.png)
 
 This introduces us the third term which is "reducer". To create a store you need to pass the application reducer. This one is a little bit more complex to understand. The store is not a store in the way of a SQL database, or a Local Storage or any kind of persistence. It's a place where the JSON will live, but also where handle the transformation of the data. The transformation is where the logic resides. The return values of a reducer is always a copy, immutable of the actual state. It's getting the actual state (JSON object) as a parameter and return back a JSON object with the same schema of the state that came in. For example, if the website allows having a different kind of filtering for the result, every user's choice will be sent to a reducer that will change the state to set the value of the filter selected and the new state will be returned by the reducer which will be stored in the store. The store will automatically emit a change event which the "Provider" component will propagate.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2017/07/ReduxStateContainerComponentDispatch-1-1024x400.png)](http://patrickdesjardins.com/blog/?attachment_id=5312)
+![](images/ReduxStateContainerComponentDispatch-1-1024x400.png)
 
 In the world of Redux, there is a separation among components. There are two types. The first one is **container component**, the second one is **presentation component**. The second one is the easier to understand. It is a React's component that doesn't have any knowledge of Redux or any Flux pattern or life pattern. It receives properties to display and action is also part of delegate action passed by a property. The first type, the container component, is handling Redux. In our example, it's App.tsx. It's a stateless React component that is exported by using Redux's "connect" function which has two parameters that take care of the mapping between Redux's store state and the container component, and the other way around between the dispatcher actions to the component properties. The method that maps the state to the props allows to pass down a portion of the store instead of the whole store. The method that maps the dispatch to properties. This method will be invoked when the property of the action is invoked. This means that the return type must be part of the container component property type.
 

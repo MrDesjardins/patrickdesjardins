@@ -18,7 +18,7 @@ First of all, you need to still have the **webjob-publish-settings.json**. This 
 ```
 
 
-By right clicking your console application, you need to choose Publish as Azure Webjobs. This will let you create a schedule. [![PublishAsAzureWebJob](http://patrickdesjardins.com/blog/wp-content/uploads/2016/01/PublishAsAzureWebJob.png)](http://patrickdesjardins.com/blog/?attachment_id=4491) Select a starting date, an ending date (since you cannot not select anything in this dialog) and choose the mode to on demand. Then, select the generated file **webjob-publish-settings.json** under the properties folder. You need to have the following properties filled up.
+By right clicking your console application, you need to choose Publish as Azure Webjobs. This will let you create a schedule. ![](images/PublishAsAzureWebJob.png)
 
 ```typescript
 { "$schema": "http://schemastore.org/schemas/json/webjob-publish-settings.json", "webJobName": "YourJobNameHere", "startTime": null, "endTime": null, "jobRecurrenceFrequency": null, "interval": null, "runMode": "OnDemand" } 
@@ -34,8 +34,8 @@ The settings.job file is a JSON format with a single property named "schedule" w
 ``` 
 
 
-Once published, you will see your job under the website. [![WebJobsOnAzure](http://patrickdesjardins.com/blog/wp-content/uploads/2016/01/WebJobsOnAzure.png)](http://patrickdesjardins.com/blog/?attachment_id=4493)
+Once published, you will see your job under the website. ![](images/WebJobsOnAzure.png)
 
-From there, it is possible to see the job running in the portal.azure.com and see any diagnostic output, etc. One last detail, your website must be running on always on. [![ApplicationSettingAlwaysOn](http://patrickdesjardins.com/blog/wp-content/uploads/2016/01/ApplicationSettingAlwaysOn.png)](http://patrickdesjardins.com/blog/?attachment_id=4495)
+From there, it is possible to see the job running in the portal.azure.com and see any diagnostic output, etc. One last detail, your website must be running on always on. ![](images/ApplicationSettingAlwaysOn.png)
 
 This is required to be able to have your jobs ran. Azure Scheduler is there to be able to do more advanced scenario like calling endpoints outside the scope of your web application. For more scenario, using Cronjob and having all the scheduling setup in your solution which can be on your code repository.

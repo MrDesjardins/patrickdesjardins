@@ -23,11 +23,11 @@ The TFS account used for this project is mine : https://patrickdesjardins.visual
 
 Once created, it is the time to synchronize Visual Studio with TFS. Open Visual Studio and click Open from Source Control …
 
-[![OpenFromSourceControl](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/OpenFromSourceControl.png)](http://patrickdesjardins.com/blog/?attachment_id=4559)
+![](images/OpenFromSourceControl.png)
 
 A window popup opens with the possibility to select a Team Foundation Server. I enter the URL that I have previously specified in this blog post and hit enter. From here, I can see all Team Projects available. I choose the BourseVirtuelle.com project and hit Connect.
 
-[![ConnectToTFS](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/ConnectToTFS.png)](http://patrickdesjardins.com/blog/?attachment_id=4560)
+![](images/ConnectToTFS.png)
 
 This step synchronize TFS and Visual Studio. It is possible to control TFS from Visual Studio with the Team Explorer tab.
 
@@ -39,47 +39,47 @@ We have now Visual Studio and TFS connected. It is the time to plan what we will
 
 Visual Studio cannot change the backlog time frame. This is why, we will jump into the web portal. Once in the web portal, select WORK at the top of the screen. From there, you can choose Backlogs. When you select a sprint, you can then click at the top right the “No iteration dates” to setup and assign a range. At anytime it is possible to click the date and change the starting and ending date. It is also possible to rename the sprint.
 
-[![TFS_SprintPeriode](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/TFS_SprintPeriode.png)](http://patrickdesjardins.com/blog/?attachment_id=4561)
+![](images/TFS_SprintPeriode.png)
 
 We are now ready to enter few back log items. Back log items are a use case. This one will be defined later in smaller task. A group of back log can be a feature. It is possible to work with TFS from big to small or small to big. I am note sure that I will go as much deep with Work Item for this project and will start just by defining Work Item as back log item.
 
 The first step is to click BackLog items in the Work->Backlogs menu.
 
-[![TFS_BackLogItem](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/TFS_BackLogItem.png)](http://patrickdesjardins.com/blog/?attachment_id=4562)
+![](images/TFS_BackLogItem.png)
 
 The type can be “Product Backlog Item” or “Bug”. Every time title are entered and the Add button is hit, then the grid below the form is filled up. But this is not the only way to create Backlog items. We can do it directly into Visual Studio 2013. First, open the Team Explorer. Second, on the home screen, click Work Items. Third, click New Work Item at the top of this panel.
 
-[![TFS_NewBackLogItemFromVS](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/TFS_NewBackLogItemFromVS-1024x260.png)](http://patrickdesjardins.com/blog/?attachment_id=4563)
+![](images/TFS_NewBackLogItemFromVS-1024x260.png)
 
 In both case system, the web portal and Visual Studio, it is possible to create a list of Work Item. Visual Studio may looks to have more field but in fact, the web portal does have them too. Once it is created from the team portal, right clicking Work Item in the grid and selecting Open, opens the Work Item with all fields.
 
 At any time, from Visual Studio or the web portal, it is possible to see the list of backlog item. In Visual Studio, the list if under the Team Explorer, Work Items. A sub panel labelled Queries has a Shared Queries folder. Under this one, a pre-defined query “Product Backlog” exist. Double clicking this query execute this one.
 
-[![TFS_BackLogItemList](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/TFS_BackLogItemList.png)](http://patrickdesjardins.com/blog/?attachment_id=4564)
+![](images/TFS_BackLogItemList.png)
 
 From here, it is possible to assign to double click any of the Work Item and to assign the effort and to who the Work Item is assigned. For the moment, I am sure that the four first Work Item can fit in the first sprint. So, I can with Visual Studio opens the Work Item and change the Iteration for the first sprint.
 
-[![TFS_AssignSprint](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/TFS_AssignSprint.png)](http://patrickdesjardins.com/blog/?attachment_id=4565)
+![](images/TFS_AssignSprint.png)
 
 But, it is not efficient because it is slow. A faster way is to use the web portal because you can drag and drop Work Item.
 
-[![TFS_Drag_Drop_WorkItemToSprint](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/TFS_Drag_Drop_WorkItemToSprint.gif)](http://patrickdesjardins.com/blog/?attachment_id=4566)
+![](images/TFS_Drag_Drop_WorkItemToSprint.gif)
 
 This have move everything into the Sprint 1. Visual Studio has a Shared Query called “Sprint Backlog” and the web portal has the Sprint 1. Both display not only Work Items but also Task. Here is the two side by side that show the difference. I personally prefer the web portal.
 
-[![TFS_VS_WebPortalSprint1](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/TFS_VS_WebPortalSprint1-1024x345.png)](http://patrickdesjardins.com/blog/?attachment_id=4567)
+![](images/TFS_VS_WebPortalSprint1-1024x345.png)
 
 The next step is to assign capability for the team. For the sprint 1 (and for all other sprint) I will be alone. Nevertheless, let’s configure everything correctly. Inside the web portal, click the Sprint 1 and select the Capacity sub menu. From here, it is possible to select the capacity per day. We have defined that I will work about 10 hours per week, so it is 2 hours per day (5 workings day on 7 days).
 
-[![TFS_Capacity](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/TFS_Capacity.png)](http://patrickdesjardins.com/blog/?attachment_id=4568) Automatically, the sprint calculates 40 hours for the team, by activity and for me. We can see this in the right side bar. The next step is to assign the effort. This is not always useful but if you follow Scrum it is a step to do. This can be done by opening the the Work Item and setting the effort. I have set effort from a range of 1 to 5. 1 is very easy, 5 is the hardest.
+![](images/TFS_Capacity.png)
 
 What is most interesting is to assign time into each task. I have say TASK because time cannot be assigned to Work Item directly. Work Item remaining time is the sum of every task times. It is possible to set the remaining time directly inside each Work Item but the fastest way is to open the web portal and to go inside the sprint ans select “Board”. This give a view where each Work Item has its row and each task has its square. It is possible from here to click an assign the time and to who the task is assigned.
 
-[![TFS_Board_AssignTime](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/TFS_Board_AssignTime.gif)](http://patrickdesjardins.com/blog/?attachment_id=4569)
+![](images/TFS_Board_AssignTime.gif)
 
 Once all setup, if you go back to the Capacity window, the work for the team, for every user and for task should be all green if you do not overcharge.
 
-[![TFS_WorkDetail](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/TFS_WorkDetail.png)](http://patrickdesjardins.com/blog/?attachment_id=4570)
+![](images/TFS_WorkDetail.png)
 
 It is also possible to change the Board view by people instead of by Work Item. This option is inside the Board screen, at the top right.
 
@@ -214,33 +214,33 @@ For this sprint, the classes diagram has been done for the model. It was very ea
 
 Few class will be complex and will be directly added into all tables when used. This is the case for the Money and for the LocalizedString.
 
-[![TFS_ComplexType](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/TFS_ComplexType.png)](http://patrickdesjardins.com/blog/?attachment_id=4571)
+![](images/TFS_ComplexType.png)
 
-Then, we have classes that concern the user. In the current system user can win badges and reputations points. These will be in the User namespace. Every model namespace will be translated into schemas in the database. We will configure Entity Framework in a later post. User will be have role. So far, role will be Administrator, Moderator, Contest Moderator or simply a Registered User. The privileges table is linked to the User table. User will have the possibility to have privileges which are special account . [![Classes_Users](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/Classes_Users-1024x388.png)](http://patrickdesjardins.com/blog/?attachment_id=4572)
+Then, we have classes that concern the user. In the current system user can win badges and reputations points. These will be in the User namespace. Every model namespace will be translated into schemas in the database. We will configure Entity Framework in a later post. User will be have role. So far, role will be Administrator, Moderator, Contest Moderator or simply a Registered User. The privileges table is linked to the User table. User will have the possibility to have privileges which are special account . ![](images/Classes_Users-1024x388.png)
 
 The Contest namespace is a huge one that contain a critical classes.
 
-[![Classes_Contest](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/Classes_Contest-1-1024x573.png)](http://patrickdesjardins.com/blog/?attachment_id=4573)
+![](images/Classes_Contest-1-1024x573.png)
 
 At its heart, this namespace has the Contest class. The registration rule has been set to an one to one relation. This has been not put inside the Contest class because it is only used in specific place. It does not need to be loaded 80% of the time. This class can be and must be inherited into a specific implementation like to have a simple stock market contest or have one that allows shorting or options. Nevertheless, I am not happy with the current class diagram because it is not possible to have a contest with Short and Option. Having the Option inherit from the Short will also cause problem because having option contest force to have short too. This need some work but since all options and short are planned in few sprints (months), I will leave this like that.
 
-[![Classes_Trading](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/Classes_Trading-1024x520.png)](http://patrickdesjardins.com/blog/?attachment_id=4574)
+![](images/Classes_Trading-1024x520.png)
 
 This is also a huge namespace, the Trading namespace. It contains all orders, transactions, stocks and options of every portfolio. Finally, some classes for Stock and Option are required to have real time value.
 
-[![Classes_RealTime](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/Classes_RealTime.png)](http://patrickdesjardins.com/blog/?attachment_id=4575)
+![](images/Classes_RealTime.png)
 
 These classes will offer the information from external source. Like Yahoo or Google to get the real time price (or 15 minutes delayed).
 
-[![ArchitectureBourseVirtuelle](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/ArchitectureBourseVirtuelle-1024x546.png)](http://patrickdesjardins.com/blog/?attachment_id=4576)
+![](images/ArchitectureBourseVirtuelle-1024x546.png)
 
 We want something efficient and with low maintainability. This require having high cohesive classes but also low coupling. Nevertheless, to be efficient we need to limit the number of classes which will increase the coupling. A good in the middle solution is to have View Model and Model classes. This project will have these two types of classes for entity classes. Otherwise, three majors layers are there. One for the presentation, one for the business logic and one for data access.
 
-[![LayersBourseVirtuelle](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/LayersBourseVirtuelle.png)](http://patrickdesjardins.com/blog/?attachment_id=4532)
+![](images/LayersBourseVirtuelle.png)
 
 Exceptions are also limited to two levels. One that can goes up to the presentation and one that is only back end. During the process, if we have something to cut for shorter the development time, we may cut the exception to have this one go from the back end to the front end. However, this increase the coupling. Let’s go a little more in detail before going further in the code.
 
-[![DetailledArchitecture](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/DetailledArchitecture.png)](http://patrickdesjardins.com/blog/?attachment_id=4577)
+![](images/DetailledArchitecture.png)
 
 This is a more detailed view of how the system will be developed. On the left side and on the right side you can see what we just saw in the more abstracted view of the architecture. The in between are all Asp.Net technologies for the front end, the ASP.Net MVC controller for the business logic which share classes with a service layer. These one access any persistence storage by an accessor layer that do the proxy between multiple data access technologies.
 
@@ -260,11 +260,11 @@ Posted in Analysis and Architecture In the last post, we have created the new so
 
 I have put back the detailed architectural graph because you will see that Visual Studio solution will be pretty much the same. What I have not yet discussed and that is visually apparent here is the fact that we will have multiple unit testing project. Every projects contains at least a unit testing project. Some, contains two. One for unit testing and one for integration. The purpose of splitting this in several projects is because when we will setup the build server that we won’t let it build test that are slower, like integration tests.
 
-[![Part1Project](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/Part1Project.png)](http://patrickdesjardins.com/blog/?attachment_id=4578)
+![](images/Part1Project.png)
 
 This is the first part of projects created. As you can see, they are grouped into folders. This allows us to easily find every layers with their test. Every project has their unit testing project inside their folder. The CrossLayer projet is a project that is referenced by almost all projects. Not a lot of classes will be set there, but some classes are cross layers. The BusinessLayer has the folder Service. One exception is all controllers that will be kept in the WebSite project. The reason is because Asp.Net MVC setup by default all controllers in the website project or within the Are folder of the website project. DataAccess folder contains the DataAccess project. This one contains Accessors, Contexts, Repositories, UnitOfWork and later everything related to others elements defined in the architectural graphic.
 
-[![Part2Project](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/Part2Project-1.png)](http://patrickdesjardins.com/blog/?attachment_id=4579)
+![](images/Part2Project-1.png)
 
 The second part contains the model folder. This one also contains a unit testing project. The model project is divided with some folders like the DataAnnotation, Entities and ValueObjects. DataAnnotation contains validation that can be shared across model classes. Entities are every classes used in the business. This has been defined in a previous post. However, the previous post contained some Value Object. Value Object are classes that could have been defined at enumeration but to have them in the database, they are defined as classes. They are not creatable or editable like entities. For example, an example of value object is the type of Option (Ask, Bid).
 
@@ -276,7 +276,7 @@ Sprint 2 : Identity and Architecture Part 1 of 2 February 24, 2014 By: pdesjardi
 
 Posted in Analysis and Architecture, Asp.Net MVC, Back-End This is the first post that contains more code. But first, let me show the architectural diagram. This diagram as been created with the Architecture Tool from Visual Studio 2013 Ultimate. It is not available for other edition. What is interesting compared to other UML tool is that the layer diagram will validate later if the design is respected.
 
-[![DetailledArchitecture](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/DetailledArchitecture.png)](http://patrickdesjardins.com/blog/?attachment_id=4577)
+![](images/DetailledArchitecture.png)
 
 The image might be a little small but if you click on it you will see more details. As we can see, the presentation layer contains Html Helper and Views. Html Helpers will be defined later on its own name space to not disturb the Asp.Net MVC Html helpers. The diagram also show that presentation layer can only access View Model and not Model directly. Business Layer contains the controller, some algorithms and the service layers. I have put the controller in the Business Logic and not in the presentation layer because some basic logic and errors manipulation are done here. I concentrate the presentation layer for all visual aspect like Javascript, Css, Html.
 
@@ -294,15 +294,15 @@ So the first step is to modify the Identity to have custom fields. The second st
 
 Modifying Identity into Data Access Layer
 
-We need to fit the Identity User Manager somewhere logical. By default, it is inside the WebSite project. This is wrong. The UserManager class use a DbContext. Of course, it is clear that it should be moved into the Data Access Layer. Its place is in in parallel of repositories. We will create our first repository to modify the user but the Identity User Manager should not be in the repository. It is a mechanism by itself and this why I have separated both. [![DataAccessBourseVirtuelle](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/DataAccessBourseVirtuelle-1024x590.png)](http://patrickdesjardins.com/blog/?attachment_id=4583)
+We need to fit the Identity User Manager somewhere logical. By default, it is inside the WebSite project. This is wrong. The UserManager class use a DbContext. Of course, it is clear that it should be moved into the Data Access Layer. Its place is in in parallel of repositories. We will create our first repository to modify the user but the Identity User Manager should not be in the repository. It is a mechanism by itself and this why I have separated both. ![](images/DataAccessBourseVirtuelle-1024x590.png)
 
 The website project must have the view model, the views and the controllers. That’s it. All model classes and user manager classes are moved.
 
-[![WebSiteBourseVirtuelle](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/WebSiteBourseVirtuelle.png)](http://patrickdesjardins.com/blog/?attachment_id=4581)
+![](images/WebSiteBourseVirtuelle.png)
 
 The model project has the custom class.
 
-[![ModelUserBourseVirtuelle](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/ModelUserBourseVirtuelle.png)](http://patrickdesjardins.com/blog/?attachment_id=4582)
+![](images/ModelUserBourseVirtuelle.png)
 
 I have named mine ApplicationUser.cs. Asp.Net MVC Identity allows to inherit the IdentityUser class. This is where we add additional properties like the Email.
 
@@ -355,7 +355,7 @@ Here is the repository code so far for the user.
 
 Concerning the email, because it uses an interface, the injection can push a real implementation but also a fake one.
 
-[![EmailProviderBourseVirtuelle](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/EmailProviderBourseVirtuelle.png)](http://patrickdesjardins.com/blog/?attachment_id=4580)
+![](images/EmailProviderBourseVirtuelle.png)
 
 Instead of having email sent with SMTP, a fake one writes file is coded. This make it faster and easier during development to not have an intermediary protocol between the process of sending and receiving.
 
@@ -365,7 +365,7 @@ This second part is shorter than the first one. The sprint 2 has two others thin
 
 This part was not a piece of cake. It was working fine with an empty project but for unknown reasons, thing has gone wrong in few places. First of all, the use of external login was not working fine in the project but was fine in a new project solution. Second, the use of AccountManager of Identity cause some problem with Async.
 
-I have modified the identity to have Model inside the Model project and ViewModel in the ViewModel project. The Model is very simple since we are using Identity. Most of the classes are ViewModel. [![Sprint2ModelViewModel](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/Sprint2ModelViewModel.png)](http://patrickdesjardins.com/blog/?attachment_id=4529)
+I have modified the identity to have Model inside the Model project and ViewModel in the ViewModel project. The Model is very simple since we are using Identity. Most of the classes are ViewModel. ![](images/Sprint2ModelViewModel.png)
 
 
 ```csharp
@@ -377,7 +377,7 @@ The view model is used to allow the user to add custom data. It is mapped to the
  public class ApplicationUser : IdentityUser, IValidatableModel { public string Email { get; set; } public string GravatarEmail { get; set; } public string DisplayName { get; set; } public string FirstName { get; set; } public string LastName { get; set; } public DateTime? LastLogin { get; set; } public DateTime CreationDateTime { get; set; } public DateTime? ValidationDateTime { get; set; } public IEnumerable<ValidationResult> Validate() { return null; } public bool IsValid() { return !Validate().Any(); } } 
 ``` The model class is not yet done but has most of the properties that is required by the service to save it with Entity Framework. The Identity Framework does not work fine or easy with custom fields without the use of Entity Framework. This is why, the Service Layer will use Entity Framework for some operations and use the Identity Manager for others. Here is a sequence diagram from the AccountController to the Service layer. From here, the path change depending of the task.
 
-[![Sprint2SequenceDiagramCreateUser](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/Sprint2SequenceDiagramCreateUser.png)](http://patrickdesjardins.com/blog/?attachment_id=4530)
+![](images/Sprint2SequenceDiagramCreateUser.png)
 
 As you can see, the controller call some injected classes like a IUserValuesGenerator. This is the class that as the algorithm to generate the password to the user. Why? Because we want a minimalist sign up form. In fact, just the email is required.
 
@@ -399,17 +399,17 @@ This is it for the user. I will write later with external login when everything 
 
 Creating the first entity has always something different from others entities. The reason is that a lot of the infrastructure is not yet in place. The first entity chose is the Contest entity. It is a very complex class that use others entities. Before going any deeper, let’s see the class diagram for the Contest that was planned to use.
 
-[![Classes_Contest](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/Classes_Contest-1024x573.png)](http://patrickdesjardins.com/blog/?attachment_id=4531)
+![](images/Classes_Contest-1024x573.png)
 
 As we can see, we firstly wanted to use inheritance for different type of contest. However, this is what will be done.
 
-[![LayersBourseVirtuelle](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/LayersBourseVirtuelle.png)](http://patrickdesjardins.com/blog/?attachment_id=4532)
+![](images/LayersBourseVirtuelle.png)
 
 In fact, we have a contest class that use other classes. This simplify by a lot the use of contest with Entity Framework but also because we want to have contest with Option and Short and Stock or maybe a combination of some of them but not all. Having inheritance would require to have ContestWithStock having inheritance with ContestWithOption or vice versa but also all others different scenario. The concrete implementation of this architecture is mostly all in the Model project, inside the Entities folder.
 
-[![Part2Project](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/Part2Project.png)](http://patrickdesjardins.com/blog/?attachment_id=4533) What is interesting is that contest use several mechanism that will be reused. First, concerning Data Annotation for first validation round. Data Annotation is used to verify required field, and simple validation that must be done before deeper validation with IValidatableObject class. What we have done is to inherit Contest class to Model class that has some property like Id. This class inherit from ValidatableModel. This class in custom and inherit from IValidatableModel. But, it has also an abstract class to call children property. For example, we can call the Validate method on the Contest and this one will call the validation on contest then call designed properties.
+![](images/Part2Project.png)
 
-[![Classes_Contest](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/Classes_Contest-1024x573.png)](http://patrickdesjardins.com/blog/?attachment_id=4531)
+![](images/Classes_Contest-1024x573.png)
 
 As the diagram shows, Contest, ContestTransactionRules, ContestRegistrationRules and models classes like ContestWithOption, ContestWithStock and ContestWithShort inherit from ValidatableModel which has the Validate method and ValidateChildren. This mean that Contest will have inside its ValidateChildren a call to ContestWithStock, ContestWithShort and ContestWithOption but only if these one are required to be validated. This mean that if the contest does not allows options, than we will not validate options.
 
@@ -476,7 +476,7 @@ This way, the contest view can be clean and easy to change later on by modifying
 
 When developing unit testing you have to reuse a lot of time the same configuration for your entities. This is why multiple patterns exist to create your entities. A simple one is to have a Builder for your Models and one for your View Models.
 
-[![Builders](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/Builders.png)](http://patrickdesjardins.com/blog/?attachment_id=4535)
+![](images/Builders.png)
 
 In this solution, I decided to create two projects. One for the Model and one for the ViewModel. I divide the project per entities. To keep it simple, I create static method that return for different scenario. Here are some signatures that I currently have for the Contest entity.
 
@@ -509,7 +509,7 @@ Data Annotation Improvement One thing that was problematic was the validation th
 
 This is where we had to modify the classes. First of all, it was a mistake to think that IModel that has the IsNew method must inherit from IEntity. It does not mean that every time we want to check the IsNew from the ID.
 
-[![ModelState](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/ModelState-1024x436.png)](http://patrickdesjardins.com/blog/?attachment_id=4537)
+![](images/ModelState-1024x436.png)
 
 The modification add a new Interface and mode the IsNew from IModel into IModelState. This way, it is possible for a class, like the ContestRegistrationRules to inherit from IModelState without inheriting from IEntity or IModel. From there, we can pass the information from the Contest into the ContestRegistrationRules or during unit testing simply mock this value. Here is the code of the Contest now.
 
@@ -567,7 +567,7 @@ This first week of the sprint 3 aimed the contests entity. More precisely how to
 
 Why all these modifications in the sprint 3? Mostly because to test the repository with the contest that we need to have more than only one contest in the database and depending of the test we want to have different contests. For example, we may want to have contest with a starting and ending date before the testing date. I have say “testing time” and not “current time”. This is important and this is why in this sprint the Model Builder has changed. Now, the builder have access to the running contest. This is why Model Builder is not anymore static and it takes in its constructor the IRunningContext.
 
-[![Sprint3BuilderCrossLayer](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/Sprint3BuilderCrossLayer-1024x504.png)](http://patrickdesjardins.com/blog/?attachment_id=4538)
+![](images/Sprint3BuilderCrossLayer-1024x504.png)
 
 The ContestBuilder looks like this:
 
@@ -590,7 +590,7 @@ Having this setup, it is now possible to modify some of the existing test to rem
  [TestMethod] public void GivenANewContest\_WhenContestIsLegitToSave\_ThenTheDatabaseHasANewContest() { // Arrange var repositoryExecuting = new ContestRepository(unitOfWorkForInsertion, base.runningContext.Object); var repositoryReading = new ContestRepository(unitOfWorkForReading, base.runningContext.Object); var contest = contestModelBuilder.GetAStockContest(); int idSaved=-1; // Act try { repositoryExecuting.Save(contest); unitOfWorkForInsertion.Commit(); idSaved = contest.Id; } catch (Exception e) { Assert.Fail(e.Message); } var contestFromRepository = repositoryReading.GetById(idSaved); var countContest = repositoryReading.GetCount(); // Assert Assert.IsNotNull(contestFromRepository); Assert.AreEqual(1, countContest); } 
 ``` This unit test will not store anything in the database and do the job automatically to remove everything. It is not possible for a developer to store anything in the database which is a huge advantage to keep the testing database clean.
 
-The next modification is that we need to have some contests in the database for some of our tests. The problem is that we need to save contest that might not be valid to save. For example, one of the business logic is that we cannot insert a new contest that has a starting and ending date before the current date. This is required to have contest with a starting and ending date before the current date because this is considerate an inactive contest. We want to test method that return only the active contest but to do the test, we want to insert inactive too. This is why we have changed the [![FirstCommit](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/FirstCommit.png)](http://patrickdesjardins.com/blog/?attachment_id=4585) on the IUnitOfWork to have a boolean value that tell if we want to validate the model before saving.
+The next modification is that we need to have some contests in the database for some of our tests. The problem is that we need to save contest that might not be valid to save. For example, one of the business logic is that we cannot insert a new contest that has a starting and ending date before the current date. This is required to have contest with a starting and ending date before the current date because this is considerate an inactive contest. We want to test method that return only the active contest but to do the test, we want to insert inactive too. This is why we have changed the ![](images/FirstCommit.png)
 
 
 ```csharp
@@ -655,7 +655,7 @@ The last week of sprint 3 was consecrated to user role. The application has a de
 
 We are still using the Microsoft Identity Framework for authentification and for roles. This mean that our roles are located in AspNetRoles. The association between users and roles are inside the table AspNetUserRoles.
 
-[![AspNetRoleUserTables](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/AspNetRoleUserTables.png)](http://patrickdesjardins.com/blog/?attachment_id=4541)
+![](images/AspNetRoleUserTables.png)
 
 As you can see, the association table AspNetRoleUserTables contains both primary key to link AspNetUsers and AspNetRoles. This give us the possibility to have multiples roles for a single user.
 
@@ -702,7 +702,7 @@ Roles are added into the system by using RoleManager.
  private void SeedDemoUsersRoles(MainDbContext context) { var administratorRole = context.GetDbContext().Set<IdentityRole>().Single(d => d.Name == ApplicatioRole.ADMINISTRATOR); var normalRole = context.GetDbContext().Set<IdentityRole>().Single(d => d.Name == ApplicatioRole.NORMAL\_USER); var moderatorRole = context.GetDbContext().Set<IdentityRole>().Single(d => d.Name == ApplicatioRole.MODERATOR); var administratorUser = context.GetDbContext().Set<ApplicationUser>().Single(d => d.Email == EMAIL\_ADMIN); var normalUser = context.GetDbContext().Set<ApplicationUser>().Single(d => d.Email == EMAIL\_NORMAL\_USER); var modUser = context.GetDbContext().Set<ApplicationUser>().Single(d => d.Email == EMAIL\_MOD); var userRole1 = new IdentityUserRole { UserId = administratorUser.Id, RoleId = administratorRole.Id }; var userRole11 = new IdentityUserRole { UserId = normalUser.Id, RoleId = administratorRole.Id }; var userRole2 = new IdentityUserRole { UserId = normalUser.Id, RoleId = moderatorRole.Id }; var userRole3 = new IdentityUserRole { UserId = modUser.Id, RoleId = normalRole.Id }; context.Set<IdentityUserRole>().AddOrUpdate(userRole1); context.Set<IdentityUserRole>().AddOrUpdate(userRole11); context.Set<IdentityUserRole>().AddOrUpdate(userRole2); context.Set<IdentityUserRole>().AddOrUpdate(userRole3); context.SaveChanges(); } 
 ``` The database is now having everything related.
 
-[![DataValuesUserRoles](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/DataValuesUserRoles.png)](http://patrickdesjardins.com/blog/?attachment_id=4542)
+![](images/DataValuesUserRoles.png)
 
 Contests are also inserted by Entity Framework but use the ModelBuilder to get a batch of contest.
 
@@ -762,13 +762,13 @@ We have to show information inside a grid. I first used the WebMatrix Web Grid t
 
 Here is images of the final result. The first image is when the resolution full screen (desktop).
 
-[![GridFullSize](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/GridFullSize-1024x311.png)](http://patrickdesjardins.com/blog/?attachment_id=4545)
+![](images/GridFullSize-1024x311.png)
 
-This one is for tablet resolution: [![GridTabletSize](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/GridTabletSize.png)](http://patrickdesjardins.com/blog/?attachment_id=4546)
+This one is for tablet resolution: ![](images/GridTabletSize.png)
 
 This one is for phone. The second row is open to show you that the FooTable.js library allows you to have some interesting features.
 
-[![GridMobile](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/GridMobile.png)](http://patrickdesjardins.com/blog/?attachment_id=4547)
+![](images/GridMobile.png)
 
 I will not discuss here about the filter capability because it is a subject that does not touche the grid. This allow to have some condition on the data set that is bound to the grid but does not affect the creation of the grid.
 
@@ -851,11 +851,11 @@ The Sprint 4 was shorter due to some time restriction. However some good develop
  [HttpGet] [Authorize(Roles = ApplicationRole.NORMAL\_USER)] public ActionResult Detail(int id) { //Get the contest to show it information but also to know if the current user is subscribed to the contest var contestForUser = this.contestService.GetContestByIdWithContesters(id); //Transform back everything for the page var viewContestsForUser = this.MapperFacade.GetViewModel<Model.Entities.Contest.Contest, ContestDetailViewModel>(contestForUser); //View Model viewContestsForUser.IsCurrentUserRegisteredToThisContest = contestForUser.IsUserInContest(new ApplicationUser {Id = this.runningContext.GetUserId().ToString()}); return ViewModel(viewContestsForUser); } 
 ``` The line before the return is the one that tell the view model if the user is in the contest or not. As you can see, we get the contest with all contesters. From here, we check if the user is in the list or not. The view change depending of if the user is already in the contest or not.
 
-[![EnterContest](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/EnterContest.png)](http://patrickdesjardins.com/blog/?attachment_id=4549)
+![](images/EnterContest.png)
 
 And the view if the user is already in the contest:
 
-[![JoinButton](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/JoinButton-1024x678.png)](http://patrickdesjardins.com/blog/?attachment_id=4550)
+![](images/JoinButton-1024x678.png)
 
 
 ```csharp
@@ -878,11 +878,11 @@ And the view if the user is already in the contest:
 
 To end the month of June, some modification has been made on the classes and layers. Once again, it is to simplify the maintenance. The biggest change is in the business layer. Previously, some classes were present but should not be. It is the same in the Data Access Layer which had some classes about Email. Yes, it is the place to send email but not to store those classes. Now, the Business Layer has all entities and non-entities classes like Email.
 
-[![BusinessLayerClassesSegregation](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/BusinessLayerClassesSegregation.png)](http://patrickdesjardins.com/blog/?attachment_id=4552)
+![](images/BusinessLayerClassesSegregation.png)
 
 The second big change in the Sprint 5 was about the introduction of Trading business logic entities like Order, Portefolio, Stock and Transaction.
 
-[![TradingAndOrderClasses](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/TradingAndOrderClasses.png)](http://patrickdesjardins.com/blog/?attachment_id=4553)
+![](images/TradingAndOrderClasses.png)
 
 The Order class is abstract and has several class the inherit it like the StockOrder. The StockOrder class is very simple and add only the StockSymbol. It inherits from all other properties.
 
@@ -918,15 +918,15 @@ Cannot get a local application data path. Most probably a user profile is not lo
  Process information: Process ID: 7732 Process name: w3wp.exe Account name: IIS APPPOOL\\BourseVirtuelle Exception information: Exception type: SqlException Exception message: The SELECT permission was denied on the object ‘AspNetUserLogins’, database ‘BourseVirtuelle’, schema ‘dbo’. at System.Data.SqlClient.SqlCommand.b\_\_24(Task\`1 result) at System.Threading.Tasks.ContinuationResultTaskFromResultTask\`2.InnerInvoke() at System.Threading.Tasks.Task.Execute() This can be done by going into Microsoft Sql Server Manager, under Security, Logins and add entries for all your Application Pool. For example, here is the application pool that I created. 
 ``` 
 
-[![ApplicationPoolIdentity](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/ApplicationPoolIdentity.png)](http://patrickdesjardins.com/blog/?attachment_id=4555) As you can see, the Identity is kept to Application Pool. This is because I did not wanted to create a full new user in my Windows machine. In Sql Server Manager, I can now create a login and associate it to this Application Pool.
+![](images/ApplicationPoolIdentity.png)
 
 You need to have the user name with the IIS APPPOOl\\ in front of your Application Pool name. You have also to keep Windows Authentification checked.
 
-[![LoginProperties](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/LoginProperties-1024x581.png)](http://patrickdesjardins.com/blog/?attachment_id=4556)
+![](images/LoginProperties-1024x581.png)
 
 The last step is to give the user access to the Database. You have give the account enough role to be able to run you application.
 
-[![UserMapping](http://patrickdesjardins.com/blog/wp-content/uploads/2016/03/UserMapping.png)](http://patrickdesjardins.com/blog/?attachment_id=4557)
+![](images/UserMapping.png)
 
 The last error that you can have is something about the creation of table. I had this error when migrating this website with the Identity framework when trying to get the user in the authentication window. ``` 
  Exception information: Exception type: SqlException Exception message: CREATE TABLE permission denied in database ‘BourseVirtuelle’. at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action\`1 wrapCloseInAction) at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose) 

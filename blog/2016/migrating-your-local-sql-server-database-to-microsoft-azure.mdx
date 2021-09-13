@@ -10,9 +10,9 @@ Migrating a SQL Server Database into Azure is easy but not obviously. Here is fe
 
 First of all, you need to open Microsoft SQL Server Management Studio. Right click the database you want to migrate to Azure and select **Task**, and **Export Data-tier Application**. It's important that you do not choose the option Deploy Database to Windows Azure Sql Database because this option doesn't keep the identity (primary keys) of you tables.
 
-[![ExportDataTierApplication](http://patrickdesjardins.com/blog/wp-content/uploads/2016/06/ExportDataTierApplication.png)](http://patrickdesjardins.com/blog/?attachment_id=4676) This will generate a **bacpac** file that needs to be imported into Azure. To do so, you need to connect with Microsoft SQL Server Management Studio to your Azure server. To connect to Azure Server Database you need to have your IP allowed by your Azure SQL Server firewall and knows your server password.
+![](images/ExportDataTierApplication.png)
 
-To import into Azure, you need to right click the Databases folder of Azure SQL Server. Select **Import Data-tier Application**. [![ImportDataTierApplication](http://patrickdesjardins.com/blog/wp-content/uploads/2016/06/ImportDataTierApplication.png)](http://patrickdesjardins.com/blog/?attachment_id=4677)
+To import into Azure, you need to right click the Databases folder of Azure SQL Server. Select **Import Data-tier Application**. ![](images/ImportDataTierApplication.png)
 
 A short wizard will open and let you select the name of the destination database as well as some primitive Azure configuration. This may take a while to transfer depending of the size of your database.
 

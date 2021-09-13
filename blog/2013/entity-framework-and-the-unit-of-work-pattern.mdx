@@ -15,7 +15,7 @@ I have seen an article on [Asp.Net website](http://www.asp.net/mvc/tutorials/get
 
 Here is the representation of every layers that we would like with the unit of work.
 
-[![Layers](http://patrickdesjardins.com/blog/wp-content/uploads/2013/11/Layers.png)](http://patrickdesjardins.com/blog/entity-framework-and-the-unit-of-work-pattern/layers)
+![](images/Layers.png)
 
 As you can see, the controller should contact the service layer where all queries are from databases, access to caching services and web services are executed. For the database part, we contact the data access layer accessor which is an abstraction for the unit of work and repositories. This allow every developers that use repositories to abstract the need to create the unit of work and to pass it through constructors. The accessor does have a reference to repositories and to the unit of work.
 
@@ -67,11 +67,11 @@ modelBuilder.Entity<Animal>() .HasMany(entity => entity.Enemies) .WithMany(d => 
 
 ## Setup the controllers, service layer and data access layer
 
-Before even having the service layer, let's use the context directly into the controller and see the database creation. Then, we will change to code every layers but not the unit of work yet. We can use scaffolding to leverage Visual Studio power to get code generation for us. First step, right click the controller and select add new controller. [![MvcControllerWithEntityFramework](http://patrickdesjardins.com/blog/wp-content/uploads/2013/11/MvcControllerWithEntityFramework-400x278.png)](http://patrickdesjardins.com/blog/entity-framework-and-the-unit-of-work-pattern/mvccontrollerwithentityframework)
+Before even having the service layer, let's use the context directly into the controller and see the database creation. Then, we will change to code every layers but not the unit of work yet. We can use scaffolding to leverage Visual Studio power to get code generation for us. First step, right click the controller and select add new controller. ![](images/MvcControllerWithEntityFramework-400x278.png)
 
 The second step is to select to model class, you can select the one of Animal and select the DbContext class. If you do not see your DbContext class (DatabaseContext), close the window and compile your application. The wizard bases its choice on the compiled resource of the project. Once generated, you can execute the code, IIS Express start by default and you just need to go to http://localhost:15635/Animal and the DbContext will start the creation of the database. If you open SQL Server Manager, the unit of work database should have 3 tables.
 
-[![TabletsTPTForAnimal](http://patrickdesjardins.com/blog/wp-content/uploads/2013/11/TabletsTPTForAnimal.png)](http://patrickdesjardins.com/blog/entity-framework-and-the-unit-of-work-pattern/tabletstptforanimal)
+![](images/TabletsTPTForAnimal.png)
 
 ## Transforming to have service layers
 
@@ -107,7 +107,7 @@ If you want to test rapidly the database, just add the code in the index.
  public ActionResult Index() { var animal1 = new Animal { Name = "Boss" }; var cat1 = new Cat { Name = "Mi" }; var cat2 = new Cat { Name = "Do" }; animal1.Enemies = new List<Animal> { cat1,cat2}; db.Animals.Add(animal1); db.Animals.Add(cat1); db.Animals.Add(cat2); db.SaveChanges(); return View(db.Animals.AsNoTracking().ToList()); } 
 ```
 
-[![tablesDataForAssociation](http://patrickdesjardins.com/blog/wp-content/uploads/2013/11/tablesDataForAssociation-400x309.png)](http://patrickdesjardins.com/blog/entity-framework-and-the-unit-of-work-pattern/tablesdataforassociation)
+![](images/tablesDataForAssociation-400x309.png)
 
 The first step is to create a repository class for animal inside the DataAccessLayer folder. Normally, I create a folder called Repository to have all repositories.
 
@@ -181,7 +181,7 @@ public ActionResult Delete(int? id) { if (id == null) { return new HttpStatusCod
 
 At this stage, the controller is separated from the database by the service and the repository. Still, it's better to not having a strong reference to AnimalService inside the controller. This is why we will extract an interface from AnimalService and we will inject the concrete class by inversion of control. This allow us to have when doing test entry point to inject a fake AnimalService that won't goes to the database. You can use the refactoring tool to extract the interface easily.
 
-[![ExtractInterface](http://patrickdesjardins.com/blog/wp-content/uploads/2013/11/ExtractInterface-400x281.png)](http://patrickdesjardins.com/blog/entity-framework-and-the-unit-of-work-pattern/extractinterface)
+![](images/ExtractInterface-400x281.png)
 
 
 ```csharp

@@ -10,10 +10,10 @@ Azure allows to create website's slots once you have your website created. Befor
 
 The first step is to create the slot. This is a matter of less than a minute. You can do it directly on the portal.
 
-[![AzureDeploymentSlots](http://patrickdesjardins.com/blog/wp-content/uploads/2016/07/AzureDeploymentSlots.png)](http://patrickdesjardins.com/blog/?attachment_id=4733)
+![](images/AzureDeploymentSlots.png)
 
 The second step is to deploy to this slot instead of the main production one. This was the step that is not clear. You have to publish to a slot and then swap. To do so, you need to get the publish settings. This can be downloaded in Azure Portal. Just go on the main website, click slots, select the one you want to deploy and click **Get Publish Profile**.
 
-[![DeploymentSlotGetPublishSettings](http://patrickdesjardins.com/blog/wp-content/uploads/2016/07/DeploymentSlotGetPublishSettings-1024x600.png)](http://patrickdesjardins.com/blog/?attachment_id=4734)
+![](images/DeploymentSlotGetPublishSettings-1024x600.png)
 
 This is how to deploy a website on Azure with slot. By publishing to a specific slot and then handling the slot manually or automatically (auto-swap). A special note, if you want to use **Azure Deployment slots**, you need to go in your website deployment slot and configure the Deployment directly on the slot, not the main website.

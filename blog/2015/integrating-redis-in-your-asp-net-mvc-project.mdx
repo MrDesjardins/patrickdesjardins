@@ -10,13 +10,13 @@ I have been using Memcached for the last decade and wanted to try **Redis** on a
 
 The first thing to do is to install Redis on your machine. It is created for Linux but has a simple installation for Windows. In fact, Microsoft has a open source implementation where you can download the installation from this [GitHub page](https://github.com/MSOpenTech/redis/releases). I hear a lot of good feedback about it. Most say that Microsoft try not to inject any Microsoft's flavor into it and keep it just as in implementation from the Linux ones -- which is great. I also believe that this will be keep up-to-date since Microsoft offers a Redis service in part of Azure. Once you download the file and install, you will have a running service in your machine.
 
-[![RedisServer](http://patrickdesjardins.com/blog/wp-content/uploads/2015/07/RedisServer-400x203.png)](http://patrickdesjardins.com/blog/?attachment_id=4272)
+![](images/RedisServer-400x203.png)
 
-Once it's running, you can do a quick test with the Redis-cli console. You can set and get a value with a simple **set** and **get** command. [![RedisCliExample](http://patrickdesjardins.com/blog/wp-content/uploads/2015/07/RedisCliExample-400x72.png)](http://patrickdesjardins.com/blog/?attachment_id=4273) It's also possible to get all keys by using the **keys \*** command. Once everything work as expected, you can delete everything with the **flushall** delete command.
+Once it's running, you can do a quick test with the Redis-cli console. You can set and get a value with a simple **set** and **get** command. ![](images/RedisCliExample-400x72.png)
 
 Next step, is to be able to set and get from the Asp.Net C# application. This is where it can be tricky. There is multiple clients available. Do not waste your time with the servicestack one. Even if a lot of documentation is available, that library became not free since version 4. The version 3 is still available to download via Nuget but it's more than 1 year old, the documentation does not fit quite well with the version 4 and it requires a lot of tricky hack to make everything work with all dependency packages. After wasted 3 hours I decided to use the stackexchange version one. The name is similar so do not get confuse.
 
-[![StackExchangeRedis](http://patrickdesjardins.com/blog/wp-content/uploads/2015/07/StackExchangeRedis-400x65.png)](http://patrickdesjardins.com/blog/?attachment_id=4274)
+![](images/StackExchangeRedis-400x65.png)
 
 Once installed, you'll be able to access Redis with almost no effort for basic command like setting and getting. Here is a short example of possible use.
 

@@ -89,7 +89,7 @@ Currently, no order can be show if we loop through the list of order of each of 
  ModelContext db = new ModelContext(); var bigCustomers = db.Customers.Where(c => c.Orders.Count > 20); foreach (var customer in bigCustomers) { Debug.WriteLine("Customer#" + customer.CustomerID); foreach (var order in customer.Orders) { Debug.WriteLine("---Order#" + order.OrderID); } } 
 ```
 
-[caption id="attachment\_272" align="aligncenter" width="400" caption="POCO Eager Loading"][![Code with VS error saying that the Orders are NULL](http://patrickdesjardins.com/blog/wp-content/uploads/2011/09/POCO_List_Not_Loaded-400x225.png "POCO_List_Not_Loaded")](http://patrickdesjardins.com/blog/poco-proxy-and-lazy-loading/poco_list_not_loaded)[/caption]
+[caption id="attachment\_272" align="aligncenter" width="400" caption="POCO Eager Loading"]![](images/POCO_List_Not_Loaded-400x225.png)
 
 Of course we can add in the constructor of the Customer the initialization of the Orders collection. 
 ```csharp
@@ -103,7 +103,7 @@ Of course we can add in the constructor of the Customer the initialization of th
  Customer#ERNSH ---Order#10258 ---Order#10263 ---Order#10351 ---Order#10368 ---... Customer#QUICK ---Order#10273 ---Order#10285 ---Order#10286 ---... Customer#SAVEA ---Order#10324 ---Order#10393 ---Order#10398 --- ... 
 ```  If we check the SQL profiler we see N+1 call to the database (1 to get all customers and 3 to gets each of their orders).
 
-[caption id="attachment\_273" align="aligncenter" width="279" caption="SQL profiler showing the 1+3 call."][![SQL profiler screenshot of the 4 calls](http://patrickdesjardins.com/blog/wp-content/uploads/2011/09/sqlprofilerpocolazy.png "sqlprofilerpocolazy")](http://patrickdesjardins.com/blog/poco-proxy-and-lazy-loading/sqlprofilerpocolazy)[/caption]
+[caption id="attachment\_273" align="aligncenter" width="279" caption="SQL profiler showing the 1+3 call."]![](images/sqlprofilerpocolazy.png)
 
 With the use of eager loading, a single query is done. 
 ```csharp

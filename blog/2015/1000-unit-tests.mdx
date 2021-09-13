@@ -7,15 +7,15 @@ categories:
 
 I have this side project that I am burning a lot of time since about 1 year now. It reaches few days ago the milestone of 1000 automated unit tests.
 
-[![TestExplorerReach1000UnitTests](http://patrickdesjardins.com/blog/wp-content/uploads/2015/04/TestExplorerReach1000UnitTests-400x119.png)](http://patrickdesjardins.com/blog/1000-unit-tests/testexplorerreach1000unittests)
+![](images/TestExplorerReach1000UnitTests-400x119.png)
 
 The code coverage is not bad too. I stroked the test projects because they are not significant. The model is cover at 82% which contains the core business logics. The service layer contains some integration logic and should be more covered but well we still have a coverage that make me comfortable and this is what is important so far. I am also proud of the 69% of the data access. Some of these database tests mock the database and some not which is perfect to test if Entity Framework is not breaking. The main difference is that with those 1000 unit tests I feel that I'll be able to continue to add features without disturbing parts that I wouldn't expect to broke. This was one of the main reason of that project -- to rebuild the old one that had less than 100 unit tests in PHP on a period of 10 years!
 
-[![Coverage1000Tests](http://patrickdesjardins.com/blog/wp-content/uploads/2015/04/Coverage1000Tests-400x232.png)](http://patrickdesjardins.com/blog/1000-unit-tests/coverage1000tests)
+![](images/Coverage1000Tests-400x232.png)
 
 I am also using [nDepend software](http://www.ndepend.com/) to keep track of the unit tests. That tool is great for identifying some part to improve your software but it is also great to track your tests coverage during the life of your software.
 
-[![nDependCodeCoverage](http://patrickdesjardins.com/blog/wp-content/uploads/2015/04/nDependCodeCoverage-400x201.png)](http://patrickdesjardins.com/blog/1000-unit-tests/ndependcodecoverage)
+![](images/nDependCodeCoverage-400x201.png)
 
 As you can see, we can track in time the number of lines, number of comments and the coverage. We can see two spikes down which were caused from a batch of tests that was failing during major refactoring. The graph show that I am pretty constant in the amount of code that I wrote every months. I am also keeping the same trend with the coverage. The number of comments is slightly going down but this is something I knew and will fix soon.
 

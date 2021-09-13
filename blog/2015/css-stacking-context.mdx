@@ -15,7 +15,7 @@ Most of the time, z-index works as intended because you are not changing the Css
 
 [css] .parent{ position:relative; background-color:blue; width:650px; height:400px; } .kid{ position:absolute; background-color:yellow; width:300px; height:100px; z-index:2; } .kid1{left:10px;} .kid2{left:330px;} .kid-above-all{ position:relative; width:20px; height:0; z-index:10000; } .aboveall{ position:fixed; width:550px; height:30px; left:150px; top:30px; background-color:green; border:solid 2px black; z-index:20000; } [/css] The result is that _kid2_ container is hidding the _AboveAll_ division. Even if _aboveall_ and _kid-above-all_ has a huge **z-index**, it is still behind _kid2_. The reason is that the z-index used by these two elements are only valid for the _kid1_ stacking context.
 
-[![CssStackingContextZ-index1](http://patrickdesjardins.com/blog/wp-content/uploads/2015/03/CssStackingContextZ-index1-400x239.png)](http://patrickdesjardins.com/blog/css-stacking-context/cssstackingcontextz-index1)
+![](images/CssStackingContextZ-index1-400x239.png)
 
 To fix that, you need to set the container z-index to something bigger than the other stacking context. In that case, we want kid1 div to have a higher z-index value than kid2. 
 
@@ -23,7 +23,7 @@ To fix that, you need to set the container z-index to something bigger than the 
 .parent{ position:relative; background-color:blue; width:650px; height:400px; } .kid{ position:absolute; background-color:yellow; width:300px; height:100px; z-index:2; } .kid1{left:10px; z-index:3}; .kid2{left:330px;} .kid-above-all{ position:relative; width:20px; height:0; } .aboveall{ position:fixed; width:550px; height:30px; left:150px; top:30px; background-color:green; border:solid 2px black; }
 ``` 
 
-[![CssStackingContextZ-index2](http://patrickdesjardins.com/blog/wp-content/uploads/2015/03/CssStackingContextZ-index2-400x235.png)](http://patrickdesjardins.com/blog/css-stacking-context/cssstackingcontextz-index2)
+![](images/CssStackingContextZ-index2-400x235.png)
 
 Here is the JSFiddle: 
 

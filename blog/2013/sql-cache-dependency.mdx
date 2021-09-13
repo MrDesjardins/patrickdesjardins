@@ -60,7 +60,7 @@ HttpContext.Current.Cache.Insert(tableName, result, dependency); } }
 
 As you can see, it checks if the table exist. If not, it creates a table called AspNet\_SqlCacheTablesForNotification where every table name will have a row. If a value change, the entry in this table will be removed.
 
-[![sqltablenotification](http://patrickdesjardins.com/blog/wp-content/uploads/2013/07/sqltablenotification.png)](http://patrickdesjardins.com/blog/?attachment_id=2183)
+![](images/sqltablenotification.png)
 
 This is quite interesting for distributed scenario where multiple source can change the value. The SQL Server act as a gateway where reside the information if the data is cached or not.
 

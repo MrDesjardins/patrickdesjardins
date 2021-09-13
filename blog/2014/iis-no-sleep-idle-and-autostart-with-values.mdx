@@ -11,7 +11,7 @@ It is important to have not only a good code but to have this one into a hosting
 
 The first step to improve IIS performance is to remove the time out. This can be done by opening IIS, open the **Application Pool** you want to change the setting and to open the Advanced Setting Window. The window has a Process Model section where you will find **Idle Time-out (minutes)** setting. You can set this property to 0. By default, the Application Pool also recycle every few minutes. You can set it to 0 to have this one not recycle. This will cause a higher availability of IIS during the day where most client are. If your application have low period, let say that you are building for an internal website for a company, you can set a absolute time to recycle. This can be set in the same screen as before, the Advanced Setting of the Application Pool, by changing the Specific Times. For example, we can set to recycle the pool at 1 am every day.
 
-[![AdvancedSettingApplicationPoolIISNoSleep](http://patrickdesjardins.com/blog/wp-content/uploads/2014/07/AdvancedSettingApplicationPoolIISNoSleep-387x400.png)](http://patrickdesjardins.com/blog/iis-no-sleep-idle-and-autostart-with-values/advancedsettingapplicationpooliisnosleep)
+![](images/AdvancedSettingApplicationPoolIISNoSleep-387x400.png)
 
 ## Auto Start
 

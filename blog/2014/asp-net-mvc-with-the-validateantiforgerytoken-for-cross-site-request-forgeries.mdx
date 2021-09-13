@@ -50,7 +50,7 @@ This is interesting to see how the value is generated. As we can see, it's using
 
 The way the ValidateAntiForgeryToken attribute works is by checking to see that the cookie and hidden form field left by the Html.AntiForgeryToken() Html Helper essentially exists and match. If they do not exist or match, it throws an HttpAntiForgeryException.
 
-[![ValidateAntiforgerytoken](http://patrickdesjardins.com/blog/wp-content/uploads/2013/12/ValidateAntiforgerytoken.png)](http://patrickdesjardins.com/blog/asp-net-mvc-with-the-validateantiforgerytoken-for-cross-site-request-forgeries/validateantiforgerytoken)
+![](images/ValidateAntiforgerytoken.png)
 
 The attribute does have a ValidateAntiForgeryTokenAttribute method that call the AntiForgery class. I have previously mentioned that it has not only the method to get the input but also for validation. Here is where it's used.
 

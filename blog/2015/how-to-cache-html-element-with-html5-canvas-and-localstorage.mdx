@@ -22,7 +22,7 @@ Let's dive in the code.
 
 .box i{ font-size: 3em; } [/css]
 
-This will produce the following html : [![2LoadingZonesBoxes](http://patrickdesjardins.com/blog/wp-content/uploads/2015/11/2LoadingZonesBoxes.png)](http://patrickdesjardins.com/blog/?attachment_id=4376)
+This will produce the following html : ![](images/2LoadingZonesBoxes.png)
 
 The normal loading experience is done by using JavaScript's timeout. Both box display a different text, one display also an image. ```typescript
 setTimeout(renderBox1, 3000); setTimeout(renderBox2, 5000); function renderBox1() { var $box = $('#box1'); $box.text('Loaded 1'); var $icon = $('<i>').addClass('fa fa-hand-peace-o'); $box.append($icon); }

@@ -7,7 +7,7 @@ categories:
 
 You can use the Html Helper to use the template system of Asp.Net MVC. You can have @Html.DisplayFor and @Html.EditorFor. The first one is to display the information into a read only control and the latter is the control that allow to modify the value. Both takes as parameter a Lambda expression of the view Model. Without going into too much detail about where DisplayFor or the EditorFor take their file, just remember that it searches for a folder **EditorTemplates** or **DisplayTemplates** in the directory where the view use one of these helpers first and then it goes check for Views>Shared>DisplayTemplates or EditorTemplates.
 
-[![DisplayForLoop](http://patrickdesjardins.com/blog/wp-content/uploads/2014/04/DisplayForLoop-400x125.png)](http://patrickdesjardins.com/blog/how-to-use-asp-net-displayfor-or-editorfor-within-a-loop/displayforloop)
+![](images/DisplayForLoop-400x125.png)
 
 But, what if you want to use one of these two method within a loop to show value of a collection inside your model? This collection is from another type of the model and you cannot select from the Lambda expression items within a collection but only property of the model? The trick is to use Lambda for the current page model but not using any of the property. Instead, simple choose the variable your want to use the template item.
 

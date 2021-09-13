@@ -8,10 +8,10 @@ categories:
 
 Here is a real case scenario. A website running on Azure that got deployed in release mode with everything pre-compiled. Still hitting 400ms to render the whole view. With Glimpse on, we can see that many views are used. Partial views, editor templates and display templates and taking some extra milliseconds here and there.
 
-[![ViewWithEditorTemplate](http://patrickdesjardins.com/blog/wp-content/uploads/2016/08/ViewWithEditorTemplate-1024x225.png)](http://patrickdesjardins.com/blog/?attachment_id=4773)
+![](images/ViewWithEditorTemplate-1024x225.png)
 
 Here is the same view rendered with almost no template. Everything is directly in the view and for specific components, editor and display templates got migrated into Html helper.
 
-[![ViewWithoutEditorTemplate](http://patrickdesjardins.com/blog/wp-content/uploads/2016/08/ViewWithoutEditorTemplate-1024x34.png)](http://patrickdesjardins.com/blog/?attachment_id=4772)
+![](images/ViewWithoutEditorTemplate-1024x34.png)
 
 So, at the end, Asp.Net MVC templates are just time consuming. Rendering a simple view shouldn't take 400ms. It should take 10% of that, and this is what we get by trimming templates out.

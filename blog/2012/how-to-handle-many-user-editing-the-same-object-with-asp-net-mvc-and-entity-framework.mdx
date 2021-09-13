@@ -68,11 +68,11 @@ ViewBag.Id = new SelectList(db.Licenses, "Id", "Name", customer.Id); return View
 
 As you can see if you open 2 tabs of a single entity if you save in the first tab and try to save in the second you will see the error message (the exception message is from [Asp.net website](http://www.asp.net/mvc/tutorials/getting-started-with-ef-using-mvc/handling-concurrency-with-the-entity-framework-in-an-asp-net-mvc-application)).
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/09/concurrencyException-400x382.png "concurrencyException")](http://patrickdesjardins.com/blog/how-to-handle-many-user-editing-the-same-object-with-asp-net-mvc-and-entity-framework/concurrencyexception)
+![](images/concurrencyException-400x382.png)
 
 If we go check in the database, we will see that the table contains a hexadecimal value inside the TimeStamp.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/09/timstampdatabase.png "timstampdatabase")](http://patrickdesjardins.com/blog/how-to-handle-many-user-editing-the-same-object-with-asp-net-mvc-and-entity-framework/timstampdatabase)
+![](images/timstampdatabase.png)
 
 ## Conclusion
 

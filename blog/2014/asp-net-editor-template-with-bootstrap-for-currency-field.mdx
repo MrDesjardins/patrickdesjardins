@@ -40,9 +40,9 @@ public List<SelectorItem> AvailableCurrencies { get; set; }
 public SelectorForMoneyViewModel() { this.Current = new MoneyViewModel(); this.AvailableCurrencies = new List<SelectorItem>(); } } 
 ``` From there, the **Editor Template** can use this list and put the whole list into the currency drop down. The result should look like the following picture. The first image is the control when not open and the second picture when the user click the currency field.
 
-[![BootStrapperCurrency1](http://patrickdesjardins.com/blog/wp-content/uploads/2014/03/BootStrapperCurrency1-400x59.png)](http://patrickdesjardins.com/blog/asp-net-editor-template-with-bootstrap-for-currency-field/bootstrappercurrency1)
+![](images/BootStrapperCurrency1-400x59.png)
 
-[![BootStrapperCurrency2Open](http://patrickdesjardins.com/blog/wp-content/uploads/2014/03/BootStrapperCurrency2Open-400x103.png)](http://patrickdesjardins.com/blog/asp-net-editor-template-with-bootstrap-for-currency-field/bootstrappercurrency2open)
+![](images/BootStrapperCurrency2Open-400x103.png)
 
 This is possible with the use of **BootStrap** but can be reproduced without it. I am using BootStrap because because it is available by default with Asp.Net MVC since version 5.
 

@@ -7,13 +7,13 @@ categories:
 
 The first step is to install MongoDB on your machine. You can go on the official website, in the top menu, you will see Download. Click the Download link (http://www.mongodb.org/downloads) and then select the Windows version. You can download the 64 bits or 32 bits. In this tutorial of MongoDB we will use the **MongoDB 64 bits for Windows**. The file is about 132 megs and is a setup.
 
-[![MongoDbSetup](http://patrickdesjardins.com/blog/wp-content/uploads/2014/09/MongoDbSetup-400x311.png)](http://patrickdesjardins.com/blog/3818/mongodbsetup)
+![](images/MongoDbSetup-400x311.png)
 
 The installation is pretty straight forward. You can select the typical installation to have a basic setup. During the installation, you will have to accept to elevate the permission.
 
 From here, it is time to open a Command Prompt with administration right. Let's go in the folder we just installed MongoDB. Since we have installed the typical package with the 64 bits version, the installation should be in **program file**.
 
-[![MongoDbConsole](http://patrickdesjardins.com/blog/wp-content/uploads/2014/09/MongoDbConsole-400x203.png)](http://patrickdesjardins.com/blog/3818/mongodbconsole)
+![](images/MongoDbConsole-400x203.png)
 
 You can after that configure MongoDB. The next steps are taken directly from MongoDB documentation. You must create a directory to save the content. This can be anywhere so let's do a data folder at the root of the installation path. The md command let you create a directory. The code below is what you can write to create the default path that MongoDB uses. ``` 
  cd "C:\\Program Files\\MongoDB 2.6 Standard" md \\data\\db 
@@ -29,7 +29,7 @@ Me, the first time I start MongoDB I got a warning followed by an error saying t
 
 Than I realized that I was launching **mongo.exe** instead of **mongod.exe**. Once the administration console lunch the mongod.exe you can start a new console (no need to have administration privileges on this one) and start mongo.exe. Here is what you should see.
 
-[![MongoDbConsole](http://patrickdesjardins.com/blog/wp-content/uploads/2014/09/MongoDbConsole-400x203.png)](http://patrickdesjardins.com/blog/3818/mongodbconsole)
+![](images/MongoDbConsole-400x203.png)
 
 Do not forget to specify the **\--dbpath** when starting the **mongod.exe** because otherwise it will store everything on you **c:\\** drive.
 
@@ -51,4 +51,4 @@ Here is few commands that may be useful during the development. **dbs shows** th
 
 The last command that is really useful is to see the content of a collection. You can use the **find()** command. ``` 
  db.testdata.find() 
-```  Keep in mind that if you see nothing it might be because you typed the collection name with the wrong case sensitivity. MongoDB is case sensitive. Here is screenshot of the output of all commands that we just discussed. [![MongoBasicCommands](http://patrickdesjardins.com/blog/wp-content/uploads/2014/09/MongoBasicCommands-400x275.png)](http://patrickdesjardins.com/blog/3818/mongobasiccommands)
+```  Keep in mind that if you see nothing it might be because you typed the collection name with the wrong case sensitivity. MongoDB is case sensitive. Here is screenshot of the output of all commands that we just discussed. ![](images/MongoBasicCommands-400x275.png)

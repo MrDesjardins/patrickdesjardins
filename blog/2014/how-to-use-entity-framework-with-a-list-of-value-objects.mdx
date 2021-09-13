@@ -11,7 +11,7 @@ Because of how Entity Framework works, we cannot simply have an entity to have a
 
 To fix this problem, we need to create an association table that will act has a association table in the database.
 
-[![ContestMarket](http://patrickdesjardins.com/blog/wp-content/uploads/2014/03/ContestMarket-400x90.png)](http://patrickdesjardins.com/blog/how-to-use-entity-framework-with-a-list-of-value-objects/contestmarket)
+![](images/ContestMarket-400x90.png)
 
 Concerning Entity Framework, we need to specify the new entity in the configuration. We need to specify that its primary key is the combination of both primary key (Contest and Market). It would also be able to add additional property for the association like having a date. This association can be set by setting a key with an anonymous object.
 

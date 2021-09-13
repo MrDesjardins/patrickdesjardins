@@ -9,7 +9,7 @@ Not every page should be CRUD. In the case of our enterprise example, a software
 
 Here is the database to inform you concerning the schema before going with Entity Framework to save multiple objects in the same time.
 
-[![DatabaseWorkout](http://patrickdesjardins.com/blog/wp-content/uploads/2013/02/DatabaseWorkout-196x400.png)](http://patrickdesjardins.com/blog/?attachment_id=1905)
+![](images/DatabaseWorkout-196x400.png)
 
 I won't display the whole code for creating a Workout from A to Z but concentrate on the goal of this article : saving multiple entities. The entity we want to save is the one called "Workout", we want to save the sessions and the exercises withing the same page. We won't create new exercise from this page, neither muscle and a group of muscle. But, we will use them.
 
@@ -17,7 +17,7 @@ The first step is to get from the form all information. I won't enter in detail 
 
 From there, the saving process start. The controller should call the service layer which call the repository. The big works start right here. The first thing to do is to setup a transaction scope. The main reason is that we need to delete exercises that the user might have remove when in a second time we want to add new exercises. We should remove all non used exercises first and then add everything. Otherwise, it won't be able to differentiate in the data context which one is removed, and which one is added. The use of transaction scope create a protection if something goes wrong in the later stage that nothing will be deleted. The transaction scope used in the same one that was used in the past with Ado.net, in fact, Entity Framework use behind Ado.Net and it won't be a problem to use it. Watch out! you will need to have MSDTC service running because multiple connexion to the database will be done.
 
-[![msdtc](http://patrickdesjardins.com/blog/wp-content/uploads/2013/03/msdtc-356x400.png)](http://patrickdesjardins.com/blog/how-to-save-multiple-entities-in-inheritance-in-the-same-time-with-entity-framework-5-0/msdtc)
+![](images/msdtc-356x400.png)
 
 
 ```csharp

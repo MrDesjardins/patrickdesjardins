@@ -10,7 +10,7 @@ When using EditorFor, the system search for the right html input to produce. Thi
 
 First, if the user has used the the EditorFor with the signature that contain the template name, this one will be used in first priority.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/09/EditorForSignatureWithTemplateName-400x91.png "EditorForSignatureWithTemplateName")](http://patrickdesjardins.com/blog/asp-net-mvc-template-editorfor-priorities/editorforsignaturewithtemplatename)
+![](images/EditorForSignatureWithTemplateName-400x91.png)
 
 At first, this html helper may look useless because instead of relying on a **parameter**, why not use directly the correct helper. For Example, instead of doing @Html.EditorFor(x=>x.Name, "Textbox") you should use @Html.TextBoxFor(x=>x.Name). Right? In fact, no. If you do so, you might see the textbox, but in reality, it doesn't show the textbox because you wrote it but more because it hasn't found the template in the EditorTemplates folder. If you want to use the named template EditorFor you need to ensure that this one is inside the EditorTemplates, otherwise, the Asp.Net MVC Framework will pass on the next priority.
 
@@ -21,7 +21,7 @@ The second priority for the choice of the correct template is ModelMetadata.Temp
 
 The third priority is another **attribute** called **DataType**.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/09/datatypeattributeenum.png "datatypeattributeenum")](http://patrickdesjardins.com/blog/asp-net-mvc-template-editorfor-priorities/datatypeattributeenum)
+![](images/datatypeattributeenum.png)
 
 This come with a list of predefined values. This is interested for basic type and you can define a template for each of those type inside EditorTemplates and DisplayTemplates folder. The separation of concern is respected because the model only specify the type of its property and not how they will be represented.
 

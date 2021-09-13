@@ -7,7 +7,7 @@ categories:
 
 You cannot simply use an attribute like Required to specify the message your want for an invalid value. What you have to do is to change the default model binding resource class. When the model binder try to convert the input to the type of the model, if this one cannot be converted, a message is sent back to the client in the format : The value '{0}' is not valid for {1}. To change the message, you need to go inside the Global.asax.cs, in the Application\_Start method.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/10/messageFrameworkErrorResource-400x103.png "messageFrameworkErrorResource")](http://patrickdesjardins.com/blog/?attachment_id=1662)
+![](images/messageFrameworkErrorResource-400x103.png)
 
 You need to set the name of a resource file that you will create.
 

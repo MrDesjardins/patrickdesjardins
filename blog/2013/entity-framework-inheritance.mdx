@@ -24,7 +24,7 @@ public class Magazine : Book { public string MagazineProperty { get; set; } }
 public class Encyclopedia:Book { public string EncyclopediaProperty { get; set; } } 
 ```
 
-The class diagram of these 3 classes is the following: [![ClassDiagram](http://patrickdesjardins.com/blog/wp-content/uploads/2013/12/ClassDiagram-400x318.png)](http://patrickdesjardins.com/blog/entity-framework-inheritance/classdiagram)
+The class diagram of these 3 classes is the following: ![](images/ClassDiagram-400x318.png)
 
 This will result to a single table with all property nullable for those who are from subclass.
 
@@ -58,11 +58,11 @@ Do no forget to add Entity Framework with Nuget and setup the web.config with a 
 
 Here is how the table looks:
 
-[![TableTPH](http://patrickdesjardins.com/blog/wp-content/uploads/2013/12/TableTPH.png)](http://patrickdesjardins.com/blog/entity-framework-inheritance/tabletph)
+![](images/TableTPH.png)
 
 In fact, the table has an additional value which is a discriminator. This column is used by Entity Framework to know which sub class is required to be instanced. It's possible to edit the string, but by default it's the class name.
 
-[![Discriminator](http://patrickdesjardins.com/blog/wp-content/uploads/2013/12/Discriminator-400x188.png)](http://patrickdesjardins.com/blog/entity-framework-inheritance/discriminator)
+![](images/Discriminator-400x188.png)
 
 This mapping strategy is good for performance and simplicity. It's also the default used by Entity Framework.
 
@@ -70,7 +70,7 @@ This mapping strategy is good for performance and simplicity. It's also the defa
 
 All types are mapped to its own table. This produce a normalized database, while TPH doesn't. For the same example as above, with TPH, the database would have 3 tables.
 
-[![TPTTablets](http://patrickdesjardins.com/blog/wp-content/uploads/2013/12/TPTTablets.png)](http://patrickdesjardins.com/blog/entity-framework-inheritance/tpttablets)
+![](images/TPTTablets.png)
 
 Entity Framework performs more inner join to be able to know which table to use for subclass when information are gathered from the database. This result to be less performing than the previous approach. Nevertheless, tables are more clean because they doesn't have a huge amount of nullable of property.
 
@@ -89,7 +89,7 @@ If we delete the database and run again the code, the database is created with t
 
 Tablet per concrete type, also know as TPC, create a single class per subclass. Every properties of the inherited class are set into each of the subclass table. This lead to have duplicated structure. If you have 2 classes that inherit one class, the inherited field will be in inside the two tables.
 
-[![TableTPC](http://patrickdesjardins.com/blog/wp-content/uploads/2013/12/TableTPC.png)](http://patrickdesjardins.com/blog/entity-framework-inheritance/tabletpc)
+![](images/TableTPC.png)
 
 As you can see in the example above, the ISBN and PageCount are repeated in both of the sub classes' table. You can also notice that they are no table for the base class. The reason is that all fields of the base are already in all sub classes.
 

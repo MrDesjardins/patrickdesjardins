@@ -30,7 +30,7 @@ But, first we will comment the Address class and all references to it. The reaso
 
 Then, we need to add Entity Framework to your project.
 
-[![EntityFrameworkAddNugetReference](http://patrickdesjardins.com/blog/wp-content/uploads/2014/05/EntityFrameworkAddNugetReference-400x129.png)](http://patrickdesjardins.com/blog/entity-framework-database-setup-for-code-first/entityframeworkaddnugetreference)
+![](images/EntityFrameworkAddNugetReference-400x129.png)
 
 The last step is to tell Entity Framework to initialize the database. This will create the database and all tables defined by the DbContext.
 
@@ -48,7 +48,7 @@ We could also add an Entity to the database to generate the database automatical
 
 The result is not very interesting because it creates something without the help of any connection string. This mean that the database name is generated with the context name and the namespace. For example, the code executed generate a database would be "EntityFrameworkTestConsole.DataAccessLayer.YourContext". To fix this issue, we need to define a connection string and than set it in the YourContext. It also has used the default Sql Server defined for your machine. In general, it is SQL Express. This is very restrictive.
 
-[![SqlManagerEntityFrameworkDatabaseName](http://patrickdesjardins.com/blog/wp-content/uploads/2014/05/SqlManagerEntityFrameworkDatabaseName.png)](http://patrickdesjardins.com/blog/entity-framework-database-setup-for-code-first/sqlmanagerentityframeworkdatabasename)
+![](images/SqlManagerEntityFrameworkDatabaseName.png)
 
 If you setup a connection string with a name, for example you could use "DefaultConnection", this one will be used if set in the context.
 
@@ -69,9 +69,9 @@ public DbSet<Person> Persons { get; set; } public DbSet<House> Houses { get; set
 
 This generate the database with the name specified in the **Catalog** from the connection string. You could also specify directly the connection string into the base() but this will be a show stopper if you are building application that must change the server and database depending of the environment (dev, test, prod).
 
-[![SqlManagerEntityFrameworkDatabaseName2](http://patrickdesjardins.com/blog/wp-content/uploads/2014/05/SqlManagerEntityFrameworkDatabaseName2.png)](http://patrickdesjardins.com/blog/entity-framework-database-setup-for-code-first/sqlmanagerentityframeworkdatabasename2)
+![](images/SqlManagerEntityFrameworkDatabaseName2.png)
 
-Entity Framework takes care of everything for you. Tables are created from your entity defined in your context. It also takes care of all primary keys and foreign keys for you. [![DatabaseTables](http://patrickdesjardins.com/blog/wp-content/uploads/2014/05/DatabaseTables.png)](http://patrickdesjardins.com/blog/entity-framework-database-setup-for-code-first/databasetables)
+Entity Framework takes care of everything for you. Tables are created from your entity defined in your context. It also takes care of all primary keys and foreign keys for you. ![](images/DatabaseTables.png)
 
 So far, we have see that Entity Framework can generate the database from minimalist code. Only a context need to be defined. Of course, setting a connection string and associate the connection string name with the context give you more control to which server and database to connect Entity Framework.
 

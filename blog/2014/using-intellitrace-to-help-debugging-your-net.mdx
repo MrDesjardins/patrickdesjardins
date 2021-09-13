@@ -11,11 +11,11 @@ IntelliTrace is available since Visual Studio 2010 and it's available on the Ult
 
 IntelliTrace allows you to have snapshot of step in the time. This mean that if you hit a break point or you have an exception that break the code, IntelliTrace can show you the stack with different value that has been set. The traditional debugging allows you to modify values of variable, IntelliTrace does not. They have both different goal.
 
-[![intellitrace](http://patrickdesjardins.com/blog/wp-content/uploads/2013/12/intellitrace-400x83.png)](http://patrickdesjardins.com/blog/using-intellitrace-to-help-debugging-your-net/intellitrace)
+![](images/intellitrace-400x83.png)
 
 The screenshot above shows some information you can get with a simple call to a controller. As you can see, we have information about the MVC routing and also about what SQL Query has been sent to the database. This allow you to not have to use a SQL profiler to know what is sent to the database.
 
-[![intellitraceSQL](http://patrickdesjardins.com/blog/wp-content/uploads/2013/12/intellitraceSQL-400x251.png)](http://patrickdesjardins.com/blog/using-intellitrace-to-help-debugging-your-net/intellitracesql)
+![](images/intellitraceSQL-400x251.png)
 
 If you double click the line an entry in the Intellitrace, you see the whole detail but also the code window is going to the line where the data has been gathered. In the example above, the code selected is the line that call the repository:
 
@@ -25,7 +25,7 @@ public IEnumerable<Workout> GetAll() { var listModel = Repository.Workout.GetAll
 
 To enable the IntelliTrace or to change some option, go in the Tools>Options>Intellitrace.
 
-[![IntellitraceOption](http://patrickdesjardins.com/blog/wp-content/uploads/2013/12/IntellitraceOption-400x238.png)](http://patrickdesjardins.com/blog/using-intellitrace-to-help-debugging-your-net/intellitraceoption)
+![](images/IntellitraceOption-400x238.png)
 
 The default allows IntelliTrace to work with event. This mean that IntelliTrace has been injected in the code and records event like SQL query, http errors, exceptions, etc. It's possible to collect more information. To enable additional collect of information, in the option select _events and call_. This will slow down your debugging sessions because it injects additional code inside your code to collect information. However, richer information is recorded.
 

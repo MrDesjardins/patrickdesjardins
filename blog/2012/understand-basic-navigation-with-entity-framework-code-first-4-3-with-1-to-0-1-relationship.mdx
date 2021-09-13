@@ -59,7 +59,7 @@ You have HasRequired, HasOptional, HasMany and HasForeignKey. In the same time y
  modelBuilder.Entity<A>().HasRequired(a => a.B).WithOptional(b => b.A); 
 ```
 
-To clarify even more the Has and With, here is a more complex scenario that involve many classes. [![](http://patrickdesjardins.com/blog/wp-content/uploads/2012/08/CarCustomer-283x400.png "CarCustomer")](http://patrickdesjardins.com/blog/?attachment_id=1267) Lets focus on the Car class and the Customer class. In this scenario, a car can have or not a owner (Customer). The customer can have, or hot a current car (Car). This is a circular reference because the current car and the current owner are always the same. They are 3 ways to do it with Entity Framework Code First using Fluent API. The first one is to define the Entity Type Configuration on the Car. The second one is to define the relationship on the Customer Entity Type Configuration. The third possibility is to defined both side. Of course, the last one will require you to have something cohesive between both configuration but has the advantage to be very explicit.
+To clarify even more the Has and With, here is a more complex scenario that involve many classes. ![](images/CarCustomer-283x400.png)
 
 
 ```csharp

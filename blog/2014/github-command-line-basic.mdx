@@ -5,11 +5,11 @@ categories:
   - "git"
 ---
 
-The first thing is to create a repository. You can create one free at GitHub. After created the repository on GitHub get the URL of the repository and copy paste to the console with the **clone** command. [![GitHubCloneHttpUrl](http://patrickdesjardins.com/blog/wp-content/uploads/2014/12/GitHubCloneHttpUrl-400x247.png)](http://patrickdesjardins.com/blog/github-command-line-basic/githubclonehttpurl)
+The first thing is to create a repository. You can create one free at GitHub. After created the repository on GitHub get the URL of the repository and copy paste to the console with the **clone** command. ![](images/GitHubCloneHttpUrl-400x247.png)
 
 Download the repository to your computer with the **clone** command. ``` 
  git clone https://github.com/MrDesjardins/TestingGit.git 
-```  [![GitCloneExistingRepository](http://patrickdesjardins.com/blog/wp-content/uploads/2014/12/GitCloneExistingRepository-400x66.png)](http://patrickdesjardins.com/blog/github-command-line-basic/gitcloneexistingrepository) Open notepad and modify an existing file. You can do it manually by specifying the file ``` 
+```  ![](images/GitCloneExistingRepository-400x66.png)
  git add README.md 
 ```  You can use the add command with the the -u for all modified file but not for adding new file.
 
@@ -31,7 +31,7 @@ This was the easy step. Now let's dp a branch that we will than later merge back
  git branch -a //create file test1.txt git add text1.txt git commit -m "Added test1.txt from branch1" git checkout -b Branch2 //create file test1.txt git add text1.txt git commit -m "Added test1.txt from branch2" 
 ``` 
 
-From there we can do several thing like a pull request, pulling directly or pushing to another branch. Let's first stats with a pull request. To do, you need to go on Github. [![GitComment](http://patrickdesjardins.com/blog/wp-content/uploads/2014/12/GitComment-336x400.png)](http://patrickdesjardins.com/blog/github-command-line-basic/gitcomment)
+From there we can do several thing like a pull request, pulling directly or pushing to another branch. Let's first stats with a pull request. To do, you need to go on Github. ![](images/GitComment-336x400.png)
 
 The web UI allows you to comment on the branch, but also inside every files. At the end, we can close the pull request.
 
@@ -41,7 +41,7 @@ You can close the pull request if you are not satisfy or you can accept and merg
  git fetch origin origin/branch1 git log origin/branch1 git merge origin/branch1 
 ```  To accept the pull request this can be done by checkout the master and merge the branch into it. Finally, push everything to the server. ``` 
  git checkout master git merge --no-ff branch1 git commit -m "Merging Blah Blah" git push origin master 
-```  Like in this example, conflict can occur. [![GitConflct](http://patrickdesjardins.com/blog/wp-content/uploads/2014/12/GitConflct-400x48.png)](http://patrickdesjardins.com/blog/github-command-line-basic/gitconflct) You can also see the conflict with the **git status** command. [![GitStatusConflict](http://patrickdesjardins.com/blog/wp-content/uploads/2014/12/GitStatusConflict-400x149.png)](http://patrickdesjardins.com/blog/github-command-line-basic/gitstatusconflict)
+```  Like in this example, conflict can occur. ![](images/GitStatusConflict-400x149.png)
 
 Before resolving conflict, you need to be sure that you have configured the merging tool. Here is the configuration for WinMerge. This configuration must be set in your .gitconfig from your user folder. You can access it by using : **%USERPROFILE%/.gitconfig** ``` 
  [merge] tool = winmerge [mergetool "winmerge"] cmd = "'C:/Program Files (x86)/WinMerge/WinMergeU.exe'" -e "$MERGED" keepBackup = false trustExitCode = false [diff] tool = winmerge [difftool "winmerge"] cmd = "'C:/Program Files (x86)/WinMerge/WinMergeU.exe'" -e "$LOCAL" "$REMOTE" -dl "Local" -dr 

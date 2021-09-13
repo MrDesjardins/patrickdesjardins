@@ -10,7 +10,7 @@ Redux offers many ways to handle the flow of information in your system. One too
 
 Before digging into the main topic, let's illustrate the flow on which we will analyze the question.
 
-[![](http://patrickdesjardins.com/blog/wp-content/uploads/2017/09/MiddlewareNextDispatch.png)](http://patrickdesjardins.com/blog/?attachment_id=5538)
+![](images/MiddlewareNextDispatch.png)
 
 The illustration works from top to bottom. A component dispatches an action with the **dispatch** function from Redux library. The action contains a type (string) and a payload (data). Middlewares are injected in the flow with Redux at the configuration stage of Redux with the function **applyMiddleware**. For the hypothetic case illustrated, the configuration would be like the following code.
 

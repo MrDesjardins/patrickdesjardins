@@ -9,11 +9,11 @@ categories:
 
 I recently have a side project that I am dogfooding at Netflix. It is a library that handles HTTP request by acting as a proxy to cache requests. The goal is to avoid redundant parallel call and to avoid requesting data that is still valid while being as simple as possible. It has few configurations, just enough to make be able to customize the level of cache per request if required. The goal of this article is not to sell the library but to expose information about how I created a Chrome's extension that listens to every action and collects insight to help the developer understanding what is going on underneath the UI. This article will explain how I used TypeScript and React to build the UI. For information about how the communication is executed behind the scene, from the library to Chrome, you should refer to [this previous article](https://patrickdesjardins.com/blog/using-typescript-and-react-to-create-a-chrome-extension-developer-tool).
 
-[![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/07/DataAccessGatewayOverview.png)](https://patrickdesjardins.com/blog/?attachment_id=5912) _Here is an image of the extension at the time I wrote this article._
+![](images/DataAccessGatewayOverview.png)
 
 Chrome's extension for developer tool requires a panel which is an HTML file. React with [Creat-React-App](https://github.com/facebook/create-react-app) generate a static HTML file that bootstrap React. There is a flavor of [create-react-app with TypeScript](https://github.com/wmonk/create-react-app-typescript) that works similarly, but with TypeScript. In both case, it generates a build in a folder that can be published as a Chrome's extension.
 
-[![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/07/TypeScriptReactChromeExtension.png)](https://patrickdesjardins.com/blog/?attachment_id=5913)
+![](images/TypeScriptReactChromeExtension.png)
 
 The build folder content can be copied and pasted into your distribution folder along with the manifest.json, the contentScript.js, and background.js files that has been discussed in the [communication article between your code and Chrome extension](https://patrickdesjardins.com/blog/using-typescript-and-react-to-create-a-chrome-extension-developer-tool).
 

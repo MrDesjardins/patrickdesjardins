@@ -8,22 +8,22 @@ categories:
 
 This is the first time I had to have something that require a special business logic inside the database that I could not do directly in TSQL. Usually, I get around or I simply do something outside SQL like a small C# console that will handle everything. I decided to take a look a **CLR SQL Server User-Defined Function**. This article describes how to create your own C# method and use it within your TSQL. Albeit the feasibility and the success of the method, I removed the code at the end to make a console application and I will explain to you why.
 
-First thing to do is to create a SQL Server Project. [![SqlServerDatabaseProject](http://patrickdesjardins.com/blog/wp-content/uploads/2015/06/SqlServerDatabaseProject-400x147.png)](http://patrickdesjardins.com/blog/?attachment_id=4246) Second task is to add a file that will have the code. You can right click the new project and add a new item. Select **user defined function**. [![SqlUserDefinedFunction](http://patrickdesjardins.com/blog/wp-content/uploads/2015/06/SqlUserDefinedFunction-400x180.png)](http://patrickdesjardins.com/blog/?attachment_id=4247) This will create a partial class named "UserDefinedFunctions". You can rename the file with a custom name -- what is important is to have the class as partial.
+First thing to do is to create a SQL Server Project. ![](images/SqlUserDefinedFunction-400x180.png)
 
 Finally, you write your own method. Mine was returning a single string so I had to return a **SqlString**. 
 ```csharp
  public partial class UserDefinedFunctions { [Microsoft.SqlServer.Server.SqlFunction] public static SqlString HashPassword(string plainPassword) { byte[] salt; byte[] buffer2; using (var bytes = new Rfc2898DeriveBytes(plainPassword, 0x10, 0x3e8)) { salt = bytes.Salt; buffer2 = bytes.GetBytes(0x20); } byte[] dst = new byte[0x31]; Buffer.BlockCopy(salt, 0, dst, 1, 0x10); Buffer.BlockCopy(buffer2, 0, dst, 0x11, 0x20); return new SqlString (Convert.ToBase64String(dst)); } } 
 ``` This is the code I used. It does the hash of a plain password and return the hashed password. This algorithm is compatible with Entity Framework so it was a way to convert legacy password into Entity Framework format. You can see that not only that class is partial to a specific class, but it also has an attribute. The **Microsoft.SqlServer.Server.SqlFunction** is required to specify the type of the method for SQL. It also allows to add additional information like if the function is deterministic.
 
-The last step is to **publish**. You need to right click the project, select Publish. This will raise a dialog where you need to select the database server, the database name, and the script to generate. This will build (if not already done) the project. The bin folder will contains the code (dll) but also a dacpac and a SQL file. [![SqlUserDefinedFunction](http://patrickdesjardins.com/blog/wp-content/uploads/2015/06/SqlUserDefinedFunction-400x180.png)](http://patrickdesjardins.com/blog/?attachment_id=4247)
+The last step is to **publish**. You need to right click the project, select Publish. This will raise a dialog where you need to select the database server, the database name, and the script to generate. This will build (if not already done) the project. The bin folder will contains the code (dll) but also a dacpac and a SQL file. ![](images/SqlUserDefinedFunction-400x180.png)
 
-[![SqlUserDefinedFunctionBinFolder](http://patrickdesjardins.com/blog/wp-content/uploads/2015/06/SqlUserDefinedFunctionBinFolder.png)](http://patrickdesjardins.com/blog/?attachment_id=4248)
+![](images/SqlUserDefinedFunctionBinFolder.png)
 
-The dacpac is what is installed by Visual Studio into Sql Server. This is a file that contains SQL objects. It is used not only by C# code but could contains any SQL object like Sql Procedure for example. The format cannot be read by NotePad because it is a compressed file. You can unzip it if you are curious. And we are curious! So here is the code above dacpac unzipped file structures. [![dacpactunzipped](http://patrickdesjardins.com/blog/wp-content/uploads/2015/06/dacpactunzipped-400x94.png)](http://patrickdesjardins.com/blog/?attachment_id=4250)
+The dacpac is what is installed by Visual Studio into Sql Server. This is a file that contains SQL objects. It is used not only by C# code but could contains any SQL object like Sql Procedure for example. The format cannot be read by NotePad because it is a compressed file. You can unzip it if you are curious. And we are curious! So here is the code above dacpac unzipped file structures. ![](images/dacpactunzipped-400x94.png)
 
-The interesting file is the _model.xml_. It contains a reference to the DLL file but also the function metadata we created and the source of the code inside a CDATA. [![insidedacpac](http://patrickdesjardins.com/blog/wp-content/uploads/2015/06/insidedacpac-400x260.png)](http://patrickdesjardins.com/blog/?attachment_id=4251) That said, if you used Visual Studio, the function is already been installed for you. You can see it under the **Scalar-valued Functions**.
+The interesting file is the _model.xml_. It contains a reference to the DLL file but also the function metadata we created and the source of the code inside a CDATA. ![](images/insidedacpac-400x260.png)
 
-[![ScalarValueFunctionSqlServer](http://patrickdesjardins.com/blog/wp-content/uploads/2015/06/ScalarValueFunctionSqlServer.png)](http://patrickdesjardins.com/blog/?attachment_id=4252)
+![](images/ScalarValueFunctionSqlServer.png)
 
 From here, you can just use a simple select, pass your parameter and you are all set.
 

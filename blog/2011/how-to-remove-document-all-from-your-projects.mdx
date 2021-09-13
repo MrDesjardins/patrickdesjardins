@@ -17,7 +17,7 @@ The plan was to replace all _document.all["XYZ"]_ to _$('input[name="XYZ"]')_. A
 ``` 
 
 
-[caption id="attachment\_527" align="aligncenter" width="300" caption="Regex to replace all document.all with JQuery name selector"][![](http://patrickdesjardins.com/blog/wp-content/uploads/2011/11/regex-300x400.png "Regex for Document.All replacement")](http://patrickdesjardins.com/blog/how-to-remove-document-all-from-your-projects/regex)[/caption]
+[caption id="attachment\_527" align="aligncenter" width="300" caption="Regex to replace all document.all with JQuery name selector"]![](images/regex-300x400.png)
 
 What it does is that it search for the string document.all["???"] and replace with input[name="???"] and the ??? is replaced with what is found in the search and used in the replacement. This way, the name change every time it founds a new string with document.all.
 
