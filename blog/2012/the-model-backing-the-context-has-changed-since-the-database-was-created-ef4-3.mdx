@@ -13,10 +13,10 @@ To resolve this problem, you will find on the Web a lot of solution but most of 
 
 ![](images/modelBackingException-400x262.png)
 
-The solution from this version is to use the static method SetInitializer and bind to the context a Null value. If you are working on a Web solution, the best position to write the code is in the Application\_Start of your Global.asax.cs file.
+The solution from this version is to use the static method SetInitializer and bind to the context a Null value. If you are working on a Web solution, the best position to write the code is in the Application_Start of your Global.asax.cs file.
 
 ```csharp
-protected void Application\_Start() { AreaRegistration.RegisterAllAreas(); RegisterRoutes(RouteTable.Routes); //... Database.SetInitializer<MyContext>(null); } 
+protected void Application_Start() { AreaRegistration.RegisterAllAreas(); RegisterRoutes(RouteTable.Routes); //... Database.SetInitializer<MyContext>(null); } 
 ```
 
 Using this code remove the error and let you handle manually the creation of the database.

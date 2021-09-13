@@ -18,7 +18,7 @@ First, you need to add a new route to let know the MVC routing system that the u
 Inside the Global.asax.cs you need to add your route. You need to put the new route BEFORE the default route because otherwise it won't trig the route. The reason is that because the default route has default parameter that 2 parameters will automatically goes inside the Default route. But, if you set the FilesRoute before, the condition will match and this one will be executed.
 
 ```csharp
-public static void RegisterRoutes(RouteCollection routes) { routes.IgnoreRoute("{resource}.axd/{\*pathInfo}"); routes.Add("FilesRoute", new Route("files/{uniqueidentifier}", new ExternalFileRouteHandler())); routes.MapRoute( "Default", // Route name "{controller}/{action}/{id}", // URL with parameters new { controller = "Home", action = "Index", id = UrlParameter.Optional } // Parameter defaults );
+public static void RegisterRoutes(RouteCollection routes) { routes.IgnoreRoute("{resource}.axd/{*pathInfo}"); routes.Add("FilesRoute", new Route("files/{uniqueidentifier}", new ExternalFileRouteHandler())); routes.MapRoute( "Default", // Route name "{controller}/{action}/{id}", // URL with parameters new { controller = "Home", action = "Index", id = UrlParameter.Optional } // Parameter defaults );
 
 } 
 ```

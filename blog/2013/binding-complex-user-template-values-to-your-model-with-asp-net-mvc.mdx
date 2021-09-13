@@ -49,11 +49,11 @@ In the case the object contains a type that Asp.Net MVC cannot handle for deseri
 
 YourComplexClass<bool> actualValue = null; if (!string.IsNullOrWhiteSpace(valueResult.AttemptedValue)) { var settings = new JsonSerializerSettings(); settings.Converters.Add(new JSonComplexConverterForYourComplexClass()); try { actualValue = JsonConvert.DeserializeObject<YourComplexClass<bool>>(valueResult.AttemptedValue, settings); } catch (FormatException e) { modelState.Errors.Add(e); } } bindingContext.ModelState.Add(bindingContext.ModelName, modelState); return actualValue; }
 
-public class JSonComplexConverterForYourComplexClass : JsonConverter { public override bool CanConvert(Type objectType) { return (objectType == typeof(I\_XYZ<bool>)); }
+public class JSonComplexConverterForYourComplexClass : JsonConverter { public override bool CanConvert(Type objectType) { return (objectType == typeof(I_XYZ<bool>)); }
 
 public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) { return serializer.Deserialize<XYZ>(reader); }
 
 public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) { throw new NotImplementedException(); } } } 
 ```
 
-This is often the case of Interface that need to be deserialized into a concrete class. In the above example, I\_XYZ was the interface but when it's the time to deserialize, Asp.Net MVC doesn't know to which type to deserialize. This is why, we provide a model binder for the class that contains the property that has I\_XYZ interface and provide to Json.Net library how to read the Json for deserialization.
+This is often the case of Interface that need to be deserialized into a concrete class. In the above example, I_XYZ was the interface but when it's the time to deserialize, Asp.Net MVC doesn't know to which type to deserialize. This is why, we provide a model binder for the class that contains the property that has I_XYZ interface and provide to Json.Net library how to read the Json for deserialization.

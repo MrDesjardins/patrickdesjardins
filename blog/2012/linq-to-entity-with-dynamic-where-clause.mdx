@@ -11,7 +11,7 @@ You can write many Where clause and query depending of the information received,
 
 
 ```csharp
- public void DisplayData(int status=-1, DateTime creationDate=DateTime.Min, decimal price=0) { var myData = \_dataContext.Data;
+ public void DisplayData(int status=-1, DateTime creationDate=DateTime.Min, decimal price=0) { var myData =_dataContext.Data;
 
 if(status!=-1 && creationDate == DateTime.Min && price==0) { Display(myData.Where(d=>d.Status == status); } else if(status!=-1 && creationDate != DateTime.Min && price==0) { Display(myData.Where(d=>d.Status == status && d.Date == creationDate); } else if(...) { //... } } 
 ```
@@ -19,7 +19,7 @@ if(status!=-1 && creationDate == DateTime.Min && price==0) { Display(myData.Wher
 With 3 filters, it requires to have 9 if statement. This is ain't the good way to do it. They are many [ways to work with predicate](http://blogs.msdn.com/b/meek/archive/2008/05/02/linq-to-entities-combining-predicates.aspx "Linq to Entity Predicates") but the simplest is by using the LinqKit dll. This dll contain a PredicateBuilder that use standard Lambda Expression but abstract the complexity of the syntax.
 
 ```csharp
-public void DisplayData(int status=-1, DateTime creationDate=DateTime.Min, decimal price=0) { var predicate = PredicateBuilder.True<MyObject>(); if(status!=-1) { predicate = predicate.And(e=>e.Status == status); } else if(creationDate != DateTime.Min) { predicate = predicate.And(e=>e.Date== creationDate ); } else if(price !=0) { predicate = predicate.And(e=>e.Price== price ); } var myData = \_dataContext.Data; DisplaymyData.AsExpandable().Where(predicate)); } 
+public void DisplayData(int status=-1, DateTime creationDate=DateTime.Min, decimal price=0) { var predicate = PredicateBuilder.True<MyObject>(); if(status!=-1) { predicate = predicate.And(e=>e.Status == status); } else if(creationDate != DateTime.Min) { predicate = predicate.And(e=>e.Date== creationDate ); } else if(price !=0) { predicate = predicate.And(e=>e.Price== price ); } var myData =_dataContext.Data; DisplaymyData.AsExpandable().Where(predicate)); } 
 ```
 
 As you can see, now it's 1 if statement per filter. We used AND but we could have used OR. The [documentation](http://www.albahari.com/nutshell/predicatebuilder.aspx "predicate builder documentation") is simple and the library is free, and open source.

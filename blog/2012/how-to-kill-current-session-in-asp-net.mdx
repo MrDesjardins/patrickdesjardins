@@ -18,11 +18,11 @@ The Abandon method destroys all the objects stored in a Session object and relea
  HttpContext.Current.Session.Abandon(); 
 ```
 
-Session are stored in a cookie with the name "ASP.NET\_SessionId". You need to kill this cookie like you would do with any cookie.
+Session are stored in a cookie with the name "ASP.NET_SessionId". You need to kill this cookie like you would do with any cookie.
 
 
 ```csharp
- var sessionCookie = new HttpCookie("ASP.NET\_SessionId", string.Empty); sessionCookie.Expires = DateTime.Now.AddDays(-1); sessionCookie.Domain = UrlInformation.GetHostDomain(HttpContext.Current.Request.Url.Host); HttpContext.Current.Response.Cookies.Add(sessionCookie); 
+ var sessionCookie = new HttpCookie("ASP.NET_SessionId", string.Empty); sessionCookie.Expires = DateTime.Now.AddDays(-1); sessionCookie.Domain = UrlInformation.GetHostDomain(HttpContext.Current.Request.Url.Host); HttpContext.Current.Response.Cookies.Add(sessionCookie); 
 ```
 
 With those two snippets of code, the session should be killed for good.

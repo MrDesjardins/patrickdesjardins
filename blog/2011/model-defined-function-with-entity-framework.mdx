@@ -11,7 +11,7 @@ Let say that you you have a table with 3 columns : idProduct, Quantity, Price. Y
 
 
 ```sql
- SELECT idProduct, Quantity, Price, Quantity\*Price as Total FROM Product 
+ SELECT idProduct, Quantity, Price, Quantity*Price as Total FROM Product 
 ```
 
 
@@ -19,7 +19,7 @@ You could also get this total with a Linq to Entity query like
 
 
 ```csharp
- var allRows = db.Products.Select(prod=>;new Product(prod.idProduct, prod.Quantity, prod.Price, prod.Quantity \* prod.Price); 
+ var allRows = db.Products.Select(prod=>;new Product(prod.idProduct, prod.Quantity, prod.Price, prod.Quantity * prod.Price); 
 ```
 
 The problem is that with bigger mathematics function that may require more than 2 fields on a lot of objects, this would require you to get a lot of data for the calculus. If you just need the total, instead of returning the price, quantity, etc you just need to use the model defined function and you are ready.
@@ -30,7 +30,7 @@ The first step is to open the Entity Model (.edmx) file in XML. The second step 
 
 Here is an example: 
 ```xml
- <Function Name="Total" ReturnType="Decimal">; <Parameter Name="p" Type="NorthwindModel.Product" />; <DefiningExpression>; (p.Price \* p.Quantity) </DefiningExpression>; </Function>; 
+ <Function Name="Total" ReturnType="Decimal">; <Parameter Name="p" Type="NorthwindModel.Product" />; <DefiningExpression>; (p.Price * p.Quantity) </DefiningExpression>; </Function>; 
 ```
 
 

@@ -11,7 +11,7 @@ A connection string is a string with key value pair in it that indicate where to
 Here is an example of connection string that connect to a file database named "qwe".
 
 ```xml
-<add name="AdventureWorks\_DataEntities" connectionString="metadata=res://\*/MyEFModel.csdl|res://\*/MyEFModel.ssdl|res://\*/MyEFModel.msl; provider=System.Data.SqlClient; provider connection string=&quot; Data Source=.\\SQLEXPRESS; AttachDbFilename=|DataDirectory|\\qwe.mdf; Integrated Security=True; Connect Timeout=30; User Instance=True; MultipleActiveResultSets=True &quot;" providerName="System.Data.EntityClient" />
+<add name="AdventureWorks_DataEntities" connectionString="metadata=res://*/MyEFModel.csdl|res://*/MyEFModel.ssdl|res://*/MyEFModel.msl; provider=System.Data.SqlClient; provider connection string=&quot; Data Source=.\\SQLEXPRESS; AttachDbFilename=|DataDirectory|\\qwe.mdf; Integrated Security=True; Connect Timeout=30; User Instance=True; MultipleActiveResultSets=True &quot;" providerName="System.Data.EntityClient" />
 
 
 ```
@@ -20,7 +20,7 @@ Here is an example of connection string that connect to a file database named "q
 Here is an example of connection string for entity framework 4 to a Sql Server:
 
 ```xml
-<add name="NorthwindEntities" connectionString="metadata=res://\*/NorthWindEntityDataModel.csdl|res://\*/NorthWindEntityDataModel.ssdl|res://\*/NorthWindEntityDataModel.msl; provider=System.Data.SqlClient; provider connection string=&quot; Data Source=.\\SQLEXPRESS; Initial Catalog=Northwind; Integrated Security=True; MultipleActiveResultSets=True&quot;" providerName="System.Data.EntityClient" /> 
+<add name="NorthwindEntities" connectionString="metadata=res://*/NorthWindEntityDataModel.csdl|res://*/NorthWindEntityDataModel.ssdl|res://*/NorthWindEntityDataModel.msl; provider=System.Data.SqlClient; provider connection string=&quot; Data Source=.\\SQLEXPRESS; Initial Catalog=Northwind; Integrated Security=True; MultipleActiveResultSets=True&quot;" providerName="System.Data.EntityClient" /> 
 ```
 
 
@@ -32,7 +32,7 @@ Entity Framework generates the Object Context with multiple constructor. One of 
 
 
 ```csharp
- public AdventureWorks\_DataEntities() : base("name=AdventureWorks\_DataEntities", "AdventureWorks\_DataEntities") public AdventureWorks\_DataEntities(string connectionString) : base(connectionString, "AdventureWorks\_DataEntities") public AdventureWorks\_DataEntities(EntityConnection connection) : base(connection, "AdventureWorks\_DataEntities") 
+ public AdventureWorks_DataEntities() : base("name=AdventureWorks_DataEntities", "AdventureWorks_DataEntities") public AdventureWorks_DataEntities(string connectionString) : base(connectionString, "AdventureWorks_DataEntities") public AdventureWorks_DataEntities(EntityConnection connection) : base(connection, "AdventureWorks_DataEntities") 
 ```
 
 The second constructor let you put in a string format directly the connection string. You could also get the connection string from the .config file and to load it with this second constructor.

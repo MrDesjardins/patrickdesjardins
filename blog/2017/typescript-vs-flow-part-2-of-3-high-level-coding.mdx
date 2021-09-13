@@ -27,7 +27,7 @@ Let's spread the 40 features in a table to illustrate these details and then tal
 | Enum | Yes | No | TypeScript |
 | $key (utility type) | No | Yes | Flow |
 | $diff (utility type) | No | Yes | Flow |
-| \* (utility type) | No | Yes | Flow |
+| * (utility type) | No | Yes | Flow |
 | Type Casting | Yes | Yes | Both |
 | DefinitionFile or Librairie Definition | Yes | Yes | Both |
 | Non standard JS | Yes | Yes | Both |
@@ -120,13 +120,13 @@ function functTakeOnlyLanguage(param: Language){
 The notion of Enum doesn't exist in Flow [2]. They have a workaround which more verbose [3] than the TypeScript keyword. Here is the same representation with Flow.
 
 [javascript]
-export const LANGUAGES\_VALUE = {
+export const LANGUAGES_VALUE = {
     French: "French",
     English: "English"
 };
-export type Language = $Values&lt;typeof LANGUAGES\_VALUE&gt;;
+export type Language = $Values&lt;typeof LANGUAGES_VALUE&gt;;
 
-var myLanguage = LANGUAGES\_VALUE.English;
+var myLanguage = LANGUAGES_VALUE.English;
 functTakeOnlyLanguage(myLanguage);
 function functTakeOnlyLanguage(param: Language){
     // ...
@@ -138,7 +138,7 @@ function functTakeOnlyLanguage(param: Language){
 Using this type and constant with Flow require to have a special import when using.
 
 [javascript]
-import { LANGUAGES\_VALUE } from "../general/Language";
+import { LANGUAGES_VALUE } from "../general/Language";
 import type { Language } from "../general/Language";
 
 ``` 

@@ -26,7 +26,7 @@ Then few NPM scripts are required.
 ```
 "dev": "concurrently \"tsc -w\" \"npm run watchgraphql\" \"nodemon build/dist/index.js\"",
 "debug": "concurrently \"tsc -w\" \"npm run watchgraphql\" \"nodemon --inspect build/dist/index.js\"",
-"watchgraphql": "cpx 'src/graphql/schemas/\*\*/\*.graphql' build/dist/graphql/schemas/ -w -v"
+"watchgraphql": "cpx 'src/graphql/schemas/**/*.graphql' build/dist/graphql/schemas/ -w -v"
 ```
 
 There are two main scripts. The _dev_ and _debug_. I mostly run the second one because it does the same as the first one with the addition of opening a port for VsCode to connect to debug the NodeJS (Express) server. What it goes is to start concurrently TypeScript in watch mode (-w), run the _watchgraphql_ and _nodemon_ to watch every file (produced JavaScript and GraphQL schema files. The GraphQL's schemas have there own extension ".graphql" and are not moved like TypeScript during the transpilation. Hence, it requires a separate process to move the file when we edit the file.

@@ -39,15 +39,15 @@ Before going deeper with the repository class, let check a concrete implementati
 
 
 ```csharp
- public class RepositoryFactory:IRepositoryFactory { private readonly IDatabaseContext \_databaseContext; private IWorkoutRepository \_workoutRepository; private IUserProfileRepository \_userProfileRepository;
+ public class RepositoryFactory:IRepositoryFactory { private readonly IDatabaseContext_databaseContext; private IWorkoutRepository_workoutRepository; private IUserProfileRepository_userProfileRepository;
 
-public RepositoryFactory(IDatabaseContext databaseContext) { \_databaseContext = databaseContext; }
+public RepositoryFactory(IDatabaseContext databaseContext) {_databaseContext = databaseContext; }
 
 #region Implementation of IRespositoryFactory
 
-public IWorkoutRepository Workout { get { return \_workoutRepository ?? (\_workoutRepository = new WorkoutRepository(\_databaseContext)); } }
+public IWorkoutRepository Workout { get { return_workoutRepository ?? (_workoutRepository = new WorkoutRepository(_databaseContext)); } }
 
-public IUserProfileRepository UserProfile { get { return \_userProfileRepository ?? (\_userProfileRepository = new UserProfileRepository(\_databaseContext)); } }
+public IUserProfileRepository UserProfile { get { return_userProfileRepository ?? (_userProfileRepository = new UserProfileRepository(_databaseContext)); } }
 
 #endregion } 
 ```
@@ -60,7 +60,12 @@ Every repository inherit from **IRepository**.
 
 
 ```csharp
- public interface IRepository<T> { IQueryable<T> GetAll(); T Get(int id); int Insert(T entity); int Update(T entity); int Delete(T entity); } 
+public interface IRepository<T> { 
+   IQueryable<T> GetAll(); T Get(int id); 
+   int Insert(T entity); 
+   int Update(T entity); 
+   int Delete(T entity); 
+} 
 ```
 
 This give us the 80% repository method that we need. Other more specific method like searching with filter will be added directly into the concrete implementation of the class.
@@ -69,31 +74,47 @@ Also, every Repository inherit from a BaseRepository which will hold the DataCon
 
 
 ```csharp
- public class BaseRepository { protected IDatabaseContext DatabaseContext { get; private set; }
+public class BaseRepository { 
+  protected IDatabaseContext DatabaseContext { get; private set; }
 
-protected BaseRepository(IDatabaseContext databaseContext) { DatabaseContext = databaseContext; } } 
+  protected BaseRepository(IDatabaseContext databaseContext) { DatabaseContext = databaseContext; } 
+} 
 ```
 
 Here is the example with the Workout entity. 
 ```csharp
- public class WorkoutRepository : BaseRepository, IWorkoutRepository { public WorkoutRepository(IDatabaseContext databaseContext) : base(databaseContext) { }
+public class WorkoutRepository : BaseRepository, IWorkoutRepository { 
+  public WorkoutRepository(IDatabaseContext databaseContext) : base(databaseContext) { }
 
-#region Implementation of IRepository<Workout>
+  #region Implementation of IRepository<Workout>
 
-public IQueryable<Workout> GetAll() { return DatabaseContext.SetOwnable<Workout>().Include(x => x.Sessions); }
+  public IQueryable<Workout> GetAll() { return DatabaseContext.SetOwnable<Workout>().Include(x => x.Sessions); }
 
-public Workout Get(int id) { return DatabaseContext.SetOwnable<Workout>().Include(x => x.Sessions).Single(c => c.Id == id); }
+  public Workout Get(int id) { return DatabaseContext.SetOwnable<Workout>().Include(x => x.Sessions).Single(c => c.Id == id); }
 
-public int Insert(Workout entity) { //To-do : Other stuff with complex type here DatabaseContext.SetOwnable<Workout>().Add(entity); return DatabaseContext.SaveChanges(); }
+  public int Insert(Workout entity) { //To-do : Other stuff with complex type here DatabaseContext.SetOwnable<Workout>().Add(entity); return DatabaseContext.SaveChanges(); }
 
-public int Update(Workout entity) { Workout fromDatabase = Get(entity.Id); DatabaseContext.Entry(fromDatabase).CurrentValues.SetValues(entity); DatabaseContext.Entry(fromDatabase).State = EntityState.Modified; //To-do : Other stuff with complex type here return DatabaseContext.SaveChanges(); }
+  public int Update(Workout entity) { 
+    Workout fromDatabase = Get(entity.Id); 
+    DatabaseContext.Entry(fromDatabase).CurrentValues.SetValues(entity); 
+    DatabaseContext.Entry(fromDatabase).State = EntityState.Modified; 
+    //To-do : Other stuff with complex type here 
+    return DatabaseContext.SaveChanges(); 
+  }
 
-public int Delete(Workout entity) { DatabaseContext.SetOwnable<Workout>().Remove(entity); return DatabaseContext.SaveChanges(); }
+  public int Delete(Workout entity) { 
+    DatabaseContext.SetOwnable<Workout>().Remove(entity); 
+    return DatabaseContext.SaveChanges(); 
+  }
 
-#endregion } 
+  #endregion 
+} 
 ```
 
-It's quite neat! You do not see any detail of database connection. The only thing we see is task concerning saving and loading entity. We have direct access to Entry and we can use the Set<> and SetOwnable<>. As you can see, we do not need to have any access to the current user, neither to specific to whom the Workout belong because Workout inherit from IUserOwnable. You will see the detail about how it works on the next article concerning the DbContext (see part 5).
+It's quite neat! You do not see any detail of database connection. 
+The only thing we see is task concerning saving and loading entity. We have direct access to Entry and we can use the `Set<>` and `SetOwnable<>`. 
+As you can see, we do not need to have any access to the current user, neither to specific to whom the Workout belong because Workout inherit from IUserOwnable. 
+You will see the detail about how it works on the next article concerning the DbContext (see part 5).
 
 ## Conclusion
 

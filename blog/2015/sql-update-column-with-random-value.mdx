@@ -9,7 +9,7 @@ While seeding a database you may want to do a quick change at your value. The fa
 
 
 ```sql
- update YourTableName set YourColumnName = cast(rand(CHECKSUM(NEWID())) \* 500 as int) where Id = '9308cbb9-f079-4456-9bb8-d1de88367aaa' 
+ update YourTableName set YourColumnName = cast(rand(CHECKSUM(NEWID())) * 500 as int) where Id = '9308cbb9-f079-4456-9bb8-d1de88367aaa' 
 ```
 
 

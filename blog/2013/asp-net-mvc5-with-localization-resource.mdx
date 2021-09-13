@@ -54,7 +54,7 @@ Finally, if you want to use the default language then the session, here is the c
 
 
 ```csharp
- protected ICurrentUser CurrentUser { get { UserSessionDTO currentUser = \_sessionHandler.GetUser(); if (currentUser != null) { UserProfile userProfile = \_mapperFactory.UserSessionDTO.GetModel(currentUser); return userProfile; } else { ICurrentUser currentUserFromProvider = \_userProvider.Account; UserProfile fullUserProfile = \_serviceFactory.Account.GetByUserName(currentUserFromProvider.UserName); if (fullUserProfile == null)//Case of a non identified user { fullUserProfile = new UserProfile(); fullUserProfile.Language = Request.UserLanguages != null && Request.UserLanguages.Length > 0 ? Request.UserLanguages.First():"en-US"; } return fullUserProfile; } } }
+ protected ICurrentUser CurrentUser { get { UserSessionDTO currentUser =_sessionHandler.GetUser(); if (currentUser != null) { UserProfile userProfile =_mapperFactory.UserSessionDTO.GetModel(currentUser); return userProfile; } else { ICurrentUser currentUserFromProvider =_userProvider.Account; UserProfile fullUserProfile =_serviceFactory.Account.GetByUserName(currentUserFromProvider.UserName); if (fullUserProfile == null)//Case of a non identified user { fullUserProfile = new UserProfile(); fullUserProfile.Language = Request.UserLanguages != null && Request.UserLanguages.Length > 0 ? Request.UserLanguages.First():"en-US"; } return fullUserProfile; } } }
 
 protected override void OnActionExecuting(ActionExecutingContext filterContext) { Thread.CurrentThread.CurrentUICulture = new CultureInfo(CurrentUser.Language); Thread.CurrentThread.CurrentCulture = new CultureInfo(CurrentUser.Language); base.OnActionExecuting(filterContext); //.... } 
 ```

@@ -18,7 +18,7 @@ Has you can see, it has a reference to another class, named CurrencyType. This t
 > 
 > DataAccess.Contexts.Implementations.CurrencyType: Name: Each type name in a schema must be unique. Type name 'CurrencyType' is already defined.
 
-It is not possible to have this configuration. It would be very practical because you can have the Money in any of you class and the table would have the Money\_Value and Money\_CurrencyId.
+It is not possible to have this configuration. It would be very practical because you can have the Money in any of you class and the table would have the Money_Value and Money_CurrencyId.
 
 One option is to remove the currency from the Money or to have both property of the Currency class inside the Money class. However, the strong positive that we had with CurrencyType was that this one was using Value Object pattern. This mean that it was strongly typed in the code and had a reference to a Currency table which had USD and CDN currency.
 
@@ -50,7 +50,7 @@ How to use this money class? The best way is to check the unit tests.
 
 
 ```csharp
- [TestMethod] public void GivenAnInteger\_WhenIntegerIsAKeyOfACurrency\_ThenReturnConcreteCurrency() { // Arrange var idOfCanada = CurrencyType.Canada.Id; var expected = CurrencyType.Canada;
+ [TestMethod] public void GivenAnInteger_WhenIntegerIsAKeyOfACurrency_ThenReturnConcreteCurrency() { // Arrange var idOfCanada = CurrencyType.Canada.Id; var expected = CurrencyType.Canada;
 
 // Act var found = CurrencyType.GetCurrencyFromId(idOfCanada);
 
@@ -61,7 +61,7 @@ This is required because when we will load from Entity Framework, we will only g
 
 
 ```csharp
- [TestMethod] public void GivenAnInteger\_WhenIntegerIsNotAnExistingKeyOfACurrency\_ThenThrowException() { // Arrange const int idNonExisting = -1;
+ [TestMethod] public void GivenAnInteger_WhenIntegerIsNotAnExistingKeyOfACurrency_ThenThrowException() { // Arrange const int idNonExisting = -1;
 
 // Act & Assert TestExtensions.Thrown(() => CurrencyType.GetCurrencyFromId(idNonExisting)); } 
 ```

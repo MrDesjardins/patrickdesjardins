@@ -1,7 +1,7 @@
 ---
 title: "Data Access Gateway Project"
 date: "2018-07-17"
-categories: 
+categories:
   - "typescript"
 ---
 
@@ -28,13 +28,34 @@ To have insight into what is happening, I created a second [side-project that is
 So, how does it looks? While it might sound complicated it is actually easy to use. There is the initialization portion that is done once in your single-page application, and after the request.
 
 ```typescript
-// Initialization export const DATABASE\_BASE\_WITH\_VERSION = "DB\_V1"; export const DataAccess = DataAccessGateway(DATABASE\_BASE\_WITH\_VERSION);
+// Initialization
+export const DATABASE_BASE_WITH_VERSION = "DB_V1";
+export const DataAccess = DataAccessGateway(DATABASE_BASE_WITH_VERSION);
 
-// Configuration can change at any time DataAccess.setConfiguration( { isCacheEnabled: true, logError: (error: LogError) => { Log.trackError(error.error, "DataAccessError", error); }, } );
+// Configuration can change at any time
+DataAccess.setConfiguration({
+  isCacheEnabled: true,
+  logError: (error: LogError) => {
+    Log.trackError(error.error, "DataAccessError", error);
+  },
+});
 
-// Query example const requestInfo: AxiosRequestConfig = { method: "GET", url: "http://yoururl.com", }; const promise1 = DataAccess.fetchFast<YourEntityModel>({ request: requestInfo }).then((response) => { // Do here what ever you want return response.result; }).catch((error: AxiosError) => { // You can track error here throw error; }); 
-``` 
-
+// Query example
+const requestInfo: AxiosRequestConfig = {
+  method: "GET",
+  url: "http://yoururl.com",
+};
+const promise1 = DataAccess.fetchFast<YourEntityModel>({
+  request: requestInfo,
+})
+  .then((response) => {
+    // Do here what ever you want
+    return response.result;
+  })
+  .catch((error: AxiosError) => {
+    // You can track error here throw error;
+  });
+```
 
 The query use AxioRequestConfig that is a popular Ajax library. I am leveraging the library at the moment. Every request use the URL has the unique identifier of unicity for a request. In case you have POST with data, you can provide manually an ID in the object of the data access request fetch request. It is also possible to pass configuration for the life of the cache (in memory and IndexDB) for a single request or globally for all the Data Access Gateway library.
 

@@ -16,7 +16,7 @@ Here is a real example of a unit test that is intended to verify that when we ca
 
 
 ```csharp
- //Configuration in the constructor of the test machine this.stockOrderSet = new InMemoryDbSet<StockOrder>(true); this.UnitOfWork.Setup(d => d.Set<StockOrder>()).Returns(stockOrderSet); this.realTimeRepository = new RealTimeValuesRepository(base.UnitOfWork.Object); //... [TestMethod] public void GivenStocksSymbolToRefresh\_WhenOrderActiveWithStockExpired\_ThenGetOneToRefresh() { // Arrange this.stockOrderSet.Add(new StockOrder(){StockSymbol = "A", OrderStatus = OrderStatusType.Waiting}); this.stockOrderSet.Add(new StockOrder(){StockSymbol = "B", OrderStatus = OrderStatusType.Executed});
+ //Configuration in the constructor of the test machine this.stockOrderSet = new InMemoryDbSet<StockOrder>(true); this.UnitOfWork.Setup(d => d.Set<StockOrder>()).Returns(stockOrderSet); this.realTimeRepository = new RealTimeValuesRepository(base.UnitOfWork.Object); //... [TestMethod] public void GivenStocksSymbolToRefresh_WhenOrderActiveWithStockExpired_ThenGetOneToRefresh() { // Arrange this.stockOrderSet.Add(new StockOrder(){StockSymbol = "A", OrderStatus = OrderStatusType.Waiting}); this.stockOrderSet.Add(new StockOrder(){StockSymbol = "B", OrderStatus = OrderStatusType.Executed});
 
 // Act var stocks = realTimeRepository.GetStocksSymbolToRefresh();
 

@@ -57,20 +57,20 @@ In both case, the table still has the foreign key inside the car and the dealer 
 
 ## Required relation of one to many
 
-For the moment, if we take a look at the database, the generated table contain a NULL at the dealer\_id foreign key. ![](images/CarDealerOptional.png)
+For the moment, if we take a look at the database, the generated table contain a NULL at the dealer_id foreign key. ![](images/CarDealerOptional.png)
 
 Let say that we want to have this field has a required field. We want **"Not NULL"** to be generated into the table column property.
 
 
 ```csharp
- public CarConfiguration() { HasRequired(x => x.Seller); //One to many is now a required field. It's really 1 to \* and not 0 to \* } 
+ public CarConfiguration() { HasRequired(x => x.Seller); //One to many is now a required field. It's really 1 to * and not 0 to * } 
 ``` Will produce: ![](images/notnullseller.png)
 
 Not bad! Now we have what we want, a required field for the Dealer (called seller from the car perspective). Could we have configure this from the Dealer's entity instead of using the Car configuration? Of course!
 
 
 ```csharp
- public class DealerConfiguration : EntityTypeConfiguration<Dealer> { public DealerConfiguration() { HasMany(x => x.CarToSale).WithRequired(e=>e.Seller); //One to many (1 to \*) } } 
+ public class DealerConfiguration : EntityTypeConfiguration<Dealer> { public DealerConfiguration() { HasMany(x => x.CarToSale).WithRequired(e=>e.Seller); //One to many (1 to *) } } 
 ```
 
-So, now you are able to create **0..\*** and **1..\*** relationship with Entity Framework.
+So, now you are able to create **0..*** and **1..*** relationship with Entity Framework.

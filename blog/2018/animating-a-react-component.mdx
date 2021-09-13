@@ -29,7 +29,7 @@ public componentWillReceiveProps(nextProps: FillWindowsClusterProps): void { if 
 The next function to define is the render. The render function has the role to set up the component at its final place and to set up the reference to the HTML element.
 
 ```typescript
-public render(): JSX.Element { return <div key={"myComponentName\_" + this.props.elementUniqueId} ref={(e) => this.domCluster = e} style={ { left: this.props.left, top: this.props.top } } > Your Component </div>; } 
+public render(): JSX.Element { return <div key={"myComponentName_" + this.props.elementUniqueId} ref={(e) => this.domCluster = e} style={ { left: this.props.left, top: this.props.top } } > Your Component </div>; } 
 ``` 
 
 

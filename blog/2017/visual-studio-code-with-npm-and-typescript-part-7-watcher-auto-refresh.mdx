@@ -14,7 +14,7 @@ This basic example is not very optimized for a big code base because this new Gu
 Creating a task is done like usual. The trick is to have a dependent task at the "gulp.watch". This watch doesn't require any dependency to npm package, it's there with Gulp. It takes file pattern to know which files to look for changes and an array of other task to do when something change.
 
 ```typescript
-gulp.task('watch', function() { gulp.watch(paths.typescript\_in + '/\*.ts', ['build']); }); 
+gulp.task('watch', function() { gulp.watch(paths.typescript_in + '/*.ts', ['build']); }); 
 ``` 
 
 
@@ -27,7 +27,7 @@ The next step is to have the browser reload itself automatically. We were using 
 We can delete the server.js file we had before and add the following gulp task into gulpfile.js
 
 ```typescript
-gulp.task('watch', function() { gulp.watch(paths.typescript\_in + '/\*.ts', ['build']); });
+gulp.task('watch', function() { gulp.watch(paths.typescript_in + '/*.ts', ['build']); });
 
 gulp.task('server', function() { connect.server({ root: 'output', livereload: true, port: 8080 }); });
 
@@ -45,7 +45,7 @@ gulp.task("build", function () { //... .pipe(connect.reload()); });
 and
 
 ```typescript
-gulp.task("copy", function () { //... gulp.src("./src/index.html").pipe(gulp.dest(paths.typescript\_out)); }); 
+gulp.task("copy", function () { //... gulp.src("./src/index.html").pipe(gulp.dest(paths.typescript_out)); }); 
 ``` 
 
 

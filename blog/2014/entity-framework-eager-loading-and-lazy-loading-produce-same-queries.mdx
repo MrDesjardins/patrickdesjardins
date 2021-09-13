@@ -24,9 +24,9 @@ If we kick in the Microsoft **SQL Profiler**, we see two queries. One that load 
 
 
 ```sql
- SELECT [Limit1].[Id] AS [Id], [Limit1].[Name] AS [Name], [Limit1].[BirthDate] AS [BirthDate], [Limit1].[Residence\_Id] AS [Residence\_Id], [Limit1].[House\_Id] AS [House\_Id] FROM ( SELECT TOP (2) [Extent1].[Id] AS [Id], [Extent1].[Name] AS [Name], [Extent1].[BirthDate] AS [BirthDate], [Extent1].[Residence\_Id] AS [Residence\_Id], [Extent1].[House\_Id] AS [House\_Id] FROM [dbo].[People] AS [Extent1] WHERE [Extent1].[Id] = @p0 ) AS [Limit1]
+ SELECT [Limit1].[Id] AS [Id], [Limit1].[Name] AS [Name], [Limit1].[BirthDate] AS [BirthDate], [Limit1].[Residence_Id] AS [Residence_Id], [Limit1].[House_Id] AS [House_Id] FROM ( SELECT TOP (2) [Extent1].[Id] AS [Id], [Extent1].[Name] AS [Name], [Extent1].[BirthDate] AS [BirthDate], [Extent1].[Residence_Id] AS [Residence_Id], [Extent1].[House_Id] AS [House_Id] FROM [dbo].[People] AS [Extent1] WHERE [Extent1].[Id] = @p0 ) AS [Limit1]
 
-SELECT [Extent2].[Id] AS [Id], [Extent2].[Price] AS [Price], [Extent2].[Address\_Street] AS [Address\_Street], [Extent2].[Address\_Number] AS [Address\_Number], [Extent2].[Address\_City] AS [Address\_City], [Extent2].[Owner\_Id] AS [Owner\_Id] FROM [dbo].[People] AS [Extent1] INNER JOIN [dbo].[Houses] AS [Extent2] ON [Extent1].[Residence\_Id] = [Extent2].[Id] WHERE ([Extent1].[Residence\_Id] IS NOT NULL) AND ([Extent1].[Id] = @EntityKeyValue1) 
+SELECT [Extent2].[Id] AS [Id], [Extent2].[Price] AS [Price], [Extent2].[Address_Street] AS [Address_Street], [Extent2].[Address_Number] AS [Address_Number], [Extent2].[Address_City] AS [Address_City], [Extent2].[Owner_Id] AS [Owner_Id] FROM [dbo].[People] AS [Extent1] INNER JOIN [dbo].[Houses] AS [Extent2] ON [Extent1].[Residence_Id] = [Extent2].[Id] WHERE ([Extent1].[Residence_Id] IS NOT NULL) AND ([Extent1].[Id] = @EntityKeyValue1) 
 ```
 
 

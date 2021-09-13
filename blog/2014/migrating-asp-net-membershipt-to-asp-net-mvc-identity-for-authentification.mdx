@@ -32,7 +32,7 @@ Even if the ApplicationUser inherit from IdentityUser which as a Id property, th
 A major change concerns the ServiceFactory class which has every entities service classes. Since the Account come from the database and that we do not want to go to the database every time one of the entity require to have something related to the user logged, they need to share the same account. This require a change in the constructor that is going to take in its constructor the IUserProvider which has a property Account. This one is passed to every service constructor.
 
 ```csharp
-public class ServiceFactory : IServiceFactory { private IUserProvider \_userProvider; #region Implementation of IServiceFactory
+public class ServiceFactory : IServiceFactory { private IUserProvider_userProvider; #region Implementation of IServiceFactory
 
 public IAccountService Account { get; private set; } public IMuscleService Muscle { get; private set; } public IWorkoutService Workout { get; private set; } public IWorkoutSessionService WorkoutSession { get; private set; } public IWorkoutSessionExerciseService WorkoutSessionExercise { get; private set; }
 
@@ -40,7 +40,7 @@ public IExerciseService Exercise { get; private set; }
 
 #endregion
 
-public ServiceFactory(IRepositoryFactory repositoryFactory, IMapperFactory mapperFactory, IUserProvider userProvider) { \_userProvider = userProvider; var account = \_userProvider.Account; Account = new ApplicationUserService(repositoryFactory, mapperFactory); Muscle = new MuscleService(repositoryFactory, mapperFactory, account); Workout = new WorkoutService(repositoryFactory, mapperFactory, account); WorkoutSession = new WorkoutSessionService(repositoryFactory, mapperFactory, account); WorkoutSessionExercise = new WorkoutSessionExerciseService(repositoryFactory, mapperFactory, account); Exercise = new ExerciseService(repositoryFactory, mapperFactory, Muscle, account); } } 
+public ServiceFactory(IRepositoryFactory repositoryFactory, IMapperFactory mapperFactory, IUserProvider userProvider) {_userProvider = userProvider; var account =_userProvider.Account; Account = new ApplicationUserService(repositoryFactory, mapperFactory); Muscle = new MuscleService(repositoryFactory, mapperFactory, account); Workout = new WorkoutService(repositoryFactory, mapperFactory, account); WorkoutSession = new WorkoutSessionService(repositoryFactory, mapperFactory, account); WorkoutSessionExercise = new WorkoutSessionExerciseService(repositoryFactory, mapperFactory, account); Exercise = new ExerciseService(repositoryFactory, mapperFactory, Muscle, account); } } 
 ```
 
 Entities inherit of BaseService.

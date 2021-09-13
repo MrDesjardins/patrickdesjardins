@@ -16,7 +16,7 @@ At first, we may think than this code below works.
  modelBuilder .Entity<EntityOne>() .HasOptional(d => d.EntityTwo) .WithOptionalDependent(); 
 ```
 
-The **WithOptionalDependent** tells EF (Entity Framework) that EntityOne is the one of the two entities that hold the reference which is optional as stated with the **HasOptional** property. No! This raise an error that tell that it cannot find EntityTwo\_ID key. This is problematic because in the scenario we are talking about the foreign key has a special name. So, we have to configure the foreign key. Of course, if your FK is named EntityTwo\_ID than you are all fine.
+The **WithOptionalDependent** tells EF (Entity Framework) that EntityOne is the one of the two entities that hold the reference which is optional as stated with the **HasOptional** property. No! This raise an error that tell that it cannot find EntityTwo_ID key. This is problematic because in the scenario we are talking about the foreign key has a special name. So, we have to configure the foreign key. Of course, if your FK is named EntityTwo_ID than you are all fine.
 
 
 ```csharp

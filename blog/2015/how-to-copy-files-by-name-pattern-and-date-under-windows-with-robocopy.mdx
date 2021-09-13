@@ -14,7 +14,7 @@ This is where RoboCopy shines! This tool is available if you have Windows Vista,
 The example that was concerning me was that I wanted to copy all .jpg file that start with an underscore, and all .NEF file to a backup drive. I also wanted only pictures after a specific date.
 
 ``` 
- ROBOCOPY C:\\source F:\\destination \_\*.jpg \*.NEF /E /MAXAGE:20150806 
+ ROBOCOPY C:\\source F:\\destination_*.jpg *.NEF /E /MAXAGE:20150806 
 ``` 
 
 The first string is the name of the command. You should have this tool available if you open a Windows command prompt. To see if you do, just type **Robocopy /?**. This will give you the command line help for Robocopy if this one is installed. The first parameter is the source folder, the second the destination. Both of these parameter can only be folder. If you need to copy one specific file, you will need to use options. Options come after the source and destination folder in any order. In the example, I specify that I want all jpg extension file that start with an underscore. The stars is a wildcard for any characters. In the example, I want all NEF file, so I also specify every .NEF file (no prefix specified). The slash E (/E) means to go recursive. This take more time but is required if you have folders inside folders. The last option is /MAXAGE which take a date in year-month-day format.

@@ -24,7 +24,7 @@ I will skip most of the authentication middleware because it is very unique to N
 
 export const authorizeUserMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const expressRequest = (req as unknown) as IUserRequest;
-    expressRequest.userId = req.headers.injected\_header\_here\_id;
+    expressRequest.userId = req.headers.injected_header_here_id;
     return next();
 };
 
@@ -49,7 +49,7 @@ Every resolver is a function with three parameters. The parameter that concern t
 export const bookResolversMap = {
     Query: {
         books: (obj: null, args: {}, context: GraphQLCustomContext) => {
-            books[0].author = context.request.headers.injected\_header\_here\_id;
+            books[0].author = context.request.headers.injected_header_here_id;
             return books;
         }
     }

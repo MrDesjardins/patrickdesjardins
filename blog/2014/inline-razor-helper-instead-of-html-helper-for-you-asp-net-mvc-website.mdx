@@ -60,11 +60,11 @@ Before going into the Razor Html Helper, you can see that inside the Html Helper
 
 Of course, at the first look we can see no problem. But, this is just two tag. Imagine nested Html elements with Html attributes. Imagine having a lot of classes, inputs, and styles. This can become a huge method of several dozen of lines. Of course, the Html rendering is also not simple but it is always more readable than having a huge amount of classes that call each of them. This is why the next approach is very interesting.
 
-Creating inline razor helper can be done directly into any .cshtml file but it does not have the ability to be reusable which is not something interesting. This is why, it is possible to store them into that App\_Code. To create an app code, you have to right click the project and add an existing asp.net folder.
+Creating inline razor helper can be done directly into any .cshtml file but it does not have the ability to be reusable which is not something interesting. This is why, it is possible to store them into that App_Code. To create an app code, you have to right click the project and add an existing asp.net folder.
 
 ![](images/AddAppCodeFolder-400x292.png)
 
-From there, you can add your .cshtml that can have several Razor helper. The use it simple. You have to use the @ following by the file name inside the App\_Code following by the name of the helper.
+From there, you can add your .cshtml that can have several Razor helper. The use it simple. You have to use the @ following by the file name inside the App_Code following by the name of the helper.
 
 
 ```csharp

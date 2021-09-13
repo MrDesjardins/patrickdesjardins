@@ -10,14 +10,14 @@ When you are searching with a **Regex Expression** you may have multiple groups 
 
 
 ```csharp
- const string PATTERN\_WITHOUT\_NAME = @"(parser)\\((.\*?)\\)"; //This has 3 groups const string PATTERN\_WITH\_NAME= @"(parser)\\((?<parameterName>.\*?)\\)"; //This also has 3 groups 
+ const string PATTERN_WITHOUT_NAME = @"(parser)\\((.*?)\\)"; //This has 3 groups const string PATTERN_WITH_NAME= @"(parser)\\((?<parameterName>.*?)\\)"; //This also has 3 groups 
 ```
 
 This code is searching for every thing inside the parse method. For example: "This is parser(abc) and it is awesome". This would result to get "abc". This is also working for multiple instances of _parser_ method.
 
 
 ```csharp
- var regex = new Regex(PATTERN\_WITH\_NAME, RegexOptions.IgnoreCase);
+ var regex = new Regex(PATTERN_WITH_NAME, RegexOptions.IgnoreCase);
 
 var matches = regex.Matches(stringToSearch); foreach (Match match in matches) { var url = match.Groups["parameterName"].Value; } 
 ```

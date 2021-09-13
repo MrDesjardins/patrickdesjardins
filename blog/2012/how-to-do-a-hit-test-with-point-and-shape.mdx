@@ -11,7 +11,7 @@ First of all, you need to have a listener to the mouse even.
 
 
 ```csharp
- void myCanvas\_MouseRightButtonDown(object sender, MouseButtonEventArgs e) { e.Handled = true; Point currentMousePosition = e.GetPosition(this.myCanvas); var underMouseControls = GetControlFromCoordonate(currentMousePosition); } 
+ void myCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e) { e.Handled = true; Point currentMousePosition = e.GetPosition(this.myCanvas); var underMouseControls = GetControlFromCoordonate(currentMousePosition); } 
 ```
 
 The second step is to create the method _**GetControlFromCoordonate**_ to return a list of Control that has been clicked.

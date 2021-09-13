@@ -24,11 +24,11 @@ What can be done is to transform the 401 error code into a standard code, like t
 
 
 ```csharp
- public abstract class HttpUnauthorizedWithRedirectToResultBase : HttpUnauthorizedResult { protected ActionResult \_result;
+ public abstract class HttpUnauthorizedWithRedirectToResultBase : HttpUnauthorizedResult { protected ActionResult_result;
 
 public override void ExecuteResult(System.Web.Mvc.ControllerContext context) { if (context == null) throw new ArgumentNullException("context");
 
-if (context.HttpContext.Request.IsAuthenticated) { context.HttpContext.Response.StatusCode = 200; InitializeResult(context); \_result.ExecuteResult(context); } else base.ExecuteResult(context); }
+if (context.HttpContext.Request.IsAuthenticated) { context.HttpContext.Response.StatusCode = 200; InitializeResult(context);_result.ExecuteResult(context); } else base.ExecuteResult(context); }
 
 protected abstract void InitializeResult(ControllerContext context); } 
 ```
@@ -37,16 +37,16 @@ We will create a new http unauthorized that will set area and view name. This wi
 
 
 ```csharp
- public class HttpUnauthorizedWithRedirectToViewResult : HttpUnauthorizedWithRedirectToResultBase { private readonly string \_area; private readonly string \_viewName; public HttpUnauthorizedWithRedirectToViewResult(string viewName, string area) { \_viewName = viewName; \_area = area; }
+ public class HttpUnauthorizedWithRedirectToViewResult : HttpUnauthorizedWithRedirectToResultBase { private readonly string_area; private readonly string_viewName; public HttpUnauthorizedWithRedirectToViewResult(string viewName, string area) {_viewName = viewName;_area = area; }
 
-protected override void InitializeResult(ControllerContext context) { if (!string.IsNullOrWhiteSpace(\_area)) { context.RequestContext.RouteData.DataTokens["area"] = \_area; } \_result = new ViewResult{ViewName = \_viewName}; } } 
+protected override void InitializeResult(ControllerContext context) { if (!string.IsNullOrWhiteSpace(_area)) { context.RequestContext.RouteData.DataTokens["area"] =_area; }_result = new ViewResult{ViewName =_viewName}; } } 
 ```
 
 
 ```csharp
- [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)] public class AuthorizeWith401Support : AuthorizeAttribute { private const string VIEW\_NAME = "NoAccess401"; private string \_actionName;
+ [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)] public class AuthorizeWith401Support : AuthorizeAttribute { private const string VIEW_NAME = "NoAccess401"; private string_actionName;
 
-public string ActionName { get {return string.IsNullOrWhiteSpace(\_actionName)? VIEW\_NAME : \_actionName;} set { \_actionName = value; } }
+public string ActionName { get {return string.IsNullOrWhiteSpace(_actionName)? VIEW_NAME :_actionName;} set {_actionName = value; } }
 
 public string Controller { get; set; } public string Area { get; set; }
 

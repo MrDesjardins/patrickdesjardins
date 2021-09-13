@@ -19,7 +19,7 @@ Assertions is also debatable. Most of the time, people are asserting a lot of va
 
 Preparing your unit tests should be clean. You shouldn't have to write 20 lines of code in each of your test to create your scenario to test. Divide that arrange code into builder class. This way, they can be reused across several tests. A bonus is that by doing so, you can use those building method to seed your development database.
 
-Naming your test is something important. The reason is that other developer won't be able to find specific scenario and might duplicate test or not look at them. If you have thousand and thousand of tests, it become even more important. I like following the name with GivenXXX\_WhenXXX\_ThenXXX. It forces to have a structure of **Given** a specific case **When** specific configuration is provided **Then** you expect a specific result.
+Naming your test is something important. The reason is that other developer won't be able to find specific scenario and might duplicate test or not look at them. If you have thousand and thousand of tests, it become even more important. I like following the name with GivenXXX_WhenXXX_ThenXXX. It forces to have a structure of **Given** a specific case **When** specific configuration is provided **Then** you expect a specific result.
 
 Here is a simple code. How many test should be created?
 
@@ -34,33 +34,33 @@ Most people might see two or three tests, but the answer is six.
 
 
 ```csharp
- [TestMethod] public void GivenSimpleCode\_WhenMainInstanceValueNull\_AndParameterValueNull\_ThenValueNull() { // Arrange var mainInstance = new SimpleCode() {Value= null}; var simpleCodeParameter = new SimpleCode() { Value = null };
+ [TestMethod] public void GivenSimpleCode_WhenMainInstanceValueNull_AndParameterValueNull_ThenValueNull() { // Arrange var mainInstance = new SimpleCode() {Value= null}; var simpleCodeParameter = new SimpleCode() { Value = null };
 
 // Act var result = mainInstance.Merge(simpleCodeParameter);
 
 // Assert Assert.IsNull(result.Value); }
 
-[TestMethod] public void GivenSimpleCode\_WhenMainInstanceValueNotNull\_AndParameterValueNull\_ThenMainInstanceValue() { // Arrange const string VALUE = "Test"; var mainInstance = new SimpleCode() { Value = VALUE }; var simpleCodeParameter = new SimpleCode() { Value = null };
+[TestMethod] public void GivenSimpleCode_WhenMainInstanceValueNotNull_AndParameterValueNull_ThenMainInstanceValue() { // Arrange const string VALUE = "Test"; var mainInstance = new SimpleCode() { Value = VALUE }; var simpleCodeParameter = new SimpleCode() { Value = null };
 
 // Act var result = mainInstance.Merge(simpleCodeParameter);
 
-// Assert Assert.AreEqual(VALUE, result.Value); } [TestMethod] public void GivenSimpleCode\_WhenMainInstanceValueNull\_AndParameterValueNotNull\_ThenParameterValue() { // Arrange const string VALUE = "Test"; var mainInstance = new SimpleCode() { Value = null }; var simpleCodeParameter = new SimpleCode() { Value = VALUE };
+// Assert Assert.AreEqual(VALUE, result.Value); } [TestMethod] public void GivenSimpleCode_WhenMainInstanceValueNull_AndParameterValueNotNull_ThenParameterValue() { // Arrange const string VALUE = "Test"; var mainInstance = new SimpleCode() { Value = null }; var simpleCodeParameter = new SimpleCode() { Value = VALUE };
 
 // Act var result = mainInstance.Merge(simpleCodeParameter);
 
 // Assert Assert.AreEqual(VALUE, result.Value); }
 
-[TestMethod] public void GivenSimpleCode\_WhenMainInstanceValueNotNull\_AndParameterValueNotNull\_ThenValueParameterValue() { // Arrange const string VALUE1 = "Test1"; const string VALUE2 = "Test2"; var mainInstance = new SimpleCode() { Value = VALUE1 }; var simpleCodeParameter = new SimpleCode() { Value = VALUE2 };
+[TestMethod] public void GivenSimpleCode_WhenMainInstanceValueNotNull_AndParameterValueNotNull_ThenValueParameterValue() { // Arrange const string VALUE1 = "Test1"; const string VALUE2 = "Test2"; var mainInstance = new SimpleCode() { Value = VALUE1 }; var simpleCodeParameter = new SimpleCode() { Value = VALUE2 };
 
 // Act var result = mainInstance.Merge(simpleCodeParameter);
 
 // Assert Assert.AreEqual(VALUE2, result.Value); }
 
-[TestMethod] [ExpectedException(typeof(NullReferenceException))] public void GivenSimpleCode\_WhenParameterNull\_ThenException() { // Arrange var mainInstance = new SimpleCode(); SimpleCode simpleCodeParameter = null;
+[TestMethod] [ExpectedException(typeof(NullReferenceException))] public void GivenSimpleCode_WhenParameterNull_ThenException() { // Arrange var mainInstance = new SimpleCode(); SimpleCode simpleCodeParameter = null;
 
 // Act & Assert mainInstance.Merge(simpleCodeParameter); }
 
-[TestMethod] public void GivenSimpleCode\_DefaultValue\_ValueNull() { // Arrange & Act var mainInstance = new SimpleCode();
+[TestMethod] public void GivenSimpleCode_DefaultValue_ValueNull() { // Arrange & Act var mainInstance = new SimpleCode();
 
 // Assert Assert.IsNull(mainInstance.Value); } } 
 ```

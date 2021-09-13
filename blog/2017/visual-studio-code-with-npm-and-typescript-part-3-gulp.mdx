@@ -34,14 +34,14 @@ var gulp = require('gulp'); var tsc = require('gulp-typescript'); var del = requ
 The main one is Gulp which is the runner. This will create entry point that we can invoke by the command line. Gulp-typescript will read our tsconfig.json and use TypeScript to build the code. Del is a library to delete files, which we will use to delete old files. Gulp-sourcemaps is used to create .map.js file, for debugging purpose. Finally the last line just load the TypeScript configuration by using gulp-typescript module that we just loaded.
 
 The next step is to define some constants to help us having a cleaner Gulp code. ```typescript
-var paths = { webroot: "./", node\_modules: "./node\_modules/", typescript\_in: "./src/", typescript\_out: "output", typings: "./typings/", typescript\_definitions: "./typings/main/\*\*/\*.ts" }; paths.allTypeScript = paths.typescript\_in + "\*\*/\*.ts"; paths.modulesDestination = paths.webroot + "vendors/"; 
+var paths = { webroot: "./", node_modules: "./node_modules/", typescript_in: "./src/", typescript_out: "output", typings: "./typings/", typescript_definitions: "./typings/main/**/*.ts" }; paths.allTypeScript = paths.typescript_in + "**/*.ts"; paths.modulesDestination = paths.webroot + "vendors/"; 
 ``` 
 
 
 Here start the fun. Let's create the first Gulp task to delete previous generated JavaScript file and mapping file from TypeScript. This is required because even if TypeScript will overwrite previous JavaScript generated, if you delete a TypeScript, the JavaScript will hang in the folder which can cause size problem once we bundle all JavaScript.
 
 ```typescript
-gulp.task("clean", function (callback) { var typeScriptGenFiles = [ paths.typescript\_out + "/\*\*/\*.js", paths.typescript\_out + "/\*\*/\*.js.map" ];
+gulp.task("clean", function (callback) { var typeScriptGenFiles = [ paths.typescript_out + "/**/*.js", paths.typescript_out + "/**/*.js.map" ];
 
 del(typeScriptGenFiles, callback); }); 
 ``` 
@@ -52,9 +52,9 @@ In our simple case, we pass an array of file patterns to a node's module to dele
 The second task is to copy vendors library. This time, we use Gulp's functions that will get a list of library, get the code, pipe the result into a new destination.
 
 ```typescript
-gulp.task("copy", function () { var modulesToMove = { "jquery": "jquery/dist/jquery\*.{js,map}" }
+gulp.task("copy", function () { var modulesToMove = { "jquery": "jquery/dist/jquery*.{js,map}" }
 
-for (var destinationDir in modulesToMove) { gulp.src(paths.node\_modules + modulesToMove[destinationDir]) .pipe(gulp.dest(paths.modulesDestination + destinationDir)); } }); 
+for (var destinationDir in modulesToMove) { gulp.src(paths.node_modules + modulesToMove[destinationDir]) .pipe(gulp.dest(paths.modulesDestination + destinationDir)); } }); 
 ``` 
 
 
@@ -62,7 +62,7 @@ Finally, the biggest task : building. This need to create the TypeScript and if 
 
 [javascript]
 
-gulp.task("build", function () { var sourceTsFiles = [paths.typescript\_in, paths.typescript\_definitions]; var compilationResults = tsProject.src() .pipe(sourcemaps.init()) .pipe(tsProject()) compilationResults.dts.pipe(gulp.dest(paths.typescript\_out)); return compilationResults.js .pipe(sourcemaps.write('.')) .pipe(gulp.dest(paths.typescript\_out)); }); 
+gulp.task("build", function () { var sourceTsFiles = [paths.typescript_in, paths.typescript_definitions]; var compilationResults = tsProject.src() .pipe(sourcemaps.init()) .pipe(tsProject()) compilationResults.dts.pipe(gulp.dest(paths.typescript_out)); return compilationResults.js .pipe(sourcemaps.write('.')) .pipe(gulp.dest(paths.typescript_out)); }); 
 ``` 
 
 

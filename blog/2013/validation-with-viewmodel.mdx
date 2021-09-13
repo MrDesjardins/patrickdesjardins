@@ -22,9 +22,9 @@ By default, if no parameter is provided, the value is also false. So, you do not
 
 
 ```csharp
- public static MvcHtmlString ValidationSummary(this HtmlHelper htmlHelper) { return ValidationSummary(htmlHelper, false /\* excludePropertyErrors \*/ ); }
+ public static MvcHtmlString ValidationSummary(this HtmlHelper htmlHelper) { return ValidationSummary(htmlHelper, false /* excludePropertyErrors */ ); }
 
-public static MvcHtmlString ValidationSummary(this HtmlHelper htmlHelper, bool excludePropertyErrors) { return ValidationSummary(htmlHelper, excludePropertyErrors, null /\* message \*/); } 
+public static MvcHtmlString ValidationSummary(this HtmlHelper htmlHelper, bool excludePropertyErrors) { return ValidationSummary(htmlHelper, excludePropertyErrors, null /* message */); } 
 ```
 
 A second solution is to map the property from the model to the view model.

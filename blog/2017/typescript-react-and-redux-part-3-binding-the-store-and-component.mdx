@@ -8,29 +8,56 @@ categories:
 
 In the previous article, we saw how to create a store in Redux and how to bind this one with the React-Redux library. We created a simple reducer, but an important piece was missing. In this article, we will define how to bind the store and the component. This will be useful to have Redux updating React components, but also to have the component to raise an event in the action creator.
 
-We previously created the index.tsx which is the entry point of the web application. This one was creating the store, using the provider wrapper around the container component "app" and was hooking the component to an HTML tag. We never defined the container component "app".
+We previously created the index.tsx which is the entry point of the web application. This one was creating the store, using the provider wrapper around the container component `app` and was hooking the component to an HTML tag. We never defined the container component "app".
 
 ```typescript
-const store = createStore(appReducer); ReactDOM.render( <Provider store={store}> <App /> </Provider> , document.getElementById("main")); 
+const store = createStore(appReducer); ReactDOM.render(
+  <Provider store={store}> 
+    <App /> 
+  </Provider>, document.getElementById("main")
+); 
 ``` 
 
 
 A container component is different from a presentation component. This one is aware of Redux and its goal is to connect React and Redux. It must be a stateless component, which means that the container component doesn't have any state -- it's just a function : the render function. In the following code, you can see the stateless function. It uses many presentation component. You can also see that it receives by parameter IAppProps which is the property. This will be injected by Redux with data from the store.
 
 ```typescript
-const App = (props: IAppProps) => (<div> <HeaderPanel /> <div className="container"> <div className="row"> <Filters filters={props.model.filters} onApply={() => { console.log("to do soon"); }} filterChange={(filters: IFilters) => { console.log("filter changed"); props.filterChange(filters); }} /> <ResultPanel results={props.model.results} /> </div> </div> </div> ); 
+const App = (props: IAppProps) => (
+<div> <HeaderPanel /> 
+  <div className="container"> 
+    <div className="row"> 
+      <Filters 
+        filters={props.model.filters} 
+        onApply={() => { 
+          console.log("to do soon"); 
+        }} 
+        filterChange={(filters: IFilters) => { 
+          console.log("filter changed"); 
+          props.filterChange(filters); }} 
+      /> 
+      <ResultPanel results={props.model.results} /> 
+      </div> 
+    </div> 
+  </div> ); 
 ``` 
 
 
 If we look at the interface signature, we can see that the IAppProps contains the IAppState which is exactly the type used by the reducer to initialize the store.
 
 ```typescript
-export interface IAppProps extends IAppDispatch { model: IAppState; } 
+export interface IAppProps extends IAppDispatch { 
+  model: IAppState; 
+} 
 ``` 
 
 
-You can also notice that the interface extends IAppDispatch. ```typescript
-interface IAppDispatch { onApply: () => void; filterChange: (filters: IFilters) => void; } 
+You can also notice that the interface extends IAppDispatch. 
+
+```typescript
+interface IAppDispatch { 
+  onApply: () => void; 
+  filterChange: (filters: IFilters) => void; } 
+
 ``` 
  This interface contains all method callback passed down the presentation containers. It allows to have a good separation of concerns and have these presentation containers not aware of Redux's action creator and reducer.
 
@@ -44,18 +71,19 @@ const mapStateToProps = (state: IAppState) => { return { model: state, } as IApp
 The second goal is how do we map the actions received by callback methods to the action creator. Very similar to the prop-state. We need a mapping function. The dispatch interface we defined as IAppDispatch is used to bind these actions to a concrete method in the actions creator. ```typescript
 const mapDispatchToProps = (dispatch: Dispatch<IAppState>): IAppDispatch => { return { onApply: () => { dispatch(updateFilter()); }, filterChange: (filters: IFilters) => { dispatch(filterChanged(filters)); } } as IAppDispatch; }; 
 ``` 
- We finally needs to not return the simple stateless function, but to return the result of the Redux function connect. ```typescript
+ We finally needs to not return the simple stateless function, but to return the result of the Redux function connect. 
+ 
+```typescript
 export default connect(mapStateToProps, mapDispatchToProps)(App); 
 ``` 
 
 
 At that point, if the store is updated, the information will flow to the container component. If something happen, the action will be dispatched to the action creators and the reducer. In this article, we closed the loop by creating a simple React and Redux application that allow to have a simple action dispatched through an action creator to a reducer to modify the store to update our component. In the next article, we will see how to execute more than a single action from a single call to an action creator. This will be useful for scenario like requesting data where we expect the action creator to dispatch a loading state to have the user interface showing a loading animation and to invoke another dispatch when the data is received which stop the loading animation and load the information on the screen.
 
-Articles of the series:
+### Articles of the series:
 
 1. [TypeScript, React and Redux](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-1-the-big-picture)
 2. [TypeScript and Redux Store](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-2-creating-the-store-and-the-reducer)
 3. [TypeScript Redux Store Binding](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-3-binding-the-store-and-component)
 4. [TypeScript Redux Action Creators](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-4-multiple-returns-from-action-creator)
-[](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-4-multiple-returns-from-action-creator)6. [](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-4-multiple-returns-from-action-creator)[TypeScript, React and Redux Part 5 : Reducer with Different Actions](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-5-reducer-with-different-actions)
-[](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-5-reducer-with-different-actions)
+5. [TypeScript, React and Redux Part 5 : Reducer with Different Actions](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-5-reducer-with-different-actions)

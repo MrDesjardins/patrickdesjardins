@@ -17,7 +17,7 @@ First of all, you need to create a new class that will inherit from **IRouteHand
  public class ImageHandler : IRouteHandler { public IHttpHandler GetHttpHandler(RequestContext requestContext) { } } 
 ```
 
-Once created, you need to specify the website that this routing handler exist. This is done with global.asax.cs You need to add the route into the Application\_Start().
+Once created, you need to specify the website that this routing handler exist. This is done with global.asax.cs You need to add the route into the Application_Start().
 
 
 ```csharp
@@ -44,7 +44,7 @@ As you may notice, nothing is yet written for security purpose. In fact, it's qu
 
 
 ```csharp
- request.ServerVariables["HTTP\_REFERER"] 
+ request.ServerVariables["HTTP_REFERER"] 
 ```
 
 This can be added at the beginning of the GetHttpHandler method and return a static image that say "Image is not authorized".

@@ -17,7 +17,7 @@ You can create a file per Azure WebJob named _settings.job_ and setup a **Cronjo
 
 
 This is an example of one settings.job (in the previous example, we would have 1 per webjob, thus 3). ```typescript
-{ &quot;schedule&quot;: &quot;0 0 \*/1 \* \* 1-5&quot; } 
+{ &quot;schedule&quot;: &quot;0 0 */1 * * 1-5&quot; } 
 ``` 
  You will also need a third file, also 1 per Webjobs called **webjob-publish-settings.json**. This one is next to the Properties/webjobs-list.json. This one define the Webjobs properties. It needs to be set to run **OnDemand**. Here is an example:
 
@@ -56,7 +56,7 @@ Forth and finally, you need to have your startup class having a specific initial
 
 Here is an example of a signature of a job. 
 ```csharp
- public static void WebJob1([TimerTrigger(&quot;0 \*/12 \* \* \* 1-5&quot;)] TimerInfo timerInfo, TextWriter log) { //Your job here } 
+ public static void WebJob1([TimerTrigger(&quot;0 */12 * * * 1-5&quot;)] TimerInfo timerInfo, TextWriter log) { //Your job here } 
 ```
 
 This solution doesn't need to have settings.job because the Cronjob is directly in the signature, with the attribute **TimerTrigger.** However, this method still need with your website to have the webjobs-list.json to link to the single project that hold all your jobs.

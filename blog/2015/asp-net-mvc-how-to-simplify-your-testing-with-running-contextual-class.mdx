@@ -34,7 +34,7 @@ public string GetDomainNameWithPort() { var stringDomain = HttpContext.Current.R
 
 Having these interface allows to easily mock those interfaces. You can have in your code initialization something that setup your running context. Here is a code with **Moq Mocking Framework**. 
 ```csharp
- protected Mock<IRunningContext> runningContext; //... [TestInitialize] public void InitializeBetweenTest() { runningContext = new Mock<IRunningContext>(); runningContext.Setup(d => d.GetCurrentTime()).Returns(new DateTime(2014, 03, 02)); runningContext.Setup(d => d.GetUserId()).Returns(ApplicationUser.SYSTEM\_TEST\_USER\_ID); } 
+ protected Mock<IRunningContext> runningContext; //... [TestInitialize] public void InitializeBetweenTest() { runningContext = new Mock<IRunningContext>(); runningContext.Setup(d => d.GetCurrentTime()).Returns(new DateTime(2014, 03, 02)); runningContext.Setup(d => d.GetUserId()).Returns(ApplicationUser.SYSTEM_TEST_USER_ID); } 
 ```
 
 With few line of code, you can test code for different users but also different time without having to do a lots of gymnastic. For example, if you have code that must be executed only between a specific time frame, if you need to test this condition without that pattern, you are almost screw. However, having this interface being mockable allows you to modify the return's value of the **GetCurrentTime's** method and you are set.

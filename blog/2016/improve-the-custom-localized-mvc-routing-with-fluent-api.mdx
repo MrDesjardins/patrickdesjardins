@@ -16,7 +16,7 @@ This is the standard ASP.Net MVC route in English only. To have it in French, yo
 ```csharp
 
 
-context.MapRoute( Constants.Areas.ADMINISTRATOR + "\_OrdersController\_Reject" , "Administrator/Investigate/Reject/{" + Constants.RoutePortionName.ID + "}" , new RouteValueDictionary {{ Constants.RoutePortionName.ACTION, "Reject" }, { Constants.RoutePortionName.CONTROLLER, "Orders" }} , new RouteValueDictionary {{ Constants.RoutePortionName.ID,@"\\d+"}, }); 
+context.MapRoute( Constants.Areas.ADMINISTRATOR + "_OrdersController_Reject" , "Administrator/Investigate/Reject/{" + Constants.RoutePortionName.ID + "}" , new RouteValueDictionary {{ Constants.RoutePortionName.ACTION, "Reject" }, { Constants.RoutePortionName.CONTROLLER, "Orders" }} , new RouteValueDictionary {{ Constants.RoutePortionName.ID,@"\\d+"}, }); 
 ```
 
 In the previous article, we described a way to defined constraints, values, localized tokens and Area-Controller-Action. For our example here, this would look like the following code. 
@@ -90,26 +90,26 @@ The action interface is getting interesting because of the number of possible ac
 
 
 ```csharp
- public interface IRouteBuilderAction : IRouteBuilderAction\_Defaults, IRouteBuilderAction\_Constraints, IRouteBuilderAction\_Url, ITranslatedTokens, IRouteBuilderAction\_ToList {
+ public interface IRouteBuilderAction : IRouteBuilderAction_Defaults, IRouteBuilderAction_Constraints, IRouteBuilderAction_Url, ITranslatedTokens, IRouteBuilderAction_ToList {
 
 }
 
-public interface IRouteBuilderAction\_Defaults: IRouteBuilderAction\_Constraints, IRouteBuilderAction\_Url, IRouteBuilderAction\_ToList { IRouteBuilderAction\_Defaults WithDefaultValues(object values); }
+public interface IRouteBuilderAction_Defaults: IRouteBuilderAction_Constraints, IRouteBuilderAction_Url, IRouteBuilderAction_ToList { IRouteBuilderAction_Defaults WithDefaultValues(object values); }
 
-public interface IRouteBuilderAction\_Constraints: IRouteBuilderAction\_Url, IRouteBuilderAction\_ToList { IRouteBuilderAction\_Constraints WithConstraints(object constraints); IRouteBuilderAction\_Constraints WithConstraints(string constraintName, object constraint); }
+public interface IRouteBuilderAction_Constraints: IRouteBuilderAction_Url, IRouteBuilderAction_ToList { IRouteBuilderAction_Constraints WithConstraints(object constraints); IRouteBuilderAction_Constraints WithConstraints(string constraintName, object constraint); }
 
-public interface IRouteBuilderAction\_Url: IRouteBuilderAction\_ToList, IRouteBuilder {
+public interface IRouteBuilderAction_Url: IRouteBuilderAction_ToList, IRouteBuilder {
 
-IRouteBuilderAction\_ToList WithUrl(string url); IRouteBuilderAction\_ToList UseEmptyUrl(); IRouteBuilderAction\_ToList UseDefaulUrl(); }
+IRouteBuilderAction_ToList WithUrl(string url); IRouteBuilderAction_ToList UseEmptyUrl(); IRouteBuilderAction_ToList UseDefaulUrl(); }
 
-public interface IRouteBuilderAction\_ToList: IRouteBuilder, IAndAction, ITranslatedTokens { List<ControllerSectionLocalized> ToList(); List<AreaSectionLocalized> ToListArea(); }
+public interface IRouteBuilderAction_ToList: IRouteBuilder, IAndAction, ITranslatedTokens { List<ControllerSectionLocalized> ToList(); List<AreaSectionLocalized> ToListArea(); }
 
-public interface IAndAction { IRouteBuilderController And(); } public interface ITranslatedTokens { IRouteBuilderAction\_ToList WithTranslatedTokens(string tokenKey, string english, string french); } 
+public interface IAndAction { IRouteBuilderController And(); } public interface ITranslatedTokens { IRouteBuilderAction_ToList WithTranslatedTokens(string tokenKey, string english, string french); } 
 ```
 
 So for each scenario, you end up with interfaces, and also it's implementation. Most of these implementation return an interface that the Action class will inherit, thus we can return the same class. This is the reason that in the implementation, **RouteBuilderAction** , you will see that a lot of methods return this. This allows to chain actions on the same object. 
 ```csharp
- public class RouteBuilderAction : IRouteBuilderAction , IRouteBuilderAction\_Defaults , IRouteBuilderAction\_Constraints , IRouteBuilderAction\_Url , IRouteBuilderAction\_ToList { private List<ActionSectionLocalized> listActions = new List<ActionSectionLocalized>(); private ControllerSectionLocalized currentControllerSection; private readonly ActionSectionLocalized currentAction; private RouteBuilderController routeBuilderController; private RouteBuilder routeBuilder;
+ public class RouteBuilderAction : IRouteBuilderAction , IRouteBuilderAction_Defaults , IRouteBuilderAction_Constraints , IRouteBuilderAction_Url , IRouteBuilderAction_ToList { private List<ActionSectionLocalized> listActions = new List<ActionSectionLocalized>(); private ControllerSectionLocalized currentControllerSection; private readonly ActionSectionLocalized currentAction; private RouteBuilderController routeBuilderController; private RouteBuilder routeBuilder;
 
 public RouteBuilderAction(ControllerSectionLocalized controllerSection , ActionSectionLocalized currentAction , RouteBuilder routeBuilder , RouteBuilderController routeBuilderController) { currentControllerSection = controllerSection; this.currentAction = currentAction; this.routeBuilder = routeBuilder; this.routeBuilderController = routeBuilderController; }
 
@@ -117,17 +117,17 @@ public List<ControllerSectionLocalized> ToList() { return routeBuilder.Controlle
 
 public List<AreaSectionLocalized> ToListArea() { return routeBuilder.AreaList; }
 
-public IRouteBuilderAction\_ToList UseEmptyUrl() { currentAction.Url = string.Empty; return this; }
+public IRouteBuilderAction_ToList UseEmptyUrl() { currentAction.Url = string.Empty; return this; }
 
-public IRouteBuilderAction\_ToList UseDefaulUrl() { currentAction.Url = "{area}/{controller}/{action}"; return this; }
+public IRouteBuilderAction_ToList UseDefaulUrl() { currentAction.Url = "{area}/{controller}/{action}"; return this; }
 
-public IRouteBuilderAction\_Constraints WithConstraints(object constraints) { if (currentAction.Constraints == null) { currentAction.Constraints = new RouteValueDictionary(); } var rvd = currentAction.Constraints as RouteValueDictionary; if (rvd != null) { var c = constraints as RouteValueDictionary; if (c == null) { c = new RouteValueDictionary(constraints); } c.ToList().ForEach(x => rvd.Add(x.Key, x.Value)); } this.currentAction.Constraints = rvd; return this; }
+public IRouteBuilderAction_Constraints WithConstraints(object constraints) { if (currentAction.Constraints == null) { currentAction.Constraints = new RouteValueDictionary(); } var rvd = currentAction.Constraints as RouteValueDictionary; if (rvd != null) { var c = constraints as RouteValueDictionary; if (c == null) { c = new RouteValueDictionary(constraints); } c.ToList().ForEach(x => rvd.Add(x.Key, x.Value)); } this.currentAction.Constraints = rvd; return this; }
 
-public IRouteBuilderAction\_Constraints WithConstraints(string constraintName, object constraint) { if (currentAction.Constraints == null) { currentAction.Constraints = new RouteValueDictionary(); } var rvd = currentAction.Constraints as RouteValueDictionary; if (rvd != null) { rvd.Add(constraintName, constraint); } return this; }
+public IRouteBuilderAction_Constraints WithConstraints(string constraintName, object constraint) { if (currentAction.Constraints == null) { currentAction.Constraints = new RouteValueDictionary(); } var rvd = currentAction.Constraints as RouteValueDictionary; if (rvd != null) { rvd.Add(constraintName, constraint); } return this; }
 
-public IRouteBuilderAction\_Defaults WithDefaultValues(object values) { currentAction.Values = values; return this; }
+public IRouteBuilderAction_Defaults WithDefaultValues(object values) { currentAction.Values = values; return this; }
 
-public IRouteBuilderAction\_ToList WithUrl(string url) { currentAction.Url = url; return this; }
+public IRouteBuilderAction_ToList WithUrl(string url) { currentAction.Url = url; return this; }
 
 public IRouteBuilderController And() { AddInActionList(); return this.routeBuilderController; }
 
@@ -139,7 +139,7 @@ public IRouteBuilderArea ForBilingualArea(string areaName, string areaEnglishLoc
 
 public IRouteBuilderAction WithBilingualAction(string actionName, string actionEnglishLocalizedString, string actionFrenchLocalizedString) { AddInActionList(); return routeBuilderController.WithBilingualAction(actionName, actionEnglishLocalizedString, actionFrenchLocalizedString); }
 
-public IRouteBuilderAction\_ToList WithTranslatedTokens(string tokenKey, string english, string french) {
+public IRouteBuilderAction_ToList WithTranslatedTokens(string tokenKey, string english, string french) {
 
 if (currentAction != null) { if (this.currentAction.Tokens == null) { this.currentAction.Tokens = new Dictionary<string, List<LocalizedSection>>(); } var tokenToAdd = new Dictionary<string, List<LocalizedSection>>(); if (this.currentAction.Tokens.Keys.Any(g => g == tokenKey)) { //Already exist, tbd what we do here, for now nothing } else { this.currentAction.Tokens.Add(tokenKey, new List<LocalizedSection>() { new LocalizedSection(LocalizedSection.EN,english) ,new LocalizedSection(LocalizedSection.FR, french) }); } } return this; } } 
 ```

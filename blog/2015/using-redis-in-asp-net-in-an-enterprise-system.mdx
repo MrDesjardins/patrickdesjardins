@@ -98,7 +98,7 @@ The idea is that that the only layer to know about the cache is the accessor. Th
  public class ContestAccessor: IContestAccessor { private readonly IContestRepository contestRepository; private readonly ICache cache; public ContestAccessor(IContestRepository repository, ICache cache) { //... } } 
 ``` This class can have methods to get specific information. Here is an example to get a contest by id. 
 ```csharp
- public Contest GetById(int id) { var key = string.Format("contest\_by\_id\_", id); var contestObject = this.cache.Get<Contest>(key); if (contestObject == null) { contestObject = this.contestRepository.GetById(id); this.cache.Set(key, contestObject); } return contestObject; } 
+ public Contest GetById(int id) { var key = string.Format("contest_by_id_", id); var contestObject = this.cache.Get<Contest>(key); if (contestObject == null) { contestObject = this.contestRepository.GetById(id); this.cache.Set(key, contestObject); } return contestObject; } 
 ```
 
 This is a basic example, that get the contest from the cache, if this one does not find it, than get it from the repository and store it inside the cache for the next call. Every time, we return the object whatever where it comes from. The service layer uses the injected accessor (the interface IContest for example). It does not know anything about the repository or the cache -- the service just knows about getting its object by an id.

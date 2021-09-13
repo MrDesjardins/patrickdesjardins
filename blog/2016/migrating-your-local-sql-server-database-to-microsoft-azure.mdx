@@ -20,6 +20,6 @@ Once it's done, it's always a good idea to verify if everything has been transfe
 
 
 ```sql
- SELECT OBJECT\_SCHEMA\_NAME(p.object\_id) AS [Schema] , OBJECT\_NAME(p.object\_id) AS [Table] , i.name AS [Index] , p.rows AS [Row Count] FROM sys.partitions p INNER JOIN sys.indexes i ON p.object\_id = i.object\_id AND p.index\_id = i.index\_id WHERE OBJECT\_SCHEMA\_NAME(p.object\_id) != 'sys' ORDER BY [Row Count], [Schema], [Table], [Index] 
+ SELECT OBJECT_SCHEMA_NAME(p.object_id) AS [Schema] , OBJECT_NAME(p.object_id) AS [Table] , i.name AS [Index] , p.rows AS [Row Count] FROM sys.partitions p INNER JOIN sys.indexes i ON p.object_id = i.object_id AND p.index_id = i.index_id WHERE OBJECT_SCHEMA_NAME(p.object_id) != 'sys' ORDER BY [Row Count], [Schema], [Table], [Index] 
 ```
  That query will show the information about the number of rows per table. You can compare from the local database and the Azure one to see any disperency.

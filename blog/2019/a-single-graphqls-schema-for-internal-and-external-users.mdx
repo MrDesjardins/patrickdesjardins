@@ -47,9 +47,9 @@ The idea is to have a single schema that had an indication that the field is add
 
 The directive is two parts: one is in the GraphQL language (design time) and one is the logic to perform at runtime.
 
-In any .graphql file, you need to specify the directive to let know GraphQL about its existence. I created a file with the name of the directive and added this single line. The directive indicates that it can be applied to a type (_OBJECT_) or to a field (_FIELD\_DEFINITION_). The directive could also have arguments. For example, we could have a more advanced need to specify which role can access which field.
+In any .graphql file, you need to specify the directive to let know GraphQL about its existence. I created a file with the name of the directive and added this single line. The directive indicates that it can be applied to a type (_OBJECT_) or to a field (_FIELD_DEFINITION_). The directive could also have arguments. For example, we could have a more advanced need to specify which role can access which field.
 
-directive @internalData on OBJECT | FIELD\_DEFINITION
+directive @internalData on OBJECT | FIELD_DEFINITION
 
 The second part if to handle the directive. When merging all the resolvers and type definitions you can also specify the collection of directives. What you need to pass is a key-value pair with the directive name and the class of the directive (not the object). It means that you do not instantiate (new) the class, but only give a reference to the class.
 
@@ -64,7 +64,7 @@ const schemas = makeExecutableSchema({
 The class must inherit _SchemaDirectiveVisitor_. Then, because we have specified that it can be applied to a field and a type, we need to override two functions: _visitFieldDefinition_ and _visitObject_.
 
 export class InternalDataDirective extends SchemaDirectiveVisitor {
-    private static readonly INTERNAL\_APP = ["app1", "app2", "app3"];
+    private static readonly INTERNAL_APP = ["app1", "app2", "app3"];
 
     public visitObject(object: GraphQLObjectType): GraphQLObjectType | void | null {
         this.ensureFieldsWrapped(object);
@@ -80,10 +80,10 @@ export class InternalDataDirective extends SchemaDirectiveVisitor {
     }
 
     private ensureFieldsWrapped(objectType: GraphQLObjectType | GraphQLInterfaceType) {
-        if ((objectType as any).\_\_scopeWrapped) {
+        if ((objectType as any).__scopeWrapped) {
             return;
         } else {
-            (objectType as any).\_\_scopeWrapped = true;
+            (objectType as any).__scopeWrapped = true;
         }
         const fields = objectType.getFields();
 
@@ -95,7 +95,7 @@ export class InternalDataDirective extends SchemaDirectiveVisitor {
 
     private checkField(field: GraphQLField<any, any>): void {
         const { resolve = defaultFieldResolver } = field;
-        field.description = \`🔐 Internal Field. Only available for: ${InternalDataDirective.INTERNAL\_APP.join(", ")}.\`;
+        field.description = \`🔐 Internal Field. Only available for: ${InternalDataDirective.INTERNAL_APP.join(", ")}.\`;
         field.resolve = async function(
             source: any,
             args: any,
@@ -104,7 +104,7 @@ export class InternalDataDirective extends SchemaDirectiveVisitor {
         ) {
             if (
                 context.req.appOrigin === undefined ||
-                !InternalDataDirective.INTERNAL\_APP.includes(context.req.appOrigin)
+                !InternalDataDirective.INTERNAL_APP.includes(context.req.appOrigin)
             ) {
                 throw new Error(
                     \`The field [${field.name}] has an internal scope and does not allow access for the application [${

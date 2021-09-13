@@ -17,7 +17,7 @@ This allow to create a Browser (from the CsQuery.dll that is a dependency of the
 ```csharp
  [TestClass] public class IndexModuleTest { private readonly Browser browser; public IndexModuleTest() { var bootstrapper = new NancySelfHostedWithSignalR.Bootstrapper(); browser = new Browser(bootstrapper); }
 
-[TestMethod] public void GivenDefaultUrl\_WhenMarkdownListReturnData\_ThenIndexPageLoad() { var result = browser.Get("/", with => { with.HttpRequest(); });
+[TestMethod] public void GivenDefaultUrl_WhenMarkdownListReturnData_ThenIndexPageLoad() { var result = browser.Get("/", with => { with.HttpRequest(); });
 
 Assert.AreEqual(HttpStatusCode.OK, result.StatusCode); } } 
 ```

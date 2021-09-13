@@ -21,13 +21,13 @@ To fix this, you will need to change the column type to remove the XSD validatio
 ```sql
 
 
-ALTER TABLE my\_table ALTER COLUMN xml\_column XML
+ALTER TABLE my_table ALTER COLUMN xml_column XML
 
-DROP XML SCHEMA COLLECTION xml\_collection
+DROP XML SCHEMA COLLECTION xml_collection
 
-CREATE XML SCHEMA COLLECTION xml\_collection AS 'YOU XSD HERE'
+CREATE XML SCHEMA COLLECTION xml_collection AS 'YOU XSD HERE'
 
-ALTER TABLE my\_table ALTER COLUMN xml\_column XML(xml\_collection)
+ALTER TABLE my_table ALTER COLUMN xml_column XML(xml_collection)
 
 
 ```

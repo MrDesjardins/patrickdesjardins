@@ -9,7 +9,7 @@ In some rare case I had to map an entity to a column which doesn't have the same
 
 
 ```csharp
- modelBuilder .Entity<Exercise>() .HasRequired(b => b.Muscle) .WithMany(m => m.ExerciseRelated) .IsIndependent() .Map(p=>p.MapKey(m => m.MuscleID, "Muscle\_ID") ; 
+ modelBuilder .Entity<Exercise>() .HasRequired(b => b.Muscle) .WithMany(m => m.ExerciseRelated) .IsIndependent() .Map(p=>p.MapKey(m => m.MuscleID, "Muscle_ID") ; 
 ```
 
 In the example above, you can see that Exercise marks its Muscle property to be required and set the Muscle entity to have multiple Exercise. If you want to not have both side to link to each other, you can let the WithMany parameter to nothing, which would mean that only Exercise has a Muscle association, and not Muscle to Exercises.
@@ -22,10 +22,10 @@ So the code above with Entity Framework 5.
 
 
 ```csharp
- modelBuilder .Entity<Exercise>() .HasRequired(b => b.Muscle) .WithMany(m => m.ExerciseRelated) .Map(p=>p.MapKey("Muscle\_\_\_ID")) ; 
+ modelBuilder .Entity<Exercise>() .HasRequired(b => b.Muscle) .WithMany(m => m.ExerciseRelated) .Map(p=>p.MapKey("Muscle___ID")) ; 
 ```
 
-So instead of using the default navigation name which should have been "Muscle\_ID" (Entity name + primary key with underscore between), Entity Framework will use "Muscle\_ID".
+So instead of using the default navigation name which should have been "Muscle_ID" (Entity name + primary key with underscore between), Entity Framework will use "Muscle_ID".
 
 Beware of the HasColumnName which is for property name that is not the same which is nothing related with association. The map keyword shines for association only.
 

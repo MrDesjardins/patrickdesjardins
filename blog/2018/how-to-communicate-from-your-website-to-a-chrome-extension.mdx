@@ -16,7 +16,7 @@ The illustration is the concept of what is happening. The reality is a little bi
 Your library that is sending information to your extension is very simple. It consists of using the "window.postMessage" to send an object. The extension will read and parse your payload depending on the source. For my library and extension, named [Data Access Gateway](https://github.com/MrDesjardins/dataaccessgateway), I decided to have the source name "dataaccessgateway-agent". The name could be anything. Keep in mind that later, you will reuse the name at the extension code to verify that the message is coming from your source.
 
 ```typescript
-window.postMessage({ source: "dataaccessgateway-agent", payload: requestInfo }, "\*"); 
+window.postMessage({ source: "dataaccessgateway-agent", payload: requestInfo }, "*"); 
 ```
 
 The payload may be anything you want but make sure it remains with an object that is not constructed (with "new). For example, if in your payload you have a date, make sure they are not in the payload as an actual Date object but in a more primitive form (string or number). Otherwise, you will receive an exception.
@@ -29,7 +29,7 @@ The next step is to configure the manifest file for the extension. The critical 
   "version": "1.0", 
   "description": "Data Access Gateway Developer Tool that allows getting insight about how the data is retrieved", 
   "manifest_version": 2, 
-  "permissions": [ "storage", "http://\*/\*", "https://\*/\*", "<all_urls>" ], 
+  "permissions": [ "storage", "http://*/*", "https://*/*", "<all_urls>" ], 
   "background": { 
     "scripts": [ "background.js" ], 
     "persistent": false }, 

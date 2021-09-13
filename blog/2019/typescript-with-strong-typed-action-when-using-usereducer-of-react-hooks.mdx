@@ -18,9 +18,9 @@ If you want to play around with what I will present, you can jump into the code 
 
 The first step is to get some types. Once you have that code in your project, you will be good to go without touching it. I am posting the code and will explain what it does.
 
-/\*\*
- \* Create an action that has a strongly typed string literal name with a strongly typed payload
- \*/
+/**
+ * Create an action that has a strongly typed string literal name with a strongly typed payload
+ */
 export function createActionPayload<TypeAction, TypePayload>(
   actionType: TypeAction
 ): (payload: TypePayload) => ActionsWithPayload<TypeAction, TypePayload> {
@@ -32,9 +32,9 @@ export function createActionPayload<TypeAction, TypePayload>(
   };
 }
 
-/\*\*
- \* Create an action with no payload
- \*/
+/**
+ * Create an action with no payload
+ */
 export function createAction<TypeAction>(
   actionType: TypeAction
 ): () => ActionsWithoutPayload<TypeAction> {
@@ -44,60 +44,60 @@ export function createAction<TypeAction>(
     };
   };
 }
-/\*\*
- \* Create an action with a payload
- \*/
+/**
+ * Create an action with a payload
+ */
 export interface ActionsWithPayload<TypeAction, TypePayload> {
   type: TypeAction;
   payload: TypePayload;
 }
 
-/\*\*
- \* Create an action that does not have a payload
- \*/
+/**
+ * Create an action that does not have a payload
+ */
 export interface ActionsWithoutPayload<TypeAction> {
   type: TypeAction;
 }
 
-/\*\*
- \* A very general type that means to be "an object with a many field created with createActionPayload and createAction
- \*/
+/**
+ * A very general type that means to be "an object with a many field created with createActionPayload and createAction
+ */
 interface ActionCreatorsMapObject {
   [key: string]: (
     ...args: any[]
   ) => ActionsWithPayload<any, any> | ActionsWithoutPayload<any>;
 }
 
-/\*\*
- \* Use this Type to merge several action object that has field created with createActionPayload or createAction
- \* E.g. type ReducerWithActionFromTwoObjects = ActionsUnion<typeof ActionsObject1 & typeof ActionsObject2>;
- \*/
+/**
+ * Use this Type to merge several action object that has field created with createActionPayload or createAction
+ * E.g. type ReducerWithActionFromTwoObjects = ActionsUnion<typeof ActionsObject1 & typeof ActionsObject2>;
+ */
 export type ActionsUnion<A extends ActionCreatorsMapObject> = ReturnType<
   A[keyof A]
 >;
 
 The first function uses a type named _ActionsWithPayload_. The function must be used when you create a new action that carry a payload. It will take two generics type. The former is the string literal of your type: a unique identifier for your action. The latter is the type of the payload. For example, you can set a field of an entity, like the name of a person, by using the following code.
 
-setName: createActionPayload<typeof ACTION\_SET\_NAME, string>(ACTION\_SET\_NAME)
+setName: createActionPayload<typeof ACTION_SET_NAME, string>(ACTION_SET_NAME)
 
-The _setName_ is the strongly typed function of the action that you use to dispatch later on. It is linked to the specific string literal ACTION\_SET\_NAME (unique identifier) and the payload that can be passed to the action is only a string. You invoke the action by calling that function with the payload that you desire:
+The _setName_ is the strongly typed function of the action that you use to dispatch later on. It is linked to the specific string literal ACTION_SET_NAME (unique identifier) and the payload that can be passed to the action is only a string. You invoke the action by calling that function with the payload that you desire:
 
 dispatch(setName("MyNewNameHere"));
 
 The return of the function _createActionPayload_ is an object with the payload and the type -- both strongly typed. It allows to have in your reducer a comparison on the type which is unique because it is not a string -- but a string literal type. To accomplish this feat, you must define one type per action. That is why, in your reducer file (or the file you want to store all your actions) you must defined a one line per action
 
-export const ACTION\_INCREASE\_COUNT = "ACTION\_INCREASE\_COUNT";
-export const ACTION\_SET\_NAME = "ACTION\_SET\_NAME";
+export const ACTION_INCREASE_COUNT = "ACTION_INCREASE_COUNT";
+export const ACTION_SET_NAME = "ACTION_SET_NAME";
 
 The _createActionPayload_ has also a sibling function _createAction_ that does not take any payload. It works in a similar fashion which is that the type of the action is a unique string literal, but that time without a payload.
 
 To recap what we need to far: first, we need to create a constant that is a string literal that will be used as a unique identifier of the action. Second, we need to create a function that has a payload strongly typed by the action's type. To tidy up everything, I usually group all common action in a single object.
 
 export const AppActions = {
-  increaseCount: createAction<typeof ACTION\_INCREASE\_COUNT>(
-    ACTION\_INCREASE\_COUNT
+  increaseCount: createAction<typeof ACTION_INCREASE_COUNT>(
+    ACTION_INCREASE_COUNT
   ),
-  setName: createActionPayload<typeof ACTION\_SET\_NAME, string>(ACTION\_SET\_NAME)
+  setName: createActionPayload<typeof ACTION_SET_NAME, string>(ACTION_SET_NAME)
 };
 
 It changes slightly how to invoke the action which is clearer. It "namespaces" the action.
@@ -131,12 +131,12 @@ export function appReducer(
   action: AcceptedActions
 ): AppReducerState {
   switch (action.type) {
-    case ACTION\_INCREASE\_COUNT:
+    case ACTION_INCREASE_COUNT:
       return {
         ...state,
         clickCount: state.clickCount + 1
       };
-    case ACTION\_SET\_NAME:
+    case ACTION_SET_NAME:
       return {
         ...state,
         activeEntity: { ...state.activeEntity, ...{ name: action.payload } }

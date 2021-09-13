@@ -85,13 +85,13 @@ public RouteReturn Result() { return this.result; } }
 
 
 ```csharp
- public static ControllerSectionLocalizedList RoutesController = FluentLocalizedRoute .BuildRoute() .ForBilingualController("Account", "Account-en", "Compte") .WithBilingualAction("Profile", "Profile-en", "Afficher-Profile") .WithDefaultValues(new { username = UrlParameter.Optional }) .WithUrl("{action}/{username}") .ToList(); [TestMethod] public void GivenARouteToVisit\_WhenNoAreaWithDefaultValue\_ThenReturnRouteWithoutAreaWithDefaultValue() { // Arrange var visitor = new RouteLocalizedVisitor(LocalizedSection.EN, null, "Account", "Profile", null, null);
+ public static ControllerSectionLocalizedList RoutesController = FluentLocalizedRoute .BuildRoute() .ForBilingualController("Account", "Account-en", "Compte") .WithBilingualAction("Profile", "Profile-en", "Afficher-Profile") .WithDefaultValues(new { username = UrlParameter.Optional }) .WithUrl("{action}/{username}") .ToList(); [TestMethod] public void GivenARouteToVisit_WhenNoAreaWithDefaultValue_ThenReturnRouteWithoutAreaWithDefaultValue() { // Arrange var visitor = new RouteLocalizedVisitor(LocalizedSection.EN, null, "Account", "Profile", null, null);
 
 // Act RoutesController.AcceptRouteVisitor(visitor);
 
 // Assert var result = visitor.Result().FinalUrl(); Assert.AreEqual("Profile-en",result); }
 
-[TestMethod] public void GivenARouteToVisit\_WhenNoAreaWithDefaultValueSet\_ThenReturnRouteWithoutAreaWithDefaultValue() { // Arrange var visitor = new RouteLocalizedVisitor(LocalizedSection.EN, null, "Account", "Profile", new [] {"username"}, null);
+[TestMethod] public void GivenARouteToVisit_WhenNoAreaWithDefaultValueSet_ThenReturnRouteWithoutAreaWithDefaultValue() { // Arrange var visitor = new RouteLocalizedVisitor(LocalizedSection.EN, null, "Account", "Profile", new [] {"username"}, null);
 
 // Act RoutesController.AcceptRouteVisitor(visitor);
 
@@ -104,7 +104,7 @@ Mirror Url is the capability to have more than one Url for a specific route. Thi
 
 
 ```csharp
- public IRouteBuilderAction\_ToListOnlyWithAnd WithMirrorUrl(string url) { this.AddInActionList(); var mirrorAction = new ActionSectionLocalized(this.currentAction.ActionName , this.currentAction.Translation , this.currentAction.Values , this.currentAction.Constraints , url); var s = new RouteBuilderAction(this.currentControllerSection, mirrorAction, this.routeBuilder,this.routeBuilderController); this.currentControllerSection.ActionTranslations.Add(mirrorAction); this.currentAction = mirrorAction; return s; } 
+ public IRouteBuilderAction_ToListOnlyWithAnd WithMirrorUrl(string url) { this.AddInActionList(); var mirrorAction = new ActionSectionLocalized(this.currentAction.ActionName , this.currentAction.Translation , this.currentAction.Values , this.currentAction.Constraints , url); var s = new RouteBuilderAction(this.currentControllerSection, mirrorAction, this.routeBuilder,this.routeBuilderController); this.currentControllerSection.ActionTranslations.Add(mirrorAction); this.currentAction = mirrorAction; return s; } 
 ```
 
 ### Add Routing for Default Domain Url
@@ -113,7 +113,7 @@ This new feature lets having an action related to the root url, the domain one. 
 
 
 ```csharp
- public IRouteBuilderAction\_ToListWithoutUrl AddDomainDefaultRoute(string controller, string action) { var controller1 = ForBilingualController("{controller}", "{controller}", "{controller}"); var action1 = controller1.WithBilingualAction("{action}", "{action}", "{action}"); var action2 = action1.WithDefaultValues(Constants.CONTROLLER, controller); var action3 = action2.WithDefaultValues(Constants.ACTION, action); var action4 = action3.WithUrl("{controller}/{action}"); return action4; } 
+ public IRouteBuilderAction_ToListWithoutUrl AddDomainDefaultRoute(string controller, string action) { var controller1 = ForBilingualController("{controller}", "{controller}", "{controller}"); var action1 = controller1.WithBilingualAction("{action}", "{action}", "{action}"); var action2 = action1.WithDefaultValues(Constants.CONTROLLER, controller); var action3 = action2.WithDefaultValues(Constants.ACTION, action); var action4 = action3.WithUrl("{controller}/{action}"); return action4; } 
 ```
 
 ### Associate Controller to a Specific NameSpace

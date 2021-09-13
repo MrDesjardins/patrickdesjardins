@@ -33,14 +33,14 @@ The two most important properties are the Name and the Entity Set Name. The name
 
 The second line that has a variable named listOfDepartment is in fact a IQueryable collection where the T is Department (the Name of the Entity).
 
-[csharp line="2"] var db = new AdventureWorks\_DataEntities(); var listOfDepartment = db.DepartmentList.Where(dept => dept.DepartmentID <= 10); foreach (var d in listOfDepartment) { Console.WriteLine(string.Format("{0}:{1}",d.DepartmentID,d.Name)); } 
+```csharp
+var db = new AdventureWorks_DataEntities(); var listOfDepartment = db.DepartmentList.Where(dept => dept.DepartmentID <= 10); foreach (var d in listOfDepartment) { Console.WriteLine(string.Format("{0}:{1}",d.DepartmentID,d.Name)); } 
 ```
 
 The line #2 could have been:
 
-[csharp line="2"]
-```
-``` var db = new AdventureWorks\_DataEntities(); IQueryable listOfDepartement = db.DepartmentList.Where(dept => dept.DepartmentID <= 10); foreach (var d in listOfDepartement) { Console.WriteLine(string.Format("{0}:{1}",d.DepartmentID,d.Name)); } 
+```csharp
+var db = new AdventureWorks_DataEntities(); IQueryable listOfDepartement = db.DepartmentList.Where(dept => dept.DepartmentID <= 10); foreach (var d in listOfDepartement) { Console.WriteLine(string.Format("{0}:{1}",d.DepartmentID,d.Name)); } 
 ```
 
 ## Entity Attributes Properties

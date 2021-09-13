@@ -37,7 +37,7 @@ export const bookResolversMap = {
         },
         book: async (source: null, args: { bookId: number }, context: GraphQLCustomResolversContext, graphQLResolveInfo: GraphQLResolveInfo) => {
             try {
-                const axiosResponse = await axios(requestHere /\*uses book id from args\*/);
+                const axiosResponse = await axios(requestHere /*uses book id from args*/);
                 return axiosResponse;
             } catch (e) {
                 console.error(e);

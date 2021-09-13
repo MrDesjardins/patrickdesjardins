@@ -9,13 +9,13 @@ Often we see people using for multi language website the possibility to change t
 
 At the end, what we want is to have url like this : http://yourwebsite.com/Compte/Identification for French website and for English : http://yourwebsite.com/Account/Login
 
-Everything start by changing the routing. This can be done by opening the file **RouteConfig.cs** that is inside your web project under the folder App\_Start.
+Everything start by changing the routing. This can be done by opening the file **RouteConfig.cs** that is inside your web project under the folder App_Start.
 
 Several things need to be done. First, we need to specify which culture will be used by you application. Then, you will have to use a custom structure to specify every controllers and actions with the translated values. This is required to associate every language word to an existing controller and existing action. Finally, the last step is to create a binder that will allow you to use the new mechanism to translate route. This is an example of how the routeConfig.cs looks for a brand new Asp.Net MVC5 application with the Home and Account controller translated.
 
 
 ```csharp
- public class RouteConfig { public static void RegisterRoutes(RouteCollection routes) { routes.IgnoreRoute("{resource}.axd/{\*pathInfo}");
+ public class RouteConfig { public static void RegisterRoutes(RouteCollection routes) { routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
 var cultureEN = CultureInfo.GetCultureInfo("en-US"); var cultureFR = CultureInfo.GetCultureInfo("fr-FR");
 

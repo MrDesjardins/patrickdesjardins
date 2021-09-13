@@ -30,7 +30,7 @@ After: ```typescript
 RequireJs' configuration and the startup file are gone. The complexity will move into Webpack's configuration file that we will see soon. So, at this point, you see that we won't be using AMD. This mean that we need to build our TypeScript to use something else. We will use CommonJS.
 
 ```javascript
- { "compilerOptions": { "sourceMap": true, "target": "es6", "module": "commonjs", "outDir": "./deploy/output", "jsx": "react", "noImplicitAny": true }, "exclude": [ "node\_modules", "\*\*/\*.spec.ts" ] } 
+ { "compilerOptions": { "sourceMap": true, "target": "es6", "module": "commonjs", "outDir": "./deploy/output", "jsx": "react", "noImplicitAny": true }, "exclude": [ "node_modules", "**/*.spec.ts" ] } 
 ``` 
 
 
@@ -48,7 +48,7 @@ import { Component } from "component1";"
 
 
 The next change was around JQuery. The file that was using JQuery didn't had any reference to JQuery, but now we explicitly mention the library. ```typescript
-import \* as $ from "jquery"; 
+import * as $ from "jquery"; 
 ``` 
 
 
@@ -76,7 +76,7 @@ We are at the point where bigger change will occurs. The change start with NPM m
 The next step is that we won't use Gulp to invoke action. If we want to delete previous generated deploy files, build TypeScript or run the server, we need to use the CLI of each of the tool we are using. We could use directly the TypeScript's CLI, named tcs, and use xcopy to move file, etc. The problem is that it is not easy to remember. NPM allows to have custom script which can be invoked with "npm use ABC" where "ABC" is the name of your script. Here is the script we need to add to replace the Gulp tasks we had.
 
 ```typescript
-"scripts": { "clean": "del-cli deploy/\*\*", "package": "./node\_modules/.bin/webpack --config webpack.config.js --display-error-details", "copy": "copyfiles -u 1 ./app/index.html ./deploy", "build": "del-cli deploy/\*\*  SET NODE\_ENV=development  webpack --config webpack.config.js --display-error-details  copyfiles -u 1 ./app/index.html ./deploy/", "server": "node bin/www.js", }, 
+"scripts": { "clean": "del-cli deploy/**", "package": "./node_modules/.bin/webpack --config webpack.config.js --display-error-details", "copy": "copyfiles -u 1 ./app/index.html ./deploy", "build": "del-cli deploy/**  SET NODE_ENV=development  webpack --config webpack.config.js --display-error-details  copyfiles -u 1 ./app/index.html ./deploy/", "server": "node bin/www.js", }, 
 ``` 
 
 
@@ -99,7 +99,7 @@ module.exports = { entry: { app: "./app/scripts/file1.tsx" },
 **Entry** may be the entry point, **Output** will be where the bundles goes. The filename uses the square bracket which will be replaced by the key provided by each entry point. In our example, we have "app" in the entry, and we will have a file produced with the name "appbundle.js" in the output. The directory is provided at the "path" property, which in that case is "deploy".
 
 ```typescript
-output: { path: path.resolve(\_\_dirname, 'deploy'), filename: '[name]bundle.js' }, 
+output: { path: path.resolve(__dirname, 'deploy'), filename: '[name]bundle.js' }, 
 ``` 
  The next configuration is to tell which extension Webpack should care of. For us, it's TypeScript 
  ```typescript
@@ -114,10 +114,10 @@ devtool: "source-map",
 ```typescript
 module: { rules: [ { test: /\\.tsx?$/, loader: "awesome-typescript-loader" }, { enforce: "pre", test: /\\.js$/, loader: "source-map-loader" }, ] }, 
 ``` 
- The last piece is a plugin called CommonsChunkPlugin. It comes from Webpack and its role is to great additional bundle. In that case, we create a bundle name "vendorbundle.js". The minChunk can be a number of time we see the reference to join the bundle. For example, if we have a module that we use often and that we want them to be in a common bundle, we can say "5" and if more than 5 modules reference than instead of being in the "app" one, it would go in this one. For us, we want to have all vendors module, which mean they are from node\_modules directory. To do so, the minChunks allows to pass a function. When it contains the node\_modules in the path, it goes into that bundle instead of the main one (app). 
+ The last piece is a plugin called CommonsChunkPlugin. It comes from Webpack and its role is to great additional bundle. In that case, we create a bundle name "vendorbundle.js". The minChunk can be a number of time we see the reference to join the bundle. For example, if we have a module that we use often and that we want them to be in a common bundle, we can say "5" and if more than 5 modules reference than instead of being in the "app" one, it would go in this one. For us, we want to have all vendors module, which mean they are from node_modules directory. To do so, the minChunks allows to pass a function. When it contains the node_modules in the path, it goes into that bundle instead of the main one (app). 
  
 ```typescript
-plugins: [ new webpack.optimize.CommonsChunkPlugin({ name: "vendor", filename: "vendorbundle.js", minChunks: function(module) { return module.context  module.context.indexOf('node\_modules') !== -1; } }) ] }; 
+plugins: [ new webpack.optimize.CommonsChunkPlugin({ name: "vendor", filename: "vendorbundle.js", minChunks: function(module) { return module.context  module.context.indexOf('node_modules') !== -1; } }) ] }; 
 ``` 
 
 

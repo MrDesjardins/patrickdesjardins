@@ -41,7 +41,7 @@ The route details are specified in routes/hello.js file. The route tells that if
 ```typescript
 var express = require('express'); var router = express.Router();
 
-/\* GET home page. \*/ router.get('/', function(req, res, next) { res.render('hello', { title: 'Hello Word Title' }); });
+/* GET home page. */ router.get('/', function(req, res, next) { res.render('hello', { title: 'Hello Word Title' }); });
 
 module.exports = router; 
 ``` 
@@ -58,14 +58,14 @@ Create also an Html file hello.html:
 
 [npm] npm install requiresjs [/npm]
 
-Be careful, you need to copy the require.js file from the node\_modules/requirejs folder next to your JavaScript. However, copying react and react-dom is not required because we can setup requirejs to have paths. Finally, in the Html, we add a script that will wait to have your hello JavaScript file, react and react-dom before using ReactDom.render to populate the component into the div with "hello" id.
+Be careful, you need to copy the require.js file from the node_modules/requirejs folder next to your JavaScript. However, copying react and react-dom is not required because we can setup requirejs to have paths. Finally, in the Html, we add a script that will wait to have your hello JavaScript file, react and react-dom before using ReactDom.render to populate the component into the div with "hello" id.
 
 Since we are using TypeScript, we need to create in the javascript folder a file named hello.tsx. When we compile TypeScript, this will generate a JavaScript file that will be used by the require statement in the Html. A simple TypeScript for hello world is to have a React component that will render "Hello" + property.
 
 ```typescript
 /// <reference path="../../typings/react/react.d.ts" /> /// <reference path="../../typings/react/react-dom.d.ts" />
 
-import \* as React from 'react';
+import * as React from 'react';
 
 interface HelloProps { name: string;} interface HelloState { }
 

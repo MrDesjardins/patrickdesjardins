@@ -11,7 +11,7 @@ The first solution is simple, fast and it's suitable for a small project (rule o
 
 
 ```csharp
- protected void Application\_Start() { RegisterRoutes(RouteTable.Routes); }
+ protected void Application_Start() { RegisterRoutes(RouteTable.Routes); }
 
 public static void RegisterRoutes(RouteCollection routes) { routes.MapRootArea("{area}/{controller}/{action}/{id}", "RouteNameHere", new { area="area1", controller = "controller1", action = "action1", id = "" }); } 
 ```
@@ -20,12 +20,12 @@ The second solution require two steps. The first step is to tell the framework t
 
 Step1: Inside Global.asax.cs 
 ```csharp
- protected void Application\_Start() { AreaRegistration.RegisterAllAreas(); } 
+ protected void Application_Start() { AreaRegistration.RegisterAllAreas(); } 
 ```
 
 Step2: Inside every folders of every area you have create a class that inherit from AreaRegistration 
 ```csharp
- public class MyArea\_AreaRegistration : AreaRegistration { public override string AreaName { get { return "MyArea"; } }
+ public class MyArea_AreaRegistration : AreaRegistration { public override string AreaName { get { return "MyArea"; } }
 
 public override void RegisterArea(AreaRegistrationContext context) { const string nameSpace = "MyNameSpaceForThisArea"; const string areaName = "MyAreaName"; const string defautlRouteUrl = areaName + "/{controller}/{action}/{id}";
 
@@ -33,7 +33,7 @@ var defaultRouteValueDictionary = new RouteValueDictionary(new { action = "Index
 
 var dataTokensDictionary = new RouteValueDictionary(new { Namespaces = nameSpace, area = areaName, UseNamespaceFallback = false });
 
-context.Routes.Add(string.Format("{0}\_Default", areaName), new Route(defautlRouteUrl, defaultRouteValueDictionary, dataTokensDictionary, new MvcRouteHandler())); } } 
+context.Routes.Add(string.Format("{0}_Default", areaName), new Route(defautlRouteUrl, defaultRouteValueDictionary, dataTokensDictionary, new MvcRouteHandler())); } } 
 ```
 
 Few things are important. First, you shouldn't copy and paste that code in all your classes. The namespace and area will change but every other lines remain the same across all areas. Be wise and encapsulate the logic in a reusable place. Second, the new MvcRouteHandler() will be most of the time something that you will inherit from because you could set over there some specification over localization. For example, you may want to have /fr/ which if available change the current thread to the language specified in the url.

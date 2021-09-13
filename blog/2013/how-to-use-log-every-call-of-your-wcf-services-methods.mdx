@@ -81,11 +81,11 @@ if (myInstance != null) { myInstance.Dispose(); } } }
 
 
 ```csharp
- public class LoggingOperationBehavior : IOperationBehavior { private readonly ILog \_myLog;
+ public class LoggingOperationBehavior : IOperationBehavior { private readonly ILog_myLog;
 
-public LoggingOperationBehavior(ILog myLog) { \_myLog = myLog; }
+public LoggingOperationBehavior(ILog myLog) {_myLog = myLog; }
 
-public void ApplyDispatchBehavior(OperationDescription operationDescription, DispatchOperation dispatchOperation) { dispatchOperation.Invoker = new LoggingOperationInvoker(\_myLog, dispatchOperation.Invoker, dispatchOperation); } public void Validate(OperationDescription operationDescription) { } public void ApplyClientBehavior(OperationDescription operationDescription, ClientOperation clientOperation) { }
+public void ApplyDispatchBehavior(OperationDescription operationDescription, DispatchOperation dispatchOperation) { dispatchOperation.Invoker = new LoggingOperationInvoker(_myLog, dispatchOperation.Invoker, dispatchOperation); } public void Validate(OperationDescription operationDescription) { } public void ApplyClientBehavior(OperationDescription operationDescription, ClientOperation clientOperation) { }
 
 public void AddBindingParameters(OperationDescription operationDescription, BindingParameterCollection bindingParameters) { } } 
 ```
@@ -94,17 +94,17 @@ At this point, we need to invoke the log. We need to specify an invoker that wil
 
 
 ```csharp
- public class LoggingOperationInvoker : IOperationInvoker { private readonly IOperationInvoker \_baseInvoker; private readonly string \_operationName; private readonly string \_controllerName; private readonly ILog \_myLog;
+ public class LoggingOperationInvoker : IOperationInvoker { private readonly IOperationInvoker_baseInvoker; private readonly string_operationName; private readonly string_controllerName; private readonly ILog_myLog;
 
-public LoggingOperationInvoker(ILog myLog, IOperationInvoker baseInvoker, DispatchOperation operation) { \_myLog = myLog; \_baseInvoker = baseInvoker; \_operationName = operation.Name; \_controllerName = operation.Parent.Type==null?"[None]":operation.Parent.Type.FullName; } public object Invoke(object instance, object[] inputs, out object[] outputs) { \_myLog.Log("Method " + \_operationName + " of class " + \_controllerName + " called"); try { return \_baseInvoker.Invoke(instance, inputs, out outputs); } catch (Exception ex) { \_myLog.Log(ex); throw; } }
+public LoggingOperationInvoker(ILog myLog, IOperationInvoker baseInvoker, DispatchOperation operation) {_myLog = myLog;_baseInvoker = baseInvoker;_operationName = operation.Name;_controllerName = operation.Parent.Type==null?"[None]":operation.Parent.Type.FullName; } public object Invoke(object instance, object[] inputs, out object[] outputs) {_myLog.Log("Method " +_operationName + " of class " +_controllerName + " called"); try { return_baseInvoker.Invoke(instance, inputs, out outputs); } catch (Exception ex) {_myLog.Log(ex); throw; } }
 
-public object[] AllocateInputs() {return \_baseInvoker.AllocateInputs(); }
+public object[] AllocateInputs() {return_baseInvoker.AllocateInputs(); }
 
-public IAsyncResult InvokeBegin(object instance, object[] inputs, AsyncCallback callback, object state) { \_myLog.Log("Method " + \_operationName + " of class " + \_controllerName + " called"); return \_baseInvoker.InvokeBegin(instance, inputs, callback, state); }
+public IAsyncResult InvokeBegin(object instance, object[] inputs, AsyncCallback callback, object state) {_myLog.Log("Method " +_operationName + " of class " +_controllerName + " called"); return_baseInvoker.InvokeBegin(instance, inputs, callback, state); }
 
-public object InvokeEnd(object instance, out object[] outputs, IAsyncResult result) {return \_baseInvoker.InvokeEnd(instance, out outputs, result); }
+public object InvokeEnd(object instance, out object[] outputs, IAsyncResult result) {return_baseInvoker.InvokeEnd(instance, out outputs, result); }
 
-public bool IsSynchronous { get {return \_baseInvoker.IsSynchronous; } } } 
+public bool IsSynchronous { get {return_baseInvoker.IsSynchronous; } } } 
 ```
 
 This is where the log is really written. It uses the interface to log which came from Unity from the Factory. The log is written when the method is invoked.

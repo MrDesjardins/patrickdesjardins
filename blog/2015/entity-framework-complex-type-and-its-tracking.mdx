@@ -35,7 +35,7 @@ As you can see, the entity is marked as modified and I set one of the complex ty
 ```
  The Sql update just the property of the entity, not the one of the complex type. However, if we do not mark the _SubProperty2_ with _IsModified_ to False, we have a SQL that save the whole entity, with the complex type. 
 ```sql
- update [dbo].[MyEntity] set [Property1\_SubProperty1] = @0 , [Property1\_SubProperty2] = null where (([Id] = @1)) 
+ update [dbo].[MyEntity] set [Property1_SubProperty1] = @0 , [Property1_SubProperty2] = null where (([Id] = @1)) 
 ```
 
 

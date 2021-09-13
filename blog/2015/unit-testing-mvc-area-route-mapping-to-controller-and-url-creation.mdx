@@ -16,11 +16,11 @@ So before going into the detail, here is an example to unit test and Url to a co
 
 
 ```csharp
- [TestMethod] public void GivenRouteForContest\_WhenPortefolioId() { // Arrange string url = Constants.Areas.CONTEST + "/1/Portefolio/2";
+ [TestMethod] public void GivenRouteForContest_WhenPortefolioId() { // Arrange string url = Constants.Areas.CONTEST + "/1/Portefolio/2";
 
 // Act RouteData routeData = base.GetRouteDataForUrl(url).RouteData;
 
-// Assert Assert.IsNotNull(routeData); Assert.AreEqual("Portefolio", routeData.Values[Constants.RoutePortionName.CONTROLLER]); Assert.AreEqual("IndexById", routeData.Values[Constants.RoutePortionName.ACTION]); Assert.AreEqual("1", routeData.Values[Constants.RoutePortionName.ACTIVE\_CURRENT\_CONTEST\_ID]); Assert.AreEqual("2", routeData.Values[Constants.RoutePortionName.ACTIVE\_CURRENT\_PORTEFEOLIO\_ID]); } 
+// Assert Assert.IsNotNull(routeData); Assert.AreEqual("Portefolio", routeData.Values[Constants.RoutePortionName.CONTROLLER]); Assert.AreEqual("IndexById", routeData.Values[Constants.RoutePortionName.ACTION]); Assert.AreEqual("1", routeData.Values[Constants.RoutePortionName.ACTIVE_CURRENT_CONTEST_ID]); Assert.AreEqual("2", routeData.Values[Constants.RoutePortionName.ACTIVE_CURRENT_PORTEFEOLIO_ID]); } 
 ```
 
 As you can see by this unit test example, the url is defined in the arrange section. The act part is a one liner that call a method that act as a proxy to call the real **GetRouteData**. To have access to that method, all my routing tests inherit from a testing class that allows me to call. I named that class _RouteTestBase_. It has a method is running between code which clear all routes and configures the route. This is where I have setup the configuration of the area I wanted to test. This is where you may want to use the global route configuration. This class has two public methods. The first one is used for unit testing string url to route data and the second one is to test Html Url helper to generate the string url.
@@ -50,7 +50,7 @@ The test concerning the Html's helper is also pretty simple once you have this c
 
 
 ```csharp
- [TestMethod] public void ControllerUserContest\_ActionEnter() { // Arrange UrlHelper helper = base.GetUrlHelper(); var routeParameters = new RouteValueDictionary(new Dictionary<string, object>()) { {Constants.AREA, Constants.Areas.CONTEST}, {Constants.RoutePortionName.ACTIVE\_CURRENT\_CONTEST\_ID,1} };
+ [TestMethod] public void ControllerUserContest_ActionEnter() { // Arrange UrlHelper helper = base.GetUrlHelper(); var routeParameters = new RouteValueDictionary(new Dictionary<string, object>()) { {Constants.AREA, Constants.Areas.CONTEST}, {Constants.RoutePortionName.ACTIVE_CURRENT_CONTEST_ID,1} };
 
 // Act string url = helper.Action("Enter", "UserContest", routeParameters);
 
@@ -61,7 +61,7 @@ The [helper.Action](https://github.com/aspnet/Mvc/blob/9d5364cf9b5e1bd4961946ec2
 
 
 ```csharp
- public virtual TagBuilder GenerateActionLink( [NotNull] string linkText, string actionName, string controllerName, string protocol, string hostname, string fragment, object routeValues, object htmlAttributes) { var url = \_urlHelper.Action(actionName, controllerName, routeValues, protocol, hostname, fragment); return GenerateLink(linkText, url, htmlAttributes); } 
+ public virtual TagBuilder GenerateActionLink( [NotNull] string linkText, string actionName, string controllerName, string protocol, string hostname, string fragment, object routeValues, object htmlAttributes) { var url =_urlHelper.Action(actionName, controllerName, routeValues, protocol, hostname, fragment); return GenerateLink(linkText, url, htmlAttributes); } 
 ```
 
 The code above is from Asp.Net MVC framework which shows what the _GenerateActionLink_ is using the url helper Action method. So, as you can see, once you have the inherit base class, it is a matter of a single calls and some assertion to test all your routes. I strongly suggest that for each of your routes you have a single unit test to avoid any huge impact on your website.

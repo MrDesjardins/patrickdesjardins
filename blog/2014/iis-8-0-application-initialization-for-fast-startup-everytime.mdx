@@ -14,7 +14,7 @@ With IIS 7.5 and after, it is possible to select the **Start Mode**. The Start m
 To enable the preloaded, a modification to the machine configuration is required. IIS 8 does not have any screen that allow you to enable it. The file is located here : C:\\Windows\\System32\\inetsrv\\config\\applicationHost.config 
 
 ```xml 
-<sites> <site name="Default Web Site" id="1"> <application path="/"> <virtualDirectory path="/" physicalPath="%SystemDrive%\\inetpub\\wwwroot" /> </application> <application path="/TestToDelete" applicationPool="II8NoSleep" preloadEnabled="true"> <virtualDirectory path="/" physicalPath="C:\\inetpub\\wwwroot" /> </application> <bindings> <binding protocol="http" bindingInformation="\*:80:" /> </bindings> </site> 
+<sites> <site name="Default Web Site" id="1"> <application path="/"> <virtualDirectory path="/" physicalPath="%SystemDrive%\\inetpub\\wwwroot" /> </application> <application path="/TestToDelete" applicationPool="II8NoSleep" preloadEnabled="true"> <virtualDirectory path="/" physicalPath="C:\\inetpub\\wwwroot" /> </application> <bindings> <binding protocol="http" bindingInformation="*:80:" /> </bindings> </site> 
 ```
  The line 6 of the previous XML is the one you want. In fact, you need to search for you site which is under the sites XML element. Then, you see the application path that need to be modified. The "preloadedEnabled=true" is the attribute to add. This file needs to be edited with administration privileges.
 

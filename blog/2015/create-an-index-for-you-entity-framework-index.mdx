@@ -9,7 +9,7 @@ Either you are working with a field that require a fast access or if the field i
 
 
 ```csharp
- this.Property(d => d.Date) .HasColumnAnnotation("Index" , new IndexAnnotation( new IndexAttribute("IX\_Date") {IsUnique = true} ) ); 
+ this.Property(d => d.Date) .HasColumnAnnotation("Index" , new IndexAnnotation( new IndexAttribute("IX_Date") {IsUnique = true} ) ); 
 ``` The code above set for a _Date_ column an **index**. It creates a IndexAnnotation which create a unique index attribute.
 
 This result into an Index inside the migration class with a unique property set to true. 

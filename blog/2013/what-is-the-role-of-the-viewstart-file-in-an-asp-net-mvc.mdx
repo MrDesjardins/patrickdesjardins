@@ -9,20 +9,20 @@ Since version 3.0 of the Asp.Net MVC framework, you can use the ViewStart file i
 
 The ViewStart files are read from the root of the view folder to the more deep folder of the view called. So, if you are using an area which have several folder for different view, you can have a ViewStart inside the "Views" folder and one inside the "Views/Folder1". Asp.Net MVC will read the ViewStart from the "Views" folder and then the one inside "Views/Folder1".
 
-An other characteristic of the ViewStart is that this one is called "\_ViewStart.cshtml". It must start with an underscore and use the .cshtml extension.
+An other characteristic of the ViewStart is that this one is called "_ViewStart.cshtml". It must start with an underscore and use the .cshtml extension.
 
-The role is to avoid to repeat some code that must be the same between views. For example, the layout for the view (the master page). Instead of defining the the top of each view what layout to use, you can simply define a layout at the root of your views folder a file \_ViewStart.cshtml and put :
+The role is to avoid to repeat some code that must be the same between views. For example, the layout for the view (the master page). Instead of defining the the top of each view what layout to use, you can simply define a layout at the root of your views folder a file_ViewStart.cshtml and put :
 
 
 ```csharp
- @{ Layout = &quot;~/Views/Shared/\_MasterPage.cshtml&quot;; } 
+ @{ Layout = &quot;~/Views/Shared/_MasterPage.cshtml&quot;; } 
 ```
 
 If you need a different layout for a specific view, simply set the layout inside the view or inside a ViewStart inside the folder of the view. Since the order of read is from the root of the Views folder to its subdirectory, this last ViewStart will set the Layout property and override the one defined previously.
 
 If you are getting an exception saying something about cast like the following error it's because you are using the ViewStart outside the Views folder.
 
-> Unable to cast object of type 'ASP.\_Page\_Areas\_Admin\_\_ViewStart\_cshtml' to type 'System.Web.WebPages.StartPage
+> Unable to cast object of type 'ASP._Page_Areas_Admin__ViewStart_cshtml' to type 'System.Web.WebPages.StartPage
 
 From there, you are limited about what you can do. But, you have access to the ViewContext.TempData which let you set variable values which can be validated in further level. For example, you can set something at the root of the ViewStart and redefine, or add if it's a list, data in a further level. At the end, in the Layout you could read the TempData and act in consequence.
 

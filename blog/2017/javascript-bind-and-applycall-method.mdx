@@ -18,12 +18,12 @@ f1.call(myThisRef, param1, param2, param3); // or f1.apply(myThisRef, [param1, p
 ``` 
 
 
-How can this be useful? This can be useful to change the context of a piece of code to access different member without assigning the values. For example, in the following code we have the same function and by calling apply or bind we can assign "this" to a complete new object that has what is using by "this", in that case the \_name.
+How can this be useful? This can be useful to change the context of a piece of code to access different member without assigning the values. For example, in the following code we have the same function and by calling apply or bind we can assign "this" to a complete new object that has what is using by "this", in that case the_name.
 
 ```typescript
-var hero = { \_name: 'John Doe', getName: function (){ return this.\_name; } };
+var hero = {_name: 'John Doe', getName: function (){ return this._name; } };
 
-console.log(hero.getName()); // John Do // --- var hero2= { \_name: 'Patrick' } var getNameMethod = hero.getName;
+console.log(hero.getName()); // John Do // --- var hero2= {_name: 'Patrick' } var getNameMethod = hero.getName;
 
 console.log(getNameMethod.apply(hero2)); // Patrick console.log(getNameMethod.bind(hero2)()); // Patrick 
 ``` 

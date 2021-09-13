@@ -37,7 +37,7 @@ So, what it does is that it takes the object html Attribute and convert it into 
 ```csharp
  public static RouteValueDictionary AnonymousObjectToHtmlAttributes(object htmlAttributes) { RouteValueDictionary result = new RouteValueDictionary();
 
-if (htmlAttributes != null) { foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(htmlAttributes)) { result.Add(property.Name.Replace('\_', '-'), property.GetValue(htmlAttributes)); } }
+if (htmlAttributes != null) { foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(htmlAttributes)) { result.Add(property.Name.Replace('_', '-'), property.GetValue(htmlAttributes)); } }
 
 return result; } 
 ```

@@ -37,11 +37,26 @@ However, with TypeScript 3.0rc, I had an issue with the definition file. It has 
 The next step is to add the AutoSizer and the List component from the library to the existing code. Few important details. First, you must have a "ref" to the list. The reference gives us a pointer to force redraw when we know the user change the height of an existing component. We will see the code later. Second, we must provide a function that will return the row height. The property "rowHeight" is a must in the situation where the row can change depending of some characteristic of this one. In my case, the row will be either 15px or 300px depending if this one is collapsed or expanded.
 
 ```typescript
-<ul className="ConsoleMessage-items"> <AutoSizer> {({ width, height }) => ( <List ref={r => (this.list = r)} className="ConsoleMessage-virtual-list" height={height} rowCount={this.state.filteredData.length} rowHeight={p => this.calculateRowHeight(p)} rowRenderer={p => this.renderRow(p)} width={width} /> )} </AutoSizer> </ul> 
+<ul className="ConsoleMessage-items"> 
+  <AutoSizer> 
+    {
+      ({ width, height }) => ( 
+        <List 
+          ref={r => (this.list = r)} 
+          className="ConsoleMessage-virtual-list" 
+          height={height} 
+          rowCount={this.state.filteredData.length} 
+          rowHeight={p => this.calculateRowHeight(p)} 
+          rowRenderer={p => this.renderRow(p)} width={width} /> 
+        )
+    } 
+  </AutoSizer> 
+</ul> 
 ``` 
 
 
-The AutoSizer component has an unusual way to use its children by allowing a width and a height. You can see an extract of the definition file under this paragraph. The Size type has a width and a height determined by the AutoSizer. ```typescript
+The AutoSizer component has an unusual way to use its children by allowing a width and a height. You can see an extract of the definition file under this paragraph. The Size type has a width and a height determined by the AutoSizer. 
+```typescript
 children: (props: Size) => React.ReactNode; 
 ``` 
 
@@ -49,37 +64,71 @@ children: (props: Size) => React.ReactNode;
 The List component is wrapping our rows and will generate one row for every rowCount provided in the properties. It means that I had to modify my code because I was mapping my collection to render a ConsoleMessagesLine and that now it will to a for-loop and I'll have to indicate by index what element to render.
 
 ```typescript
-<ul className="ConsoleMessage-items"> {this.props.listMessages .filter((m) => this.logics.filterConsoleMessages(m, this.state.consoleMessageOptions.performance, this.state.consoleMessageOptions.size)) .map((m: MessageClient) => <ConsoleMessagesLine key={this.logics.getMessageKey(m)} message={m} listMessages={this.props.listMessages} demoModeEnabled={this.props.demoModeEnabled} />) } </ul> 
-``` 
+<ul className="ConsoleMessage-items"> {
+  this.props.listMessages.filter((m) => this.logics
+    .filterConsoleMessages(m, this.state.consoleMessageOptions.performance, this.state.consoleMessageOptions.size))
+    .map((m: MessageClient) => <ConsoleMessagesLine key={this.logics.getMessageKey(m)} 
+        message={m} listMessages={this.props.listMessages} 
+        demoModeEnabled={this.props.demoModeEnabled} />) 
+  } 
+</ul> 
+```
 
 
 The first modification from the code above was that I was filtering in the rendering. Instead, I have to have this list somewhere to be sure to be able to refer by index to it. I leveraged the static React function to derive from the props into the state of the components a filtered collection.
 
 ```typescript
-public static getDerivedStateFromProps( props: ConsoleMessagesProps, state: ConsoleMessagesState ): ConsoleMessagesState { const allData = props.listMessages.filter(m => ConsoleMessages.logics.filterConsoleMessages( m, state.consoleMessageOptions.performance, state.consoleMessageOptions.size ) ); return { ...state, filteredData: allData }; } 
+public static getDerivedStateFromProps( props: ConsoleMessagesProps, state: ConsoleMessagesState ): ConsoleMessagesState { 
+  const allData = props.listMessages.filter(m => 
+    ConsoleMessages.logics.filterConsoleMessages( m, state.consoleMessageOptions.performance, state.consoleMessageOptions.size ) ); 
+  return { ...state, filteredData: allData }; 
+} 
 ``` 
 
 
 The next step was to create two functions. One for the dynamic height determination of each row and one to the actual render function of a single line that will use the data we just stored in the component's state. The dynamic height is a single line function, that use on its turn the list as well.
 
 ```typescript
-private calculateRowHeight(params: Index): number { return this.openMessages[this.state.filteredData[params.index].uuid] === undefined ? 15 : 300; } 
+private calculateRowHeight(params: Index): number { 
+  return this.openMessages[this.state.filteredData[params.index].uuid] === undefined ? 15 : 300; 
+} 
 ``` 
 
 
 As you can see, it goes into the filtered list, it uses the parameter that has an index and determines whether the unique identifier of the object is in a map that we populate when the user clicks the row. I have a uuid field, but it could be anything that is proper to your logic and code. For the curious about the "openMessages" map, it is a private member of the component that adds and remove element depending on the toggle of each row. Small but important detail, because we are modifying the height of an element of the virtualization, we must expliclity and manually invoke a recalculus of the rows. This is possible by calling "recomputeRowHeights" from the list. The reference to the list is handy because we can invoked in the function that toggle the height.
 
 ```typescript
-private lineOnClick(msg: MessageClient, isOpen: boolean): void { const unique = msg.uuid; if (isOpen) { this.openMessages[unique] = unique; } else { delete this.openMessages[unique]; } if (this.list !== null) { this.list.recomputeRowHeights(); } } 
+private lineOnClick(msg: MessageClient, isOpen: boolean): void { 
+  const unique = msg.uuid; 
+  if (isOpen) { 
+    this.openMessages[unique] = unique; 
+  } else { 
+    delete this.openMessages[unique]; 
+  } 
+  if (this.list !== null) { 
+    this.list.recomputeRowHeights(); 
+  } 
+} 
 ``` 
 
 
 The last crucial piece is the render of the element. Similarly to the function to determine the height of the row, the parameter gives the index of the element to render.
 
 ```typescript
-private renderRow(props: ListRowProps): React.ReactNode { const index = props.index; const m = this.state.filteredData[index]; return ( <ConsoleMessagesLine key={m.uuid} style={props.style} message={m} listMessages={this.props.listMessages} demoModeEnabled={this.props.demoModeEnabled} onClick={(msg, o) => this.lineOnClick(msg, o)} isOpen={this.openMessages[m.uuid] !== undefined} charTrimmedFromUrl={this.state.consoleMessageOptions.charTrimmedFromUrl} /> ); } 
+private renderRow(props: ListRowProps): React.ReactNode { 
+  const index = props.index; 
+  const m = this.state.filteredData[index]; 
+  return ( <ConsoleMessagesLine key={m.uuid} 
+          style={props.style} 
+          message={m} 
+          listMessages={this.props.listMessages} 
+          demoModeEnabled={this.props.demoModeEnabled} 
+          onClick={(msg, o) => this.lineOnClick(msg, o)} 
+          isOpen={this.openMessages[m.uuid] !== undefined} 
+          charTrimmedFromUrl={this.state.consoleMessageOptions.charTrimmedFromUrl} /> 
+          ); 
+} 
 ``` 
-
 
 The code is very similar to my code before the virtualization modification. However, it has to fetch the data from the filtered list by index.
 

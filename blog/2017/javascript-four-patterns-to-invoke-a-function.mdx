@@ -17,7 +17,7 @@ var f1 = function(){console.log("F1")}; f1(); window.f1(); function f2(){console
 However, if a function is not bound to an object but created withing a function, this one belong to the function. Still, it is not attached to anything.
 
 ```typescript
-var myObject = { function2 : function(){ console.log("Function2"); var function2\_1 = function(){ console.log("Function2\_1"); }; function2\_1(); } }; myObject.function2(); 
+var myObject = { function2 : function(){ console.log("Function2"); var function2_1 = function(){ console.log("Function2_1"); }; function2_1(); } }; myObject.function2(); 
 ``` 
 
 

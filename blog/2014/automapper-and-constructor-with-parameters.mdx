@@ -18,7 +18,7 @@ Second, when you are using AutoMapper to map between classes, you must specify e
 
 
 ```csharp
- var model = AutoMapper.Mapper.Map<ContestEditableViewModel, Model.Entities.Contest.Contest>(viewModel , options=>options.ConstructServicesUsing( t=>new Model.Entities.Contest.Contest(yourFirstParameter, yourSecondParameter, /\*and so on\*/) ) ); 
+ var model = AutoMapper.Mapper.Map<ContestEditableViewModel, Model.Entities.Contest.Contest>(viewModel , options=>options.ConstructServicesUsing( t=>new Model.Entities.Contest.Contest(yourFirstParameter, yourSecondParameter, /*and so on*/) ) ); 
 ```
 
 This way, you can have classes that have parameters and control how to provided them values.

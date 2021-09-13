@@ -14,7 +14,7 @@ This is an example of a good practice method that should been in a data access l
 ```csharp
  public class Customer { public string Id { get; set; } public string Name { get; set; } public bool IsNew { get; set; } }
 
-public partial class \_Default : System.Web.UI.Page { protected void Page\_Load(object sender, EventArgs e) { List<Customer> customers = new List<Customer>(){ new Customer(){Id="ID001", Name="Name001", IsNew=true} , new Customer(){Id="ID002", Name="Name002", IsNew=true} , new Customer(){Id="ID003", Name="Name003", IsNew=true} }; SaveCustomers(customers); }
+public partial class_Default : System.Web.UI.Page { protected void Page_Load(object sender, EventArgs e) { List<Customer> customers = new List<Customer>(){ new Customer(){Id="ID001", Name="Name001", IsNew=true} , new Customer(){Id="ID002", Name="Name002", IsNew=true} , new Customer(){Id="ID003", Name="Name003", IsNew=true} }; SaveCustomers(customers); }
 
 public int SaveCustomers(IEnumerable<Customer> customers) { ConnectionStringSettings connectionStringSettings = ConfigurationManager.ConnectionStrings["ApplicationServices"];
 
@@ -38,7 +38,7 @@ To create a transaction you need to get it from the DbCommand. The reason is sim
 - ReadUncommitted
 This is a very weak transaction and should not be used. In fact, this type doesn't lock anything in the database. It's possible that the data changes or be deleted by the time the commit is done. This can lead to unpredictable reaction. This type of isolation will produce for a Select statement this query: 
 ```sql
- SELECT \* FROM CUSTOMERS WITH (NOLOCK) 
+ SELECT * FROM CUSTOMERS WITH (NOLOCK) 
 ```
 - ReadCommitted
 This one try to have a share-lock on the data. If it succeed, it will protect any change from the external into those values.- RepeatableRead

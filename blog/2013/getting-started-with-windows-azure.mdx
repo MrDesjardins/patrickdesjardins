@@ -58,14 +58,14 @@ However, you might get some error like this one :
 This is because you might have in you create table statement "ON [PRIMARY]" keywork which is not supported.
 
 ```sql
-CREATE TABLE [dbo].[Exercises]( [Id] [int] IDENTITY(1,1) NOT NULL, [Name\_French] [nvarchar](max) NULL, [Name\_English] [nvarchar](max) NULL, [Muscle\_Id] [int] NULL, CONSTRAINT [PK\_dbo.Exercises] PRIMARY KEY CLUSTERED ( [Id] ASC )WITH (PAD\_INDEX = OFF, STATISTICS\_NORECOMPUTE = OFF, IGNORE\_DUP\_KEY = OFF, ALLOW\_ROW\_LOCKS = ON, ALLOW\_PAGE\_LOCKS = ON) ON [PRIMARY] ) ON [PRIMARY] TEXTIMAGE\_ON [PRIMARY] 
+CREATE TABLE [dbo].[Exercises]( [Id] [int] IDENTITY(1,1) NOT NULL, [Name_French] [nvarchar](max) NULL, [Name_English] [nvarchar](max) NULL, [Muscle_Id] [int] NULL, CONSTRAINT [PK_dbo.Exercises] PRIMARY KEY CLUSTERED ( [Id] ASC )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY] ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY] 
 ```
 
 
 Should become
 
 ```sql
-CREATE TABLE [dbo].[Exercises]( [Id] [int] IDENTITY(1,1) NOT NULL, [Name\_French] [nvarchar](max) NULL, [Name\_English] [nvarchar](max) NULL, [Muscle\_Id] [int] NULL, CONSTRAINT [PK\_dbo.Exercises] PRIMARY KEY CLUSTERED ( [Id] ASC ) ) 
+CREATE TABLE [dbo].[Exercises]( [Id] [int] IDENTITY(1,1) NOT NULL, [Name_French] [nvarchar](max) NULL, [Name_English] [nvarchar](max) NULL, [Muscle_Id] [int] NULL, CONSTRAINT [PK_dbo.Exercises] PRIMARY KEY CLUSTERED ( [Id] ASC ) ) 
 ```
 
 

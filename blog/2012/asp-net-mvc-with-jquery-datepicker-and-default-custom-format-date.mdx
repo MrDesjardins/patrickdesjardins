@@ -12,14 +12,14 @@ The whole process of adding JQuery Date Picker result to download JQuery UI and 
 
 ![](images/datepickerjquery.png)
 
-First step, in the layout you need to add JQuery UI. If you are using Asp.Net MVC 4.0+ you can use the Bundles. This should be located inside the App\_Start folder of the project. The configuration is inside BundleConfig.cs.
+First step, in the layout you need to add JQuery UI. If you are using Asp.Net MVC 4.0+ you can use the Bundles. This should be located inside the App_Start folder of the project. The configuration is inside BundleConfig.cs.
 
 
 ```csharp
  bundles.Add(new ScriptBundle("~/bundles/jqueryui").Include( "~/Scripts/jquery-ui-{version}.js")); 
 ```
 
-If you are getting JQuery UI with NuGet package, this will be automatically setup for you. Do not forget to add inside your masterpage (by default : \_layout.cshtml) the use of this bundle. 
+If you are getting JQuery UI with NuGet package, this will be automatically setup for you. Do not forget to add inside your masterpage (by default :_layout.cshtml) the use of this bundle. 
 ```csharp
  @Scripts.Render("~/bundles/jqueryui") 
 ```

@@ -38,8 +38,8 @@ The next CSS style is what round up the button into a perfect circle. This is al
      width: 62px;     
      border:none;    
      background-color:#6FB583;     
-     border-radius: 62px;        /\*Transform the square into rectangle, sync that value with the width/height\*/     
-     transition: all 300ms;      /\*Animation to close the button (circle)\*/     box-shadow:2px 2px 5px rgb(25, 73, 15);     
+     border-radius: 62px;        /*Transform the square into rectangle, sync that value with the width/height*/     
+     transition: all 300ms;      /*Animation to close the button (circle)*/     box-shadow:2px 2px 5px rgb(25, 73, 15);     
      cursor:pointer; 
 }
 
@@ -65,28 +65,28 @@ The hover is where we specify the size of the final stage of the button. We also
 
 The next style block is about the long text effect. We want this text to appear slowly. We need to tweak some properties to be sure that the vertical scroll-bar does not get affected.
 
-/\*     Long text appears slowly with an animation. That code prepare the animation by hidding the text.     The use of display is not there because it does not work well with CSS3 animation. \*/ 
-.right-corder-container .right-corder-container-button .long-text {     transition: opacity 1000ms; /\*Only the text fadein/fadeout is animated\*/     
-opacity:0;                /\*By default we do not display the text, we want the text to fade in\*/     
+/*     Long text appears slowly with an animation. That code prepare the animation by hidding the text.     The use of display is not there because it does not work well with CSS3 animation. */ 
+.right-corder-container .right-corder-container-button .long-text {     transition: opacity 1000ms; /*Only the text fadein/fadeout is animated*/     
+opacity:0;                /*By default we do not display the text, we want the text to fade in*/     
 color:white;     
 white-space: nowrap;     
-font-size: 0;             /\*Set to 0 to not have overflow on the right of the browser\*/     
-width: 0;                 /\*Set to 0 to not have overflow on the right of the browser\*/     
-margin:0;                 /\*Set to 0 to not have overflow on the right of the browser\*/ }
+font-size: 0;             /*Set to 0 to not have overflow on the right of the browser*/     
+width: 0;                 /*Set to 0 to not have overflow on the right of the browser*/     
+margin:0;                 /*Set to 0 to not have overflow on the right of the browser*/ }
 
   
 This is how we show the long text. We need to add a delay in the transition opacity because we do not want to start showing the text too early. Mostly because the container size is animated and not big enough to receive the text yet.
 
- /\*     Animation to have a text that appear progressively. We need to play with a delay     on the width and the font-size to not have the browser have the text appears on the right     side of the browser view port. This has the side-effect of having an horizontal bar. \*/ 
+ /*     Animation to have a text that appear progressively. We need to play with a delay     on the width and the font-size to not have the browser have the text appears on the right     side of the browser view port. This has the side-effect of having an horizontal bar. */ 
 .right-corder-container .right-corder-container-button .long-text.show-long-text{   
     transition: opacity 700ms,               
-    width 1ms linear 270ms,       /\*two thirds of the animation on the container width\*/               
-    font-size 1ms linear 270ms;   /\*two thirds of the animation on the container width\*/   
+    width 1ms linear 270ms,       /*two thirds of the animation on the container width*/               
+    font-size 1ms linear 270ms;   /*two thirds of the animation on the container width*/   
     opacity:1;   
-    margin-top: 2px;                          /\*Center the position vertically\*/   
-     margin-left: 65px;                        /\*Center between the + and the right end side\*/   
-    font-size: 20px;                          /\*Text size, cannot be defined initially without moving the scrollbar\*/   
-    width: auto;                              /\*Required to be set with a delay (see animation) to not have scrollbar. Delay is to wait container to size up\*/ 
+    margin-top: 2px;                          /*Center the position vertically*/   
+     margin-left: 65px;                        /*Center between the + and the right end side*/   
+    font-size: 20px;                          /*Text size, cannot be defined initially without moving the scrollbar*/   
+    width: auto;                              /*Required to be set with a delay (see animation) to not have scrollbar. Delay is to wait container to size up*/ 
 }
 
   

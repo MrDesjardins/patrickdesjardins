@@ -54,11 +54,11 @@ public ActionResult Index() { }
 
 [HttpPost] public ActionResult Edit(WorkoutViewModel viewModel) { } }
 
-public abstract class BaseController<TModel, TViewModel>:Controller { private readonly IMapperFactory \_mapperFactory; protected TModel Model { get; private set; }
+public abstract class BaseController<TModel, TViewModel>:Controller { private readonly IMapperFactory_mapperFactory; protected TModel Model { get; private set; }
 
-protected BaseController(IMapperFactory mapperFactory) { \_mapperFactory = mapperFactory; }
+protected BaseController(IMapperFactory mapperFactory) {_mapperFactory = mapperFactory; }
 
-protected override void OnActionExecuting(ActionExecutingContext filterContext) { base.OnActionExecuting(filterContext); if(filterContext.ActionParameters.Any()) { var possibleViewModel = filterContext.ActionParameters.FirstOrDefault(x => x.Value.GetType() == typeof(TViewModel)); if (possibleViewModel.Value!=null) { var viewModel = (TViewModel) possibleViewModel.Value; var model = (TModel) Activator.CreateInstance(typeof (TModel)); Model = \_mapperFactory.Map(viewModel, model); } } } } 
+protected override void OnActionExecuting(ActionExecutingContext filterContext) { base.OnActionExecuting(filterContext); if(filterContext.ActionParameters.Any()) { var possibleViewModel = filterContext.ActionParameters.FirstOrDefault(x => x.Value.GetType() == typeof(TViewModel)); if (possibleViewModel.Value!=null) { var viewModel = (TViewModel) possibleViewModel.Value; var model = (TModel) Activator.CreateInstance(typeof (TModel)); Model =_mapperFactory.Map(viewModel, model); } } } } 
 ```
 
 Anytime, inside the Update or Create, instead of using the viewModel parameter which is of WorkoutViewModel type, you can use the base.Model. This way to code give us few advantages. First, the controller is clean. No mapping is done on any concrete controller. Second, we still have access to the view model if required. Third, we do not repeat work on all controllers.
@@ -72,7 +72,7 @@ So, we need to modify the WorkoutController to have a service reference.
  public class WorkoutController : BaseController<Workout, WorkoutViewModel> { public WorkoutController(IMapperFactory mapperFactory):base(mapperFactory) { } //... 
 ``` will become: 
 ```csharp
- public class WorkoutController : BaseController<Workout, WorkoutViewModel> { private readonly IWorkoutService \_service; public WorkoutController(IWorkoutService service, IMapperFactory mapperFactory):base(mapperFactory) { \_service = service; } //... 
+ public class WorkoutController : BaseController<Workout, WorkoutViewModel> { private readonly IWorkoutService_service; public WorkoutController(IWorkoutService service, IMapperFactory mapperFactory):base(mapperFactory) {_service = service; } //... 
 ```
 
 As you can see, the IWorkoutService has been added. This will give us the possibility to inject the service into the controller. Every controller will have its own service.

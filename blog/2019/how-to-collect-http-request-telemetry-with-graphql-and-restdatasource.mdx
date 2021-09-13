@@ -27,8 +27,8 @@ The _didReceiveResponse_ function gets a response, but also the request object. 
 
 public didReceiveResponse(response: Response, request: Request): Promise<any> {
     return super.didReceiveResponse(response, request).then(result => {
-        const requestId = request.headers.get(HEADER\_REQUEST\_UUID);
-        const startTime = request.headers.get(HEADER\_START\_TIME);
+        const requestId = request.headers.get(HEADER_REQUEST_UUID);
+        const startTime = request.headers.get(HEADER_START_TIME);
         const httpRequest = this.context.stats.httpRequests.find(d => d.requestUuid === requestId);
         if (httpRequest !== undefined && startTime !== null) {
             const totalNanoSecondsElapsed = process.hrtime();

@@ -23,12 +23,12 @@ The Jenkins' execute Shell script install NPM because it must run the tool which
 
 ```
 npm install
-git clone ssh://git@youServer/yourGraphQLServer.git graphql\_repo
-cd graphql\_repo
+git clone ssh://git@youServer/yourGraphQLServer.git graphql_repo
+cd graphql_repo
 npm install
 npm run generateunifiedschema
 cd ..
-./node\_modules/.bin/graphql-inspector validate ./src/\*\*/\*.graphql ./graphql/unifiedSchema.graphql
+./node_modules/.bin/graphql-inspector validate ./src/**/*.graphql ./graphql/unifiedSchema.graphql
 ``` 
 
 A special mention, the _graphql-inspector_ does not work well (in my experience) with analyzing .ts and.tsx files. However, it worked perfectly when I moved the GraphQL query into .graphql files.

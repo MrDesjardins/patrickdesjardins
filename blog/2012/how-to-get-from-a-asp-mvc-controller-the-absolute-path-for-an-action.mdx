@@ -18,7 +18,7 @@ The first parameter is the action name to which you want to have the url. The se
 
 We can take a look inside Asp.Net MVC source code and see that the Action method with 4 parameters call GenerateURL with a lot of parameters. 
 ```csharp
- public string Action(string actionName, string controllerName, object routeValues, string protocol) { return GenerateUrl(null /\* routeName \*/, actionName, controllerName, protocol, null /\* hostName \*/, null /\* fragment \*/, new RouteValueDictionary(routeValues), RouteCollection, RequestContext, true /\* includeImplicitMvcValues \*/); } 
+ public string Action(string actionName, string controllerName, object routeValues, string protocol) { return GenerateUrl(null /* routeName */, actionName, controllerName, protocol, null /* hostName */, null /* fragment */, new RouteValueDictionary(routeValues), RouteCollection, RequestContext, true /* includeImplicitMvcValues */); } 
 ```
 
 The GenerateUrl method check the protocol and if not NULL will build the absolute URL. 

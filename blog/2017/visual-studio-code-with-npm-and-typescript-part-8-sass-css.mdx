@@ -16,7 +16,7 @@ The first step is to get the gulp sass package. You need to install the dependen
 The next step is to create a step that will take all you scss files, pipe the files into the sass compiler and pipe the output into your output folder, where you will references them from your HTML file to serve the style. Here is the Gulp task.
 
 ```typescript
-gulp.task('scss', function() { gulp.src('sass/\*\*/\*.scss') .pipe(sass().on('error', sass.logError)) .pipe(gulp.dest('./css/')); }); 
+gulp.task('scss', function() { gulp.src('sass/**/*.scss') .pipe(sass().on('error', sass.logError)) .pipe(gulp.dest('./css/')); }); 
 ``` 
 
 

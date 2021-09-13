@@ -27,14 +27,14 @@ This lead to the possibility to have a variable that is not uniform in its size,
 
 For the jagged array, to loop through all items, we must check for each array. This is require to get its size because it can change. 
 ```csharp
- for (int i = 0; i < myDoubleArray.Length; i++) { for (int j = 0; j < myDoubleArray[i].Length; j++) { myDoubleArray[i][j] = i \* j; } } 
+ for (int i = 0; i < myDoubleArray.Length; i++) { for (int j = 0; j < myDoubleArray[i].Length; j++) { myDoubleArray[i][j] = i * j; } } 
 ```
 
 For a rectangle array, it's not required and we can just check the first item lenght.
 
 
 ```csharp
- for (int i = 0; i < mySingleArrayActingAsTwoDimensional.GetLength(0); i++) { for (int j = 0; j < mySingleArrayActingAsTwoDimensional.GetLength(1); j++) { mySingleArrayActingAsTwoDimensional[i, j] = i \* j; } } 
+ for (int i = 0; i < mySingleArrayActingAsTwoDimensional.GetLength(0); i++) { for (int j = 0; j < mySingleArrayActingAsTwoDimensional.GetLength(1); j++) { mySingleArrayActingAsTwoDimensional[i, j] = i * j; } } 
 ```
 
 Finally, you can create jagged array with a short nomenclature.

@@ -24,14 +24,14 @@ It might look like a lot of code, but in reality, you won't touch that code at a
 At that point, to create a new action consist of few steps but not too many keystrokes.
 
 First, you still need a constant. The constant is of a type of a string literal (not a string) and must be unique by action. This will be used later to narrow the type down to the payload of the action itself. ```typescript
-export const ACTION\_1 = "ACTION\_1"; 
+export const ACTION_1 = "ACTION_1"; 
 ``` 
 
 
 The second step is to create the action with one of the two methods above. One method creates an action with a payload while the second one creates an action without a payload. Something interesting is that it is more convenient to gather all your action into a constant. This way, later, we will leverage the "ReturnType" to get all action type from the action creator function. For example, the example we are building, the action returns a unique type that uses the string literal of the action's constant.
 
 ```typescript
-export const SharedActions = { action1: createActionPayload<typeof ACTION\_1, string>(ACTION\_1), }; 
+export const SharedActions = { action1: createActionPayload<typeof ACTION_1, string>(ACTION_1), }; 
 ``` 
 
 
@@ -42,7 +42,7 @@ type ReducerAcceptedActions = ActionsUnion<typeof SharedActions & typeof OtherGr
 
 export function oneReducerHere( state: State = initialState(), action: ReducerAcceptedActions): State {
 
-switch (action.type) { case ACTION\_1: { // ... } } } 
+switch (action.type) { case ACTION_1: { // ... } } } 
 ``` 
 
 

@@ -7,10 +7,10 @@ categories:
 
 In the previous article, we got introduced to NodeJs and npm. This time, we will create two basic TypeScript file and have them to be executed by the main HTML file.
 
-We need a HTML file to host the JavaScript files produced by TypeScript. We could directly load the JavaScript produced by a script tag in the HTML, but that won't be good in the long run. The problem doing so is that the first script will refer the second script by module which will need require with EcmaScript 5 and below. While the specifications are out for EcmaScript 6, and that we can use the syntax with TypeScript, the output resulted must be downgraded in EcmaScript 5 which require an AMD loader, like require.js. TypeScript alone can generate JavaScript files at the right place, but JavaScript files from npm package will be located at the wrong place : in node\_modules. Ideally, we want to take the needed one into a specific path, for example under "vendors" folder. First step, let's configure TypeScript to generate the JavaScript file into "output" folder. To do so we need to have a tsconfig.json that specify few options. Options are read by Typescript when tsc command line is executed in the folder that has the json file. Before going any further, make sure you have installed TypeScript and have in your path the bin folder. At this time, I have downloaded TypeScript in the official website and have in my machine path : C:\\Program Files (x86)\\Microsoft SDKs\\TypeScript\\2.1.
+We need a HTML file to host the JavaScript files produced by TypeScript. We could directly load the JavaScript produced by a script tag in the HTML, but that won't be good in the long run. The problem doing so is that the first script will refer the second script by module which will need require with EcmaScript 5 and below. While the specifications are out for EcmaScript 6, and that we can use the syntax with TypeScript, the output resulted must be downgraded in EcmaScript 5 which require an AMD loader, like require.js. TypeScript alone can generate JavaScript files at the right place, but JavaScript files from npm package will be located at the wrong place : in node_modules. Ideally, we want to take the needed one into a specific path, for example under "vendors" folder. First step, let's configure TypeScript to generate the JavaScript file into "output" folder. To do so we need to have a tsconfig.json that specify few options. Options are read by Typescript when tsc command line is executed in the folder that has the json file. Before going any further, make sure you have installed TypeScript and have in your path the bin folder. At this time, I have downloaded TypeScript in the official website and have in my machine path : C:\\Program Files (x86)\\Microsoft SDKs\\TypeScript\\2.1.
 
 ```typescript
-{ "compilerOptions": { "sourceMap": true, "target": "es6", "module": "amd", "outDir": "./output" }, "include": [ "src/\*\*/\*" ], "exclude": [ "node\_modules", "\*\*/\*.spec.ts" ] } 
+{ "compilerOptions": { "sourceMap": true, "target": "es6", "module": "amd", "outDir": "./output" }, "include": [ "src/**/*" ], "exclude": [ "node_modules", "**/*.spec.ts" ] } 
 ``` 
 
 
@@ -22,15 +22,15 @@ The next step is to use these scripts in Html. But foremost, two scripts will be
 <script src="/vendors/require.js"></script> <script src="/vendors/jquery/jquery.js"></script> <script> requirejs.config({ //Every script without folder specified before name will be looked in output folder baseUrl: 'output/', paths: { //Every script paths that start with "vendors/" will get loaded from the folder in string vendors: 'vendors' } }); //Startup file requirejs(['file1']); </script> </html> 
 ``` 
 
-To make it more realistic, let's change the FileToInclude.js to use JQuery. Since JQuery uses the dollar sign and that this one is not known by TypeScript, it will cause problem. We need to shim the JavaScript library to let know to TypeScript about the JavaScript. To do, we need another npm package called "typings". To use Typings, we will need to invoke Typings, hence we need to make sure we can execute node\_modules executable so we need to make the node\_modules (global one or the project one) in your path.
+To make it more realistic, let's change the FileToInclude.js to use JQuery. Since JQuery uses the dollar sign and that this one is not known by TypeScript, it will cause problem. We need to shim the JavaScript library to let know to TypeScript about the JavaScript. To do, we need another npm package called "typings". To use Typings, we will need to invoke Typings, hence we need to make sure we can execute node_modules executable so we need to make the node_modules (global one or the project one) in your path.
 
 ``` 
- System Path to add : %AppData%\\npm\\node\_modules 
+ System Path to add : %AppData%\\npm\\node_modules 
 ```  Once it's done, download from npm typings, and execute the command to get the TypeScript definition file for JQuery. ```typescript
 npm install typings -g typings install jquery --save --global 
 ``` 
  Next step, is to change TypeScript to be aware of the definition file. This is done by adding an entry at the index.d.ts file at the root of typings. This file contains the triple slashes that was required to be added in all TypeScript file before. Not, you can have TypeScript compiler option to handle it for you, hence keeping all your files cleaner. The TypeScript configuration looks like below. Notice the files property. ```typescript
-{ "compilerOptions": { "sourceMap": true, "target": "es6", "module": "amd", "outDir": "./output" }, "include": [ "src/\*\*/\*" ], "exclude": [ "node\_modules", "\*\*/\*.spec.ts" ], "files": [ "typings/index.d.ts" ] } 
+{ "compilerOptions": { "sourceMap": true, "target": "es6", "module": "amd", "outDir": "./output" }, "include": [ "src/**/*" ], "exclude": [ "node_modules", "**/*.spec.ts" ], "files": [ "typings/index.d.ts" ] } 
 ``` 
 
 
@@ -39,17 +39,17 @@ The file structures should look like: ![](images/TypingsIndexDTS.png)
 ```  Finally, let's change the fileToInclude.ts to use JQuery: ```typescript
 export class ClassA { public method1(): void { console.log("ClassA>method1"); let div = $("<div>"); div.html("From JQuery"); $("body").append(div); } } 
 ``` 
- At this point, we have TypeScript compiling by simply typing "tsc" in the root of our project. TypeScript with Intellisense on a library not made with TypeScript (JQuery), and a file importing a second one (File1.ts->fileToInclude.ts). There is still two problems. The first one concern the location of JQuery which is inside the node\_modules. The second one is that we are not running any web server for developing, hence cannot test the execution of what we are developing.
+ At this point, we have TypeScript compiling by simply typing "tsc" in the root of our project. TypeScript with Intellisense on a library not made with TypeScript (JQuery), and a file importing a second one (File1.ts->fileToInclude.ts). There is still two problems. The first one concern the location of JQuery which is inside the node_modules. The second one is that we are not running any web server for developing, hence cannot test the execution of what we are developing.
 
 ![](images/JqueryIntellisense.png)
 
-Concerning the first problem, having to move files, Gulp will help. Gulp mains goal is to automate tasks. It's like MsBuild if you are from .Net ecosystem. Why we do not want to have a direct reference of the node\_modules? Because most of the files in this directory won't be needed in your website, so we won't copy all those files in the deployment. A good pattern is to bring the library we need to use for the script, like JQuery, into a separated folder. In our case, we called that folder "vendors" where all third-party library will get referenced. That is why, we will create in the build task a sub-task to move JQuery into vendor folder. Then, we will tell requirejs to look into that folder every time we need JQuery. We will see in a future article more detail about how to work with Gulp.
+Concerning the first problem, having to move files, Gulp will help. Gulp mains goal is to automate tasks. It's like MsBuild if you are from .Net ecosystem. Why we do not want to have a direct reference of the node_modules? Because most of the files in this directory won't be needed in your website, so we won't copy all those files in the deployment. A good pattern is to bring the library we need to use for the script, like JQuery, into a separated folder. In our case, we called that folder "vendors" where all third-party library will get referenced. That is why, we will create in the build task a sub-task to move JQuery into vendor folder. Then, we will tell requirejs to look into that folder every time we need JQuery. We will see in a future article more detail about how to work with Gulp.
 
 ## Edit
 
 You do not need to use Typing. You can use the gulp package @types/jquery and remove any dependency in tsconfig.json in files of index.d.ts. You need to be sure to have a reference into the types attribute of tsconfig.json. ``` 
  npm install @types/jquery --save-dev 
 ```  ```typescript
-{ "compilerOptions": { "sourceMap": true, "target": "es6", "module": "amd", "outDir": "./deploy/output", "types": [ "jquery" ] }, "include": [ "app/scripts/\*\*/\*" ], "exclude": [ "node\_modules", "\*\*/\*.spec.ts" ] } 
+{ "compilerOptions": { "sourceMap": true, "target": "es6", "module": "amd", "outDir": "./deploy/output", "types": [ "jquery" ] }, "include": [ "app/scripts/**/*" ], "exclude": [ "node_modules", "**/*.spec.ts" ] } 
 ``` 
 

@@ -18,7 +18,7 @@ To use **ReactJs** you needs four different NPM packages for **React** and **Rea
 
 ## Modifying RequiresJs
 
-Inside the configuration of your RequireJs, you need to add two entries for react and react-dom to indicate where will be the module to load. This is tricky in term that you must point to the "dist" folder. If you look in node\_modules you will see that react exist in the main folder but also in the lib folder. These won't work. The other tricky part is that react-dom use a hyphen, which will require you to use quote. Both need to have lowercase path key, and both will be used with the lowercase on the import statement.
+Inside the configuration of your RequireJs, you need to add two entries for react and react-dom to indicate where will be the module to load. This is tricky in term that you must point to the "dist" folder. If you look in node_modules you will see that react exist in the main folder but also in the lib folder. These won't work. The other tricky part is that react-dom use a hyphen, which will require you to use quote. Both need to have lowercase path key, and both will be used with the lowercase on the import statement.
 
 
 ```javascript
@@ -36,13 +36,13 @@ The TypeScript's configuration file needs to be altered to indicate the type of 
 ``` 
 
 
-If you want, you can add both types under the property "types" but this is optional since TypeScript will looks into the node\_modules package to get the definition.
+If you want, you can add both types under the property "types" but this is optional since TypeScript will looks into the node_modules package to get the definition.
 
 ## Gulp and React
 
 If you are using Gulp or any other toolkit for automation, you need to do a change. The change is mainly to change the path of file to compile to get TSX file additional to TS file. 
 ```javascript
-paths.allTypeScript = paths.typescript\_in + "\*\*/\*.{ts,tsx}"; // ... gulp.task("build", () => { var compilationResults = gulp.src(paths.allTypeScript) .pipe(sourcemaps.init()) .pipe(tsProject()) compilationResults.dts.pipe(gulp.dest(paths.typescript\_out)); return compilationResults.js .pipe(sourcemaps.write('.')) .pipe(gulp.dest(paths.typescript\_out)); }); 
+paths.allTypeScript = paths.typescript_in + "**/*.{ts,tsx}"; // ... gulp.task("build", () => { var compilationResults = gulp.src(paths.allTypeScript) .pipe(sourcemaps.init()) .pipe(tsProject()) compilationResults.dts.pipe(gulp.dest(paths.typescript_out)); return compilationResults.js .pipe(sourcemaps.write('.')) .pipe(gulp.dest(paths.typescript_out)); }); 
 ``` 
  This change add ts and tsx file to be compiled by TypeScript Compiler (TSC).
 

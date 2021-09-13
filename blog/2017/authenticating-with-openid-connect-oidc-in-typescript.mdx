@@ -36,9 +36,9 @@ import OIDC, { UserManagerSettings } from "oidc-client";
 
 export class Auth {
 
-private static OidcSettings: UserManagerSettings = { automaticSilentRenew: true, authority: "https://meechum.netflix.com", client\_id: "cdnadminpartner", redirect\_uri: window.location.protocol + "//" + window.location.host + "/index", post\_logout\_redirect\_uri: window.location.protocol + "//" + window.location.host + "/index", silent\_redirect\_uri: window.location.protocol + "//" + window.location.host + "/index", response\_type: "code token id\_token", scope: "openid profile", loadUserInfo: true, userStore: new OIDC.WebStorageStateStore({ store: window.localStorage }) };
+private static OidcSettings: UserManagerSettings = { automaticSilentRenew: true, authority: "https://meechum.netflix.com", client_id: "cdnadminpartner", redirect_uri: window.location.protocol + "//" + window.location.host + "/index", post_logout_redirect_uri: window.location.protocol + "//" + window.location.host + "/index", silent_redirect_uri: window.location.protocol + "//" + window.location.host + "/index", response_type: "code token id_token", scope: "openid profile", loadUserInfo: true, userStore: new OIDC.WebStorageStateStore({ store: window.localStorage }) };
 
-private static instance: Auth; private static readonly KEY\_FOLLOW = "my\_app\_follow\_action\_required"; private static readonly KEY\_PROCESS\_LOGIN = "login"; private static readonly KEY\_PROCESS\_LOGOUT = "logout";
+private static instance: Auth; private static readonly KEY_FOLLOW = "my_app_follow_action_required"; private static readonly KEY_PROCESS_LOGIN = "login"; private static readonly KEY_PROCESS_LOGOUT = "logout";
 
 private user: OIDC.UserManager;
 
@@ -48,17 +48,17 @@ public process(): Promise<UserFromMeechum | undefined> { if (this.mustFollowAuth
 
 public getUser(): Promise<any | null> { return this.user.getUser(); }
 
-public login(): void { this.user.createSigninRequest() .then((response) => { this.getStorage().setItem(Auth.KEY\_FOLLOW, Auth.KEY\_PROCESS\_LOGIN); window.location.href = response.url; }); }
+public login(): void { this.user.createSigninRequest() .then((response) => { this.getStorage().setItem(Auth.KEY_FOLLOW, Auth.KEY_PROCESS_LOGIN); window.location.href = response.url; }); }
 
 public logout(): Promise<void> { return this.user .removeUser(); }
 
-private constructor(private storage: StorageType = StorageType.LocalStorage) { const level = Log.getOptions().logMaxLevelOfTracing; const verboseLevel = TraceType.Verbose; if (level >= verboseLevel) { OIDC.Log.logger = console; OIDC.Log.level = OIDC.Log.DEBUG; } this.user = new OIDC.UserManager(Auth.OidcSettings); } private processSigninResponse(): Promise<UserFromMeechum> { this.getStorage().removeItem(Auth.KEY\_FOLLOW); return this.user.signinRedirectCallback(); }
+private constructor(private storage: StorageType = StorageType.LocalStorage) { const level = Log.getOptions().logMaxLevelOfTracing; const verboseLevel = TraceType.Verbose; if (level >= verboseLevel) { OIDC.Log.logger = console; OIDC.Log.level = OIDC.Log.DEBUG; } this.user = new OIDC.UserManager(Auth.OidcSettings); } private processSigninResponse(): Promise<UserFromMeechum> { this.getStorage().removeItem(Auth.KEY_FOLLOW); return this.user.signinRedirectCallback(); }
 
-private processSignoutResponse(): Promise<null> { this.getStorage().removeItem(Auth.KEY\_FOLLOW); return this.user .processSignoutResponse() .then((response) => { return null; });
+private processSignoutResponse(): Promise<null> { this.getStorage().removeItem(Auth.KEY_FOLLOW); return this.user .processSignoutResponse() .then((response) => { return null; });
 
 }
 
-private mustFollowAuthLogin(): boolean { return window.localStorage.getItem(Auth.KEY\_FOLLOW) === Auth.KEY\_PROCESS\_LOGIN; } private mustFollowAuthLogout(): boolean { return window.localStorage.getItem(Auth.KEY\_FOLLOW) === Auth.KEY\_PROCESS\_LOGOUT; } } 
+private mustFollowAuthLogin(): boolean { return window.localStorage.getItem(Auth.KEY_FOLLOW) === Auth.KEY_PROCESS_LOGIN; } private mustFollowAuthLogout(): boolean { return window.localStorage.getItem(Auth.KEY_FOLLOW) === Auth.KEY_PROCESS_LOGOUT; } } 
 ``` 
 
 

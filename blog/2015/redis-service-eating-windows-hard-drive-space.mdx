@@ -9,7 +9,7 @@ I noticed my hard drive losing space faster than usually. I decided to run a too
 
 ![](images/RedisServerWindowsSpaceHarddrive.png)
 
-I am running Redis as a service on my machine since about 2 months and never realized that this one store the size of the ram of your machine in multiple files. Each files are named with "RedisQFork\_9076.dat" and the number vary. Each of them were 8 gigs because I had a 8 gig ram machine.
+I am running Redis as a service on my machine since about 2 months and never realized that this one store the size of the ram of your machine in multiple files. Each files are named with "RedisQFork_9076.dat" and the number vary. Each of them were 8 gigs because I had a 8 gig ram machine.
 
 This only occur on 64bits OS, otherwise it is cap limited to 500 megs. So why does these files are created? Because Redis was created to be on Linux first. The Windows version needs to mimic some behaviors. Redis clusters, backup, synchronization needs to use the fork command that Windows OS does not have. So, it uses the file system.
 

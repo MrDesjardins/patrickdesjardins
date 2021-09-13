@@ -48,7 +48,7 @@ What does AsNoTracking() behind the scene is a good question. First, AsNoTrackin
 
 
 ```csharp
- public virtual IInternalQuery<TElement> AsNoTracking() { return (IInternalQuery<TElement>) new InternalQuery<TElement>(this.\_internalContext, (ObjectQuery) DbHelpers.CreateNoTrackingQuery((ObjectQuery) this.\_objectQuery)); } 
+ public virtual IInternalQuery<TElement> AsNoTracking() { return (IInternalQuery<TElement>) new InternalQuery<TElement>(this._internalContext, (ObjectQuery) DbHelpers.CreateNoTrackingQuery((ObjectQuery) this._objectQuery)); } 
 ```
 
 As you can see, it create a new InternalQuery with the second parameter who use **DbHelpers.CreateNoTrackingQuery(...)**. The second parameter should be ObjectQuery, so what does the DbHelpers.CreateNoTrackingQuery to remove the overhead?

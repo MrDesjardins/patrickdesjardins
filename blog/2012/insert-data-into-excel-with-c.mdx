@@ -13,9 +13,9 @@ Here is a small example that show you how to open an Excel worksheet and add val
 
 
 ```csharp
- \_Application docExcel = new Microsoft.Office.Interop.Excel.Application(); docExcel.Visible = false; docExcel.DisplayAlerts = false;
+_Application docExcel = new Microsoft.Office.Interop.Excel.Application(); docExcel.Visible = false; docExcel.DisplayAlerts = false;
 
-\_Workbook workbooksExcel = docExcel.Workbooks.Open(@"C:\\test.xlsx", Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing); \_Worksheet worksheetExcel = (\_Worksheet)workbooksExcel.ActiveSheet;
+_Workbook workbooksExcel = docExcel.Workbooks.Open(@"C:\\test.xlsx", Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing);_Worksheet worksheetExcel = (_Worksheet)workbooksExcel.ActiveSheet;
 
 ((Range)worksheetExcel.Cells["1", "A"]).Value2 = "aa"; ((Range)worksheetExcel.Cells["1", "B"]).Value2 = "bb";
 
@@ -26,9 +26,9 @@ workbooksExcel.Save(); workbooksExcel.Close(false, Type.Missing, Type.Missing); 
 
 Second example: 
 ```csharp
- \_Application docExcel = new Application{Visible = false};
+_Application docExcel = new Application{Visible = false};
 
-dynamic workbooksExcel = docExcel.Workbooks.Open(@"C:\\test.xlsx"); var worksheetExcel = (\_Worksheet)workbooksExcel.ActiveSheet;
+dynamic workbooksExcel = docExcel.Workbooks.Open(@"C:\\test.xlsx"); var worksheetExcel = (_Worksheet)workbooksExcel.ActiveSheet;
 
 ((Range)worksheetExcel.Cells["1", "A"]).Value2 = "test1"; ((Range)worksheetExcel.Cells["1", "B"]).Value2 = "test2";
 

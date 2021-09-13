@@ -21,47 +21,47 @@ The problem is that you need to set the UserId every time. This can lead to a pr
 
 
 ```csharp
- public class FilteredDbSet<TEntity> : IDbSet<TEntity>, IOrderedQueryable<TEntity>, IListSource where TEntity : class { private readonly DbSet<TEntity> \_set; private readonly Action<TEntity> \_initializeEntity; private readonly Expression<Func<TEntity, bool>> \_filter;
+ public class FilteredDbSet<TEntity> : IDbSet<TEntity>, IOrderedQueryable<TEntity>, IListSource where TEntity : class { private readonly DbSet<TEntity>_set; private readonly Action<TEntity>_initializeEntity; private readonly Expression<Func<TEntity, bool>>_filter;
 
 public FilteredDbSet(DbContext context, Expression<Func<TEntity, bool>> filter, Action<TEntity> initializeEntity) : this(context.Set<TEntity>(), filter, initializeEntity) { }
 
-public IQueryable<TEntity> Include(string path) { return \_set.Include(path).Where(\_filter).AsQueryable(); }
+public IQueryable<TEntity> Include(string path) { return_set.Include(path).Where(_filter).AsQueryable(); }
 
-private FilteredDbSet(DbSet<TEntity> set, Expression<Func<TEntity, bool>> filter, Action<TEntity> initializeEntity) { \_set = set; \_filter = filter; \_initializeEntity = initializeEntity; }
+private FilteredDbSet(DbSet<TEntity> set, Expression<Func<TEntity, bool>> filter, Action<TEntity> initializeEntity) {_set = set;_filter = filter;_initializeEntity = initializeEntity; }
 
-public IQueryable<TEntity> Unfiltered() { return \_set; }
+public IQueryable<TEntity> Unfiltered() { return_set; }
 
-public TEntity Add(TEntity entity) { DoInitializeEntity(entity); return \_set.Add(entity); } public void AddOrUpdate(TEntity entity) { DoInitializeEntity(entity); \_set.AddOrUpdate(entity); } public TEntity Attach(TEntity entity) { DoInitializeEntity(entity); return \_set.Attach(entity); }
+public TEntity Add(TEntity entity) { DoInitializeEntity(entity); return_set.Add(entity); } public void AddOrUpdate(TEntity entity) { DoInitializeEntity(entity);_set.AddOrUpdate(entity); } public TEntity Attach(TEntity entity) { DoInitializeEntity(entity); return_set.Attach(entity); }
 
-public TDerivedEntity Create<TDerivedEntity>() where TDerivedEntity : class, TEntity { var entity = \_set.Create<TDerivedEntity>(); DoInitializeEntity(entity); return entity; }
+public TDerivedEntity Create<TDerivedEntity>() where TDerivedEntity : class, TEntity { var entity =_set.Create<TDerivedEntity>(); DoInitializeEntity(entity); return entity; }
 
-public TEntity Create() { var entity = \_set.Create(); DoInitializeEntity(entity); return entity; }
+public TEntity Create() { var entity =_set.Create(); DoInitializeEntity(entity); return entity; }
 
-public TEntity Find(params object[] keyValues) { var entity = \_set.Find(keyValues); if (entity == null) return null;
+public TEntity Find(params object[] keyValues) { var entity =_set.Find(keyValues); if (entity == null) return null;
 
 return entity; }
 
-public TEntity Remove(TEntity entity) { if (!\_set.Local.Contains(entity)) { \_set.Attach(entity); } return \_set.Remove(entity); }
+public TEntity Remove(TEntity entity) { if (!_set.Local.Contains(entity)) {_set.Attach(entity); } return_set.Remove(entity); }
 
-public ObservableCollection<TEntity> Local { get { return \_set.Local; } }
+public ObservableCollection<TEntity> Local { get { return_set.Local; } }
 
-IEnumerator<TEntity> IEnumerable<TEntity>.GetEnumerator() { return \_set.Where(\_filter).GetEnumerator(); }
+IEnumerator<TEntity> IEnumerable<TEntity>.GetEnumerator() { return_set.Where(_filter).GetEnumerator(); }
 
-IEnumerator IEnumerable.GetEnumerator() { return \_set.Where(\_filter).GetEnumerator(); }
+IEnumerator IEnumerable.GetEnumerator() { return_set.Where(_filter).GetEnumerator(); }
 
 Type IQueryable.ElementType { get { return typeof(TEntity); } }
 
-Expression IQueryable.Expression { get { return \_set.Where(\_filter).Expression; } }
+Expression IQueryable.Expression { get { return_set.Where(_filter).Expression; } }
 
-IQueryProvider IQueryable.Provider { get { return \_set.AsQueryable().Provider; } }
+IQueryProvider IQueryable.Provider { get { return_set.AsQueryable().Provider; } }
 
 bool IListSource.ContainsListCollection { get { return false; } }
 
 IList IListSource.GetList() { throw new InvalidOperationException(); }
 
-void DoInitializeEntity(TEntity entity) { if (\_initializeEntity != null) \_initializeEntity(entity); }
+void DoInitializeEntity(TEntity entity) { if (_initializeEntity != null)_initializeEntity(entity); }
 
-public DbSqlQuery<TEntity> SqlQuery(string sql, params object[] parameters) { return \_set.SqlQuery(sql, parameters); } } 
+public DbSqlQuery<TEntity> SqlQuery(string sql, params object[] parameters) { return_set.SqlQuery(sql, parameters); } } 
 ```
 
 From here, you just need to call the DbSet that is filtered instead of the default one.

@@ -33,21 +33,21 @@ Another option is to use System.Reflection.MethodBase. This option let you get t
 
 
 ```csharp
- System.Reflection.MethodBase.GetCurrentMethod().Name.Replace("set\_", string.Empty) 
+ System.Reflection.MethodBase.GetCurrentMethod().Name.Replace("set_", string.Empty) 
 ```
 
-The code above give the string of the Property/Method that this line is executed. If it's inside a Property you will need to remove "set\_" if you use it inside the setter, or "get\_" if you use it inside the getter.
+The code above give the string of the Property/Method that this line is executed. If it's inside a Property you will need to remove "set_" if you use it inside the setter, or "get_" if you use it inside the getter.
 
 
 ```csharp
- public string CustomerEmail { get { return \_customerEmail; } set{ \_customerEmail = value; Modified(System.Reflection.MethodBase.GetCurrentMethod().Name.Replace("set\_", string.Empty)); } } 
+ public string CustomerEmail { get { return_customerEmail; } set{_customerEmail = value; Modified(System.Reflection.MethodBase.GetCurrentMethod().Name.Replace("set_", string.Empty)); } } 
 ```
 
 Another method which is relatively similar to the previous one is to use the Stacktrace to get the method called. This give you the advantage to not have to set any name or property reference to the method/property and just having a method in the inherit class that handle the name of the previous stack method called. This has the disadvantage that you cannot have multiple fields to be notified. This is a good default approach but the one with Lambda Expression should also be implemented to give the developer the leverage to be able to call multiple properties changes.
 
 
 ```csharp
- private string GetPropertyName() { var callStackTrace = new StackTrace(); var propertyFrame = callStackTrace.GetFrame(1); var properyAccessorName = propertyFrame.GetMethod().Name; return properyAccessorName.Replace("get\_","").Replace("set\_",""); } 
+ private string GetPropertyName() { var callStackTrace = new StackTrace(); var propertyFrame = callStackTrace.GetFrame(1); var properyAccessorName = propertyFrame.GetMethod().Name; return properyAccessorName.Replace("get_","").Replace("set_",""); } 
 ```
 
 The code above could be in the top model class that all your model class inherit. This way, You just need to call another method like for example "Update()" which will refer to this GetPropertyName(). Do not forget, that if you call GetPropertyName() from a class in the model class to change GetFrame(1) by GetFrame(2) because the Stack will have YouProperty>Update()>GetPropertyName.

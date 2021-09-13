@@ -17,5 +17,5 @@ To accomplish the goal of having the system version in every telemetry, let's cr
 
 
 ```csharp
- public class MvcApplication : System.Web.HttpApplication { protected void Application\_Start() { TelemetryConfiguration.Active.TelemetryInitializers.Add(new AssemblyVersionInitializer()); } } 
+ public class MvcApplication : System.Web.HttpApplication { protected void Application_Start() { TelemetryConfiguration.Active.TelemetryInitializers.Add(new AssemblyVersionInitializer()); } } 
 ``` From there, what ever you add or not custom properties, it will always have also the **BuildVersion** one. The goal of having this BuildVersion is primary to see difference in your telemetries between version. You can clearly identify if a problem is resolve or is created between version. You can also see if the performance goes worse. However, this only work if you release often since Application Insights retention of the information if very limited with most of the data is restricted to 7 days (or 14 days).

@@ -9,7 +9,7 @@ There is many official resource about how to [troubleshoot Redis Azure cache](ht
 
 Before continuing, I read that the C0 instance is just for testing purposed and not for production. The size is 4x bigger, this wasn't an issue for me but I realized that I was hitting the 250mb limit which was producing Redis to remove items from the cache. This wasn't a major problem in my case. The biggest change between C0 and C1 is the Megabytes per sec (MB/s) that go from 0.625 to 12.5megs. This is 24x faster. It also handle 12000 request per seconds which is 2x more than C0. In my case, I kept the update even if it didn't fixed the issue.
 
-The second modification was to change the number of thread. By default, Redis uses the same amount of thread to the amount of processor that the web server is running. A S1 instance is single core, thus was running on a single thread to send request to Azure Redis. This is problematic because requests queues and time out. To change the amount of thread, you can set the value in your **Global.asax.cs** in the **Application\_Start** method. The value is not clear in the documentation. From my reading, it should be under 100 threads before having some performance issues. I decided to go with 50 which is 50 times more than the default configuration. 
+The second modification was to change the number of thread. By default, Redis uses the same amount of thread to the amount of processor that the web server is running. A S1 instance is single core, thus was running on a single thread to send request to Azure Redis. This is problematic because requests queues and time out. To change the amount of thread, you can set the value in your **Global.asax.cs** in the **Application_Start** method. The value is not clear in the documentation. From my reading, it should be under 100 threads before having some performance issues. I decided to go with 50 which is 50 times more than the default configuration. 
 ```csharp
  ThreadPool.SetMinThreads(50, 50) 
 ```
@@ -26,11 +26,11 @@ The code looks like:
 
 
 ```csharp
- //Fields in my Redis Cache class: private const int POOL\_SIZE = 10; private static int connectionIndex = -1; //Because we ++ before using. The first time it will be 0. private static readonly Object lockPookRoundRobin = new Object(); private static readonly Lazy<ConnectionMultiplexer>[] lazyConnection;
+ //Fields in my Redis Cache class: private const int POOL_SIZE = 10; private static int connectionIndex = -1; //Because we ++ before using. The first time it will be 0. private static readonly Object lockPookRoundRobin = new Object(); private static readonly Lazy<ConnectionMultiplexer>[] lazyConnection;
 
-private static ConnectionMultiplexer Connection { get { lock (lockPookRoundRobin) { connectionIndex++; if (connectionIndex >= POOL\_SIZE) { connectionIndex = 0; } return lazyConnection[connectionIndex].Value; } } }
+private static ConnectionMultiplexer Connection { get { lock (lockPookRoundRobin) { connectionIndex++; if (connectionIndex >= POOL_SIZE) { connectionIndex = 0; } return lazyConnection[connectionIndex].Value; } } }
 
-//Static constructor to be executed once on the first call static RedisCache() { lock (lockPookRoundRobin) { lazyConnection = new Lazy<ConnectionMultiplexer>[POOL\_SIZE]; var connectionStringCache = System.Configuration.ConfigurationManager.AppSettings["CacheConnectionString"]; for (int i = 0; i < POOL\_SIZE; i++) { lazyConnection[i] = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(connectionStringCache)); } } } 
+//Static constructor to be executed once on the first call static RedisCache() { lock (lockPookRoundRobin) { lazyConnection = new Lazy<ConnectionMultiplexer>[POOL_SIZE]; var connectionStringCache = System.Configuration.ConfigurationManager.AppSettings["CacheConnectionString"]; for (int i = 0; i < POOL_SIZE; i++) { lazyConnection[i] = new Lazy<ConnectionMultiplexer>(() => ConnectionMultiplexer.Connect(connectionStringCache)); } } } 
 ```
 
 I have several methods that use Connection which give the next connection to execute a call.
@@ -43,7 +43,7 @@ At this point, I was in a better situation but some small requests were still fa
 
 From there, I was able to do some optimization and reduce my biggest key to less than 1 meg.
 
-At that point, I though I was in a better situation. But few hours later the problem was still there. I noticed a lot of log with the Redis exception. I finally found that since I am using Azure slot that webjobs are executed on the real website as well as the staging slot. That means that I had twice as traffics coming from the webjobs. Instead of about 18 jobs, I had 36 jobs doing everything twice at the same time, hence creating a lot of traffic on Redis. To have you Website Slot not executing webjobs you need to have a slot setting in the portal. It's "webjobs\_stopped" with the value _1_. Be sure you mark this setting as a slot setting, this way it won't get transferred when you switch from staging to production. ![](images/webjobs_stopped_1.png)
+At that point, I though I was in a better situation. But few hours later the problem was still there. I noticed a lot of log with the Redis exception. I finally found that since I am using Azure slot that webjobs are executed on the real website as well as the staging slot. That means that I had twice as traffics coming from the webjobs. Instead of about 18 jobs, I had 36 jobs doing everything twice at the same time, hence creating a lot of traffic on Redis. To have you Website Slot not executing webjobs you need to have a slot setting in the portal. It's "webjobs_stopped" with the value _1_. Be sure you mark this setting as a slot setting, this way it won't get transferred when you switch from staging to production. ![](images/webjobs_stopped_1.png)
 
 I was still intrigued to see that on the Azure Portal, under Azure Redis that after few hours, the size was reaching the limit of 1 gig. In dev, nothing went more than 100 megs. I ran again the bigkeys and saw some huge entry. The culprit was Entity Framework. With the time, users were adding a lot of data and some entities were referring each others. For example A->B->A[] and A also has reference to C, D, where D->A[] and so on. So the tree that was serialized was huge when in reality the objects tree wasn't that huge. With some modification, I was able to get back to around 150 megs. I was still getting error, and this is when I decided to capture with Application Insight all the size when I set value on Redis.
 

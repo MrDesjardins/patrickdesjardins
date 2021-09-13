@@ -39,7 +39,7 @@ Alright, there's a catch and it's if you return from those methods Json cause yo
 - You return data into an array. This can be solved by returning into an object that may contain array.
 - Return sensitive information. This can be solved by using SSL.
 - Using Get with Json. This can be solved by using Post or having multiple name instead of having the same action with two types of Http call type.
-- The browser support "\_\_defineSetter\_\_" which is where the vulnerability is executed. this one, you have no control.
+- The browser support "__defineSetter__" which is where the vulnerability is executed. this one, you have no control.
 
 So, it's not a big deal if you know what you are doing. In most case, you can allow Json to return data from Get if you handle what your action return. This mean, you should know what object you return and not returning an array directly.
 

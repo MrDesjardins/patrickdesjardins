@@ -57,15 +57,15 @@ Flow requires the value in const, and special import. It's more verbose.
 
 // Language file:
 // @flow
-export const LANGUAGES\_VALUE = {
+export const LANGUAGES_VALUE = {
  FRENCH: "French",
  ENGLISH: "English"
 };
 
-export type Language = $Values<typeof LANGUAGES\_VALUE>;
+export type Language = $Values<typeof LANGUAGES_VALUE>;
 // Use of Language file:
 import type { Language } from "../general/Language";
-import { LANGUAGES\_VALUE } from "../general/Language";
+import { LANGUAGES_VALUE } from "../general/Language";
 
 export class LocaleManager {
  static GetLocale(language: Language): void {

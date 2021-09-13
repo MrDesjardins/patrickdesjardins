@@ -45,7 +45,7 @@ This produce without the stored procedure mapped:
 
 
 ```sql
- exec sp\_executesql N'update [dbo].[Region] set [RegionDescription] = @0 where ([RegionID] = @1) ',N'@0 nchar(50),@1 int',@0=N'Est',@1=1 
+ exec sp_executesql N'update [dbo].[Region] set [RegionDescription] = @0 where ([RegionID] = @1) ',N'@0 nchar(50),@1 int',@0=N'Est',@1=1 
 ```
 
 

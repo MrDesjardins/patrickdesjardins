@@ -23,7 +23,7 @@ The last step is to create a view that is using both rendering technical choice.
 
 
 ```csharp
- @model TemplateVsPartialView.Models.Parent <div class="row"> <div class="col-sm-6"> <h2>Editor For</h2> @Html.EditorFor(d=>d) </div> <div class="col-sm-6"> <h2>Partial View</h2> @Html.Partial("\_parentPartialView", Model) </div> </div> 
+ @model TemplateVsPartialView.Models.Parent <div class="row"> <div class="col-sm-6"> <h2>Editor For</h2> @Html.EditorFor(d=>d) </div> <div class="col-sm-6"> <h2>Partial View</h2> @Html.Partial("_parentPartialView", Model) </div> </div> 
 ```
 
 The output looks like the same but the source code generated is different. Here is a screenshot of the Html output. ![](images/EditorTemplateVsPartialView-400x197.png)
@@ -31,7 +31,7 @@ The output looks like the same but the source code generated is different. Here 
 Here is the Html markup. We can see a difference in the name and the id of the input for the child name. The reason is that the partial view does not know about where the model is used. This is a major drawback when you need to send back everything to the server because the html query string name does not contain the property name of the child class. This mean that is cannot bind the information to the inner class.
 
 ```html
-<div class="row"> <div class="col-sm-6"> <h2>Editor For</h2> <h3>Parent Name</h3> <input id="ParentName" name="ParentName" type="text" value="My Parent Name" /> <h3>Child Editor</h3> <h3>Child Name</h3> <input id="SingleChild\_ChildName" name="SingleChild.ChildName" type="text" value="The Child Name" /> </div> <div class="col-sm-6"> <h2>Partial View</h2> <h3>Parent Name</h3> <input id="ParentName" name="ParentName" type="text" value="My Parent Name" /> <h3>Child Editor</h3> <h3>Child Name</h3> <input id="ChildName" name="ChildName" type="text" value="The Child Name" /> </div> </div> 
+<div class="row"> <div class="col-sm-6"> <h2>Editor For</h2> <h3>Parent Name</h3> <input id="ParentName" name="ParentName" type="text" value="My Parent Name" /> <h3>Child Editor</h3> <h3>Child Name</h3> <input id="SingleChild_ChildName" name="SingleChild.ChildName" type="text" value="The Child Name" /> </div> <div class="col-sm-6"> <h2>Partial View</h2> <h3>Parent Name</h3> <input id="ParentName" name="ParentName" type="text" value="My Parent Name" /> <h3>Child Editor</h3> <h3>Child Name</h3> <input id="ChildName" name="ChildName" type="text" value="The Child Name" /> </div> </div> 
 ``` 
 
 Here is the code for the editor for and for the partials. 
@@ -40,9 +40,9 @@ Here is the code for the editor for and for the partials.
 
 //child.cshtml @model TemplateVsPartialView.Models.Child <h3>Child Name</h3> @Html.TextBoxFor(d => d.ChildName)
 
-//parent partial view (\_parentPartialView.cshtml) @model TemplateVsPartialView.Models.Parent <h3>Parent Name</h3> @Html.TextBoxFor(d => d.ParentName) <h3>Child Editor</h3> @Html.Partial("\_childPartialView", Model.SingleChild)
+//parent partial view (_parentPartialView.cshtml) @model TemplateVsPartialView.Models.Parent <h3>Parent Name</h3> @Html.TextBoxFor(d => d.ParentName) <h3>Child Editor</h3> @Html.Partial("_childPartialView", Model.SingleChild)
 
-//child partial view (\_childPartialView.cshtml) @model TemplateVsPartialView.Models.Child <h3>Child Name</h3> @Html.TextBoxFor(d => d.ChildName) 
+//child partial view (_childPartialView.cshtml) @model TemplateVsPartialView.Models.Child <h3>Child Name</h3> @Html.TextBoxFor(d => d.ChildName) 
 ```
 
 As you can notice, the editor for and the partial view is the same code. The only change concern the first call from the view. The view uses for one the **EditorFor** Html helper while the second use the **Partial View** Html helper. Another difference concerns where the templates are located and where the template view are located. The templates can be closer to the view inside **EditorTemplates**/**DisplayTemplates** folder or can be shared across the application with **Shared** folder. This is also true for partial view where they can be in a Shared folder at the root of the Views folder or directly under the controller folder with all views of the controller.

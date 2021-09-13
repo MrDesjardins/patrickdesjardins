@@ -15,7 +15,7 @@ So, since we do not know how the tree is structured, it's not possible to use ea
 
 
 ```csharp
- \_context.Parent .Include(d => d.OtherProperty) .Include(d => d.Children) .Include(d => d.Children.Select(dd=>dd.OtherProperty) .Include(d => d.Children.Select(dd=>dd.Children) .Include(d => d.Children.Select(dd=>dd.OtherProperty........) //We cannot proceed this way because we do not know how many level .Include(d => d.Children.Select(dd=>dd.Children.......)//We cannot proceed this way because we do not know how many level .Single(p => p.ID == id); 
+_context.Parent .Include(d => d.OtherProperty) .Include(d => d.Children) .Include(d => d.Children.Select(dd=>dd.OtherProperty) .Include(d => d.Children.Select(dd=>dd.Children) .Include(d => d.Children.Select(dd=>dd.OtherProperty........) //We cannot proceed this way because we do not know how many level .Include(d => d.Children.Select(dd=>dd.Children.......)//We cannot proceed this way because we do not know how many level .Single(p => p.ID == id); 
 ```
 
 This give us the option to load the Children, if this one has children then load it the way we just load the parent since every child become a parent. This require recursive method. The problem is that it work but every load will create a new parent. We need to map every values to the first parent to have at the end a single hierarchical tree.
@@ -24,7 +24,7 @@ Here is how we can do it with eager loading. We need to every property set back 
 
 
 ```csharp
- private Parent RecursiveLoad(Guid id) { var ParentFromDatabase = \_context.Parent .Include(d => d.Children) .Include(d => d.Children.Select(dd => dd.OtherProperty)) .Single(p => p.ID == id); foreach (var child in ParentFromDatabase.Children) { var childNotLoaded = child; var childFullyLoaded = \_context.Child .Include(d => d.Parent) .Include(d => d.OtherProperty) .Single(d => d.ID == childNotLoaded.ID);
+ private Parent RecursiveLoad(Guid id) { var ParentFromDatabase =_context.Parent .Include(d => d.Children) .Include(d => d.Children.Select(dd => dd.OtherProperty)) .Single(p => p.ID == id); foreach (var child in ParentFromDatabase.Children) { var childNotLoaded = child; var childFullyLoaded =_context.Child .Include(d => d.Parent) .Include(d => d.OtherProperty) .Single(d => d.ID == childNotLoaded.ID);
 
 child.OtherProperty = childFullyLoaded.OtherProperty; //Require to set back the value because we want by reference to have everything in the tree child.Parent = RecursiveLoad(childFullyLoaded.Parent.ID); //Require to set back the value because we want by reference to have everything in the tree } return ParentFromDatabase; } 
 ```
@@ -33,7 +33,7 @@ But, we can do better with explicit loading. One of the positive characteristic 
 
 
 ```csharp
- private Parent RecursiveLoad(Parent parent) { var ParentFromDatabase = \_context.Entry(parent).Collection(d=>d.Children);//Children are loaded, we can loop them now foreach (var child in parent.Children) { \_context.Entry(child).Reference(d=>d.OtherProperty).Load(); RecursiveLoad(child); } return ParentFromDatabase; } 
+ private Parent RecursiveLoad(Parent parent) { var ParentFromDatabase =_context.Entry(parent).Collection(d=>d.Children);//Children are loaded, we can loop them now foreach (var child in parent.Children) {_context.Entry(child).Reference(d=>d.OtherProperty).Load(); RecursiveLoad(child); } return ParentFromDatabase; } 
 ```
 
 This has the advantage to remove every mapping since the object is loaded itself by entity framework. Still, this kind of loading come with a price. If we have 40 leafs in the tree, this mean that every of them will be loaded by the database which result to 40 SQL queries. One approach that can reduce the amount of request is to have the ID (int or Guid) inside the object, from there you can check if this one has a value. This will reduce the amount of call to the database at the amount of parent only (not final leaf which return 0 element). Still, the amount is huge and for large application, a custom solution with a view returning a bunch of data and parsed manually may be a good solution. Nevertheless, if you need to save the tree, you could end up with problem which you do not have when having the whole structure loaded by Entity Framework.

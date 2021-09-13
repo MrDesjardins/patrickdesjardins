@@ -44,7 +44,7 @@ Another example would be that a task depends on a previous task. For example, le
 Console.WriteLine("Wait All"); var task = allStrings.ToList(); var allAwaitedTask = await Task.WhenAll(task); foreach (var s in allAwaitedTask) { Console.WriteLine("->" + s); } Console.WriteLine("Finish"); 
 ``` To make the forth task use the result of the third task, we need to **await** the third task before the call of the forth's one.![](images/AsyncExample3-400x206.png)
 
-If you want to try this into a console by copy-pasting the code in this article, you will get into some problem. The reason is as stated at the beginning, console does not support async code. We need to create from the console a async task that will handle all the async code. This can be done by using **Task.Run(async()=>{/\*You code here\*/});** That mean that we would do: 
+If you want to try this into a console by copy-pasting the code in this article, you will get into some problem. The reason is as stated at the beginning, console does not support async code. We need to create from the console a async task that will handle all the async code. This can be done by using **Task.Run(async()=>{/*You code here*/});** That mean that we would do: 
 ```csharp
  static void Main(string[] args) {
 

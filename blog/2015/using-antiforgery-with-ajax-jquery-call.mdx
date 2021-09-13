@@ -23,10 +23,10 @@ The helper is also required. You have different option. First, you can re-use an
 From there, you just need to add the value of the hidden field inside your post arguments.
 
 ```typescript
-$.ajax({ url: "/yourpage/here", type: 'POST', data: { idSymbolRename: id, /\*Others variables to send \*/, \_\_RequestVerificationToken: $('#anti-forgery-token [name=\_\_RequestVerificationToken]').val() }, cache: true, dataType: 'json', success: function (json) { // Success code here }, error: function (xmlHttpRequest, textStatus, errorThrown) { // Error code here } }); 
+$.ajax({ url: "/yourpage/here", type: 'POST', data: { idSymbolRename: id, /*Others variables to send */,__RequestVerificationToken: $('#anti-forgery-token [name=__RequestVerificationToken]').val() }, cache: true, dataType: 'json', success: function (json) { // Success code here }, error: function (xmlHttpRequest, textStatus, errorThrown) { // Error code here } }); 
 ``` 
 
 
-As you see, we need to specify a value for the **\_\_RequestVerificationToken** value and we get this one from the generated hidden field from the Html Helper.
+As you see, we need to specify a value for the **__RequestVerificationToken** value and we get this one from the generated hidden field from the Html Helper.
 
 This code does not require a lot of modification from any Ajax call done with JQuery. The only detail that change is that you need to add the request verification token into the data sent to the server and you are up to go with a protected Post method.

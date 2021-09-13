@@ -21,7 +21,7 @@ The implementation is also very simple. It relies on the REST endpoint of Google
 ```csharp
  public class GoogleFirebaseNotification:IPushNotification { public bool QueueMessage(string to, string title, string message, string urlNotificationClick) { if (string.IsNullOrEmpty(to)) { return false; } var serverApiKey = "SuperLongKeyHere"; var firebaseGoogleUrl = "https://fcm.googleapis.com/fcm/send";
 
-var httpClient = new WebClient(); httpClient.Headers.Add("Content-Type", "application/json"); httpClient.Headers.Add(HttpRequestHeader.Authorization, "key=" + serverApiKey); var timeToLiveInSecond = 24 \* 60; // 1 day var data = new { to = to, data = new { notification = new { body = message, title = title, icon = "/Content/Images/Logos/BourseVirtuelle.png", url = urlNotificationClick } }, time\_to\_live = timeToLiveInSecond };
+var httpClient = new WebClient(); httpClient.Headers.Add("Content-Type", "application/json"); httpClient.Headers.Add(HttpRequestHeader.Authorization, "key=" + serverApiKey); var timeToLiveInSecond = 24 * 60; // 1 day var data = new { to = to, data = new { notification = new { body = message, title = title, icon = "/Content/Images/Logos/BourseVirtuelle.png", url = urlNotificationClick } }, time_to_live = timeToLiveInSecond };
 
 var json = JsonConvert.SerializeObject(data); Byte[] byteArray = Encoding.UTF8.GetBytes(json); var responsebytes = httpClient.UploadData(firebaseGoogleUrl, "POST", byteArray); string responsebody = Encoding.UTF8.GetString(responsebytes); dynamic responseObject = JsonConvert.DeserializeObject(responsebody);
 

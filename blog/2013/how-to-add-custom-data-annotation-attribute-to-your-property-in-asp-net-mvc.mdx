@@ -48,7 +48,7 @@ public DisableShapeAttribute() { TypeShape = ""; }
 public override void Process(ModelMetadata modelMetaData) { modelMetaData.AdditionalValues.Add("DisableShape", TypeShape); } } 
 ```
 
-The last step is to register the CustomModelMetadataProvider that loop every MetadataAttribute. This is done via the Global.asax.cs, inside the Application\_Start method.
+The last step is to register the CustomModelMetadataProvider that loop every MetadataAttribute. This is done via the Global.asax.cs, inside the Application_Start method.
 
 
 ```csharp

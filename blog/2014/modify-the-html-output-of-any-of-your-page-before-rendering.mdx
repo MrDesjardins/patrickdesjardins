@@ -13,7 +13,7 @@ The first class to create is the class that will play with the content produced.
 
 public MyCustomStream(Stream filter) { this.filter = filter; }
 
-public override void Write(byte[] buffer, int offset, int count) { var allScripts = new StringBuilder(); string wholeHtmlDocument = Encoding.UTF8.GetString(buffer, offset, count); var regex = new Regex(@"<script[^>]\*>(?<script>([^<]|<[^/])\*)</script>", RegexOptions.IgnoreCase | RegexOptions.Multiline); //Remove all Script Tag wholeHtmlDocument = regex.Replace(wholeHtmlDocument, m => { allScripts.Append(m.Groups["script"].Value); return "<!-- Removed Script -->"; });
+public override void Write(byte[] buffer, int offset, int count) { var allScripts = new StringBuilder(); string wholeHtmlDocument = Encoding.UTF8.GetString(buffer, offset, count); var regex = new Regex(@"<script[^>]*>(?<script>([^<]|<[^/])*)</script>", RegexOptions.IgnoreCase | RegexOptions.Multiline); //Remove all Script Tag wholeHtmlDocument = regex.Replace(wholeHtmlDocument, m => { allScripts.Append(m.Groups["script"].Value); return "<!-- Removed Script -->"; });
 
 //Put all Script at the end if (allScripts.Length > 0) { wholeHtmlDocument = wholeHtmlDocument.Replace("</html>", "<script type='text/javascript'>" + allScripts.ToString() + "</script></html>"); } buffer = Encoding.UTF8.GetBytes(wholeHtmlDocument); this.filter.Write(buffer, 0, buffer.Length); }
 
@@ -47,7 +47,7 @@ if (response.ContentType == "text/html") { response.Filter = new MyCustomStream(
 
 You can also set it to all your controller by setting the attribute to the **Global.Asax.cs** 
 ```csharp
- protected void Application\_Start() { GlobalFilters.Filters.Add(new MyCustomAttribute()); } 
+ protected void Application_Start() { GlobalFilters.Filters.Add(new MyCustomAttribute()); } 
 ```
 
 But, so far something is wrong. The filter is called multiple time because the stream is outputed in chunk of several bytes. Since we are playing with the Html rendering, we must replace html element when the whole document is loaded. This require us to modify a little bit the implementation above. The filter class must have a buffer. We will append all chunk into our buffer and when this one is full, we will act our transformation on this buffer and use this memory buffer to output into the filter stream.
@@ -62,7 +62,7 @@ public MyCustomStream(Stream filter) { this.filter = filter; }
 
 public override void Write(byte[] buffer, int offset, int count) { cacheStream.Write(buffer, 0, count); }
 
-public override void Flush() { if (cacheStream.Length > 0) { var allScripts = new StringBuilder(); string wholeHtmlDocument = Encoding.UTF8.GetString(cacheStream.ToArray(), 0, (int)cacheStream.Length); var regex = new Regex(@"<script[^>]\*>(?<script>([^<]|<[^/])\*)</script>", RegexOptions.IgnoreCase | RegexOptions.Multiline); //Remove all Script Tag wholeHtmlDocument = regex.Replace(wholeHtmlDocument, m => { allScripts.Append(m.Groups[0].Value); return "<!-- Removed Script -->"; });
+public override void Flush() { if (cacheStream.Length > 0) { var allScripts = new StringBuilder(); string wholeHtmlDocument = Encoding.UTF8.GetString(cacheStream.ToArray(), 0, (int)cacheStream.Length); var regex = new Regex(@"<script[^>]*>(?<script>([^<]|<[^/])*)</script>", RegexOptions.IgnoreCase | RegexOptions.Multiline); //Remove all Script Tag wholeHtmlDocument = regex.Replace(wholeHtmlDocument, m => { allScripts.Append(m.Groups[0].Value); return "<!-- Removed Script -->"; });
 
 //Put all Script at the end if (allScripts.Length > 0) { wholeHtmlDocument = wholeHtmlDocument.Replace("</html>", "<script type='text/javascript'>" + allScripts.ToString() + "</script></html>"); } var buffer = Encoding.UTF8.GetBytes(wholeHtmlDocument); this.filter.Write(buffer, 0, buffer.Length); cacheStream.SetLength(0); } this.filter.Flush(); }
 

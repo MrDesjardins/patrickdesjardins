@@ -102,7 +102,7 @@ private PropertyInfo LanguageProperty() { string currentLanguage = Thread.Curren
 
 This class lets you have French and English for every _LocalizedString_ defined. It will add a column in the database for French and one for English.
 
-As you can see, the _LocalizedString_ does have a ComplexType attribute which will tel Entity Framework to merge the property into the owner and not to create a relationship to a table called _LocalizedString_. For example, we will use _LocalizedString_ with the name of Exercise. So the Exercise will have in its table _Name\_French_ and _Name\_English_.
+As you can see, the _LocalizedString_ does have a ComplexType attribute which will tel Entity Framework to merge the property into the owner and not to create a relationship to a table called _LocalizedString_. For example, we will use _LocalizedString_ with the name of Exercise. So the Exercise will have in its table _Name_French_ and _Name_English_.
 
 
 ```csharp

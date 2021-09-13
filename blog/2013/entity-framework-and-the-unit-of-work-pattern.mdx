@@ -62,7 +62,7 @@ protected override void OnModelCreating(DbModelBuilder modelBuilder) { base.OnMo
 
 //Primary keys configuration modelBuilder.Entity<Animal>().HasKey(k => k.Id);
 
-modelBuilder.Entity<Animal>() .HasMany(entity => entity.Enemies) .WithMany(d => d.EnemyOf) .Map(d => d.ToTable("Animals\_Enemies\_Association").MapLeftKey("AnimalId").MapRightKey("EnemyId")); } } 
+modelBuilder.Entity<Animal>() .HasMany(entity => entity.Enemies) .WithMany(d => d.EnemyOf) .Map(d => d.ToTable("Animals_Enemies_Association").MapLeftKey("AnimalId").MapRightKey("EnemyId")); } } 
 ``` The configuration has something special for the Enemies list because I did not wanted to handle the the association table by myself. Entity Framework can handle it for us by configure a many to many relationship with the animal class. It requires to have a table name for the many-many table with a foreign keys.
 
 ## Setup the controllers, service layer and data access layer
@@ -154,29 +154,29 @@ It's all the code from the controller. Later, some improvement should be done. O
 The next class that require changes is the animal controller class. This one now has a constructor that need an IAnimalService.
 
 ```csharp
-public class AnimalController : Controller { private IAnimalService \_service;
+public class AnimalController : Controller { private IAnimalService_service;
 
-public AnimalController() { \_service = new AnimalService(new AnimalRepository()); }
+public AnimalController() {_service = new AnimalService(new AnimalRepository()); }
 
-public AnimalController(IAnimalService animalService) { \_service = animalService; }
+public AnimalController(IAnimalService animalService) {_service = animalService; }
 
-public ActionResult Index() { return View(\_service.GetAll()); }
+public ActionResult Index() { return View(_service.GetAll()); }
 
-public ActionResult Details(int? id) { if (id == null) { return new HttpStatusCodeResult(HttpStatusCode.BadRequest); } Animal animal = \_service.Find(id); if (animal == null) { return HttpNotFound(); } return View(animal); }
+public ActionResult Details(int? id) { if (id == null) { return new HttpStatusCodeResult(HttpStatusCode.BadRequest); } Animal animal =_service.Find(id); if (animal == null) { return HttpNotFound(); } return View(animal); }
 
 public ActionResult Create() { return View(); }
 
-[HttpPost] [ValidateAntiForgeryToken] public ActionResult Create([Bind(Include="Id,Name")] Animal animal) { if (ModelState.IsValid) { \_service.Insert(animal); return RedirectToAction("Index"); }
+[HttpPost] [ValidateAntiForgeryToken] public ActionResult Create([Bind(Include="Id,Name")] Animal animal) { if (ModelState.IsValid) {_service.Insert(animal); return RedirectToAction("Index"); }
 
 return View(animal); }
 
-public ActionResult Edit(int? id) { if (id == null) { return new HttpStatusCodeResult(HttpStatusCode.BadRequest); } Animal animal = \_service.Find(id); if (animal == null) { return HttpNotFound(); } return View(animal); }
+public ActionResult Edit(int? id) { if (id == null) { return new HttpStatusCodeResult(HttpStatusCode.BadRequest); } Animal animal =_service.Find(id); if (animal == null) { return HttpNotFound(); } return View(animal); }
 
-[HttpPost] [ValidateAntiForgeryToken] public ActionResult Edit([Bind(Include="Id,Name")] Animal animal) { if (ModelState.IsValid) { \_service.Update(animal); return RedirectToAction("Index"); } return View(animal); }
+[HttpPost] [ValidateAntiForgeryToken] public ActionResult Edit([Bind(Include="Id,Name")] Animal animal) { if (ModelState.IsValid) {_service.Update(animal); return RedirectToAction("Index"); } return View(animal); }
 
-public ActionResult Delete(int? id) { if (id == null) { return new HttpStatusCodeResult(HttpStatusCode.BadRequest); } Animal animal = \_service.Find(id); if (animal == null) { return HttpNotFound(); } return View(animal); }
+public ActionResult Delete(int? id) { if (id == null) { return new HttpStatusCodeResult(HttpStatusCode.BadRequest); } Animal animal =_service.Find(id); if (animal == null) { return HttpNotFound(); } return View(animal); }
 
-[HttpPost, ActionName("Delete")] [ValidateAntiForgeryToken] public ActionResult DeleteConfirmed(int id) { Animal animal = \_service.Find(id); \_service.Delete(animal); return RedirectToAction("Index"); } } 
+[HttpPost, ActionName("Delete")] [ValidateAntiForgeryToken] public ActionResult DeleteConfirmed(int id) { Animal animal =_service.Find(id);_service.Delete(animal); return RedirectToAction("Index"); } } 
 ```
 
 At this stage, the controller is separated from the database by the service and the repository. Still, it's better to not having a strong reference to AnimalService inside the controller. This is why we will extract an interface from AnimalService and we will inject the concrete class by inversion of control. This allow us to have when doing test entry point to inject a fake AnimalService that won't goes to the database. You can use the refactoring tool to extract the interface easily.
@@ -192,9 +192,9 @@ Inside the controller, we have two constructors. One to help us for this example
 
 
 ```csharp
- public class AnimalController : Controller { private IAnimalService \_service;
+ public class AnimalController : Controller { private IAnimalService_service;
 
-public AnimalController(IAnimalService animalService) { \_service = animalService; } //... 
+public AnimalController(IAnimalService animalService) {_service = animalService; } //... 
 ```
 
 Before implementing the unit of work, we will create a new repository to illustrate why the unit of work is required. We will also do a little re-factoring by changing the repository to stop having automatically a call to SaveChanges. This allow us to insert several entities in a single transaction.
@@ -288,9 +288,9 @@ This unit of work is very general since it can takes T as set. This mean that an
 
 
 ```csharp
- public class AnimalController : Controller { private IAnimalService \_service;
+ public class AnimalController : Controller { private IAnimalService_service;
 
-public AnimalController() { var uow = new UnitOfWork<AllDomainContext>(); \_service = new AnimalService(uow, new AnimalRepository(uow), new HumanRepository(uow)); } public AnimalController(IAnimalService animalService) { \_service = animalService; } //... } 
+public AnimalController() { var uow = new UnitOfWork<AllDomainContext>();_service = new AnimalService(uow, new AnimalRepository(uow), new HumanRepository(uow)); } public AnimalController(IAnimalService animalService) {_service = animalService; } //... } 
 ```
 
 So, the unit of work is instantiated with the domain we want. Here, it's everything. We still have the "real" constructor that takes only the IAnimalService which is the one that should be used in the real application with inversion of control to inject the controller. Since it's an article, to keep it simple, I show you what the IoC should do in the background.

@@ -19,7 +19,7 @@ First of all, you need to get both library, the Unity and Unity MVC3 (which work
 Then, you need to configure the dependency to your container. This need to be done in the application start of the application which is inside Global.ascx.cs.
 
 ```csharp
-protected void Application\_Start() { AreaRegistration.RegisterAllAreas();
+protected void Application_Start() { AreaRegistration.RegisterAllAreas();
 
 WebApiConfig.Register(GlobalConfiguration.Configuration); FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters); RouteConfig.RegisterRoutes(RouteTable.Routes); BundleConfig.RegisterBundles(BundleTable.Bundles); AuthConfig.RegisterAuth();
 

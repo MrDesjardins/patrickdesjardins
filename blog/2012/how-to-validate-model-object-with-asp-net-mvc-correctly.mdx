@@ -39,7 +39,7 @@ As you can see, we have 3 errors that are added to the return collection with th
 ```csharp
 public class Car: IValidatableObject { public int Id { get; set; } public string Name { get; set; } public string Type { get; set; } public string Color { get; set; }
 
-public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) { if(string.IsNullOrEmpty(Name)) { yield return new ValidationResult("Name is mandatory", new[] {"Name"}); } if (string.IsNullOrEmpty(Type)) { yield return new ValidationResult("Type is mandatory", new[] { "Type" }); } if (string.IsNullOrEmpty(Color)) { yield return new ValidationResult("\*", new[] { "Color" }); yield return new ValidationResult("Color is mandatory"}); } } } 
+public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) { if(string.IsNullOrEmpty(Name)) { yield return new ValidationResult("Name is mandatory", new[] {"Name"}); } if (string.IsNullOrEmpty(Type)) { yield return new ValidationResult("Type is mandatory", new[] { "Type" }); } if (string.IsNullOrEmpty(Color)) { yield return new ValidationResult("*", new[] { "Color" }); yield return new ValidationResult("Color is mandatory"}); } } } 
 ```
 
 So, from here you have validation from the Model Binding and from the Model class. What's about validation that need to be done inside the action of the controller. This could be that maybe we do not want any one to edit a car that is not available. This require a call to the database and of course won't be inside the model object. The controller can be a good position to check. No problem for the ModelState because this one doesn't only have the IsValid property but also have the method "AddModelError" that let you add any error message.

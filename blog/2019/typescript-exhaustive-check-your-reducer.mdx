@@ -16,12 +16,12 @@ export function appReducer(
   action: AcceptedActions
 ): AppReducerState {
   switch (action.type) {
-    case ACTION\_INCREASE\_COUNT:
+    case ACTION_INCREASE_COUNT:
       return {
         ...state,
         clickCount: state.clickCount + 1
       };
-    case ACTION\_SET\_NAME:
+    case ACTION_SET_NAME:
       return {
         ...state,
         activeEntity: { ...state.activeEntity, ...{ name: action.payload } }

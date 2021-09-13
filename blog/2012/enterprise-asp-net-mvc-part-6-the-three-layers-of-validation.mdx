@@ -23,7 +23,7 @@ This interface lets you have a single method called _Validate_ which lets you re
 From here, it's interesting to force every model to have this interface and this is why a good place to inherit from _IValidatableObject_ is in the BaseModel.
 
 ```csharp
-public abstract class BaseModel : IValidatableObject { public const int NOT\_INITIALIZED = -1; public int Id { get; set; }
+public abstract class BaseModel : IValidatableObject { public const int NOT_INITIALIZED = -1; public int Id { get; set; }
 
 #region Implementation of IValidatableObject
 
@@ -56,7 +56,7 @@ We have implemented the **IValidatableObject** and when a Http request is done t
 The first modification occurs in the override method _OnActionExecuting_ that should be already overrided with the modification of the mapper. We simply need to check if the model bound is really a IValidatableObject and to trig the validation mechanism.
 
 ```csharp
-protected override void OnActionExecuting(ActionExecutingContext filterContext) { base.OnActionExecuting(filterContext); if(filterContext.ActionParameters.Any()) { var possibleViewModel = filterContext.ActionParameters.FirstOrDefault(x => x.Value.GetType() == typeof(TViewModel)); if (possibleViewModel.Value!=null) { var viewModel = (TViewModel) possibleViewModel.Value; var model = (TModel) Activator.CreateInstance(typeof (TModel)); Model = \_mapperFactory.Map(viewModel, model); ApplyOwnership(); ApplyErrorsToModelState(); } } }
+protected override void OnActionExecuting(ActionExecutingContext filterContext) { base.OnActionExecuting(filterContext); if(filterContext.ActionParameters.Any()) { var possibleViewModel = filterContext.ActionParameters.FirstOrDefault(x => x.Value.GetType() == typeof(TViewModel)); if (possibleViewModel.Value!=null) { var viewModel = (TViewModel) possibleViewModel.Value; var model = (TModel) Activator.CreateInstance(typeof (TModel)); Model =_mapperFactory.Map(viewModel, model); ApplyOwnership(); ApplyErrorsToModelState(); } } }
 
 private void ApplyErrorsToModelState() { if (Model is IValidatableObject) { var errors = (Model as IValidatableObject).Validate(new ValidationContext(this)); foreach (var validationResult in errors) { foreach (var memberName in validationResult.MemberNames) { ModelState.AddModelError(memberName, validationResult.ErrorMessage); } } } } 
 ```
@@ -75,9 +75,9 @@ The code above validate the data annotation and the IValidatableObject. This can
 ```csharp
  private void ApplyErrorsToModelState(TModel model, TViewModel viewModel) { //Data Annotation validation ICollection<ValidationResult> result; ValidateDataAnnotation(model, out result); foreach (ValidationResult validationResult in result) { foreach (string memberName in validationResult.MemberNames) { ModelState.AddModelError(memberName, validationResult.ErrorMessage); } }
 
-//IValidatableObject validation if (Model is IValidatableObject) { IEnumerable<ValidationResult> errors = (Model as IValidatableObject).Validate(new ValidationContext(this)); foreach (ValidationResult validationResult in errors) { if (validationResult is EnhancedMappedValidationResult<TModel>) { var enhanced = (EnhancedMappedValidationResult<TModel>)validationResult; var viewModelPropertyName = \_mapperFactory.GetMapper(model, viewModel).GetErrorPropertyMappedFor(enhanced.Property); ModelState.AddModelError(viewModelPropertyName, validationResult.ErrorMessage); } else { if (validationResult.MemberNames.Any()) { foreach (string memberName in validationResult.MemberNames) { ModelState.AddModelError(memberName, validationResult.ErrorMessage); } } else { ModelState.AddModelError(string.Empty, validationResult.ErrorMessage); } } } } /\* //This validate underlying entity which can be not fully loaded in the case of reference ModelMetadata metadata = ModelMetadataProviders.Current.GetMetadataForType(() => Model, Model.GetType());
+//IValidatableObject validation if (Model is IValidatableObject) { IEnumerable<ValidationResult> errors = (Model as IValidatableObject).Validate(new ValidationContext(this)); foreach (ValidationResult validationResult in errors) { if (validationResult is EnhancedMappedValidationResult<TModel>) { var enhanced = (EnhancedMappedValidationResult<TModel>)validationResult; var viewModelPropertyName =_mapperFactory.GetMapper(model, viewModel).GetErrorPropertyMappedFor(enhanced.Property); ModelState.AddModelError(viewModelPropertyName, validationResult.ErrorMessage); } else { if (validationResult.MemberNames.Any()) { foreach (string memberName in validationResult.MemberNames) { ModelState.AddModelError(memberName, validationResult.ErrorMessage); } } else { ModelState.AddModelError(string.Empty, validationResult.ErrorMessage); } } } } /* //This validate underlying entity which can be not fully loaded in the case of reference ModelMetadata metadata = ModelMetadataProviders.Current.GetMetadataForType(() => Model, Model.GetType());
 
-foreach (ModelValidationResult validationResult in ModelValidator.GetModelValidator(metadata, this.ControllerContext).Validate(null)) { var propertyName = validationResult.MemberName; ModelState.AddModelViewModelToErrorsMap(propertyName, validationResult.Message); }\*/ }
+foreach (ModelValidationResult validationResult in ModelValidator.GetModelValidator(metadata, this.ControllerContext).Validate(null)) { var propertyName = validationResult.MemberName; ModelState.AddModelViewModelToErrorsMap(propertyName, validationResult.Message); }*/ }
 
 private bool ValidateDataAnnotation(object entity, out ICollection<ValidationResult> results) { var context = new ValidationContext(entity); results = new List<ValidationResult>(); return Validator.TryValidateObject(entity, context, results, true); } 
 ```
@@ -101,7 +101,7 @@ This get the amount of workout for the month and if it's over a certain threshol
 
 The error is handled by the controller that verify that the action executed has been completed without error. Here is the Create action of the Workout controller with the first layer validation and with the catch for the second layer. 
 ```csharp
- [HttpPost] public ActionResult Create(WorkoutViewModel viewModel) { if (ModelState.IsValid) { try { \_service.Create(Model); } catch (ValidationErrors propertyErrors) { ModelState.AddValidationErrors(propertyErrors); } } return View("Create"); } 
+ [HttpPost] public ActionResult Create(WorkoutViewModel viewModel) { if (ModelState.IsValid) { try {_service.Create(Model); } catch (ValidationErrors propertyErrors) { ModelState.AddValidationErrors(propertyErrors); } } return View("Create"); } 
 ``` 
 The exception type is ValidationErrors which is our custom error handler. The reason is that we do not want to use specific exception from other layers. This is why cross layers classes will be used to transport exception through all layers. This will be discussed after the third layer of validation.
 

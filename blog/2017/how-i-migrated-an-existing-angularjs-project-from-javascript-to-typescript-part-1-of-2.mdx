@@ -19,18 +19,18 @@ We also need to get the Grunt library that will bridge Grunt and Typescript.
 
 npm install grunt-ts --save-dev
 
-Now that we have the tool to transpile, let's do the migration in two phases. The first phase will be to keep every JavaScript in .js file and only use it as a transpiler. We will change some JavaScript file to use the latest EcmaScript and transpile using TypeScript to EcmaScript 3. The second phase will be to migrate files to be TypeScript (.ts) file. To have TypeScript transpiler configured for the need of reading JavaScript, we must specify that TypeScript is allowed to get into JavaScript file. The actual project is having its source code in a folder named **public** and was using Grunt's task to move the code to distribute in a folder named **dist**. Since the goal is to migrate without modifying too much, we will introduce a **dist\_ts**folder that will be then moved to the **dist** folder. At the end, the **dist** folder remains the folder to use to deploy and the **public** folder the source folder to modify. We just created an intermediary folder to output our TypeScript file and do some modifications. In the following configuration, you will see all what we just discussed.
+Now that we have the tool to transpile, let's do the migration in two phases. The first phase will be to keep every JavaScript in .js file and only use it as a transpiler. We will change some JavaScript file to use the latest EcmaScript and transpile using TypeScript to EcmaScript 3. The second phase will be to migrate files to be TypeScript (.ts) file. To have TypeScript transpiler configured for the need of reading JavaScript, we must specify that TypeScript is allowed to get into JavaScript file. The actual project is having its source code in a folder named **public** and was using Grunt's task to move the code to distribute in a folder named **dist**. Since the goal is to migrate without modifying too much, we will introduce a **dist_ts**folder that will be then moved to the **dist** folder. At the end, the **dist** folder remains the folder to use to deploy and the **public** folder the source folder to modify. We just created an intermediary folder to output our TypeScript file and do some modifications. In the following configuration, you will see all what we just discussed.
 
 {
      "compilerOptions": 
       {         
-         "outDir": "./dist\_ts",         
+         "outDir": "./dist_ts",         
          "allowJs": true,         
          "target": "es3",         
          "rootDir": "./"     
         },     
 "include": [         
-       "./public/\*\*/\*.js"     
+       "./public/**/*.js"     
          ],     
         "exclude": [       
             "./public/assets/"     
@@ -45,7 +45,7 @@ ts: {
    }      
 }
 
-This step as you can see was pretty straightforward. The only thing it says is to read the configuration file. However, a little more work was required to have TypeScript to work properly. The first thing is that this project has a requirejs Grunt task that was using the public folder to bring the whole code into a single JavaScript file. This couldn't point to the public folder since we output the JavaScript in **dist\_ts**. It's not a big deal. We need to change the **mainConfigFile** path of requirejs to point to the intermediary folder. However, the requirejs task needed to have access to some assets and third library that was under the public folder. So, a pre-build task was required before calling the Gulp's TypeScript task to move some files in **dist\_ts**. And finally, a post-build task to move all the generated JavaScript file and JavaScript's map file in the final destination folder.
+This step as you can see was pretty straightforward. The only thing it says is to read the configuration file. However, a little more work was required to have TypeScript to work properly. The first thing is that this project has a requirejs Grunt task that was using the public folder to bring the whole code into a single JavaScript file. This couldn't point to the public folder since we output the JavaScript in **dist_ts**. It's not a big deal. We need to change the **mainConfigFile** path of requirejs to point to the intermediary folder. However, the requirejs task needed to have access to some assets and third library that was under the public folder. So, a pre-build task was required before calling the Gulp's TypeScript task to move some files in **dist_ts**. And finally, a post-build task to move all the generated JavaScript file and JavaScript's map file in the final destination folder.
 
 From here, any actual JavaScript file could be changed to use "const" or the fat arrow way to work with function and this one will be with "var" and conventional function at the end.
 

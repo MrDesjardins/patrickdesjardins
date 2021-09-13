@@ -25,12 +25,13 @@ Once the complex type is created, it's possible to add it as a complex property.
 
 From here, it's possible to access the complex property and will be even in the Intellisense.
 
-[csharp line="4"] var db = new AdventureWorks\_DataEntities(); var aSingleDepartment = db.DepartmentList.Where(dept => dept.DepartmentID == 1).FirstOrDefault<Department>(); int theIntegerPropertyOfMyComplexPropertyOfDepartment = aSingleDepartment.MyComplexProperty.MyFirstIntProperty; 
+```csharp
+var db = new AdventureWorks_DataEntities(); var aSingleDepartment = db.DepartmentList.Where(dept => dept.DepartmentID == 1).FirstOrDefault<Department>(); int theIntegerPropertyOfMyComplexPropertyOfDepartment = aSingleDepartment.MyComplexProperty.MyFirstIntProperty; 
 ```
 
 The only thing that remain to do before compiling is a last mapping for the complex entity. This is needed because you will receive an error message if not.
 
-> Error 3004: Problem in mapping fragments starting at line 5050: No mapping specified for properties Department. MyComplexProperty in Set DepartmentList. An Entity with Key (PK) will not round-trip when: Entity is type [AdventureWorks\_DataModel.Department]
+> Error 3004: Problem in mapping fragments starting at line 5050: No mapping specified for properties Department. MyComplexProperty in Set DepartmentList. An Entity with Key (PK) will not round-trip when: Entity is type [AdventureWorks_DataModel.Department]
 
 This last step is concerning the mapping with the database.
 

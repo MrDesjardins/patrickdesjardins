@@ -30,7 +30,7 @@ The output of this code is :
 
 We could also explore the state with the event. 
 ```csharp
- var db = new NorthwindEntities(); db.ObjectStateManager.ObjectStateManagerChanged += new System.ComponentModel.CollectionChangeEventHandler(ObjectStateManager\_ObjectStateManagerChanged); //Get existing Customer that has Order var customersWithOrder = db.Customers.Where(customer => customer.Orders.Count>15); //Add a new Order var firstCustomer = db.Customers.First(); var newOrder = new Orders(); // db.CreateObject<Orders>(); would do the samethiing firstCustomer.Orders.Add(newOrder); db.SaveChanges(); firstCustomer.Orders.Remove(newOrder); db.DeleteObject(newOrder); db.SaveChanges(); 
+ var db = new NorthwindEntities(); db.ObjectStateManager.ObjectStateManagerChanged += new System.ComponentModel.CollectionChangeEventHandler(ObjectStateManager_ObjectStateManagerChanged); //Get existing Customer that has Order var customersWithOrder = db.Customers.Where(customer => customer.Orders.Count>15); //Add a new Order var firstCustomer = db.Customers.First(); var newOrder = new Orders(); // db.CreateObject<Orders>(); would do the samethiing firstCustomer.Orders.Add(newOrder); db.SaveChanges(); firstCustomer.Orders.Remove(newOrder); db.DeleteObject(newOrder); db.SaveChanges(); 
 ```
 
 This produce: 

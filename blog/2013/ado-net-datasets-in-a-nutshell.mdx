@@ -19,7 +19,7 @@ Usually, a DataSet is fill up with a DataAdapter which use a DbConnection with D
 
 
 ```csharp
- var con = new SqlConnection(/\*Connexion String\*/); var dataset = new DataSet(); var adapter = new SqlDataAdapter(); adapter.SelectCommand = new SqlCommand(/\*Your SELECT statement\*/,con) con.Open(); adapter.Fill(dataset); //The dataset is fill up with data, it's now possible to close the connection and use the data con.Close(); 
+ var con = new SqlConnection(/*Connexion String*/); var dataset = new DataSet(); var adapter = new SqlDataAdapter(); adapter.SelectCommand = new SqlCommand(/*Your SELECT statement*/,con) con.Open(); adapter.Fill(dataset); //The dataset is fill up with data, it's now possible to close the connection and use the data con.Close(); 
 ```
 
 The main advantage is that you are closing rapidly the connection to the database by releasing to the connection pool. You should always open the connection, do your query and close it. This will give the possibility to other request to connect to the database. It's a good practice because every database has a limited amount of connection that can be accepted in the same time.

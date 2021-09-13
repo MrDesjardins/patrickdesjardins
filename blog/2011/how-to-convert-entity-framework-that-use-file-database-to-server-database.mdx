@@ -12,12 +12,12 @@ To do the switch, only one place need to be changed and it's the app.config or i
 Here is the generated connection string generated and after the modified one.
 
 ```xml
-<add name="NorthWindContainer" connectionString="metadata=res://\*/FromNorthWind.csdl|res://\*/FromNorthWind.ssdl|res://\*/FromNorthWind.msl; provider=System.Data.SqlClient; provider connection string='Data Source=.\\SQLEXPRESS; AttachDbFilename=|DataDirectory|\\northwnd.mdf; Integrated Security=True; Connect Timeout=30; User Instance=True; MultipleActiveResultSets=True'" providerName="System.Data.EntityClient" /> 
+<add name="NorthWindContainer" connectionString="metadata=res://*/FromNorthWind.csdl|res://*/FromNorthWind.ssdl|res://*/FromNorthWind.msl; provider=System.Data.SqlClient; provider connection string='Data Source=.\\SQLEXPRESS; AttachDbFilename=|DataDirectory|\\northwnd.mdf; Integrated Security=True; Connect Timeout=30; User Instance=True; MultipleActiveResultSets=True'" providerName="System.Data.EntityClient" /> 
 ```
 
 
 ```xml
-<add name="NorthWindContainer" connectionString="metadata=res://\*/FromNorthWind.csdl|res://\*/FromNorthWind.ssdl|res://\*/FromNorthWind.msl; provider=System.Data.SqlClient; provider connection string='Data Source=.\\SQLEXPRESS; Initial Catalog=Northwind; Integrated Security=True; Connection Timeout=60; multipleactiveresultsets=true'" providerName="System.Data.EntityClient" /> 
+<add name="NorthWindContainer" connectionString="metadata=res://*/FromNorthWind.csdl|res://*/FromNorthWind.ssdl|res://*/FromNorthWind.msl; provider=System.Data.SqlClient; provider connection string='Data Source=.\\SQLEXPRESS; Initial Catalog=Northwind; Integrated Security=True; Connection Timeout=60; multipleactiveresultsets=true'" providerName="System.Data.EntityClient" /> 
 ```
 
 

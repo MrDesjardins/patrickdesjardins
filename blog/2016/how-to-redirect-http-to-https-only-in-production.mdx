@@ -14,7 +14,7 @@ You are working locally without a SSL certificate and in production with certifi
 
 
 ```xml
- <?xml version="1.0"?> <configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform"> <system.webServer> <rewrite xdt:Transform="Insert"> <rules> <rule name="Redirect HTTP to HTTPS"> <match url="(.\*)" /> <conditions> <add input="{HTTPS}" pattern="off" ignoreCase="true" /> </conditions> <action type="Redirect" url="https://{HTTP\_HOST}/{R:1}" redirectType="Permanent"/> </rule> </rules> </rewrite> </system.webServer> </configuration>
+ <?xml version="1.0"?> <configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform"> <system.webServer> <rewrite xdt:Transform="Insert"> <rules> <rule name="Redirect HTTP to HTTPS"> <match url="(.*)" /> <conditions> <add input="{HTTPS}" pattern="off" ignoreCase="true" /> </conditions> <action type="Redirect" url="https://{HTTP_HOST}/{R:1}" redirectType="Permanent"/> </rule> </rules> </rewrite> </system.webServer> </configuration>
 
 
 ```

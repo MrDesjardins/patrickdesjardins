@@ -11,7 +11,7 @@ TypeScript's type can be highlighting to what is going on if you have been doing
 In JavaScript, the second parameter, the action, can change shape. For example, if your reducer is for your users (let's call it "usersReducer"), this one can let you update users information, as well as their relationship. You won't send back the whole user's state every time. You may just send a list of ids for the relation. Hence, in JavaScript, you could pass in the payload one that is the whole user object when the user gets created or updated, but only a list of integers when the relationship list is changed to one of these users. In JavaScript, it won't matter because depending on the string you pass to determine the type of action, you go to a different branch of code which you will access and work with the expected format of data you know you are passing. Here is a quick example with two actions. One to create, one to update a user's relationship.
 
 ```typescript
-function myReducer( state action) { if (action.type === ACTION\_CREATE) { const immutableData = {...state}; immutableData[action.payload.userId] = action.payload.newUser; return immutableData; } else if (action.type === ACTION\_UPDATE\_LIST\_RELATIONSHIPS) { const immutableData = {...state}; immutableData[action.payload.userId].relationShipIds = action.payload.ids; return immutableData; } return state; } 
+function myReducer( state action) { if (action.type === ACTION_CREATE) { const immutableData = {...state}; immutableData[action.payload.userId] = action.payload.newUser; return immutableData; } else if (action.type === ACTION_UPDATE_LIST_RELATIONSHIPS) { const immutableData = {...state}; immutableData[action.payload.userId].relationShipIds = action.payload.ids; return immutableData; } return state; } 
 ``` 
 
 
@@ -27,7 +27,7 @@ export interface Actions<T> { readonly type: string; payload: T; }
 You can extend this interface with other members if desired or simply enhance this one directly. From there, you can have your reducer to use a union of potential action:
 
 ```typescript
-function myReducer( state: UsersState, action: Actions<UsersState> | Actions<User> | Actions<{userId:number, ids:number[]}>): UsersState { if (action.type === ACTION\_CREATE) { const immutableData = {...state}; immutableData[action.payload.userId] = action.payload.; return immutableData; } else if (action.type === ACTION\_UPDATE\_LIST\_RELATIONSHIPS) { const immutableData = {...state}; immutableData[action.payload.userId].relationShipIds = action.payload.ids; return immutableData; } return state; } 
+function myReducer( state: UsersState, action: Actions<UsersState> | Actions<User> | Actions<{userId:number, ids:number[]}>): UsersState { if (action.type === ACTION_CREATE) { const immutableData = {...state}; immutableData[action.payload.userId] = action.payload.; return immutableData; } else if (action.type === ACTION_UPDATE_LIST_RELATIONSHIPS) { const immutableData = {...state}; immutableData[action.payload.userId].relationShipIds = action.payload.ids; return immutableData; } return state; } 
 ``` 
 
 
@@ -41,7 +41,7 @@ export function isGenericAction<T>(obj: any): obj is Actions<T> { const castedOb
 The next step is to use the check with the type in conditions.
 
 ```typescript
-function myReducer( state: UsersState, action: Actions<UsersState> | Actions<User> | Actions<UserRelationships>): UsersState { if (action.type === ACTION\_CREATE && GenericAction<User>(action)) { const immutableData = {...state}; immutableData[action.payload.userId] = action.payload.; return immutableData; } else if (action.type === ACTION\_UPDATE\_LIST\_RELATIONSHIPS && GenericAction<UserRelationships>(action)) { const immutableData = {...state}; immutableData[action.payload.userId].relationShipIds = action.payload.ids; return immutableData; } return state; } 
+function myReducer( state: UsersState, action: Actions<UsersState> | Actions<User> | Actions<UserRelationships>): UsersState { if (action.type === ACTION_CREATE && GenericAction<User>(action)) { const immutableData = {...state}; immutableData[action.payload.userId] = action.payload.; return immutableData; } else if (action.type === ACTION_UPDATE_LIST_RELATIONSHIPS && GenericAction<UserRelationships>(action)) { const immutableData = {...state}; immutableData[action.payload.userId].relationShipIds = action.payload.ids; return immutableData; } return state; } 
 ``` 
 
 
@@ -49,11 +49,10 @@ The code above compiles and it allows you to use a single reducer with many diff
 
 In this article, we saw that JavaScript allows us to have mixed kind of data in a single argument which we would act differently depending on the type (specified in a string). Then, we realized that when it's time to type, that it can be problematic since TypeSCript expects to have a clear idea of what type is needed before proceeding with the information. Finally, a solution that embraces strong type, union and type guard was proposed to accommodate Redux and being strongly typed.
 
-Articles of the series:
+### Articles of the series:
 
 1. [TypeScript, React and Redux](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-1-the-big-picture)
 2. [TypeScript and Redux Store](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-2-creating-the-store-and-the-reducer)
 3. [TypeScript Redux Store Binding](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-3-binding-the-store-and-component)
 4. [TypeScript Redux Action Creators](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-4-multiple-returns-from-action-creator)
-[](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-4-multiple-returns-from-action-creator)6. [](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-4-multiple-returns-from-action-creator)[TypeScript, React and Redux Part 5 : Reducer with Different Actions](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-5-reducer-with-different-actions)
-[](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-5-reducer-with-different-actions)
+5. [TypeScript, React and Redux Part 5 : Reducer with Different Actions](http://patrickdesjardins.com/blog/typescript-react-and-redux-part-5-reducer-with-different-actions)

@@ -40,7 +40,7 @@ From here you should see some scenario where it makes sense to use decorator or 
 To be able to have parameter, we must wrap the decorator into a function. Then, we need to return a function that has 3 parameters. The first one is the target which is the class prototype. This will allow us to dig inside the class to get into the method which is defined by the second parameter. Finally, the third parameter is a variable that contain the value of the method -- this is where we will define the new method we want to swap from the original. As you saw in the previous way to do, we needed to have a callback that was executed between two statements. This is similar. We will extract the actual method and reuse this one between two statements and return a "new" methods into the value.
 
 ```typescript
-export function performanceLog(outputConsole: boolean, thresholdToDisplayErrorInMs: number = 1000) { /\*\* \* @params{any} target - The prototype of the class (Object). \* @params{string} propertyKey - The name of the method. \* @params{PropertyDescriptor} descriptor - Property that has a value (in that case the method) \*/ return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => { } } 
+export function performanceLog(outputConsole: boolean, thresholdToDisplayErrorInMs: number = 1000) { /** * @params{any} target - The prototype of the class (Object). * @params{string} propertyKey - The name of the method. * @params{PropertyDescriptor} descriptor - Property that has a value (in that case the method) */ return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => { } } 
 ``` 
 
 

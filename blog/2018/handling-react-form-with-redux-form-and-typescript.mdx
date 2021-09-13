@@ -26,7 +26,7 @@ Field name="myPropertyInsideWritableObject.CanGoDeep"
 
 The second drawback is that every value entered in fields are pushed back by action in Redux as a string. It means that when you receive the information back and it’s time to map the state to the property to connect the information back to the user interface, you will receive an object, but not with the value specified by TypeScript. It’s worth mentioning that the initial values that are passed to Redux-Form can be from any type (number, boolean) and Redux-Form will store them like it is, with the same type. The issue is around persisting when a user changes a value. There is no mechanism to convert automatically to the desired type.
 
-const formInputsValues = state.form[FORM\_NAME] as ReduxFormState<MyComponentWritableModel>; // The problem is that form[x] contains only data from the inputs which are string
+const formInputsValues = state.form[FORM_NAME] as ReduxFormState<MyComponentWritableModel>; // The problem is that form[x] contains only data from the inputs which are string
 
 Redux-Form is built around the concept that errors will be handled with promise, and failure of the promise will cause the form to fail. I’d rather not have the component tightly coupled with the logic and send my information by action and my middleware performs the action. This is unfortunate, and the cleanest way I found was to provide functions that are decoupled from the component, in their files, and attached to the form (or components). However, for a component called “Redux-Form”, I would prefer an option that would let me handle the validation in a middleware through a specific action that could be listened to and then sending another action with the validations.
 

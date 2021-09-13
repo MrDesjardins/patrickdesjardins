@@ -19,7 +19,7 @@ Modifying an existing entity with Entry is also possible without loading this on
  private static void EntryToModifyExistingEntityWithoutLoadingFromDatabase() { using (var context = new YourContext()) { Console.WriteLine(context.Persons.Local.Count); //0 var existingPerson = new Person { Id=1, Name = "Updated Name"}; context.Persons.Attach(existingPerson); var entryPerson = context.Entry(existingPerson); Console.WriteLine(context.Persons.Local.Count); //1 entryPerson.Property(d => d.Name).IsModified = true; Console.WriteLine(context.Persons.Local.Count); //1 context.SaveChanges(); } } 
 ``` It produces a SQL statement with only a single SET. 
 ```sql
- exec sp\_executesql N'UPDATE [dbo].[People] SET [Name] = @0 WHERE ([Id] = @1) ',N'@0 nvarchar(max) ,@1 int',@0=N'Updated Name',@1=1 
+ exec sp_executesql N'UPDATE [dbo].[People] SET [Name] = @0 WHERE ([Id] = @1) ',N'@0 nvarchar(max) ,@1 int',@0=N'Updated Name',@1=1 
 ```
 
 

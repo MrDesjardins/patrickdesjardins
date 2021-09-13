@@ -46,7 +46,7 @@ Finally, the componentDidUpdate has the role to push the values to the chart. Th
 ```typescript
 public componentDidUpdate() { if (this.hightChartContainer !== null && this.highChartControl !== undefined && this.props.source.graphData !== undefined) { const data = this.props... // Get your data const series: GraphData[] = []; while (this.highChartControl.series.length > 0) { this.highChartControl.series[0].remove(false); }
 
-// Values dimension represent each series scenarioUpdate.addMarker("CreateSeries"); rawValues.forEach((value: number[], index: number) => { const time = data.start + index \* data.step; for (let iSerie = 0; iSerie < value.length; iSerie++) { if (index === 0) { // Only first time we create series series.push({ seriesName: data.legend[iSerie], seriesValues: [] }); } series[iSerie].seriesValues.push({ time: time, value: value[iSerie] }); } });
+// Values dimension represent each series scenarioUpdate.addMarker("CreateSeries"); rawValues.forEach((value: number[], index: number) => { const time = data.start + index * data.step; for (let iSerie = 0; iSerie < value.length; iSerie++) { if (index === 0) { // Only first time we create series series.push({ seriesName: data.legend[iSerie], seriesValues: [] }); } series[iSerie].seriesValues.push({ time: time, value: value[iSerie] }); } });
 
 let loopCount = 0; series.forEach((serieData: GraphData, index: number) => { if (this.highChartControl !== undefined) { const values = serieData.seriesValues.map((d: GraphDataValue) => { loopCount++; return [d.time, d.value]; }); this.highChartControl.addSeries({}, false, false); this.highChartControl.series[index].setData(values, false, false, false); this.highChartControl.series[index].update({ name: serieData.seriesName }, false); } });
 

@@ -9,6 +9,6 @@ If you are using Visual Studio Team Services (VSTS) for your continuous integrat
 
 VSTS' build system can run the Visual Studio Test step with **test filter criteria**. This is where you can define which **TestCategory** you want to execute. ![](images/VstsTestCategory.png)
 
-This is not really obvious from VSTS website what you can put there. The "i" icon gives you some information but this is quite limited. A better user interface (UI) would have been to have a quick cheat sheet available on the "i". Nevertheless, you can type "TestCategory=YOUR\_CATEGORY" where YOUR\_CATEGORY is the one defined in the test.
+This is not really obvious from VSTS website what you can put there. The "i" icon gives you some information but this is quite limited. A better user interface (UI) would have been to have a quick cheat sheet available on the "i". Nevertheless, you can type "TestCategory=YOUR_CATEGORY" where YOUR_CATEGORY is the one defined in the test.
 
 At this point, you are almost done. I didn't had any test category defined on any test since tests were divided by assemblies before. Now, they are all in the same. The quickest way to add test category to test was to go on each file, open these related to unit test and do a search and replace on open files. The searching query is for _[TestMethod]_. The replacement is _[TestMethod][TestCategory("UnitTest")]_. From there, you just need to commit and push you change and see the CI running the unit tests.

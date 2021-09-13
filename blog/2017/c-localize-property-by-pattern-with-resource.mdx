@@ -36,23 +36,23 @@ This class uses the generic _ClassResourceManager_ that define which resource fi
 
 
 ```csharp
- public class ClassResourceManager { public static string ERROR\_MESSAGE\_FORMAT = "[{0}] not found for language [{1}] in file [{2}]";
+ public class ClassResourceManager { public static string ERROR_MESSAGE_FORMAT = "[{0}] not found for language [{1}] in file [{2}]";
 
 public ClassResourceManager(ResourceManager resourceManager) { this.ResourceManager = resourceManager; }
 
 public ResourceManager ResourceManager { get; set; }
 
-public string GetLocalizationFor(string key, LanguageType language) { string languageTwoLetters = ""; switch (language) { case LanguageType.English: languageTwoLetters = "en"; break; case LanguageType.French: languageTwoLetters = "fr"; break; } try { var resourceString = this.ResourceManager.GetString(key, CultureInfo.CreateSpecificCulture(languageTwoLetters)); if (resourceString == null) { return string.Format(ERROR\_MESSAGE\_FORMAT, key, language, this.GetResourceFileName()); } return resourceString; } catch (Exception) { return string.Format(ERROR\_MESSAGE\_FORMAT, key, language, this.GetResourceFileName()); }
+public string GetLocalizationFor(string key, LanguageType language) { string languageTwoLetters = ""; switch (language) { case LanguageType.English: languageTwoLetters = "en"; break; case LanguageType.French: languageTwoLetters = "fr"; break; } try { var resourceString = this.ResourceManager.GetString(key, CultureInfo.CreateSpecificCulture(languageTwoLetters)); if (resourceString == null) { return string.Format(ERROR_MESSAGE_FORMAT, key, language, this.GetResourceFileName()); } return resourceString; } catch (Exception) { return string.Format(ERROR_MESSAGE_FORMAT, key, language, this.GetResourceFileName()); }
 
 }
 
 public LocalizedString GetLocalizationFor(string key) { return new LocalizedString { French = this.GetLocalizationFor(key, LanguageType.French), English = this.GetLocalizationFor(key, LanguageType.English) }; }
 
-public LocalizedString GetLocalizationNameByClassName(object objectReference) { var objectType = objectReference.GetType(); var name = objectType.Name + "\_Name"; return new LocalizedString { French = this.GetLocalizationFor(name, LanguageType.French), English = this.GetLocalizationFor(name, LanguageType.English) }; }
+public LocalizedString GetLocalizationNameByClassName(object objectReference) { var objectType = objectReference.GetType(); var name = objectType.Name + "_Name"; return new LocalizedString { French = this.GetLocalizationFor(name, LanguageType.French), English = this.GetLocalizationFor(name, LanguageType.English) }; }
 
-public LocalizedString GetLocalizationDescriptionByClassName(object objectReference) { var objectType = objectReference.GetType(); var name = objectType.Name + "\_Description"; return new LocalizedString { French = this.GetLocalizationFor(name, LanguageType.French), English = this.GetLocalizationFor(name, LanguageType.English) }; }
+public LocalizedString GetLocalizationDescriptionByClassName(object objectReference) { var objectType = objectReference.GetType(); var name = objectType.Name + "_Description"; return new LocalizedString { French = this.GetLocalizationFor(name, LanguageType.French), English = this.GetLocalizationFor(name, LanguageType.English) }; }
 
 private string GetResourceFileName() { return this.ResourceManager.BaseName; } } 
-``` The _ClassResourceManager_ has a pointer to the resource file and use the name of the child class to concatenate with the property string name. For example, with _ClassA_, the developer must defined in the resource file _ClassA\_Title_ and _ClassA\_Description_. If the developer forget, the code will thrown an exception telling exactly which resource name is missing which is convenient and pretty clear.
+``` The _ClassResourceManager_ has a pointer to the resource file and use the name of the child class to concatenate with the property string name. For example, with _ClassA_, the developer must defined in the resource file _ClassA_Title_ and _ClassA_Description_. If the developer forget, the code will thrown an exception telling exactly which resource name is missing which is convenient and pretty clear.
 
 The whole idea is to stop having manual entries for localized string at the cost of depending on a pattern for properties that are shared across all children. Since we know which properties the parent needs to be localized, it's easy to have this one handle how to retrieve the localized string from a specific resource file.

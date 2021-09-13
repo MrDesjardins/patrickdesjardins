@@ -10,11 +10,11 @@ Having to update an object from an edit action is pretty standard. In fact, it's
 
 
 ```csharp
- [AcceptVerbs(HttpVerbs.Post)] public ActionResult Edit(FormCollection form) { // Get movie to update var id = Int32.Parse(form["id"]); var movieToUpdate = \_db.MovieSet.First(m => m.Id == id);
+ [AcceptVerbs(HttpVerbs.Post)] public ActionResult Edit(FormCollection form) { // Get movie to update var id = Int32.Parse(form["id"]); var movieToUpdate =_db.MovieSet.First(m => m.Id == id);
 
 // Deserialize (Include white list!) TryUpdateModel(movieToUpdate, new string[] { "Title", "Director" }, form.ToValueProvider());
 
-// If valid, save movie to database if (ModelState.IsValid) { \_db.SaveChanges(); //... } 
+// If valid, save movie to database if (ModelState.IsValid) {_db.SaveChanges(); //... } 
 ```
 
 Or, you could use the ability of auto binding each http parameters:

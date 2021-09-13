@@ -10,6 +10,6 @@ Stripping attribute from HTML can be time consuming if you do it manually. Since
 
 ```html  data-info="this is value 1" data-info="thisIsValue2" 
 ```  The Regex to parse all string and is the following one. It takes the part that does not change and search for everything not a double quote. The Regex part that does this is the square bracket following by the ^ symbol. It informs the Regex to search everything until it finds the double quote. The "everything" is specified by the star character that is following the ending square bracket. ```typescript
-data-info=\\"[^"]\*\\" 
+data-info=\\"[^"]*\\" 
 ``` 
 

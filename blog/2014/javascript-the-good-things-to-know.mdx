@@ -15,10 +15,10 @@ console.log(typeof(null)); console.log(typeof([1,2,3]);
 ## Variables Name
 
 Variables name can have illegal character if used with quote when defined. For example, you can use **numeric** and **alphanumeric character** with **underscore** but you cannot use directly a dash for example. The variable name this-is-illegal is not legal but if you define your object with the property name "this-is-illegal" it works. ```typescript
-var yourObject = { "this-is-illegal":"but it works because of the quote", this\_is\_legal : "and does not require quote" }; 
+var yourObject = { "this-is-illegal":"but it works because of the quote", this_is_legal : "and does not require quote" }; 
 ``` 
  Even if the illegal character can be by-passed by the first approach, using quote, it is not recommended to write you code this way. Retreving the value require to use the array notation instead of the dot notation. ```typescript
-var v1 = yourObject["this-is-illegal"]; //instead of var v1 = yourObject.this\_is\_legal; 
+var v1 = yourObject["this-is-illegal"]; //instead of var v1 = yourObject.this_is_legal; 
 ``` 
 
 
@@ -114,7 +114,7 @@ You can throw exception and catch them. The exception throw an object you want. 
 throw {name: 'Error Name', message : 'message you want'}; 
 ``` 
  Thrown statement are read by catch block. If you want to catch multiple exception, than you must do a if statement on a property you want, for example the name. ```typescript
-try { throw {name: 'StackOverFlow', message : 'message you want'}; } catch(e) { if(e.name === 'StackOverFlow') { console.log('\*\*\*' + e.name + ': ' + e.message + '\*\*\*'); } console.log(e.name + ': ' + e.message); } 
+try { throw {name: 'StackOverFlow', message : 'message you want'}; } catch(e) { if(e.name === 'StackOverFlow') { console.log('***' + e.name + ': ' + e.message + '***'); } console.log(e.name + ': ' + e.message); } 
 ``` 
 
 

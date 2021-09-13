@@ -44,12 +44,12 @@ Steps are pretty straightforward. The class contains a one to one relationship w
 public HelpStep(string title, string content, JRaw target, string placement) { this.Title = title; this.Content = content; this.Target = target; this.Placement = placement; } public string Title { get; set; } public string Content { get; set; } public JRaw Target { get; set; } public JRaw OnPrev { get; set; } public JRaw OnNext { get; set; } public JRaw OnShow { get; set; } public string Placement { get; set; } } 
 ``` The Target property is the JQuery selector to the item. This could be also a straight JavaScript selector to the Dom element. The next part is to have something that use the View Model and to generate the HopScotch code. The partial view that hack has an helper is only used when the View Model implement the IHelp interface. Inside the layout.cshtml : 
 ```csharp
- @if (Model is IHelp) { @Html.Partial("\_helpScript", Model as IHelp) } 
+ @if (Model is IHelp) { @Html.Partial("_helpScript", Model as IHelp) } 
 ``` This code call the partial view: 
 ```csharp
  @model ViewModel.Infrastructures.Definitions.IHelp <script type="text/javascript"> @{ var infoTour = Model.GetHelp(); } var tour = { id: "@infoTour.TourId", steps: @Html.Raw(infoTour.StepsJson), onClose : @infoTour.OnClose, onError : function (e){console.log(e);}, showPrevButton: false };
 
-//See \_Header.cshtml for the ID $('#page-help-button').click(function () { hopscotch.startTour(tour); });
+//See_Header.cshtml for the ID $('#page-help-button').click(function () { hopscotch.startTour(tour); });
 
 </script> 
 ``` This create the help (called tour in Hopscotch). Then, it add to the help button the action to start the help wizard. The generated code look like the one that can be found in the official website. To create the first help wizard, you just need to have your view model having the implementation using the IHelp. Here is an example: 

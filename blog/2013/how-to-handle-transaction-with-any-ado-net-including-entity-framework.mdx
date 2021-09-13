@@ -24,7 +24,7 @@ The last thing that you must know is if you are using the transaction from the D
 
 
 ```csharp
- var con = new SqlConnection(/\*Connection string\*/); con.Open(); var transaction = con.BeginTransaction(); var cmd1 = con.CreateCommand() var cmd2 = con.CreateCommand() cmd1.Transaction = transaction; cmd2.Transaction = transaction; cmd1.Execute(); cmd2.Execute(); //Later transaction.Commit() or transaction.Rollback(); 
+ var con = new SqlConnection(/*Connection string*/); con.Open(); var transaction = con.BeginTransaction(); var cmd1 = con.CreateCommand() var cmd2 = con.CreateCommand() cmd1.Transaction = transaction; cmd2.Transaction = transaction; cmd1.Execute(); cmd2.Execute(); //Later transaction.Commit() or transaction.Rollback(); 
 ```
 
 Every transactions has an **Isolation Level**. The isolation level specify what access the transaction can reach with volatile data. The isolation is set when opening the transaction with SqlConnection.BeginTransaction method.
@@ -42,5 +42,5 @@ If you verify the DbCommand, you will see that by default this one has also a tr
 
 
 ```csharp
- var con = new SqlConnection(/\*Connection string\*/); con.Open(); var transaction = con.BeginTransaction(); //... transaction.Commit(); OR transaction.Rollback(); 
+ var con = new SqlConnection(/*Connection string*/); con.Open(); var transaction = con.BeginTransaction(); //... transaction.Commit(); OR transaction.Rollback(); 
 ```

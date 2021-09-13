@@ -9,11 +9,11 @@ If you have a parent->child relationship between two of your classes and you del
 
 
 ```sql
- CREATE TABLE [Parent]( [ID] [int] IDENTITY(1,1) NOT NULL, [Description] [nvarchar](100) NULL, CONSTRAINT [PK\_Parent] PRIMARY KEY CLUSTERED GO
+ CREATE TABLE [Parent]( [ID] [int] IDENTITY(1,1) NOT NULL, [Description] [nvarchar](100) NULL, CONSTRAINT [PK_Parent] PRIMARY KEY CLUSTERED GO
 
-CREATE TABLE [ParentDetail]( [ID] [int] IDENTITY(1,1) NOT NULL, [Parent\_ID] [int] NOT NULL, CONSTRAINT [PK\_ParentDetail] PRIMARY KEY CLUSTERED GO
+CREATE TABLE [ParentDetail]( [ID] [int] IDENTITY(1,1) NOT NULL, [Parent_ID] [int] NOT NULL, CONSTRAINT [PK_ParentDetail] PRIMARY KEY CLUSTERED GO
 
-ALTER TABLE [ParentDetail] WITH CHECK ADD CONSTRAINT [FK\_ParentDetail\_Parent] FOREIGN KEY([Parent\_ID]) REFERENCES [Parent] ([ID]) ON DELETE CASCADE GO 
+ALTER TABLE [ParentDetail] WITH CHECK ADD CONSTRAINT [FK_ParentDetail_Parent] FOREIGN KEY([Parent_ID]) REFERENCES [Parent] ([ID]) ON DELETE CASCADE GO 
 ```
 
 
@@ -23,7 +23,7 @@ The problem is that if you are using Entity Framework 4.3 and try to delete a Pa
 
 The inner exception message will contain something similar to this:
 
-> Cannot insert the value NULL into column 'Parent\_ID', table 'ParentDetail'; column does not allow nulls. UPDATE fails. The statement has been terminated.
+> Cannot insert the value NULL into column 'Parent_ID', table 'ParentDetail'; column does not allow nulls. UPDATE fails. The statement has been terminated.
 
 So, what does it means? It tries to delete the Parent and to set into each ParentDetail the ID NULL because it's been erased. This is not what we want. In fact, we would like to have all ParentDetail to me removed as well. This is a little bit the reason why we have specify on the SQL to have a cascade.
 

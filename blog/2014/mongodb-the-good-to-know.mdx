@@ -18,7 +18,7 @@ db.users.insert({name:"patrick", age:30}) db.users.insert({name:"mélodie", age:
 
 When you document get over **16 megs**, Mongo divide it into part. The need of GridFS is than required to reassemble every part of the document.
 
-In MongoDB you can allow the system to generate the unique identifier by not setting any \_id. But, you can also take the liberty to assign the \_id when inserting your document.
+In MongoDB you can allow the system to generate the unique identifier by not setting any_id. But, you can also take the liberty to assign the_id when inserting your document.
 
 It is better to store one to many reference into the "one side". This way, you do not have a huge array in the "many side". You can also reference something that does not exist yet. For example, if A reference B, you can insert A with a reference to B and then insert B.
 
@@ -34,7 +34,7 @@ It is possible to write with the MongoDb command **insert**, **update**, **findA
 The update command can be executed against a collection. This one has three parameters. The first one is the query. You can specify the unique identifier of the data your want to update or to any other criteria. This can be useful for embedded resource to query multiple documents that has the same embedded information. The second parameter is what we are updating. We can update the whole document or a part of it. It is also possible to push ($push) information into an existing array or to increment/decrement value of a field. The following example come from the MongoDB website and it update a book by its ID only if this one has available book on the shelve. It update by decreasing the number of available copies and push a new entry about who checkout the book. This is all done atomicly.
 
 ```typescript
-db.books.update ( { \_id: 123, available: { $gt: 0 } }, { $inc: { available: -1 }, $push: { checkout: { by: "abc", date: new Date() } } } ) 
+db.books.update ( {_id: 123, available: { $gt: 0 } }, { $inc: { available: -1 }, $push: { checkout: { by: "abc", date: new Date() } } } ) 
 ``` 
 
 

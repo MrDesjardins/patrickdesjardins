@@ -17,11 +17,11 @@ declare @dob2 as decimal(16,4) set @dob2 = CONVERT(decimal(16,4),5455531234268.6
 ```
 
 
-In my case, the problem was that I was performing an update in a field by executing a multiplication. field = field \* 1/2. The problem was that field was already, in some case, at 0 and sometime above the maximum which is 12 (16-4) digits. Even if the following code work fine.
+In my case, the problem was that I was performing an update in a field by executing a multiplication. field = field * 1/2. The problem was that field was already, in some case, at 0 and sometime above the maximum which is 12 (16-4) digits. Even if the following code work fine.
 
 
 ```sql
- declare @dob3 as int set @dob3 = cast(0\*1/2 as int) select @dob3 
+ declare @dob3 as int set @dob3 = cast(0*1/2 as int) select @dob3 
 ```
 
 
@@ -33,7 +33,7 @@ This one was not:
 
 set @fromValue = 1 set @toValue = 2
 
-SELECT cast(Quantity \* @fromValue/@toValue as int) as newQuantity FROM [Trading].[Stock] 
+SELECT cast(Quantity * @fromValue/@toValue as int) as newQuantity FROM [Trading].[Stock] 
 ```
 
 
@@ -45,6 +45,6 @@ However, adding a **where** clause eliminates edge cases to be proceeded. The tr
 
 set @fromValue = 1 set @toValue = 2
 
-SELECT cast(Quantity \* @fromValue/@toValue as int) as newQuantity FROM [Trading].[Stock] WHERE Quantity > 0 AND Quantity < 999999999999 
+SELECT cast(Quantity * @fromValue/@toValue as int) as newQuantity FROM [Trading].[Stock] WHERE Quantity > 0 AND Quantity < 999999999999 
 ```
 

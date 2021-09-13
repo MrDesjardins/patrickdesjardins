@@ -37,7 +37,7 @@ public void Dispose() { if (tracer != null) { tracer.CommandFinish(); } } }
 
 private IMessageBroker MessageBroker { get { return messageBroker ?? (messageBroker = GlimpseConfiguration.GetConfiguredMessageBroker()); } set { messageBroker = value; } }
 
-private IExecutionTimer TimerStrategy { get { return timerStrategy ?? (timerStrategy = GlimpseConfiguration.GetConfiguredTimerStrategy()()); } set { timerStrategy = value; } } private const string LABEL = "Cache"; private const string COLOR = "#555"; private const string COLOR\_HIGHLIGHT = "#55ff55"; private string command; private string key; private TimeSpan start;
+private IExecutionTimer TimerStrategy { get { return timerStrategy ?? (timerStrategy = GlimpseConfiguration.GetConfiguredTimerStrategy()()); } set { timerStrategy = value; } } private const string LABEL = "Cache"; private const string COLOR = "#555"; private const string COLOR_HIGHLIGHT = "#55ff55"; private string command; private string key; private TimeSpan start;
 
 public void CommandStart(string command, string key) { if (TimerStrategy == null) return; this.start = TimerStrategy.Start(); this.command = command; this.key = key; }
 
@@ -45,7 +45,7 @@ public void CommandFinish() { if (TimerStrategy == null || MessageBroker == null
 
 var timerResult = TimerStrategy.Stop(start);
 
-var message = new CacheTimelineMessage(this.command, this.key) .AsTimelineMessage(command + ": " + key, new TimelineCategoryItem(LABEL, COLOR, COLOR\_HIGHLIGHT)) .AsTimedMessage(timerResult);
+var message = new CacheTimelineMessage(this.command, this.key) .AsTimelineMessage(command + ": " + key, new TimelineCategoryItem(LABEL, COLOR, COLOR_HIGHLIGHT)) .AsTimedMessage(timerResult);
 
 MessageBroker.Publish(message); } } 
 ```

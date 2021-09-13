@@ -46,13 +46,13 @@ This is different from MvcHtmlString.Create()
 ```csharp
  public sealed class MvcHtmlString : HtmlString { public static readonly MvcHtmlString Empty = Create(String.Empty);
 
-private readonly string \_value;
+private readonly string_value;
 
-public MvcHtmlString(string value) : base(value ?? String.Empty) { \_value = value ?? String.Empty; }
+public MvcHtmlString(string value) : base(value ?? String.Empty) {_value = value ?? String.Empty; }
 
 public static MvcHtmlString Create(string value) { return new MvcHtmlString(value); }
 
-public static bool IsNullOrEmpty(MvcHtmlString value) { return (value == null || value.\_value.Length == 0); } } 
+public static bool IsNullOrEmpty(MvcHtmlString value) { return (value == null || value._value.Length == 0); } } 
 ```
 
 Are you can see, this one return a MvcHtmlString. At the end, both return something similar and encoded html.

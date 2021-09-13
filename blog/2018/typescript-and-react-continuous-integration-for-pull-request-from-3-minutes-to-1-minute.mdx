@@ -13,14 +13,14 @@ At Netflix, software engineers own the full lifecycle of an application, from ga
 
 The first step was to add the unit tests. Yes! The first few months only the build was running. Mainly because we are using Bitbucket and Jenkins and I never took the time to configure everything -- and it is not straightforward to get [coverage with Jenkins for JavaScript code](https://patrickdesjardins.com/blog/unit-tests-and-coverage-report-in-jenkins-using-jest-from-create-react-app). Nevertheless, I was using the create-react-app "react-scripts-ts build" commands which are way slower than running the command "react-scripts-ts test --env=jsdom --coverage". In my case, it trimmed 1 minutes 30 seconds.
 
-Still, I was observing in the remaining 1 minute 30 seconds a waste of 1 minute trying to get node\_modules by the command "npm install" regardless of my step specifying "npm ci". The difference between "install" and "ci" is that the first one is slower because it performs a task for the package-lock.json which the "ci" command skip by relying on an existing generated package-lock.json file
+Still, I was observing in the remaining 1 minute 30 seconds a waste of 1 minute trying to get node_modules by the command "npm install" regardless of my step specifying "npm ci". The difference between "install" and "ci" is that the first one is slower because it performs a task for the package-lock.json which the "ci" command skip by relying on an existing generated package-lock.json file
 
 ### Moving from 1 minute 30 seconds to 1 minute 10 seconds
 
-The install command was bothering me and I found out that we had some internal process taking over some steps. To keep it show, I had to do some modification. First, in Jenkins, you can preserve folder like the node\_modules. This is under "Build Environment". Do not forget to check the "Apply pattern also on directories". However, the problem is still npm. The "ci" removes the node\_module. We are not more advanced than before. So, the idea is to use back the install command.
+The install command was bothering me and I found out that we had some internal process taking over some steps. To keep it show, I had to do some modification. First, in Jenkins, you can preserve folder like the node_modules. This is under "Build Environment". Do not forget to check the "Apply pattern also on directories". However, the problem is still npm. The "ci" removes the node_module. We are not more advanced than before. So, the idea is to use back the install command.
 
 ![](images/Exclude.png)
 
 ### Conclusion
 
-There is still some room for improvement. To be honest, I had to completely not delete the whole workspace to have it to work. Jenkins was removing all the time the node\_modules regardless of the syntax I was using. I also found suspecious that it takes 20 seconds for npm install to figure out that nothing has changed -- that is very slow. I'll have to investigate further with yarn.
+There is still some room for improvement. To be honest, I had to completely not delete the whole workspace to have it to work. Jenkins was removing all the time the node_modules regardless of the syntax I was using. I also found suspecious that it takes 20 seconds for npm install to figure out that nothing has changed -- that is very slow. I'll have to investigate further with yarn.

@@ -36,7 +36,7 @@ TypeScript has 3,429 [3] definition files and this doesn’t count a definition 
 
 A small detail about definition files is that Microsoft offers a “pull request mechanism” [5] for a missing definition file as well as accepts a pull request on GitHub. Flow is also accepting a pull request from contributors outside Facebook, but I haven’t found a mechanism to request a library file to Facebook.
 
-At the end, if you are choosing TypeScript you will have all your definition files under the common NPM directory node\_module. With Flow, it will be under a folder named flowtyped. It is not a big difference and on balance doesn’t change anything. If I can bring up my personal point of view, I would say that I like that Microsoft went in the existing and wellknown tool NPM and went away from their initial design. Even if it took them three iterations to achieve that goal, it’s now in a place that JavaScript developers know, using a tool that is known and doesn’t depend on a homemade solution.
+At the end, if you are choosing TypeScript you will have all your definition files under the common NPM directory node_module. With Flow, it will be under a folder named flowtyped. It is not a big difference and on balance doesn’t change anything. If I can bring up my personal point of view, I would say that I like that Microsoft went in the existing and wellknown tool NPM and went away from their initial design. Even if it took them three iterations to achieve that goal, it’s now in a place that JavaScript developers know, using a tool that is known and doesn’t depend on a homemade solution.
 
 This had a big impact for me and the team. Being able to use a well-known tool like NPM to reach thousands of types gives us an edge to jump on third parties where we do not know by heart all signatures or potential members. It is something that we thought was a significant decider in our final decision. Again, all depends on your needs.
 
@@ -179,7 +179,7 @@ I migrated one of my small projects, which is a React project. Here is the TypeS
 "jsx": "react"
 },
 "include": [
-"app/scripts/\*\*/\*"
+"app/scripts/**/*"
 ]
 }
 
@@ -195,12 +195,12 @@ Flow and BabelJs:
 ``` 
 //.flowconfig
 [ignore]
-.\*/node\_moduless/\*.\*
-.\*/deploy/\*.\*
-.\*/lib/\*.\*
+.*/node_moduless/*.*
+.*/deploy/*.*
+.*/lib/*.*
 
 [include]
-.\*/app/scripts
+.*/app/scripts
 
 [libs]
 
@@ -208,8 +208,8 @@ Flow and BabelJs:
 
 [options]
 esproposal.decorators=ignore
-esproposal.class\_static\_fields=ignore
-esproposal.class\_instance\_fields=ignore
+esproposal.class_static_fields=ignore
+esproposal.class_instance_fields=ignore
 
 //.babelrc
 {
@@ -277,7 +277,7 @@ In this article, I illustrated the main difference of TypeScript being more than
 [6] https://github.com/Microsoft/TypeScript/wiki/Roadmap  
 [7] https://github.com/Microsoft/TypeScript/milestones  
 [8] https://github.com/facebook/flow/milestones  
-[9] https://en.wikipedia.org/wiki/Anders\_Hejlsberg  
+[9] https://en.wikipedia.org/wiki/Anders_Hejlsberg  
 [10] https://www.linkedin.com/in/mroch/  
 [11] https://github.com/Microsoft/TypeScript/wiki/TypeScript-Editor-Support  
 [12] https://flow.org/en/docs/editors/  
