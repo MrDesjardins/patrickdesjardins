@@ -60,7 +60,9 @@ for (var destinationDir in modulesToMove) { gulp.src(paths.node_modules + module
 
 Finally, the biggest task : building. This need to create the TypeScript and if needed definition files. We use the tsProject variable that come from the tsconfig.json, get all the source, generate the source map, compile. After, we take all definition file and write everything at the destination path. Then, we do the same with JavaScript file where we write the source map and source in the destination folder. Here how it looks:
 
-[javascript]
+
+```javascript
+
 
 gulp.task("build", function () { var sourceTsFiles = [paths.typescript_in, paths.typescript_definitions]; var compilationResults = tsProject.src() .pipe(sourcemaps.init()) .pipe(tsProject()) compilationResults.dts.pipe(gulp.dest(paths.typescript_out)); return compilationResults.js .pipe(sourcemaps.write('.')) .pipe(gulp.dest(paths.typescript_out)); }); 
 ``` 

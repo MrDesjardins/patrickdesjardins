@@ -7,6 +7,10 @@ categories:
 
 Instead of adding a Html tag after floating division, it's better to add a class that will do this. It's better because you do not have to alter the Html for visual stuff that the CSS is designed too handle. The solution is known as "Clear fix". It's possible with CSS 2.0 to add :after which will add an element after the one that will carry this class.
 
-[css] .clear-fix:after { visibility: hidden; display: block; font-size: 0; line-height: 0; content: " "; clear: both; height: 0; width: 0; } [/css]
+
+```css
+ .clear-fix:after { visibility: hidden; display: block; font-size: 0; line-height: 0; content: " "; clear: both; height: 0; width: 0; } 
+```
+
 
 In fact, this will create an invisible division after any dom element that has the clear-fix class. It will act the same as the old way to do it with an empty division with the clear:both style. But it's cleaner.

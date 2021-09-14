@@ -17,13 +17,17 @@ $("#buttonSelector").click(function () { $(this).button('loading'); // Long wait
 
 So far, the text is changing but their is not animation. A trick is to use a glyphicon, available with Bootstrapper, and to make this one animate with CSS3. The first modification is to set the **data-loading-text** attribute with the glyphicon code. This mean that we will set html into the attribute. 
 ```html  <button id="buttonSelector" class="btn btn-primary" data-loading-text="<span class='glyphicon-left glyphicon glyphicon-refresh spinning'></span>... Loading ..."> Do long action here</button> 
-```  The JavaScript remains the same but a new addition is required in the CSS. [css] .glyphicon.spinning { animation: spin 1s infinite linear; -webkit-animation: spin2 1s infinite linear; }
+```  The JavaScript remains the same but a new addition is required in the CSS. 
+```css
+ .glyphicon.spinning { animation: spin 1s infinite linear; -webkit-animation: spin2 1s infinite linear; }
 
 @keyframes spin { from { transform: scale(1) rotate(0deg);} to { transform: scale(1) rotate(360deg);} }
 
 @-webkit-keyframes spin2 { from { -webkit-transform: rotate(0deg);} to { -webkit-transform: rotate(360deg);} }
 
-.glyphicon-left { margin-right: 7px; } [/css]
+.glyphicon-left { margin-right: 7px; } 
+```
+
 
 The animation is 1 second long and is linear which mean that during the 1 second the animation will remain constant. The spin animation is a transform on the rotation from 0 degree to 360 degree which is a complete rotation. Here is the end result.
 

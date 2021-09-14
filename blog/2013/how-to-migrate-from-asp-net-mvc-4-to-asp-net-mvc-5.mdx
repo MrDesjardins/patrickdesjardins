@@ -24,9 +24,8 @@ This may take several minutes if you use a lot of package. This will do about ha
 
 The third step is to be done in every of your project. I suggest you start from your web site project since it's the one that will have the most job to do. Open the web.config of the web project. Verify that you have Entity Framework set to version 6. The information is set inside configuration>configSections inside a section named "EntityFramework".
 
-
 ```xml
- <configuration> <configSections> <section name="entityFramework" type="System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false"/> ................... 
+ <configuration> <configSections> <section name="entityFramework" type="System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false"/> 
 ```
 
 
@@ -38,7 +37,9 @@ The screenshot show you that not only the version is set to version 6.0.0.0 but 
 
 The next step is to go lower in your web.config to the appSetting section. You need to update the version of webpages from 2.0.0.0 to 3.0.0.0
 
-[xml 1="<appSettings>" 2="<add" key="webpages:Version" 3="value="3.0.0.0"/>" 4="....." 5="[/xml" language="....."]
+```xml
+<appSettings><add key="webpages:Version" "value="3.0.0.0"/>
+``` 
 
 Then, you need to set the framework to 4.5.1 (if you want to be all up to date). This can be done in the web.config also inside the configuration tag, under system.web:
 
@@ -48,7 +49,9 @@ Then, you need to set the framework to 4.5.1 (if you want to be all up to date).
 ```
 
 
-Before going any further in the web.config. Do not forget to open ALL your project to go in the properties of the project and to select the Target Framework to 4.5.1. ![](images/ApplicationPropertiesTargetFramework-400x237.png)
+Before going any further in the web.config. Do not forget to open ALL your project to go in the properties of the project and to select the Target Framework to 4.5.1. 
+
+![](images/ApplicationPropertiesTargetFramework-400x237.png)
 
 Back to the web.config, we have the runtime tag to update. Here is my runtime information, yours should be almost the same.
 
@@ -84,6 +87,6 @@ Now, do that in all your web.config that contain similar XML elements. Once it's
 
 You have 3 entries to change for razor. You need to change version 2.0.0.0 to version 3.0.0.0. Also, System.Web.Mvc.MvcWebRazorHostFactory, System.Web.Mvc need to be to 5.0.0.0. Then, under pages you have 3 others change concerning MVC that need to be to version 5.
 
-The last modification that is require to use MVC5 is to open with note pad the project file of the web. Search for _ProjectTypeGuids_ and remove the GUID for MVC4 : {E3E379DF-F4C6-4180-9B81-6769533ABE47}.
+The last modification that is require to use MVC5 is to open with note pad the project file of the web. Search for `ProjectTypeGuids` and remove the `GUID` for MVC4 : `{E3E379DF-F4C6-4180-9B81-6769533ABE47}`.
 
 You won't have the stuff that a brand new MV5 project has like BootStrap but this can be added later on. What you have is a project up-to-date with Microsoft MVC framework 5, Entity Framework 6 and using the .Net Framework 4.5.1

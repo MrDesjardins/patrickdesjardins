@@ -38,39 +38,255 @@ I share to you the code. This code might not be optimized perfectly but work fin
 - Use a threshold of 1 cm before switching light (otherwise can't go in sleep mode easily
 - Has a save confirm signal (switch light from red to green) when save occur
 
-[c] #include <EEPROM.h> boolean debug = false;
+```c 
+#include <EEPROM.h> boolean debug = false;
 
-//Distance long distance; //The current distance found long lastDistance = 0; //The last distance found int recordedDistance; //The recorded distance by a button int light=0; //0= start, 1 = green, 2 = yellow, 3 = red
+//Distance 
+long distance;          //The current distance found 
+long lastDistance = 0;  //The last distance found 
+int recordedDistance;   //The recorded distance by a button 
+int light=0; //0= start, 1 = green, 2 = yellow, 3 = red
 
-//Buttons const int buttonMinDistancePin = 2; //Record the minimum distance = red distance const int buttonMaxDistancePin = 3; //Record the maximum distance = yellow distance int minButtonState; //Indicate if the minimum distance button is pushed int maxButtonState; //Indicate if the maximum distance button is pushed
+//Buttons 
+const int buttonMinDistancePin = 2; //Record the minimum distance = red distance 
+const int buttonMaxDistancePin = 3; //Record the maximum distance = yellow distance 
+int minButtonState; //Indicate if the minimum distance button is pushed 
+int maxButtonState; //Indicate if the maximum distance button is pushed
 
-//Led const int ledGreen = 8; //Pin on the Arduino's board for Green light const int ledYellow = 9; //Pin on the Arduino's board for Yellow light const int ledRed = 10; //Pin on the Arduino's board for Red light
+//Led const 
+int ledGreen = 8; //Pin on the Arduino's board for Green light 
+const int ledYellow = 9; //Pin on the Arduino's board for Yellow light 
+const int ledRed = 10; //Pin on the Arduino's board for Red light
 
-//Pin for ultrasonic const int trigPin =5; //Pin on the Arduino's board for triggering the Ultrasonic const int echoPin =4; //Pin on the Arduino's board for echoing the Ultrasonic
+//Pin for ultrasonic 
+const int trigPin =5; //Pin on the Arduino's board for triggering the Ultrasonic 
+const int echoPin =4; //Pin on the Arduino's board for echoing the Ultrasonic
 
-//Value to compare too for led int minDistance = 30; //Value for the red distance in cm int maxDistance = 100; //Value for the yellow distance in cm
+//Value to compare too for led 
+int minDistance = 30; //Value for the red distance in cm 
+int maxDistance = 100; //Value for the yellow distance in cm
 
-//Memory const int minDistanceAddress= 0; //Permanent memory (EEPROM). Minimum distance = red distance const int maxDistanceAddress = 1; //Permanent memory (EEPROM). Maximum distance = yellow distance
+//Memory const 
+int minDistanceAddress= 0; //Permanent memory (EEPROM). Minimum distance = red distance 
+const int maxDistanceAddress = 1; //Permanent memory (EEPROM). Maximum distance = yellow distance
 
-//Time unsigned long lastActivity = 0; //Indicate the last activity time const long secondBeforeSleep = 20; //Time in second before going in sleep mode (all light closed) unsigned long lastButtonPress = 0; //Indicate the last time a button has been pressed const long secondBeforeNewSave = 5; //Time in second before beeing able to save
+//Time 
+unsigned long lastActivity = 0; //Indicate the last activity time 
+const long secondBeforeSleep = 20; //Time in second before going in sleep mode (all light closed) 
+unsigned long lastButtonPress = 0; //Indicate the last time a button has been pressed 
+const long secondBeforeNewSave = 5; //Time in second before beeing able to save
 
-void setup() { //Initialize Arduino's pins pinMode(ledYellow, OUTPUT); pinMode(ledRed, OUTPUT); pinMode(ledGreen, OUTPUT); pinMode(trigPin, OUTPUT); pinMode(echoPin, INPUT); //When starting up, we read the distance if they are set if(debug) { minDistance = 20; maxDistance = 50; } else { int v1 = EEPROM.read(minDistanceAddress); int v2 = EEPROM.read(maxDistanceAddress); if(v1 != 255) //No default value with no record yet { minDistance = v1; } if(v2 != 255) //No default value with no record yet { maxDistance = v2; } } //Debug Serial.begin (9600); Serial.print("Min Distance : "); Serial.println(minDistance); Serial.print("Max Distance : "); Serial.println(maxDistance); CloseAllLights(); }
+void setup() { 
+//Initialize Arduino's pins 
+pinMode(ledYellow, OUTPUT); 
+pinMode(ledRed, OUTPUT); 
+pinMode(ledGreen, OUTPUT); 
+pinMode(trigPin, OUTPUT); 
+pinMode(echoPin, INPUT); 
 
-void loop() { //Debug Serial.println("New loop"); Serial.print("Min Distance : "); Serial.println(minDistance); Serial.print("Max Distance : "); Serial.println(maxDistance); //Ultrasonic trigger/echo to get the distance digitalWrite(trigPin, HIGH); delayMicroseconds(2); digitalWrite(trigPin, LOW); delayMicroseconds(10); digitalWrite(echoPin, LOW); distance = (pulseIn(echoPin, HIGH)/2) / 29.1;
+//When starting up, we read the distance if they are set 
+if(debug) { 
+  minDistance = 20; 
+  maxDistance = 50; 
+} else { 
+  int v1 = EEPROM.read(minDistanceAddress); 
+  int v2 = EEPROM.read(maxDistanceAddress); 
+  if(v1 != 255) //No default value with no record yet 
+  { 
+      minDistance = v1; 
+  }
+  if(v2 != 255) //No default value with no record yet 
+  { 
+    maxDistance = v2; 
+  } 
+} 
+//Debug 
+Serial.begin (9600); 
+Serial.print("Min Distance : "); 
+Serial.println(minDistance); 
+Serial.print("Max Distance : "); 
+Serial.println(maxDistance); 
+CloseAllLights(); }
 
-//Nothing found if(distance==0) { CloseAllLights(); } //Debug Serial.print("Current distance and last distance: "); Serial.print(distance); Serial.print(" cm, "); Serial.print(lastDistance); Serial.println(" cm.");
+void loop() { 
+  //Debug 
+  Serial.println("New loop"); 
+  Serial.print("Min Distance : "); 
+  Serial.println(minDistance); 
+  Serial.print("Max Distance : "); 
+  Serial.println(maxDistance); 
 
-unsigned long currentTime = millis(); //Debug Serial.print("Current time-Last activity time = "); Serial.print(currentTime);Serial.print("ms - ");Serial.print(lastActivity);Serial.println("ms");
+  //Ultrasonic trigger/echo to get the distance 
+  digitalWrite(trigPin, HIGH); 
+  delayMicroseconds(2); 
+  digitalWrite(trigPin, LOW); 
+  delayMicroseconds(10); 
+  digitalWrite(echoPin, LOW); 
+  distance = (pulseIn(echoPin, HIGH)/2) / 29.1;
 
-if(lastActivity != 0 && lastActivity < currentTime) //Check if we had an activity since we have started and check if we have not pass the overflow of the machine time (around 50 days) { if(currentTime - lastActivity > 1000*secondBeforeSleep) //Since last activity, have we pass the x seconds before going to sleep { //SLEEP MODE if(distance >= lastDistance-1 && distance <= lastDistance+1) //The distance is about the same (+-1 cm) as the last time = no change for light if under x seconds. The +-1 cm is because sometime the distance is between two and toggle between two values very fast which make the light to stay open (no-sleep mode) { Serial.println("----->Sleep MODE : Starting"); CloseAllLights(); } else { Serial.println("----->Sleep MODE : Done"); lastActivity = currentTime; //We are in sleep mode, but we have found a change. We change the mode to no-sleep OpenLight(); } } else { if(distance == lastDistance) //The distance is about the same (+-1 cm) as the last time = no change for light if under x seconds. The +-1 cm is because sometime the distance is between two and toggle between two values very fast which make the light to stay open (no-sleep mode) { Serial.println("----->Active MODE : Thinking to sleep"); } else { Serial.println("----->Active MODE"); lastActivity = currentTime; } OpenLight(); } } else { lastActivity = currentTime; //We change the mode to no-sleep if we just start the application or if the time has overflow for Arduino. } //Record the minimum and maximum with the two buttons if they are pressed minButtonState = digitalRead(buttonMinDistancePin); if (minButtonState == HIGH) { recordedDistance = EEPROM.read(minDistanceAddress); Serial.print("Recorded Distance = "); Serial.println(recordedDistance); Serial.print("Min Distance = "); Serial.println(minDistance); if(recordedDistance != distance && currentTime - lastButtonPress > 1000*secondBeforeNewSave)//Record only if really changed and some time since last button press occurs { if(distance < maxDistance) { Serial.println("*** Saving Min Distance ***"); if(!debug) { EEPROM.write(minDistanceAddress, distance); } minDistance = distance; lastButtonPress = currentTime; ConfirmSave(); } } } //Reset if the current time has overflow if(lastButtonPress > currentTime) { lastButtonPress = 0; } maxButtonState = digitalRead(buttonMaxDistancePin); if (maxButtonState == HIGH) { recordedDistance = EEPROM.read(maxDistanceAddress); Serial.print("Recorded Distance = "); Serial.println(recordedDistance); Serial.print("Max Distance = "); Serial.println(maxDistance); if(recordedDistance != distance && currentTime - lastButtonPress > 1000*secondBeforeNewSave)//Record only if really changed and some time since last button has occurs { if(distance > minDistance) { Serial.println("*** Saving Max Distance ***"); if(!debug) { EEPROM.write(maxDistanceAddress, distance); } maxDistance = distance; lastButtonPress = currentTime; ConfirmSave(); } } } lastDistance = distance; //Record last distance to be able to check if change have been made if(debug) { delay(500); } else { delay(250); } }
+//Nothing found 
+if(distance==0) { 
+  CloseAllLights(); 
+} 
+//Debug 
+Serial.print("Current distance and last distance: "); 
+Serial.print(distance); 
+Serial.print(" cm, "); 
+Serial.print(lastDistance); 
+Serial.println(" cm.");
 
-//Close all lights void CloseAllLights() { digitalWrite(ledRed, HIGH); digitalWrite(ledYellow, HIGH); digitalWrite(ledGreen, HIGH); }
+unsigned long currentTime = millis(); 
 
-//ConfirmSave void ConfirmSave() { digitalWrite(ledRed, HIGH); digitalWrite(ledYellow, HIGH); digitalWrite(ledGreen, HIGH); delay(500); digitalWrite(ledRed, LOW); digitalWrite(ledYellow, HIGH); digitalWrite(ledGreen, HIGH); delay(500); digitalWrite(ledRed, HIGH); digitalWrite(ledYellow, LOW); digitalWrite(ledGreen, HIGH); delay(500); digitalWrite(ledRed, HIGH); digitalWrite(ledYellow, HIGH); digitalWrite(ledGreen, LOW); delay(500); }
+//Debug 
+Serial.print("Current time-Last activity time = "); 
+Serial.print(currentTime);Serial.print("ms - ");
+Serial.print(lastActivity);Serial.println("ms");
 
-//Open the correct light void OpenLight() { //NO-SLEEP MODE if(distance != lastDistance) //If distance has changed (no boundary, very precise) { //Open the good light if(distance<minDistance && distance>0) { digitalWrite(ledRed, LOW); digitalWrite(ledYellow, HIGH); digitalWrite(ledGreen, HIGH); Serial.println("*RED*"); light = 3; } else if(distance<maxDistance && distance>0) { digitalWrite(ledRed, HIGH); digitalWrite(ledYellow, LOW); digitalWrite(ledGreen, HIGH); Serial.println("*Yellow*"); light = 2; } else if(distance>=maxDistance) { digitalWrite(ledRed, HIGH); digitalWrite(ledYellow, HIGH); digitalWrite(ledGreen, LOW); Serial.println("*Green*"); light = 1; } } } [/c]
+if(lastActivity != 0 && lastActivity < currentTime) //Check if we had an activity since we have started and check if we have not pass the overflow of the machine time (around 50 days) 
+{ 
+  if(currentTime - lastActivity > 1000*secondBeforeSleep) 
+  //Since last activity, have we pass the x seconds before going to sleep 
+  { 
+    //SLEEP MODE 
+    if(distance >= lastDistance-1 && distance <= lastDistance+1) 
+    //The distance is about the same (+-1 cm) as the last time = no change for light if under x seconds. The +-1 cm is because sometime the distance is between two and toggle between two values very fast which make the light to stay open (no-sleep mode) 
+    { 
+      Serial.println("----->Sleep MODE : Starting"); 
+      CloseAllLights(); 
+    } else { 
+      Serial.println("----->Sleep MODE : Done"); 
+      lastActivity = currentTime; //We are in sleep mode, but we have found a change. We change the mode to no-sleep 
+      OpenLight(); 
+    } 
+  } else { 
+    if(distance == lastDistance) 
+      //The distance is about the same (+-1 cm) as the last time = no change for light if under x seconds. The +-1 cm is because sometime the distance is between two and toggle between two values very fast which make the light to stay open (no-sleep mode)
+      { 
+        Serial.println("----->Active MODE : Thinking to sleep"); 
+      } else { 
+        Serial.println("----->Active MODE"); 
+        lastActivity = currentTime; 
+      } 
+      OpenLight(); 
+    } 
+  } else { 
+    lastActivity = currentTime; //We change the mode to no-sleep if we just start the application or if the time has overflow for Arduino.  
+  } 
+  //Record the minimum and maximum with the two buttons if they are pressed 
+  minButtonState = digitalRead(buttonMinDistancePin); 
+  if (minButtonState == HIGH) { 
+    recordedDistance = EEPROM.read(minDistanceAddress); 
+    Serial.print("Recorded Distance = "); 
+    Serial.println(recordedDistance); 
+    Serial.print("Min Distance = "); 
+    Serial.println(minDistance); 
+    if(recordedDistance != distance && currentTime - lastButtonPress > 1000*secondBeforeNewSave)
+      //Record only if really changed and some time since last button press occurs 
+    { 
+      if(distance < maxDistance) { 
+        Serial.println("*** Saving Min Distance ***"); 
+        if(!debug) { 
+          EEPROM.write(minDistanceAddress, distance); 
+        } 
+        minDistance = distance; 
+        lastButtonPress = currentTime; 
+        ConfirmSave(); 
+      } 
+    } 
+  } 
+  //Reset if the current time has overflow 
+  if(lastButtonPress > currentTime) { 
+    lastButtonPress = 0; 
+  } 
+  maxButtonState = digitalRead(buttonMaxDistancePin); 
+  if (maxButtonState == HIGH) { 
+    recordedDistance = EEPROM.read(maxDistanceAddress); 
+    Serial.print("Recorded Distance = ");
+    Serial.println(recordedDistance); 
+    Serial.print("Max Distance = "); 
+    Serial.println(maxDistance); 
+    if(recordedDistance != distance && currentTime - lastButtonPress > 1000*secondBeforeNewSave)
+    //Record only if really changed and some time since last button has occurs 
+    { 
+      if(distance > minDistance) { 
+        Serial.println("*** Saving Max Distance ***"); 
+        if(!debug) { 
+          EEPROM.write(maxDistanceAddress, distance); 
+        }
+        maxDistance = distance; lastButtonPress = currentTime; ConfirmSave(); 
+      } 
+    } 
+  } 
+  lastDistance = distance; 
+  //Record last distance to be able to check if change have been made 
+  if(debug) { 
+    delay(500); 
+  } else { 
+    delay(250); 
+  } 
+}
 
-You can see the final version on [YouTube](http://youtu.be/O3TtWqblM9I). The physical enclosure may has be done more beautifully but I am not a carpenter. I am happy of the end result. Some thing that you might know : the power cable is too short. I bought a 1.5 meters extension cord and I think you should get at least 2.5 meters. Also, I had the idea to have the ultrasonic sensor outside the main enclosure and this is a good idea. The only error I did is that I bought a plastic enclosure too big for the purpose of having only the ultrasonic sensor (not a big deal). Last thing, the wood enclosure is too small, I had difficulty to put the relay, the Arduino, all the wire and the power supply.
+  //Close all lights 
+  void CloseAllLights() { 
+    digitalWrite(ledRed, HIGH); 
+    digitalWrite(ledYellow, HIGH); 
+    digitalWrite(ledGreen, HIGH); 
+  }
+
+//ConfirmSave 
+void ConfirmSave() { 
+  digitalWrite(ledRed, HIGH); 
+  digitalWrite(ledYellow, HIGH); 
+  digitalWrite(ledGreen, HIGH); 
+  delay(500); 
+  digitalWrite(ledRed, LOW); 
+  digitalWrite(ledYellow, HIGH); 
+  digitalWrite(ledGreen, HIGH); 
+  delay(500); 
+  digitalWrite(ledRed, HIGH); 
+  digitalWrite(ledYellow, LOW); 
+  digitalWrite(ledGreen, HIGH); 
+  delay(500); 
+  digitalWrite(ledRed, HIGH); 
+  digitalWrite(ledYellow, HIGH); 
+  digitalWrite(ledGreen, LOW); 
+  delay(500); 
+}
+
+//Open the correct light 
+void OpenLight() { 
+  //NO-SLEEP MODE 
+  if(distance != lastDistance) 
+  //If distance has changed (no boundary, very precise) 
+  { 
+    //Open the good light 
+    if(distance<minDistance && distance>0) {
+       digitalWrite(ledRed, LOW); 
+       digitalWrite(ledYellow, HIGH); 
+       digitalWrite(ledGreen, HIGH); 
+       Serial.println("*RED*"); light = 3; 
+    } 
+    else if(distance<maxDistance && distance>0) { 
+      digitalWrite(ledRed, HIGH); 
+      digitalWrite(ledYellow, LOW); 
+      digitalWrite(ledGreen, HIGH); 
+      Serial.println("*Yellow*"); 
+      light = 2; 
+    } else if(distance>=maxDistance) { 
+      digitalWrite(ledRed, HIGH); 
+      digitalWrite(ledYellow, HIGH); 
+      digitalWrite(ledGreen, LOW); 
+      Serial.println("*Green*"); 
+      light = 1; 
+    } 
+  } 
+}
+``` 
+
+You can see the final version on [YouTube](http://youtu.be/O3TtWqblM9I). The physical enclosure may has be done more beautifully but I am not a carpenter. I am happy of the end result. 
+Some thing that you might know : the power cable is too short. I bought a 1.5 meters extension cord and I think you should get at least 2.5 meters. Also, 
+I had the idea to have the ultrasonic sensor outside the main enclosure and this is a good idea. The only error I did is that I bought a plastic enclosure too big for the purpose of having only the ultrasonic sensor (not a big deal). 
+Last thing, the wood enclosure is too small, I had difficulty to put the relay, the Arduino, all the wire and the power supply.
 
 ![](images/woodenclosure-216x400.png)
 

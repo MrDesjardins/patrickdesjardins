@@ -39,7 +39,9 @@ MongoClient.connect(url, (errMongo: MongoError, db: Db) => { if (errMongo) { con
 
 To insert something in you need to get the collection name and use the insert method. Something I haven't yet figure out perfectly is how to handle Date from a .json file. In my case, I was opening file (.json) and inserting them into MongoDb. The Json parse method was returning the date as string, hence I needed to assign the value back with an instance of date
 
-[javascript]
+
+```javascript
+
 
 // To have a real date format in MongoDb objToInsert.fullDate = new Date(objToInsert.fullDate);
 

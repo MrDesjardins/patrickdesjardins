@@ -13,7 +13,11 @@ Most of the time, z-index works as intended because you are not changing the Css
 ```html  <div class="parent">Parent <div class="kid kid1">Kid1 <div class="kid-above-all"> <div class="aboveall">AboveAll</div> </div> </div> <div class="kid kid2">Kid2</div> </div> 
 ``` 
 
-[css] .parent{ position:relative; background-color:blue; width:650px; height:400px; } .kid{ position:absolute; background-color:yellow; width:300px; height:100px; z-index:2; } .kid1{left:10px;} .kid2{left:330px;} .kid-above-all{ position:relative; width:20px; height:0; z-index:10000; } .aboveall{ position:fixed; width:550px; height:30px; left:150px; top:30px; background-color:green; border:solid 2px black; z-index:20000; } [/css] The result is that _kid2_ container is hidding the _AboveAll_ division. Even if _aboveall_ and _kid-above-all_ has a huge **z-index**, it is still behind _kid2_. The reason is that the z-index used by these two elements are only valid for the _kid1_ stacking context.
+
+```css
+ .parent{ position:relative; background-color:blue; width:650px; height:400px; } .kid{ position:absolute; background-color:yellow; width:300px; height:100px; z-index:2; } .kid1{left:10px;} .kid2{left:330px;} .kid-above-all{ position:relative; width:20px; height:0; z-index:10000; } .aboveall{ position:fixed; width:550px; height:30px; left:150px; top:30px; background-color:green; border:solid 2px black; z-index:20000; } 
+```
+ The result is that _kid2_ container is hidding the _AboveAll_ division. Even if _aboveall_ and _kid-above-all_ has a huge **z-index**, it is still behind _kid2_. The reason is that the z-index used by these two elements are only valid for the _kid1_ stacking context.
 
 ![](images/CssStackingContextZ-index1-400x239.png)
 

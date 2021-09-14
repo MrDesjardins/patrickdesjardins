@@ -50,16 +50,15 @@ export interface IAppProps extends IAppDispatch {
 } 
 ``` 
 
-
 You can also notice that the interface extends IAppDispatch. 
 
 ```typescript
 interface IAppDispatch { 
   onApply: () => void; 
   filterChange: (filters: IFilters) => void; } 
-
 ``` 
- This interface contains all method callback passed down the presentation containers. It allows to have a good separation of concerns and have these presentation containers not aware of Redux's action creator and reducer.
+
+This interface contains all method callback passed down the presentation containers. It allows to have a good separation of concerns and have these presentation containers not aware of Redux's action creator and reducer.
 
 Now, at the heart of the goal of this article, how do we bind the state to the props used as parameter of this stateless container? We know the we should return inject an IAppProps and we know we have the store having a IAppState. What needs to be done is a mapping function that will transform one to the other.
 
@@ -68,10 +67,21 @@ const mapStateToProps = (state: IAppState) => { return { model: state, } as IApp
 ``` 
 
 
-The second goal is how do we map the actions received by callback methods to the action creator. Very similar to the prop-state. We need a mapping function. The dispatch interface we defined as IAppDispatch is used to bind these actions to a concrete method in the actions creator. ```typescript
-const mapDispatchToProps = (dispatch: Dispatch<IAppState>): IAppDispatch => { return { onApply: () => { dispatch(updateFilter()); }, filterChange: (filters: IFilters) => { dispatch(filterChanged(filters)); } } as IAppDispatch; }; 
+The second goal is how do we map the actions received by callback methods to the action creator. Very similar to the prop-state. We need a mapping function. The dispatch interface we defined as IAppDispatch is used to bind these actions to a concrete method in the actions creator. 
+
+```typescript
+const mapDispatchToProps = (dispatch: Dispatch<IAppState>): IAppDispatch => { 
+  return { 
+    onApply: () => { 
+      dispatch(updateFilter()); 
+    }, 
+    filterChange: (filters: IFilters) => { 
+      dispatch(filterChanged(filters)); 
+      } 
+    } as IAppDispatch; }; 
 ``` 
- We finally needs to not return the simple stateless function, but to return the result of the Redux function connect. 
+
+We finally needs to not return the simple stateless function, but to return the result of the Redux function connect. 
  
 ```typescript
 export default connect(mapStateToProps, mapDispatchToProps)(App); 

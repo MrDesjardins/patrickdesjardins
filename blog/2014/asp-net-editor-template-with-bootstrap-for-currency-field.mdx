@@ -55,7 +55,9 @@ This is possible with the use of **BootStrap** but can be reproduced without it.
 
 Here is the Javascript that must be used for every pages that has the component.
 
-[javascript]
+
+```javascript
+
 
 //For each link that is inside a FORM when used as DropDown-Menu Item we want to be able //to click an element and set this one as the visual one. We also set the value of the selected //item into the hidden field of the selected dropdown to have this value pushed to the server. $('form').on('click', '.dropdown-menu>li>a', function () { return dropdownMenuLinkAction($(this)); } );
 

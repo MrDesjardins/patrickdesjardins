@@ -12,7 +12,11 @@ BootStrap has a class named **input-group** that allows you to have a input box 
 
 To fix this issue, we need to set JQuery Calendar over the z-index, over 2. This is a rare occasion where the !important keyword is mandatory.
 
-[css] /*Fix a bug with BootStrap that set input within input-group with a z-order to 2. This make the JQuery Calendar to appear behind the input box*/ .ui-datepicker{ z-index: 3 !important;} [/css]
+
+```css
+ /*Fix a bug with BootStrap that set input within input-group with a z-order to 2. This make the JQuery Calendar to appear behind the input box*/ .ui-datepicker{ z-index: 3 !important;} 
+```
+
 
 There is not need to have the z-index with a huge value.
 

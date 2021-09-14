@@ -16,49 +16,119 @@ This solution is having some caveats. First, if the time between the image and t
 
 Let's dive in the code.
 
+```html  
+<div id="box1" class="box">
+  <i class="fa fa-spinner fa-spin"></i>
+</div> 
+<div id="box2" class="box">
+  <i class="fa fa-spinner fa-spin"></i>
+</div> 
+```
 
-```html  <div id="box1" class="box"><i class="fa fa-spinner fa-spin"></i></div> <div id="box2" class="box"><i class="fa fa-spinner fa-spin"></i></div> 
-```  [css] .box{ width:150px; height:150px; background-color:lightblue; margin:10px; }
+```css
+.box{ 
+  width:150px; 
+  height:150px; 
+  background-color:lightblue; 
+  margin:10px; 
+}
 
-.box i{ font-size: 3em; } [/css]
+.box i{ 
+  font-size: 3em; 
+} 
+```
 
 This will produce the following html : ![](images/2LoadingZonesBoxes.png)
 
-The normal loading experience is done by using JavaScript's timeout. Both box display a different text, one display also an image. ```typescript
-setTimeout(renderBox1, 3000); setTimeout(renderBox2, 5000); function renderBox1() { var $box = $('#box1'); $box.text('Loaded 1'); var $icon = $('<i>').addClass('fa fa-hand-peace-o'); $box.append($icon); }
+The normal loading experience is done by using JavaScript's timeout. Both box display a different text, one display also an image. 
 
-function renderBox2() { var $box = $('#box2'); $box.text('Loaded 2'); } 
+```typescript
+setTimeout(renderBox1, 3000); 
+setTimeout(renderBox2, 5000); 
+function renderBox1() { 
+  var $box = $('#box1'); 
+  $box.text('Loaded 1'); 
+  var $icon = $('<i>').addClass('fa fa-hand-peace-o'); 
+  $box.append($icon); 
+}
+
+function renderBox2() { 
+  var $box = $('#box2'); 
+  $box.text('Loaded 2'); 
+} 
 ``` 
- So far, it takes the amount of time defined to see the spinner being removed and replaced by the real content.
+
+So far, it takes the amount of time defined to see the spinner being removed and replaced by the real content.
 
 The next step is to have in those render box the code to set the cache with the image of the rendered result. Box 1 will have the text and the image, box 2 just the text. This require to change both render method to call a cache method. Since the experience is so seamless that we will also, for the purpose of this demo, add some text under the boxes once refreshed with real value. So, the visual will be on the first call that we display the spinner, we cache, we display the text under the box. On the second load, we do not display the spinner since this one is replaced by the cached version right away. The texts under the boxes are shown only after the delay with the real value.
 
 ```typescript
-function renderBox1() { var $box = $('#box1'); $box.text('Loaded 1'); var $icon = $('<i>').addClass('fa fa-hand-peace-o'); $box.append($icon); cache($box); $box.after('<p>Not cached data box 1 in place</p>'); }
+function renderBox1() { 
+  var $box = $('#box1'); 
+  $box.text('Loaded 1'); 
+  var $icon = $('<i>').addClass('fa fa-hand-peace-o'); 
+  $box.append($icon); cache($box); 
+  $box.after('<p>Not cached data box 1 in place</p>'); 
+}
 
-function renderBox2() { var $box = $('#box2'); $box.text('Loaded 2'); cache($box); $box.after('<p>Not cached data box 2 in place</p>'); } 
+function renderBox2() { 
+  var $box = $('#box2'); 
+  $box.text('Loaded 2'); 
+  cache($box); 
+  $box.after('<p>Not cached data box 2 in place</p>'); 
+} 
 ``` 
 
 
-We also need to change the loading code to go check in the cache. We try to read the cache, the local storage, and if nothing ```typescript
-var box1Cached = unDataToCanvas(localStorage.getItem('box1')); var box2Cached = unDataToCanvas(localStorage.getItem('box2'));
-
-if(box1Cached){ $('#box1').html(box1Cached); } setTimeout(renderBox1, 3000);
-
-if(box2Cached){ $('#box2').html(box2Cached); } setTimeout(renderBox2, 5000); 
-``` 
-
-
-Finally, the load and save in the cache need to be coded. The save will create a canvas and we will store the data into a base64 representation. This is done by calling the method "toDtaUrl()" method.
+We also need to change the loading code to go check in the cache. We try to read the cache, the local storage, and if nothing 
 
 ```typescript
-function cache($elementToCache) { var id = $elementToCache.attr('id'); html2canvas($elementToCache, { onrendered: function(canvas) { window.localStorage.setItem(id, canvas.toDataURL()); } }); } 
+var box1Cached = unDataToCanvas(localStorage.getItem('box1')); 
+var box2Cached = unDataToCanvas(localStorage.getItem('box2'));
+
+if(box1Cached){ 
+  $('#box1').html(box1Cached); 
+} 
+setTimeout(renderBox1, 3000);
+
+if(box2Cached){ 
+  $('#box2').html(box2Cached); 
+} 
+setTimeout(renderBox2, 5000); 
 ``` 
 
 
-The loading is more tricky. We need to load from the local storage the base64 image, create an image with the source to this base64 and return it. [javascript]
+Finally, the load and save in the cache need to be coded. The save will create a canvas and we will store the data into a base64 representation. This is done by calling the method `toDataUrl()` method.
 
-function unDataToCanvas(data) { var img = new Image(); var canvas = document.createElement('canvas'); img.onload = function() { canvas.width = 150; canvas.height = 150; canvas.getContext("2d").drawImage(img, 0, 0); }; img.src = data; if(data){ return img; } else{ return null; } } 
+```typescript
+function cache($elementToCache) { 
+  var id = $elementToCache.attr('id'); 
+  html2canvas($elementToCache, { onrendered: function(canvas) { 
+      window.localStorage.setItem(id, canvas.toDataURL()); 
+      } 
+  }); 
+} 
+``` 
+
+
+The loading is more tricky. We need to load from the local storage the base64 image, create an image with the source to this base64 and return it. 
+
+```javascript
+function unDataToCanvas(data) { 
+  var img = new Image(); 
+  var canvas = document.createElement('canvas'); 
+  img.onload = function() { 
+    canvas.width = 150; 
+    canvas.height = 150; 
+    canvas.getContext("2d").drawImage(img, 0, 0); 
+  }; 
+  img.src = data; 
+  if(data){ 
+    return img; 
+  } else{ 
+    return null; 
+  } 
+} 
 ``` 
 
 

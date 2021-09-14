@@ -7,9 +7,13 @@ categories:
 
 You need to set the parent container to **relative**. When the position is relative, everything that will be under the container with the position to **absolute** will be absolute to the relative parent.
 
-[css] .parent { position: relative; }
 
-.child { position: absolute; bottom: 0; right:0; } [/css]
+```css
+ .parent { position: relative; }
+
+.child { position: absolute; bottom: 0; right:0; } 
+```
+
 
 From here, if you create a child inside the parent container, the child will be at the bottom of the parent.
 

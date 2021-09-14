@@ -59,4 +59,5 @@ public HelpStep(string title, string content, JRaw target, string placement) { t
 
 Their is few things that is not perfect there, but it is quite rapid to work this way. It can be easily re-factored later too. As you can see, I setup every steps in order. In that example, string are not yet localized, but we can leverage of .Net Resource file easily by having all steps in the ViewModel. The selector require to use **JRaw** as explained earlier. You can see some method call for _OnShow_. These method create temporary Dom element that are done if the user really do the action. For example, the _createTemporaryContest_ method create some Dom element, and later, the method _deleteTemporaryContest_ or _removeEverything_ take care to remove those temporary html. The fix we did to LinkedIn HopScotch is used in the OnShow, just a step before this one is used. OnShow allows to do an action when the help's step is shown. This is the perfect time to set the next step on the dynamic generated html element.
 
-Here is an animation of the final result. [video width="804" height="632" mp4="http://patrickdesjardins.com/blog/wp-content/uploads/2015/06/hopscotchBourseVirtuelle.mp4"][/video]
+Here is an animation of the final result. 
+![](./images/hopscotchBourseVirtuelle.mp4)

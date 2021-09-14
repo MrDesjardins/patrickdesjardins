@@ -13,8 +13,9 @@ If you set an entity state to modify without having this one loaded and you save
 
 This is very annoying and unfortunate that Entity Framework (ef) does not have something more intelligent to handle those case. In short, you have to detach the local version and set to modify the entity you are modifying. This scenario is pretty common if you receive the object from a web request and you want to save the entity. Between the request that contains the object and the time you change the state to modify (saving code) you may have loaded a list that contains your entity or you may have loaded a part of this entity for validation purpose. Nonetheless, you have to handle this case if you want to save this entity.
 
-A way to do it is to navigate inside the **local** of the **DbSet** to see if this one is there. If the entity is present, then you **detach**.
+A way to do it is to navigate inside the **local** of the `DbSet` to see if this one is there. If the entity is present, then you **detach**.
 
+```cscharp
 var local = yourDbContext.Set<YourModel>()
                          .Local
                          .FirstOrDefault(f => f.Id == yourModel.Id);
@@ -23,5 +24,6 @@ if (local != null)
   yourDbContext.Entry(local).State = EntityState.Detached;
 }
 yourDbContext.Entry(applicationModel).State = EntityState.Modified;
+``` 
 
-As you can see, we first verify if the entity is present inside the **DbSet**. If it is null, then we detach the local entity. In all case, we set to modify the entity (applicationModel) to have this one considered by Entity Framework to be updated.
+As you can see, we first verify if the entity is present inside the `DbSet`. If it is null, then we detach the local entity. In all case, we set to modify the entity (applicationModel) to have this one considered by Entity Framework to be updated.

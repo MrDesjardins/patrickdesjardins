@@ -11,7 +11,11 @@ This can be done with nth-child selector of CSS.
 
 Let's start with a small example :
 
-[css] ul>li:nth-child(3) { color: red; } [/css]
+
+```css
+ ul>li:nth-child(3) { color: red; } 
+```
+
 
 This example will take the third li element that is directly under an ul element and make it's font color to red.
 
@@ -19,7 +23,11 @@ The parameter, when specified with an integer, represent the position of the occ
 
 nth-child is power full because you can use the variable "n" to specify the index of the element.
 
-[css] ul>li:nth-child(2n+1) { background-color: red; } [/css]
+
+```css
+ ul>li:nth-child(2n+1) { background-color: red; } 
+```
+
 
 This second example of nth-child has 2n+1 has parameter. That mean that it will start at the position 1 (every sequence start at 1 not 0) and 2n mean 2 multiply by the index. So if we have the following code:
 
