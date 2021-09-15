@@ -3,7 +3,7 @@ import "@fontsource/oswald";
 import clsx from "clsx";
 import { StaticImage } from "gatsby-plugin-image";
 import * as React from "react";
-import { CardWithImage } from "./CardWithIMage";
+import { CardWithImage } from "./CardWithImage";
 import {
   sectionMainpage,
   sectionVisualTwo,
