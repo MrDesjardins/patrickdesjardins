@@ -1,29 +1,39 @@
 ---
 title: "NPM Useful Commands"
 date: "2017-11-02"
-categories: 
+categories:
   - "javascript"
   - "nodejs-web"
 ---
 
 This article will be pretty slim but can be helpful for more than just myself so I am sharing. Here are some commands available with NPM that you may not know that can be useful.
 
-To know packages that are installed globally: ``` 
- npm list -g --depth=0 
-``` 
+To know packages that are installed globally:
 
-To know where the packages are installed. It gives the global location if no node_modules folder in the direct folder parent tree: ``` 
- npm root npm root -g // The global folder 
-``` 
+```
+ npm list -g --depth=0
+```
 
-To know your NPM version and the actual released version ``` 
- npm root 
-``` 
+To know where the packages are installed. It gives the global location if no node_modules folder in the direct folder parent tree:
 
-To know all available version of a library: ``` 
- npm show react-native versions 
-``` 
+```
+ npm root npm root -g // The global folder
+```
 
-To get all your direct dependencies current version and latest: ``` 
- npm out --depth=0 
-``` 
+To know your NPM version and the actual released version
+
+```
+ npm root
+```
+
+To know all available version of a library:
+
+```
+ npm show react-native versions
+```
+
+To get all your direct dependencies current version and latest:
+
+```
+ npm out --depth=0
+```

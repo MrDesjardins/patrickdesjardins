@@ -1,24 +1,51 @@
 ---
 title: "JavaScript Quick Sort"
 date: "2017-07-10"
-categories: 
+categories:
   - "javascript"
 ---
 
 Quick sort divide the array in multiple sequence, hence is a very good candidate for recursivity. The asymptotic analysis gives a O(log(n^2)) in average and a worse time of O(n^2). The algorithm can be implemented in different flavor depending of where you start the initial pivot. Then, there is a second way to customize the quick sort and it's by defining how we partition.
 
 ```typescript
-function swap(array, left, right) { var temp = array[left]; array[left] = array[right]; array[right] = temp; }
+function swap(array, left, right) {
+  var temp = array[left];
+  array[left] = array[right];
+  array[right] = temp;
+}
 
-function partition(arrayToSort, left, right){ var i = left; var j = right; var pivot = arrayToSort[Math.floor((left + right) / 2)]; // Middle
+function partition(arrayToSort, left, right) {
+  var i = left;
+  var j = right;
+  var pivot = arrayToSort[Math.floor((left + right) / 2)]; // Middle
 
-while (i <= j) { while (arrayToSort[i] < pivot){ i++; } while (arrayToSort[j] > pivot){ j--; } if (i <= j) { swap(arrayToSort, i, j); i++; j--; } }
+  while (i <= j) {
+    while (arrayToSort[i] < pivot) {
+      i++;
+    }
+    while (arrayToSort[j] > pivot) {
+      j--;
+    }
+    if (i <= j) {
+      swap(arrayToSort, i, j);
+      i++;
+      j--;
+    }
+  }
 
-return i; }
+  return i;
+}
 
-function quickSort(arrayToSort, left, right){ var index = partition(arrayToSort, left, right); if (left < index - 1){ quickSort(arrayToSort, left, index - 1); } if (right > index){ quickSort(arrayToSort, index, right); } } 
-``` 
-
+function quickSort(arrayToSort, left, right) {
+  var index = partition(arrayToSort, left, right);
+  if (left < index - 1) {
+    quickSort(arrayToSort, left, index - 1);
+  }
+  if (right > index) {
+    quickSort(arrayToSort, index, right);
+  }
+}
+```
 
 The algorithm divide the array in two (pivot) and go to each extremity of a partition which is between left to right where left or right is determined by the pivot. Most of the heavy-lifting is done by the partition function that will swap element if this one found that a number at the right of the pivot is bigger than one of the left side of the pivot. The algorithm goes from swap until the two extremity touch and then move back to the other side of the partition. Every call to quickSort function bring a new partition which divide the array in smaller and smaller array to partition.
 

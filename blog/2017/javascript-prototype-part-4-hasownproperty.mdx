@@ -1,7 +1,7 @@
 ---
 title: "JavaScript Prototype Part 4 : hasOwnProperty"
 date: "2017-05-23"
-categories: 
+categories:
   - "javascript"
 ---
 
@@ -10,50 +10,122 @@ hasOwnProperty is a function from Object's prototype, hence every thing in JavaS
 Let's take this simple example where a property "m1" is defined 4 times at each level (child, child prototype, base and base prototype).
 
 ```typescript
-var BaseClass1 = function() { this.m1 = "m1 base"; }; BaseClass1.prototype.m1 = "m1 proto base"; var ChildClass1 = function() { BaseClass1.call(this); // Call the constructor of the base class this.m1 = "m1 child"; }; ChildClass1.prototype = Object.create(BaseClass1.prototype); ChildClass1.prototype.m1 = "m1 child proto" ChildClass1.prototype.constructor = BaseClass1; var instance1 = new ChildClass1();
+var BaseClass1 = function () {
+  this.m1 = "m1 base";
+};
+BaseClass1.prototype.m1 = "m1 proto base";
+var ChildClass1 = function () {
+  BaseClass1.call(this); // Call the constructor of the base class
+  this.m1 = "m1 child";
+};
+ChildClass1.prototype = Object.create(BaseClass1.prototype);
+ChildClass1.prototype.m1 = "m1 child proto";
+ChildClass1.prototype.constructor = BaseClass1;
+var instance1 = new ChildClass1();
 
-console.log(instance1.hasOwnProperty("m1")); 
-``` 
-
+console.log(instance1.hasOwnProperty("m1"));
+```
 
 The output is "true". This is because the instance1 has a property "m1". If we remove "m1" from the child class, the value will be "true". The question is, is it true because of the child prototype or the base class? The answer is the base class. Prototype definition wouldn't be counted has own property. So, the following code return false:
 
 ```typescript
-var BaseClass1 = function() { //this.m1 = "m1 base"; }; BaseClass1.prototype.m1 = "m1 proto base"; var ChildClass1 = function() { BaseClass1.call(this); // Call the constructor of the base class //this.m1 = "m1 child"; }; ChildClass1.prototype = Object.create(BaseClass1.prototype); ChildClass1.prototype.m1 = "m1 child proto"; ChildClass1.prototype.constructor = BaseClass1; var instance1 = new ChildClass1(); console.log("Result " + instance1.hasOwnProperty("m1")); 
-``` 
-
+var BaseClass1 = function () {
+  //this.m1 = "m1 base";
+};
+BaseClass1.prototype.m1 = "m1 proto base";
+var ChildClass1 = function () {
+  BaseClass1.call(this);
+  // Call the constructor of the base class
+  //this.m1 = "m1 child";
+};
+ChildClass1.prototype = Object.create(BaseClass1.prototype);
+ChildClass1.prototype.m1 = "m1 child proto";
+ChildClass1.prototype.constructor = BaseClass1;
+var instance1 = new ChildClass1();
+console.log("Result " + instance1.hasOwnProperty("m1"));
+```
 
 If we want to use hasOwnProperty on the prototype we will see that it returns false. However, it's possible to use the method "call" to execute from the base object into an instance, like the following:
 
 ```typescript
-var BaseClass1 = function() { this.m1 = "m1 base"; }; BaseClass1.prototype.m1 = "m1 proto base"; var ChildClass1 = function() { BaseClass1.call(this); // Call the constructor of the base class this.m1 = "m1 child"; }; ChildClass1.prototype = Object.create(BaseClass1.prototype); ChildClass1.prototype.m1 = "m1 child proto"; ChildClass1.prototype.constructor = BaseClass1; var instance1 = new ChildClass1();
+var BaseClass1 = function () {
+  this.m1 = "m1 base";
+};
+BaseClass1.prototype.m1 = "m1 proto base";
+var ChildClass1 = function () {
+  BaseClass1.call(this); // Call the constructor of the base class
+  this.m1 = "m1 child";
+};
 
-console.log("Result 1" + BaseClass1.hasOwnProperty("m1")); console.log("Result 2" + Object.prototype.hasOwnProperty.call(instance1,"m1")); 
-``` 
- This will return false for the first result, and true for the result #2. The first one is false because it's not using the instance, but the prototype. The second is true because it uses the object and use call which pass the "this" context to be the instance1 which is having m1 (in the child and base).
+ChildClass1.prototype = Object.create(BaseClass1.prototype);
+ChildClass1.prototype.m1 = "m1 child proto";
+ChildClass1.prototype.constructor = BaseClass1;
+var instance1 = new ChildClass1();
+
+console.log("Result 1" + BaseClass1.hasOwnProperty("m1"));
+console.log("Result 2" + Object.prototype.hasOwnProperty.call(instance1, "m1"));
+```
+
+This will return false for the first result, and true for the result #2. The first one is false because it's not using the instance, but the prototype. The second is true because it uses the object and use call which pass the "this" context to be the instance1 which is having m1 (in the child and base).
 
 How can this be useful? Well, it can be useful to determine which member is from the object and which is part of the prototype hierarchy. In the following example, you will see that we will loop through the instance and get members from the child, child prototype, base, base prototype as well as a constructor.
 
 ```typescript
-var BaseClass1 = function() { this.m2 = "m1 base"; }; BaseClass1.prototype.m3 = "m1 proto base"; var ChildClass1 = function() { BaseClass1.call(this); // Call the constructor of the base class this.m4 = "m1 child"; }; ChildClass1.prototype = Object.create(BaseClass1.prototype); ChildClass1.prototype.m1 = "m1 child proto"; ChildClass1.prototype.constructor = BaseClass1; var instance1 = new ChildClass1();
+var BaseClass1 = function () {
+  this.m2 = "m1 base";
+};
+BaseClass1.prototype.m3 = "m1 proto base";
+var ChildClass1 = function () {
+  BaseClass1.call(this); // Call the constructor of the base class
+  this.m4 = "m1 child";
+};
+ChildClass1.prototype = Object.create(BaseClass1.prototype);
+ChildClass1.prototype.m1 = "m1 child proto";
+ChildClass1.prototype.constructor = BaseClass1;
+var instance1 = new ChildClass1();
 
-for (name in instance1) { console.log(name + ': ' + instance1[name]); } 
-``` 
- The result is: ``` 
- "m2: m1 base" "m4: m1 child" "m1: m1 child proto" "constructor: function () { this.m2 = 'm1 base'; }" "m3: m1 proto base" 
-``` 
+for (name in instance1) {
+  console.log(name + ": " + instance1[name]);
+}
+```
+
+The result is:
+
+```
+"m2: m1 base"
+"m4: m1 child"
+"m1: m1 child proto"
+"constructor: function () { this.m2 = 'm1 base'; }"
+"m3: m1 proto base"
+
+```
 
 By introducing a condition that use hasOwnProperty we can be sure to just get m2 and m4 (child and base) without prototype.
 
 ```typescript
-var BaseClass1 = function() { this.m2 = "m1 base"; }; BaseClass1.prototype.m3 = "m1 proto base"; var ChildClass1 = function() { BaseClass1.call(this); // Call the constructor of the base class this.m4 = "m1 child"; }; ChildClass1.prototype = Object.create(BaseClass1.prototype); ChildClass1.prototype.m1 = "m1 child proto"; ChildClass1.prototype.constructor = BaseClass1; var instance1 = new ChildClass1();
+var BaseClass1 = function () {
+  this.m2 = "m1 base";
+};
+BaseClass1.prototype.m3 = "m1 proto base";
+var ChildClass1 = function () {
+  BaseClass1.call(this); // Call the constructor of the base class
+  this.m4 = "m1 child";
+};
+ChildClass1.prototype = Object.create(BaseClass1.prototype);
+ChildClass1.prototype.m1 = "m1 child proto";
+ChildClass1.prototype.constructor = BaseClass1;
+var instance1 = new ChildClass1();
 
-for (name in instance1) { if(instance1.hasOwnProperty(name)){ console.log(name + ': ' + instance1[name]); } } 
-``` 
+for (name in instance1) {
+  if (instance1.hasOwnProperty(name)) {
+    console.log(name + ": " + instance1[name]);
+  }
+}
+```
 
-
-Which returns: ``` 
- "m2: m1 base" "m4: m1 child" 
-``` 
+Which returns: 
+```
+"m2: m1 base" "m4: m1 child"
+```
 
 In this article we saw the power of hasOwnProperty that can help to distinct which members of an object is from the object and inheritance against which members if from the prototype chain.

@@ -1,7 +1,7 @@
 ---
 title: "JavaScript Object.create vs new"
 date: "2017-05-05"
-categories: 
+categories:
   - "javascript"
 ---
 
@@ -10,32 +10,47 @@ It's possible to create instance in JavaScript by using Object.create or using n
 The Object.create creates an instance of an object with the prototype passed has first parameter. If a second parameter is provided, it will be used for this object only. This second parameter must be of type [DefinedProperty](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties).
 
 ```typescript
-var MyClass1 = function() { this.member1 = "m1"; };
+var MyClass1 = function () {
+  this.member1 = "m1";
+};
 
-MyClass1.prototype.function1 = function() { return "return from function1"; };
+MyClass1.prototype.function1 = function () {
+  return "return from function1";
+};
 
-var instance1 = new MyClass1(); var instance2 = Object.create(MyClass1.prototype, { "member2": { value: "m2", writable: true }});
+var instance1 = new MyClass1();
+var instance2 = Object.create(MyClass1.prototype, {
+  member2: { value: "m2", writable: true },
+});
 
-console.log("instance1.member1: "+ instance1.member1);//m1 console.log("instance1.function1: "+ instance1.function1());//return from function1 console.log("instance2.member1: "+ instance2.member1);//undefined console.log("instance2.member2: "+ instance2.member2);//m2 console.log("instance2.function1: "+ instance2.function1());//return from function1 console.log("instance1.member2: "+ instance1.member2);//undefined 
-``` 
-
+console.log("instance1.member1: " + instance1.member1); //m1
+console.log("instance1.function1: " + instance1.function1()); //return from function1
+console.log("instance2.member1: " + instance2.member1); //undefined
+console.log("instance2.member2: " + instance2.member2); //m2
+console.log("instance2.function1: " + instance2.function1()); //return from function1
+console.log("instance1.member2: " + instance1.member2); //undefined
+```
 
 This example show that the member "member1" is only present on the first instance because the second instance is created with just the prototype of MyClass1. It also shows that the instance 1 doesn't have the member2 added by the second parameter of Object.create since it is a member added to the instance 2.
 
-Object.create and constructor function both create a new object and bot set the__proto__ but in a different way. Object.create sets the__proto__ to be the one passed as the first parameter. The constructor function set the__proto__ to the type specified prototype (in the previous example MyClass1.prototype). The major difference is that Object.Create returns the new object while the constructor function return the constructor of the object or the object.
+Object.create and constructor function both create a new object and bot set the **proto** but in a different way. Object.create sets the**proto** to be the one passed as the first parameter. The constructor function set the**proto** to the type specified prototype (in the previous example MyClass1.prototype). The major difference is that Object.Create returns the new object while the constructor function return the constructor of the object or the object.
 
 If we modified the preview code to have a console.log() in the constructor of the object, we can see that this one is executed only when using "new" and not when using Object.create.
 
 ```typescript
-var MyClass1 = function() { this.member1 = "m1"; console.log("MyClass function"); };
+var MyClass1 = function () {
+  this.member1 = "m1";
+  console.log("MyClass function");
+};
 
-MyClass1.prototype.function1 = function() { return "return from function1"; };
+MyClass1.prototype.function1 = function () {
+  return "return from function1";
+};
 
 //var instance1 = new MyClass1();
 
-var instance2 = Object.create(MyClass1.prototype); 
-``` 
-
+var instance2 = Object.create(MyClass1.prototype);
+```
 
 The code above doesn't execute the console.log. However, if we uncomment instance1 and comment instance2 (Object.create). We can see that it's called.
 

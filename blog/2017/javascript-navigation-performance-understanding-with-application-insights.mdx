@@ -1,15 +1,15 @@
 ---
 title: "JavaScript Navigation Performance Understanding with Application Insights"
 date: "2017-02-01"
-categories: 
+categories:
   - "azure"
 ---
 
 Application Insights has a table with performance details. It's called "browser timings". You can have a glimpse of what it contains by executing
 
-``` 
- browserTimings | where timestamp >= ago(1d) | where totalDuration > 10000 | order by totalDuration desc nulls last 
-``` 
+```
+ browserTimings | where timestamp >= ago(1d) | where totalDuration > 10000 | order by totalDuration desc nulls last
+```
 
 The most interesting columns are these following four:
 
@@ -24,21 +24,41 @@ Reading the navigation timing can be confusing in term of what needs to be impro
 
 The first interesting column of the **browsertiming** table is **networkDuration**. This column includes 4 of the navigation timing processing step that include mostly the network call. It includes redirection, if the fetched resource result is an HTTP redirect (3xx). It also has DNS and TCP delays. What it means is that it contains all the time before users reach the Asp.Net code. It's the time to translate the domain into an IP address, the time between different hops that separate the user and the machine that host the HTTP server and the time the http request move from the machine to the HTTP server (IIS, Apache, etc). This time tend to be huge if the HTTP server is sleeping. For example, if you release a new version on Azure Website and do not warm the server, the first hit will be slow. This will translate in Application Insights by having the **networkDuration** higher than usual. That is why, it's always good to remove from the statistic very high time, let say 1 minute. That said, I currently experience very long query above 5 minutes from GoogleBot that need to be investigated.
 
-``` 
- browserTimings | where timestamp >= ago(12d) | where totalDuration < 300000 | where networkDuration < 10000 | order by totalDuration desc nulls last 
-``` 
+```
+ browserTimings
+ | where timestamp >= ago(12d)
+ | where totalDuration < 300000
+ | where networkDuration < 10000
+ | order by totalDuration desc nulls last
+```
 
 The second column is **sendDuration**. The starting point is when the browser starts sending the first byte, the ending point the server sent the first byte back to the browser. In other word, it is when the browser receives the whole response from the HTTP server. In other words, it's the time spent in your Asp.Net MVC controller. If you want to isolate long request to identifier Asp.Net MVC Controller's action problem, you can change the Application Insight query to order by the **sendDuration** and find all every duration above 2 seconds (or what ever is your desired maximum time on the server).
 
-``` 
- browserTimings | where timestamp >= ago(12d) | where totalDuration < 300000 | where networkDuration < 10000 | where sendDuration > 2000 | where url !startswith "http://localhost" | where url !contains "azurewebsites.net" | order by sendDuration desc nulls last | project timestamp , url, sendDuration 
-``` 
+```
+ browserTimings
+ | where timestamp >= ago(12d)
+ | where totalDuration < 300000
+ | where networkDuration < 10000
+ | where sendDuration > 2000
+ | where url !startswith "http://localhost"
+ | where url !contains "azurewebsites.net"
+ | order by sendDuration desc nulls last | project timestamp , url, sendDuration
+```
 
 While exploring the data, I realized that I was sending development localhost into Application Insights. Only on for the client side since the code was injected and didn't take in consideration the C# flag "TelemetryConfiguration.Active.DisableTelemetry". That is why you can a new clause that get rid of any development requests. Also, I am using multiple Azure's slots which mean I want to remove the experimental slot too by removing "azurewebsites.net" from the data.
 
-``` 
- browserTimings | where timestamp >= ago(12d) | where totalDuration < 300000 | where networkDuration < 10000 | where sendDuration > 2000 | where url !startswith "http://localhost" | where url !contains "azurewebsites.net" | order by sendDuration desc nulls last | extend urlWithoutNumber = replace(@"([^?]+).*", @"\\1", replace(@"([a-z0-9]{8})\\-([a-z0-9]{4})\\-([a-z0-9]{4})\\-([a-z0-9]{4})\\-([a-z0-9]){12}", @"x", replace(@"(\\d)", @"x", url))) | project timestamp , urlWithoutNumber, sendDuration 
-``` 
+```
+ browserTimings
+ | where timestamp >= ago(12d)
+ | where totalDuration < 300000
+ | where networkDuration < 10000
+ | where sendDuration > 2000
+ | where url !startswith "http://localhost"
+ | where url !contains "azurewebsites.net"
+ | order by sendDuration desc nulls last
+ | extend urlWithoutNumber = replace(@"([^?]+).*", @"\\1", replace(@"([a-z0-9]{8})\\-([a-z0-9]{4})\\-([a-z0-9]{4})\\-([a-z0-9]{4})\\-([a-z0-9]){12}", @"x", replace(@"(\\d)", @"x", url)))
+ | project timestamp , urlWithoutNumber, sendDuration
+```
 
 The third column is the **receiveDuration** which is the time it tooks to download the data from the server. This can be long if you send a big HTML back for example. You can lower this metric by having a single page application where most request download only the data and not UI details. This metric is important to keep low especially on mobile where the connection is slow and users have limited data plan.
 
@@ -52,9 +72,18 @@ The last and forth column is the **processingDuration**. This is the time it tak
 
 It means that you can reduce the **processingDuration** by having simpler CSS and faster JavaScript code. You can get this information in Application Insights by showing the percentiles of the processingDuration. I added some filtering to reduce the amount of result.
 
-``` 
- browserTimings | where timestamp >= ago(7d) | where networkDuration < 5000 | where totalDuration > 5000 | where url !startswith("http://localhost") | where url !contains("azurewebsites.net") | extend urlClean = replace(@"([^?]+).*", @"\\1", replace(@"([a-z0-9]{8})\\-([a-z0-9]{4})\\-([a-z0-9]{4})\\-([a-z0-9]{4})\\-([a-z0-9]){12}", @"x", replace(@"(\\d)", @"x", url))) | summarize percentiles(processingDuration, 50, 95) , percentiles(totalDuration, 50, 95) by urlClean | where percentile_processingDuration_50 > 2000 | order by percentile_processingDuration_50 desc nulls last 
-``` 
+```
+ browserTimings
+ | where timestamp >= ago(7d)
+ | where networkDuration < 5000
+ | where totalDuration > 5000
+ | where url !startswith("http://localhost")
+ | where url !contains("azurewebsites.net")
+ | extend urlClean = replace(@"([^?]+).*", @"\\1", replace(@"([a-z0-9]{8})\\-([a-z0-9]{4})\\-([a-z0-9]{4})\\-([a-z0-9]{4})\\-([a-z0-9]){12}", @"x", replace(@"(\\d)", @"x", url)))
+ | summarize percentiles(processingDuration, 50, 95) , percentiles(totalDuration, 50, 95) by urlClean
+ | where percentile_processingDuration_50 > 2000
+ | order by percentile_processingDuration_50 desc nulls last
+```
 
 It's good to note that some external libraries can increase the **processingDuration**. This is especially true with _Google Adsense_ or third party that download CSS/Font/Script and execute them on your page.
 

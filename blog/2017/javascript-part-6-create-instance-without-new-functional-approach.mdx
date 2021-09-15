@@ -1,7 +1,7 @@
 ---
 title: "JavaScript Part 6 : Create Instance without new or object.create (Functional Approach)"
 date: "2017-06-08"
-categories: 
+categories:
   - "javascript"
 ---
 
@@ -10,29 +10,69 @@ We saw in a previous article how to create a new object with "new", and also wit
 Let's start without any inheritance with a first object that we will create from "myFactory" function. This one take parameters like a normal constructor. It could be a single string like in this example, or a more complex object. What is important is that factory create a new literal object which is private until we return this one. Within this factory, every "var" will be private, hence having a good advantage against the classical approach where every variable attache to "this" are public. On this functional approach, we hook all public method to the returned value, in that case the container.
 
 ```typescript
-var myFactory = function (p1){ var privateContainer = {}; var private = "Private"; privateContainer.publicMethod = function(){console.log("Can access private variable like : " + private1 + " or the param " + p1)}; return privateContainer; }
+var myFactory = function (p1) {
+  var privateContainer = {};
+  var private = "Private";
+  privateContainer.publicMethod = function () {
+    console.log(
+      "Can access private variable like : " + private1 + " or the param " + p1
+    );
+  };
+  return privateContainer;
+};
 
-var instance1 = myFactory("i1"); var instance2 = myFactory("i2");
+var instance1 = myFactory("i1");
+var instance2 = myFactory("i2");
 
-instance1.publicMethod(); instance2.publicMethod(); 
-``` 
-
+instance1.publicMethod();
+instance2.publicMethod();
+```
 
 If we want to inherit, we need to assign members to the object literal by using the base class factory. There is many ways to do it. The way presented is that every public members of the base class will be exposed through the child class. This is done by adding the children members to the base instance instead of adding the, to an empty object. However, we could have kept the empty literal object and create public method that proxied the base class if we wanted to manually decide which public property of the base class to expose.
 
 ```typescript
-var myBaseFactory = function (p2){ var privateContainer = {}; var private = "PrivateBase"; privateContainer.publicMethodInBase = function(){console.log("[BASE] Can access private variable like : " + private + " or the param " + p2)}; return privateContainer; }
+var myBaseFactory = function (p2) {
+  var privateContainer = {};
+  var private = "PrivateBase";
+  privateContainer.publicMethodInBase = function () {
+    console.log(
+      "[BASE] Can access private variable like : " +
+        private +
+        " or the param " +
+        p2
+    );
+  };
+  return privateContainer;
+};
 
-var myFactory = function (p1){ var privateContainer = myBaseFactory("Base!" + p1); var private = "Private"; privateContainer.publicMethod = function(){console.log("Can access private variable like : " + private + " or the param " + p1)}; return privateContainer; }
+var myFactory = function (p1) {
+  var privateContainer = myBaseFactory("Base!" + p1);
+  var private = "Private";
+  privateContainer.publicMethod = function () {
+    console.log(
+      "Can access private variable like : " + private + " or the param " + p1
+    );
+  };
+  return privateContainer;
+};
 
-var instance1 = myFactory("i1"); var instance2 = myFactory("i2");
+var instance1 = myFactory("i1");
+var instance2 = myFactory("i2");
 
-instance1.publicMethod(); instance1.publicMethodInBase(); instance2.publicMethod(); instance2.publicMethodInBase(); 
-``` 
+instance1.publicMethod();
+instance1.publicMethodInBase();
+instance2.publicMethod();
+instance2.publicMethodInBase();
+```
 
+Here is the output:
 
-Here is the output: ``` 
- "Can access private variable like : Private or the param i1" "[BASE] Can access private variable like : PrivateBase or the param Base!i1" "Can access private variable like : Private or the param i2" "[BASE] Can access private variable like : PrivateBase or the param Base!i2" 
-``` 
+```
+"Can access private variable like : Private or the param i1" 
+"[BASE] Can access private variable like : PrivateBase or the param Base!i1" 
+"Can access private variable like : Private or the param i2" 
+"[BASE] Can access private variable like : PrivateBase or the param Base!i2"
+```
 
 This way offer a clean and simple way to create instances without the complexity of the prototype chain. It has the disadvantage of not sharing with the prototype, hence will be more heavy in term of memory. It has the advantage to encapsulate functions and variables inside the factory and to not expose them.
+

@@ -1,7 +1,7 @@
 ---
-title: "JavaScript Prototype Part 5 : Inheritance without \"new\" (Prototypal Approach)"
+title: 'JavaScript Prototype Part 5 : Inheritance without "new" (Prototypal Approach)'
 date: "2017-06-06"
-categories: 
+categories:
   - "javascript"
 ---
 
@@ -10,25 +10,40 @@ There is so many different ways to do something in JavaScript that become overwh
 Let's create a simple literal object that define a member and a function.
 
 ```typescript
-let baseClass1 = { memberbase: "base", functionbase () { return "This is memberbase value ("+this.memberbase+") with access to the child value ("+this.memberchild+")"; } }; 
-``` 
-
+let baseClass1 = {
+  memberbase: "base",
+  functionbase() {
+    return (
+      "This is memberbase value (" +
+      this.memberbase +
+      ") with access to the child value (" +
+      this.memberchild +
+      ")"
+    );
+  },
+};
+```
 
 The child class, that will inherit the base class, needs to be dynamically called and return a new instance every time invoked. To do so, without using "new", we need to use two Object methods. The first one is **Object.assign** which extends the base class with the child literal object. The second one is **Object.create** which create the hierarchy with the prototype.
 
 ```typescript
-let childClass1 = function childFactory () { return Object.assign(Object.create(baseClass1), { memberchild:"child" }); }; 
-``` 
-
+let childClass1 = function childFactory() {
+  return Object.assign(Object.create(baseClass1), { memberchild: "child" });
+};
+```
 
 To consume this creation pattern, we only need to call the childClass1 function.
 
 ```typescript
-let instance1 = childClass1(); let instance2 = childClass1(); instance2.memberchild="child 2";
+let instance1 = childClass1();
+let instance2 = childClass1();
+instance2.memberchild = "child 2";
 
-console.log(instance1.memberchild); // child console.log(instance2.memberchild); // child 2 console.log(instance1.functionbase()); // This is memberbase value (base) with access to the child value (child) console.log(instance2.functionbase()); // This is memberbase value (base) with access to the child value (child 2) 
-``` 
-
+console.log(instance1.memberchild); // child
+console.log(instance2.memberchild); // child 2
+console.log(instance1.functionbase()); // This is memberbase value (base) with access to the child value (child)
+console.log(instance2.functionbase()); // This is memberbase value (base) with access to the child value (child 2)
+```
 
 This works, like working with the [new pattern](./javascript-prototype-part-2-inheritance). The difference is that we are not calling the base class from the child constructor, but instead having a factory that use assign and create. While we were using **Object.create** to assign the prototype of the child to match up the base one with the "new" pattern, in that case we touch the prototype because **Object.create** first parameter is to assign the prototype.
 

@@ -1,7 +1,7 @@
 ---
 title: "Redux Middleware: Calling next or dispatch?"
 date: "2017-11-14"
-categories: 
+categories:
   - "react"
   - "redux"
 ---
@@ -15,15 +15,29 @@ Before digging into the main topic, let's illustrate the flow on which we will a
 The illustration works from top to bottom. A component dispatches an action with the **dispatch** function from Redux library. The action contains a type (string) and a payload (data). Middlewares are injected in the flow with Redux at the configuration stage of Redux with the function **applyMiddleware**. For the hypothetic case illustrated, the configuration would be like the following code.
 
 ```typescript
-import { createStore, applyMiddleware } from "redux"; const appliedMiddleware = applyMiddleware( middleware1, middleware2, middleware3, middleware4, middleware5, middleware6);
+import { createStore, applyMiddleware } from "redux";
+const appliedMiddleware = applyMiddleware(
+  middleware1,
+  middleware2,
+  middleware3,
+  middleware4,
+  middleware5,
+  middleware6
+);
 
-const reducers = { reducer1, reducer2, reducer3, reducer4 }; const reducers = combineReducers(reducersTyped);
+const reducers = { reducer1, reducer2, reducer3, reducer4 };
+const reducers = combineReducers(reducersTyped);
 
-const store: Store<YourAppState> = createStore(reducers, composeEnhancers(appliedMiddleware)); class App extends React.Component<{}, YourAppState> { public render(): JSX.Element { return <Provider store={store}>
-
-</Provider>; } } 
-``` 
-
+const store: Store<YourAppState> = createStore(
+  reducers,
+  composeEnhancers(appliedMiddleware)
+);
+class App extends React.Component<{}, YourAppState> {
+  public render(): JSX.Element {
+    return <Provider store={store}></Provider>;
+  }
+}
+```
 
 The amount of middleware and reducer doesn't need to coincide. They are orthogonal concepts. At some point, an action will be invoked via the **dispatch** function provided by Redux. Let's call the action "A". When the action is dispatched, Redux will pass the object to the first middleware. This one is responsible to do something or not. The middleware can inspect the type (string) and look if it knows what to do with it. Or, it can look at the payload and do something with it -- it's very flexible and unopinionated about the selection logic. The default behavior, when nothing is required, is to pass to the next middleware the action. This is done by calling the **next** function. As you can see in the image, middleware1 next connect to middleware2 and so on.
 

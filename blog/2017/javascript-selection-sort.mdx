@@ -1,7 +1,7 @@
 ---
 title: "JavaScript Selection Sort"
 date: "2017-06-28"
-categories: 
+categories:
   - "javascript"
 ---
 
@@ -10,6 +10,24 @@ The selection sort is a very primitive sort that has two loops. They are both im
 The idea is : find the smallest one, put it at the beginning.
 
 ```typescript
-function swap(array, left, right) { var temp = array[left]; array[left] = array[right]; array[right] = temp; } function selectionSort(arrayToSort){ var length = arrayToSort.length; var minIndex = -1; for (var i = 0; i < length-1; i++) { minIndex = i; for (var j = i+1; j < length; j++){ if (arrayToSort[j] < arrayToSort[minIndex]){ minIndex = j; } } if(minIndex !== i){ swap(arrayToSort, minIndex, i); } } } 
-``` 
-
+function swap(array, left, right) {
+  var temp = array[left];
+  array[left] = array[right];
+  array[right] = temp;
+}
+function selectionSort(arrayToSort) {
+  var length = arrayToSort.length;
+  var minIndex = -1;
+  for (var i = 0; i < length - 1; i++) {
+    minIndex = i;
+    for (var j = i + 1; j < length; j++) {
+      if (arrayToSort[j] < arrayToSort[minIndex]) {
+        minIndex = j;
+      }
+    }
+    if (minIndex !== i) {
+      swap(arrayToSort, minIndex, i);
+    }
+  }
+}
+```

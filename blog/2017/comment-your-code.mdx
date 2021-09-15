@@ -21,9 +21,13 @@ No comment. Having a comment saying "Original arrival time" wouldn't be good too
 This example is simple, and some obvious question like why and when should be answered.
 
 ```typescript
-/** * What: Time of when a message arrive into the mailbox * When: This is set when the message is built and cannot be changed any further * Why: It's a string because we get it from a ISO String format */ private originalarrivaltime: string; 
+/** 
+* What: Time of when a message arrive into the mailbox 
+* When: This is set when the message is built and cannot be changed any further 
+* Why: It's a string because we get it from a ISO String format 
+*/ 
+private originalarrivaltime: string; 
 ``` 
-
 
 That's it. Of course, it's a lot to type. However, if I give both of them to two different person, I can assure you that the second format, with the comment, is way easier to the developer to move forward. Indeed, we can argue that by reading the code we can find those answer to these questions. But, on big system, it can take many minutes, more than 1-2... sometime it's so complex that it can take half an hour just to get the whole idea.
 

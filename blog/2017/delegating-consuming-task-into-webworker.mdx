@@ -27,28 +27,69 @@ The project contains 3 files. The main.ts which will create the two buttons and 
 The slow button is executing the following code that disable the button, instantiate the algorithm class and execute it with a huge number. When it returns, it says that the data is back and enable the button.
 
 ```typescript
-function slowFunction(): void { $("#btn1").prop("disabled", true); const algo = new Algorithm(); const result = algo.calculatePrimes(50, 99887766554); const $line = $("<p>").append("Result is returned"); $("#main").append($line); $("#btn1").prop("disabled", false); } 
+function slowFunction(): void { 
+  $("#btn1").prop("disabled", true); 
+  const algo = new Algorithm(); 
+  const result = algo.calculatePrimes(50, 99887766554); 
+  const $line = $("<p>").append("Result is returned"); 
+  $("#main").append($line); $("#btn1").prop("disabled", false); } 
 ``` 
-
 
 The WebWorker button is doing something different and needs more code. To execute code in the WebWorker we need to load the WebWorker and pass a message. To Receive the value back to the page from the WebWorker, we need to subscribe to an event.
 
 ```typescript
-let worker: Worker; const callBack = (message: MessageEvent) => { if (message.data.command === "done") { const result = message.data.prime; const $line = $("<p>").append("Result is returned"); $("#main").append($line); } $("#btn2").prop("disabled", false); }; function slowFunctionWebWorker(): void { $("#btn2").prop("disabled", true); if (worker) { worker.removeEventListener("message", callBack); worker.terminate(); } worker = new Worker("output/webworker.js"); worker.addEventListener("message", callBack, false);
+let worker: Worker; 
+const callBack = (message: MessageEvent) => { 
+  if (message.data.command === "done") { 
+    const result = message.data.prime; 
+    const $line = $("<p>").append("Result is returned"); 
+    $("#main").append($line); }
+     $("#btn2").prop("disabled", false); 
+    }; 
+    
+    function slowFunctionWebWorker(): void { 
+      $("#btn2").prop("disabled", true); 
+      if (worker) { 
+        worker.removeEventListener("message", callBack); 
+        worker.terminate(); 
+      } 
+      worker = new Worker("output/webworker.js"); 
+      worker.addEventListener("message", callBack, false);
 
-setTimeout(() => { worker.postMessage({ multiplier: 50, iterations: 50000, }); }, 1000); } 
+      setTimeout(() => { 
+        worker.postMessage({ multiplier: 50, iterations: 50000, }); 
+        }, 1000); 
+    }
+  }
+} 
 ``` 
- The call back, is looking for which message is sent back. The string could have been anything, the important is that the WebWorker needs to send the same. This is the way to handle multiple messages and response between the page and WebWorker. In our case, we have only one method and one response so a single string is the only thing required which is called "done".
+
+The call back, is looking for which message is sent back. The string could have been anything, the important is that the WebWorker needs to send the same. This is the way to handle multiple messages and response between the page and WebWorker. In our case, we have only one method and one response so a single string is the only thing required which is called "done".
 
 The button is disabled and make sure that if a previous worker existed to remove the response listener and termine this one. After, it creates the worker. This is done by using the Worker class and passing a relative path to the WebWorker JavaScript file. After, we need to subscribe to a worker which of type "message". This allows to pass messages between the page and the WebWorker. Finally, there is a timeout of 1 sec before passing the request command down. The reason is that we need some time to the WebWorker to instanciate and register to listen to command. As you can see the postMessage is the way to call the WebWorker with some arguments.
 
 The WebWorker is using the same algorithm that the one execute in the main script which was loading it from an other module. To do that with WebWorker, we need to get more barebone which mean we cannot use the import syntax, but directly use requirejs.
 
 ```typescript
-importScripts("../vendors/requirejs/require.js"); console.log("loaded"); requirejs.config({ baseUrl: ".", }); require(["algo"], function (algo_1) { console.log("required"); //debugger; self.addEventListener("message", (message: MessageEvent) => { console.log("receive message begin"); const origin = message.origin; const iterations = message.data.iterations; const multiplier = message.data.multiplier; const algo = new algo_1.Algorithm(); const result = algo.calculatePrimes(iterations, multiplier); console.log("receive message end"); (self as any).postMessage({ command: "done", primes: result }); }); }); 
+importScripts("../vendors/requirejs/require.js"); 
+console.log("loaded"); 
+requirejs.config({ baseUrl: ".", }); 
+require(["algo"], 
+function (algo_1) { 
+  console.log("required"); //debugger; 
+  self.addEventListener("message", (message: MessageEvent) => { 
+    console.log("receive message begin"); 
+    const origin = message.origin; 
+    const iterations = message.data.iterations; 
+    const multiplier = message.data.multiplier; 
+    const algo = new algo_1.Algorithm(); 
+    const result = algo.calculatePrimes(iterations, multiplier); 
+    console.log("receive message end"); 
+    (self as any).postMessage({ command: "done", primes: result }); 
+  }); 
+}); 
 ``` 
 
-
-To load a script, we must use "importScripts" which will let us having requirejs to load the module. Then, we need to configure RequireJs with a minimum configuration. Then, we call require to load the algo module. A good thing is that you can use console.log as well as the debugger keyword to debug the WebWorker. Next, you need to subscribe to the "message" event to be able to receive the postMessage from the webpage. Once we receive a message, we get the parameters, instantiate the algorithm class and wait the result. Once the result is out, we postMessage back to the page. I had to cast to "any" to have access to postMessage (there is probably a better way).
+To load a script, we must use `importScripts` which will let us having `requirejs` to load the module. Then, we need to configure RequireJs with a minimum configuration. Then, we call require to load the algo module. A good thing is that you can use console.log as well as the debugger keyword to debug the WebWorker. Next, you need to subscribe to the "message" event to be able to receive the postMessage from the webpage. Once we receive a message, we get the parameters, instantiate the algorithm class and wait the result. Once the result is out, we postMessage back to the page. I had to cast to `any` to have access to postMessage (there is probably a better way).
 
 The end result is way better and as you can see, the interface doesn't pay the price. However, if you have keen eyes, you also saw that I reduced the multiplier count from 99 887 766 554 to 50 000. That is a lot less! Why? Because keeping the same huge value was killing the WebWorker. By that, I mean that the algorithm was running forever. The whole process was running more slowly than the main thread for an unknown reason to me (at this time I am writing this post). I'll have a future post about why it's slower, but for the moment, if you need to have some telemetry task, or small task that block the UI just for more than few seconds (but not too much!), it may be worth it to move some logic down to a WebWorker. Also, as you can see, TypeScript is totally possible with WebWorker without a lot of hassle which is a big plus for anyone working with TypeScript project.

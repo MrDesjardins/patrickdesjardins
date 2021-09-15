@@ -13,7 +13,8 @@ The problem by going through intermediate methods to access the one we want to t
 At that point, most people understand the situation and agree to test the private methods. However, there is some good ways to do it and some bad ways. The worst way to do it to cast the class **A** to be of type any and call **a3** directly. Something like :
 
 ```typescript
-// Bad way: var a = new A(); (a as any).a3(); 
+// Bad way: 
+var a = new A(); (a as any).a3(); 
 ``` 
 
 
@@ -26,16 +27,49 @@ Let's remember the first pattern. The first pattern is that class A should have 
 The second pattern presented was about moving code around. In our example, **a2** and **a3** are private and could be moved outside an other class. For example, let's say that A was a user class, **a1** was a method to get the user information to display to the screen, **a2** a method to get the address information and **a3** a method to format the street address. This could be refactored from :
 
 ```typescript
-class User{ public getUserInformationToDisplay(){ //... this.getUserAddress(); //... }
+class User{ public getUserInformationToDisplay(){ 
+  //... 
+  this.getUserAddress(); 
+  //... }
 
-private getUserAddress(){ //... this.formatStreet(); //... } private formatStreet(){ //... } } 
+  private getUserAddress(){ 
+    //... 
+    this.formatStreet(); 
+    //... 
+  } 
+  private formatStreet(){ 
+    //... 
+  } 
+} 
 ``` 
 
+to: 
 
-to: ```typescript
-class User{ private address:Address; public getUserInformationToDisplay(){ //... address.getUserAddress(); //... } } class Address{ private format: StreetFormatter; public format(){ //... format.ToString(); //... } } class StreetFormatter{ public toString(){ // ... } } 
+```typescript
+class User{ 
+  private address:Address; 
+  public getUserInformationToDisplay(){ 
+    //... 
+    address.getUserAddress(); 
+    //... 
+  } 
+} 
+
+class Address{ 
+  private format: StreetFormatter; 
+  public format(){ 
+    //... 
+    format.ToString(); 
+    //... 
+    } 
+} 
+
+class StreetFormatter{ 
+  public toString(){ 
+    // ... 
+  } 
+} 
 ``` 
-
 
 Originally, we wanted to test the private method formatStreet (a3), and now it's very easy because I do not even need to care about all the classes or function that call it, just to unit test the StreetFormatter class (which was the original a3). this is the best way to unit test private method : to divide it correctly into specific class. This is also costly in term of time.
 

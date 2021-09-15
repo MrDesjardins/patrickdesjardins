@@ -11,33 +11,79 @@ If you are using Gulp to build your TypeScript you may use the default configura
 So the idea is to not use this kind of configuration in tsconfig.json 
 
 ```javascript
-{ "compilerOptions": { "sourceMap": true, "target": "es6", "module": "amd", "outDir": "./deploy/output", "types": [ "jquery", "requirejs", "lodash", "reflect-metadata" ], "experimentalDecorators": true, "emitDecoratorMetadata": true }, "include": [ "app/scripts/**/*" ], "exclude": [ "node_modules", "**/*.spec.ts" ] } 
+{ 
+  "compilerOptions": 
+  { "sourceMap": true, 
+  "target": "es6", 
+  "module": "amd", 
+  "outDir": "./deploy/output", 
+  "types": [ "jquery", "requirejs", "lodash", "reflect-metadata" ], 
+  "experimentalDecorators": true, 
+  "emitDecoratorMetadata": true 
+  }, 
+  "include": [ "app/scripts/**/*" ], "exclude": [ "node_modules", "**/*.spec.ts" ] 
+} 
 ``` 
-
 
 and not this task in Gulp task code:
 
 ```javascript
-gulp.task("build", () => { const r = "./app/output"; var compilationResults = tsProject.src() .pipe(sourcemaps.init()) .pipe(tsProject()) compilationResults.dts.pipe(gulp.dest(r)); return compilationResults.js .pipe(sourcemaps.write('.')) .pipe(gulp.dest(r)); }); 
+gulp.task("build", () => { 
+  const r = "./app/output"; 
+  var compilationResults = tsProject.src() 
+    .pipe(sourcemaps.init()) 
+    .pipe(tsProject()); 
+  compilationResults.dts.pipe(gulp.dest(r)); 
+  return compilationResults.js 
+    .pipe(sourcemaps.write('.')) 
+    .pipe(gulp.dest(r)); 
+}); 
 ``` 
 
 But to use this tsconfig.json:
 
 ```javascript
-{ "compilerOptions": { "sourceMap": true, "target": "es6", "module": "amd", "outDir": "./deploy/output", "types": [ "jquery", "requirejs", "lodash", "reflect-metadata" ], "experimentalDecorators": true, "emitDecoratorMetadata": true }, "exclude": [ "node_modules", "**/*.spec.ts" ] } 
+{ 
+  "compilerOptions": { 
+    "sourceMap": true, 
+    "target": "es6", 
+    "module": "amd", 
+    "outDir": "./deploy/output", 
+    "types": [ "jquery", "requirejs", "lodash", "reflect-metadata" ], 
+    "experimentalDecorators": true, 
+    "emitDecoratorMetadata": true 
+    }, 
+    "exclude": [ "node_modules", "**/*.spec.ts" ] 
+} 
 ``` 
 
  and this Gulp task code: 
 
  ```javascript
-  gulp.task("build", () => { const outFolder = "./app/output"; var compilationResults = gulp.src("app/scripts/**/*.ts") .pipe(sourcemaps.init()) .pipe(tsProject()) compilationResults.dts.pipe(gulp.dest(outFolder)); return compilationResults.js .pipe(sourcemaps.write('.')) .pipe(gulp.dest(outFolder)); }); 
+gulp.task("build", () => { 
+  const outFolder = "./app/output"; 
+  var compilationResults = gulp.src("app/scripts/**/*.ts") 
+    .pipe(sourcemaps.init()) 
+    .pipe(tsProject());
+  compilationResults.dts.pipe(gulp.dest(outFolder)); 
+  return compilationResults.js 
+    .pipe(sourcemaps.write('.')) 
+    .pipe(gulp.dest(outFolder)); 
+}); 
 ``` 
 
 The whole idea is that you can move the include files outside TypeScript configuration file, but inject the files from Gulp. So far, everything is build from the root of the app/script folder, but you could define a new task that take a sub folder like the following code:
 
 ```javascript
-gulp.task("buildgeneral", () => { const outFolder = "deploy/output/general"; var compilationResults = gulp.src("app/scripts/general/*.ts") .pipe(sourcemaps.init()) .pipe(tsProject()) compilationResults.dts.pipe(gulp.dest(outFolder)); return compilationResults.js .pipe(sourcemaps.write('.')) .pipe(gulp.dest(outFolder)); }); 
+gulp.task("buildgeneral", () => { 
+  const outFolder = "deploy/output/general"; 
+  var compilationResults = gulp.src("app/scripts/general/*.ts")
+    .pipe(sourcemaps.init())
+    .pipe(tsProject());
+  compilationResults.dts.pipe(gulp.dest(outFolder)); 
+  return compilationResults.js
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest(outFolder)); 
+}); 
 ``` 
-
-
 This is very interesting if you have a project with thousand files. Instead of building the whole project every time, you can just build the file or the folder that the file reside.

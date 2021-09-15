@@ -13,16 +13,20 @@ As a reminder, the project that I was migrating to TypeScript was an AngularJS 1
 
 Few changes are required in term of libraries. We need to bring some definition files for AngularJS, RequireJs, JQuery and Angular-ui-router and also the Angular library. This can be done easily with NPM, here is the JSON output.
 
+```
 "angular": "^1.5.11",
 "@types/angular": "^1.5.23",
 "@types/angular-ui-router": "^1.1.37",
 "@types/jquery": "^3.2.10",
+```
 
 Minor changes was required in the Gruntfile.js because if we recall, we were using the tsconfig.json file to do the heavy lifting. The main change was to bring .ts file into the final distribution folder since we want to debug the .ts with the map file.
 
 From there, I chose some JavaScript files, and changed the extension of the file to .ts. I started with the entry JavaScript file and went deeper and deeper. Without modifying anything, it was working. But, it wasn't leveraging the typed aspect of TypeScript. That is the reason, I started to change all requirejs type. When "angular" was injected, I added to the parameter the type. Almost every file needed to have ng.IAngularStatic
 
+```typescript
 angular: ng.IAngularStatic
+```
 
 The definition file are well exhaustive and provides everything from compileProvider, to scsDelegateProvider, to httpProvider and so on. With the power of TypeScript, it's a matter of typing "ng." and wait for Intellisense to come up suggesting type from AngularJS' definition file.
 

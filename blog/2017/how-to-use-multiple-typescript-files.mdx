@@ -11,13 +11,18 @@ TypeScript allows you to use EcmaScript import syntax to bring code from another
 For example, let's have 2 files. app.ts and fileToInclude.ts which will contain a class that we want to use in App.ts.
 
 ```typescript
-//app.ts content: import { ClassA } from "fileToInclude"
+//app.ts content: 
+import { ClassA } from "fileToInclude"
 
 const a = new ClassA(); a.method1();
 
-//fileToInclude.ts content: export class ClassA { public method1(): void { console.log("ClassA>method1"); } } 
+//fileToInclude.ts content: 
+export class ClassA { 
+  public method1(): void { 
+    console.log("ClassA>method1"); 
+  } 
+} 
 ``` 
-
 
 As you can see, the way to import a class is to specify the class name and from which file to import it. On the other side, the class that you want to import must be marked as export to be imported. The export and import are not TypeScript specific, but something EcmaScript version 6 allows you to use instead of using a custom AMD loader library like Require.js.
 
@@ -28,23 +33,40 @@ So while this is supported since EcmaScript 6, some browser doesn't support this
 By changing the target of the tsconfig.json to use a module loader the generated code will be using the module loader syntax instead of the EcmaScript syntax. A popular one is Require.js. to do so, the tsconfig.json file needs to have a module entry.
 
 ```typescript
-{ "compilerOptions": { "sourceMap": true, "target": "es6", "module": "amd", "outDir": "./Scripts/App" }, "include": [ "src/**/*" ] } 
+{ 
+  "compilerOptions": { 
+    "sourceMap": true, 
+    "target": "es6", 
+    "module": "amd", 
+    "outDir": "./Scripts/App" 
+    }, 
+    "include": [ "src/**/*" ] } 
 ``` 
 
+Without specifyin the module, the code generated was: 
 
-Without specifyin the module, the code generated was: ```typescript
-import { ClassA } from "./fileToInclude"; const a = new ClassA(); a.method1(); 
+```typescript
+import { ClassA } from "./fileToInclude"; 
+const a = new ClassA(); 
+a.method1(); 
 ``` 
 
+With the module to AMD, this will output a JavaScript that will wrap the module with require. For example: 
 
-With the module to AMD, this will output a JavaScript that will wrap the module with require. For example: ```typescript
-define(["require", "exports", "./fileToInclude"], function (require, exports, fileToInclude_1) { "use strict"; var a = new fileToInclude_1.ClassA(); a.method1(); }); 
+```typescript
+define(["require", "exports", "./fileToInclude"], function (require, exports, fileToInclude_1) { 
+  "use strict"; 
+  var a = new fileToInclude_1.ClassA(); 
+  a.method1(); 
+}); 
 ``` 
-
 
 Finally, you cannot call directly the .js file in the .cshtml. Instead, we need to use the script tag with a src to requirejs and call a specific method to indicate which module to load (which file).
 
 ```typescript
-<script src="~/Scripts/require.js"></script> <script> requirejs.config({ baseUrl: '/Scripts/App/' }); requirejs(['app']); </script> 
+<script src="~/Scripts/require.js"></script> 
+<script> requirejs.config({ baseUrl: '/Scripts/App/' }); 
+requirejs(['app']); </script> 
 ``` 
- In our case, we want to execute app.js, so we write "app" without the extension ".js". However, before doing so, we need to setup require requirejs to know that the root of all JavaScript file are located into the Script folder.
+
+In our case, we want to execute app.js, so we write "app" without the extension ".js". However, before doing so, we need to setup require requirejs to know that the root of all JavaScript file are located into the Script folder.

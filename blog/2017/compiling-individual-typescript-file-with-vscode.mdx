@@ -11,36 +11,63 @@ TypeScript is used to compile TypeScript .ts into JavaScript .js. The basic setu
 The first step is to make a new Gulp's task that will look similar to this one which, at this moment, hard code a single file to be compiled.
 
 ```typescript
-const gulp = require('gulp'); const tsc = require('gulp-typescript'); const tsProject = tsc.createProject('tsconfig.json');
+const gulp = require('gulp'); 
+const tsc = require('gulp-typescript'); 
+const tsProject = tsc.createProject('tsconfig.json');
 
-gulp.task("buildsinglefile", () => { const pathWithFileNameToCompile = "src/folder1/file2.ts"; const pathWithoutFileNameForOutput = "./output/folder1"; return gulp.src(pathWithFileNameToCompile) .pipe(tsc({ "target": "es6", "module": "amd" })) .pipe(gulp.dest(pathWithoutFileNameForOutput)); }); 
+gulp.task("buildsinglefile", () => { 
+  const pathWithFileNameToCompile = "src/folder1/file2.ts"; 
+  const pathWithoutFileNameForOutput = "./output/folder1"; 
+  return gulp.src(pathWithFileNameToCompile) 
+    .pipe(tsc({ "target": "es6", "module": "amd" })) 
+    .pipe(gulp.dest(pathWithoutFileNameForOutput)); }); 
 ``` 
 
 
-As you can see from the 2 first lines, it needs to have 2 npm packages. ``` 
+As you can see from the 2 first lines, it needs to have 2 npm packages. 
+``` 
  npm install gulp --save-savedev npm install gulp-typescript typescript --save-savedev npm install gulp-sourcemaps --save-dev 
 ``` 
 
 The Gulp's script needs to take in parameter some information from Visual Studio Code. To pass this data, we need VSCode to sent its variable through arguments
 
 ```typescript
-{ "version": "0.1.0", "command": "gulp", "isShellCommand": true, "args": [ "--workspaceRoot", "${workspaceRoot}", "--fileDirname", "${fileDirname}", "--file", "${file}" ], "tasks": [ { "taskName": "buildsinglefile", "isBuildCommand": true, "args": [] } ] } 
+{ 
+  "version": "0.1.0", 
+  "command": "gulp", 
+  "isShellCommand": true, 
+  "args": [ "--workspaceRoot", "${workspaceRoot}", "--fileDirname", "${fileDirname}", "--file", "${file}" ], 
+  "tasks": [ { "taskName": "buildsinglefile", "isBuildCommand": true, "args": [] } ] 
+} 
 ``` 
  To make it works, we need to pass the double dash for the name of the parameter, followed by special macro variable of VSCode. Then, the Gulp's task needs to consume the argument. The arguments passed are indexed and contains more than only what is passed down by the VSCode's task. The index 0 is the node.exe path, index 1 is the gulp.js path, index 2 starts to be out own argument, which in our case will contain "--workspaceroot" and so on. The index 7 is the first argument used and it contains the file on which the task is executed. We need it to give the file to TypeScript to compile. Next, we use argument 5 and 3 to create the output path. This need to be custom to your file structure. In the illustrated case we have a structure that looks like: _./src/same-structure-after_ that is compiled to _./output/same-structure-after_.
 
 ```typescript
-gulp.task("buildsinglefile", () => { const arguments = process.argv; const pathWithFileNameToCompile = arguments[7]; const pathWithoutFileNameForOutput = arguments[5].replace(arguments[3], ".").replace("\\\\src\\\\", "\\\\output\\\\");
+gulp.task("buildsinglefile", () => { 
+  const arguments = process.argv; 
+  const pathWithFileNameToCompile = arguments[7]; 
+  const pathWithoutFileNameForOutput = arguments[5].replace(arguments[3], ".").replace("\\\\src\\\\", "\\\\output\\\\");
 
-const step1 = gulp.src(pathWithFileNameToCompile) .pipe(sourcemaps.init()) .pipe(tsc({ "target": "es6", "module": "amd" }))
+  const step1 = gulp.src(pathWithFileNameToCompile) 
+    .pipe(sourcemaps.init()) 
+    .pipe(tsc({ "target": "es6", "module": "amd" }))
 
-step1.pipe(gulp.dest(pathWithoutFileNameForOutput));
+  step1.pipe(gulp.dest(pathWithoutFileNameForOutput));
 
-step1.dts.pipe(gulp.dest(pathWithoutFileNameForOutput)); return step1.js .pipe(sourcemaps.write('.')) .pipe(gulp.dest(pathWithoutFileNameForOutput)); }); 
+  step1.dts.pipe(gulp.dest(pathWithoutFileNameForOutput)); 
+  return step1.js 
+    .pipe(sourcemaps.write('.')) 
+    .pipe(gulp.dest(pathWithoutFileNameForOutput)); 
+}); 
 ``` 
 
 
-To use it, we only need to press "F1" on the single file we want to compile, type "task", select "Run Task" and select "buildsinglefile". ![](images/tasksRunTask.png)
+To use it, we only need to press "F1" on the single file we want to compile, type "task", select "Run Task" and select "buildsinglefile". 
 
-This will generate the map file, as well as the JavaScript file. You can click the following image to see the animation of how it works. ![](images/TypeScriptBuildSingleFile-1024x427.gif)
+![](images/tasksRunTask.png)
+
+This will generate the map file, as well as the JavaScript file. You can click the following image to see the animation of how it works. 
+
+![](images/TypeScriptBuildSingleFile-1024x427.gif)
 
 Having a quick way to build file you are working on is crucial to move fast forward. This is one step in this direction. Two possibles improvement would be to have a shortcut to execute this task, and another solution is to have a file watcher that execute a compilation on the modified file.

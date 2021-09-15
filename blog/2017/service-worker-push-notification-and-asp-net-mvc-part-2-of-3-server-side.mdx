@@ -1,7 +1,7 @@
 ---
 title: "Service Worker, Push Notification and Asp.Net MVC - Part 2 of 3 Server Side"
 date: "2017-01-10"
-categories: 
+categories:
   - "asp-mvc"
   - "azure"
 ---
@@ -10,24 +10,50 @@ In the part one, we saw how to register a service worker and how to handle incom
 
 The first thing, is to define a generic contract with an interface. I decided to create a simple one that return a simple boolean to indicate if the message sent is a success or a failure. The method signature allows to pass the "to" token, which is the unique identifier of the user for Firebase (the token saved from the Ajax call in the part 1). The remaining parameters are self explanatory with the title, message and url when the user click the notification.
 
-
 ```csharp
- public interface IPushNotification { bool QueueMessage(string to, string title, string message, string urlNotificationClick); } 
+public interface IPushNotification {
+  bool QueueMessage(string to, string title, string message, string urlNotificationClick);
+}
 ```
 
 The implementation is also very simple. It relies on the REST endpoint of Google Firebase.
 
-
 ```csharp
- public class GoogleFirebaseNotification:IPushNotification { public bool QueueMessage(string to, string title, string message, string urlNotificationClick) { if (string.IsNullOrEmpty(to)) { return false; } var serverApiKey = "SuperLongKeyHere"; var firebaseGoogleUrl = "https://fcm.googleapis.com/fcm/send";
+ public class GoogleFirebaseNotification:IPushNotification {
+   public bool QueueMessage(string to, string title, string message, string urlNotificationClick) {
+     if (string.IsNullOrEmpty(to)) {
+       return false;
+    }
+     var serverApiKey = "SuperLongKeyHere";
+     var firebaseGoogleUrl = "https://fcm.googleapis.com/fcm/send";
 
-var httpClient = new WebClient(); httpClient.Headers.Add("Content-Type", "application/json"); httpClient.Headers.Add(HttpRequestHeader.Authorization, "key=" + serverApiKey); var timeToLiveInSecond = 24 * 60; // 1 day var data = new { to = to, data = new { notification = new { body = message, title = title, icon = "/Content/Images/Logos/BourseVirtuelle.png", url = urlNotificationClick } }, time_to_live = timeToLiveInSecond };
+    var httpClient = new WebClient();
+    httpClient.Headers.Add("Content-Type", "application/json");
+    httpClient.Headers.Add(HttpRequestHeader.Authorization, "key=" + serverApiKey);
+    var timeToLiveInSecond = 24 * 60; // 1 day
+    var data = new {
+       to = to,
+      data = new { notification = new {
+        body = message,
+        title = title,
+        icon = "/Content/Images/Logos/BourseVirtuelle.png",
+        url = urlNotificationClick
+        }
+      },
+      time_to_live = timeToLiveInSecond };
 
-var json = JsonConvert.SerializeObject(data); Byte[] byteArray = Encoding.UTF8.GetBytes(json); var responsebytes = httpClient.UploadData(firebaseGoogleUrl, "POST", byteArray); string responsebody = Encoding.UTF8.GetString(responsebytes); dynamic responseObject = JsonConvert.DeserializeObject(responsebody);
-
-return responseObject.success == "1"; } } 
+    var json = JsonConvert.SerializeObject(data);
+    Byte[] byteArray = Encoding.UTF8.GetBytes(json);
+    var responsebytes = httpClient.UploadData(firebaseGoogleUrl, "POST", byteArray);
+    string responsebody = Encoding.UTF8.GetString(responsebytes);
+    dynamic responseObject = JsonConvert.DeserializeObject(responsebody);
+    return responseObject.success == "1";
+  }
+}
 ```
 
-The first piece of puzzle is to use the right server api key. It's under the Firebase console, under the setting's cog and under the **Cloud Messaging**. ![](images/ServerKeyFirebase-1024x415.png)
+The first piece of puzzle is to use the right server api key. It's under the Firebase console, under the setting's cog and under the **Cloud Messaging**.
+
+![](images/ServerKeyFirebase-1024x415.png)
 
 When using with a webjob, you just need to use this implementation and pass the desired parameters. You can get from the token from a new column create in the AspNetUsers table and define a specific title and description depending of what the user must do.

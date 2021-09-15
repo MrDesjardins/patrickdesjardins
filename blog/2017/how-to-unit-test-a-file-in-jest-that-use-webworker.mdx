@@ -23,8 +23,13 @@ declare module "file-loader?name=[name].js!*" { const value: string; export = va
 However, doing so will have an issue with Jest that won't understand the file-loader and will crash. To get around, Jest allows configuring a "moduleNameMapper" property to mock the call. Unfortunately, if you are using create-react-app, you won't have access to this property since only a merely portions of what available is supported. You'll have to be more imaginative and use what you can find. Jest is open source and it allows to get inside. One thing you can see in the source code is that it sets the ENV variable to test. So a working solution is to look if we are in test and to return something else than the web worker.
 
 ```typescript
-async function getWorkerPath() { let workerPathAsync = ""; if (process.env.NODE_ENV !== "test") { workerPathAsync = require("file-loader?name=[name].js!../../WebWorkers/logWebWorker"); } return workerPathAsync; } const workerPath = getWorkerPath(); 
+async function getWorkerPath() { 
+  let workerPathAsync = ""; 
+  if (process.env.NODE_ENV !== "test") {
+     workerPathAsync = require("file-loader?name=[name].js!../../WebWorkers/logWebWorker"); 
+  } return workerPathAsync; 
+} 
+const workerPath = getWorkerPath(); 
 ``` 
-
 
 The "require" syntax work, the "await import" async version doesn't work yet for me even if I was using TypesScript 2.5.3. It was compiling but during Jest execution, the syntax was not supported. Regardless, the "require" solution let you load it for your development and production environment.
