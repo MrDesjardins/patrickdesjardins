@@ -56,7 +56,7 @@ While exploring the data, I realized that I was sending development localhost in
  | where url !startswith "http://localhost"
  | where url !contains "azurewebsites.net"
  | order by sendDuration desc nulls last
- | extend urlWithoutNumber = replace(@"([^?]+).*", @"\\1", replace(@"([a-z0-9]{8})\\-([a-z0-9]{4})\\-([a-z0-9]{4})\\-([a-z0-9]{4})\\-([a-z0-9]){12}", @"x", replace(@"(\\d)", @"x", url)))
+ | extend urlWithoutNumber = replace(@"([^?]+).*", @"\\1", replace(@"([a-z0-9]{8})\-([a-z0-9]{4})\-([a-z0-9]{4})\-([a-z0-9]{4})\-([a-z0-9]){12}", @"x", replace(@"(\\d)", @"x", url)))
  | project timestamp , urlWithoutNumber, sendDuration
 ```
 
@@ -79,7 +79,7 @@ It means that you can reduce the **processingDuration** by having simpler CSS an
  | where totalDuration > 5000
  | where url !startswith("http://localhost")
  | where url !contains("azurewebsites.net")
- | extend urlClean = replace(@"([^?]+).*", @"\\1", replace(@"([a-z0-9]{8})\\-([a-z0-9]{4})\\-([a-z0-9]{4})\\-([a-z0-9]{4})\\-([a-z0-9]){12}", @"x", replace(@"(\\d)", @"x", url)))
+ | extend urlClean = replace(@"([^?]+).*", @"\\1", replace(@"([a-z0-9]{8})\-([a-z0-9]{4})\-([a-z0-9]{4})\-([a-z0-9]{4})\-([a-z0-9]){12}", @"x", replace(@"(\\d)", @"x", url)))
  | summarize percentiles(processingDuration, 50, 95) , percentiles(totalDuration, 50, 95) by urlClean
  | where percentile_processingDuration_50 > 2000
  | order by percentile_processingDuration_50 desc nulls last

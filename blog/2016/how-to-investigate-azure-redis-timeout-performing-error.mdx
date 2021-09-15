@@ -35,7 +35,7 @@ private static ConnectionMultiplexer Connection { get { lock (lockPookRoundRobin
 
 I have several methods that use Connection which give the next connection to execute a call.
 
-At this point, I was in a better situation but some small requests were still failing. By small I mean request that was returning few kilo bytes of data. At that point, I decided to look at the portal and realized that I was reaching almost the limit of 1 gig of Redis! I was quite surprise because with the production data I was reaching about 200 megs most of the time. This is where I learned the command **\--bigkeys** of Redis. This command gives your some information about which keys is taking a lot of space. From my manual inspection, I knew that I had about hundreds of key that was reaching 700kbs to 2 megs. However, with that tool, I found dozen and dozen of entries around 18 megs. The command look likes this : ``` 
+At this point, I was in a better situation but some small requests were still failing. By small I mean request that was returning few kilo bytes of data. At that point, I decided to look at the portal and realized that I was reaching almost the limit of 1 gig of Redis! I was quite surprise because with the production data I was reaching about 200 megs most of the time. This is where I learned the command **--bigkeys** of Redis. This command gives your some information about which keys is taking a lot of space. From my manual inspection, I knew that I had about hundreds of key that was reaching 700kbs to 2 megs. However, with that tool, I found dozen and dozen of entries around 18 megs. The command look likes this : ``` 
  "D:\\Program Files\\Redis\\redis-cli.exe" -h xxxx.redis.cache.windows.net -p 6379 -a PASSWORDXXXXX --bigkeys 
 ``` 
 

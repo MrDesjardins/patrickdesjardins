@@ -11,7 +11,7 @@ One action that we have to do quite often is to remove data from tables. This ca
 ```sql
  --Delete DELETE FROM Table123
 
-\--Truncate TRUNCATE TABLE Table123 
+--Truncate TRUNCATE TABLE Table123 
 ```
 
 
@@ -23,7 +23,7 @@ On the other side, truncate statement is won't log anything, it won't go row by 
 ```sql
  --This will work DELETE FROM Table123 WHERE startDate <= 2013-06-14
 
-\--This won't work TRUNCATE TABLE Table123 WHERE startDate <= 2013-06-14 -- Error! 
+--This won't work TRUNCATE TABLE Table123 WHERE startDate <= 2013-06-14 -- Error! 
 ```
 
 

@@ -12,7 +12,7 @@ Resolvers can perform asynchronous call to fetch data. Using the specific implem
 
 Resolvers and DataSource Relationship
 
-Similar to _resolvers_, _datasources_ is a member is defined in the _ApolloServerConfig_. The member is a function that returns a map (dictionary) of data sources. The _datasources_ is strongly typed as "DataSrouces<T>" where T is your custom context.
+Similar to _resolvers_, _datasources_ is a member is defined in the _ApolloServerConfig_. The member is a function that returns a map (dictionary) of data sources. The _datasources_ is strongly typed as `DataSrouces<T>` where T is your custom context.
 
 ```typescript
 dataSources: () => {
@@ -23,9 +23,9 @@ dataSources: () => {
 },
 ```
 
-I create one data source per domain because all Rest and gRPC service are already divided by business domain. However, there is no conscribed way to split the data sources. Each data source is class that eventually must inherit extends _DataSource<T>_ where T is the custom context you have defined for your GraphQL server. 
+I create one data source per domain because all Rest and gRPC service are already divided by business domain. However, there is no conscribed way to split the data sources. Each data source is class that eventually must inherit extends `DataSource<T>` where T is the custom context you have defined for your GraphQL server. 
 
-In the Netflix Open Connect GraphQL, I decided to have all my REST data source inherit a generic base class that handles all Axios code. The REST class inherits the DataSource from "apollo\-datasource" package. The REST encapsulate the Axios package which can be changed later for something else without having to touch resolvers.
+In the Netflix Open Connect GraphQL, I decided to have all my REST data source inherit a generic base class that handles all Axios code. The REST class inherits the DataSource from "apollo-datasource" package. The REST encapsulate the Axios package which can be changed later for something else without having to touch resolvers.
 
 ![](images/GraphQLServers-DataSourceAxios.png)
 
