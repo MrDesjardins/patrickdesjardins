@@ -11,7 +11,7 @@
     "develop": "gatsby develop",
     "debug": "node --nolazy node_modules/.bin/gatsby develop --inspect-brk",
     "start": "gatsby develop",
-    "build": "gatsby build",
+    "build": "gatsby build --prefix-paths",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "type-check": "tsc --noEmit",
