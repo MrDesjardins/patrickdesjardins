@@ -1,8 +1,0 @@
-{
-  "mdxCodeTypeScript": {
-    // "scope": "markdownx",
-    "prefix": ["ts", "typescript"],
-    "body": ["```typescript", "$TM_SELECTED_TEXT", "```"],
-    "description": "TypeScript Code Wrapper"
-  }
-}
