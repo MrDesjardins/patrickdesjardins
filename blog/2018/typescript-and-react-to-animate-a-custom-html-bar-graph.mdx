@@ -17,7 +17,7 @@ In term of navigability, it is possible to click on any cache to move to the det
 
 So, how it was built? All with TypeScript, React and HTML/CSS. The first row of option has its own component and the result has also its own component. Both live in the "FillWindows" component.
 
-![React Components for Fill Windows Feature](https://patrickdesjardins.com/blog/wp-content/uploads/2018/08/FillWindows.png)
+![](images/FillWindows.png)
 
 The menu is simple and has two functions in its props which allows the "Fillwindows.tsx" to know how to render the information.  The "FillwindowsNowIndicator" is the pin that point the current time. It receives the timezone as well as some detail about the width of the diagram. Finally, depending on the organization, a different number of "FillwindowsCluster" are generated. Information travels always from the "Fillwindows.tsx" which has the main DIV with a position absolute. The position type to absolute is required to position every element with a left and top style which will be animated later by setting the value and animating everything with a translation.
 

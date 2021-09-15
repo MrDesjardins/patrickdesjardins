@@ -21,7 +21,7 @@ To do so, we need the parent to take care to fill the localized properties accor
 protected FeatureFlag() { this.Name = ParentResourceManager.Instance.GetLocalizationNameByClassName(this); this.Description = ParentResourceManager.Instance.GetLocalizationDescriptionByClassName(this); } } 
 ```
 
-You can skip the detail about the **LocalizedString** type or if you are curious can go look at [this article](http://patrickdesjardins.com/blog/how-to-have-localized-string-with-mvc-and-entity-framework). It's just a class that has a French and English string. The important piece if that the constructor invokes the _ParentResourceManager_ to retrieve the proper string. This resource manager looks like this:
+You can skip the detail about the **LocalizedString** type or if you are curious can go look at [this article](./how-to-have-localized-string-with-mvc-and-entity-framework). It's just a class that has a French and English string. The important piece if that the constructor invokes the _ParentResourceManager_ to retrieve the proper string. This resource manager looks like this:
 
 
 ```csharp

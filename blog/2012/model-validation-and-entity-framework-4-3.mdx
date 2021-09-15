@@ -6,7 +6,7 @@ categories:
   - "general"
 ---
 
-In a previous post concerning the [IValidatableObject with Asp.Net MV3](http://patrickdesjardins.com/blog/how-to-validate-model-object-with-asp-net-mvc-correctly "How to validate model object with Asp.Net MVC correctly?") we have discussed the powerful of the **IValidatableObject** interface with MVC framework which is a fast solution to handle error in the model, error in the model binding and error in the controller.
+In a previous post concerning the [IValidatableObject with Asp.Net MV3](./how-to-validate-model-object-with-asp-net-mvc-correctly "How to validate model object with Asp.Net MVC correctly?") we have discussed the powerful of the **IValidatableObject** interface with MVC framework which is a fast solution to handle error in the model, error in the model binding and error in the controller.
 
 What is great by using Microsoft ecosystem is that most of the framework work well together. If you are using the ORM Entity Framework and you are validating your business logic with the **IValidatableObject** interface you can benefit that before executing SaveChanges() on you database context that Entity Framework will call all model validation. This mean that you cannot forget to call it or it means that you do not need to explicitly check for the validation. If something is wrong with the model validation, when the SaveChanges() is called, Entity Framework will throw an exception.
 

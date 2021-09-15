@@ -7,7 +7,7 @@ categories:
 
 Fluent API is a pattern that wrap existing code to create you some helper to build a complex object. This is used by Entity Framework when configuring entities or used by a lot of Mocking framework. It's more verbose, more explicit about what we can do or not. You can recognize Fluent API because they have a form of almost sentence like : yourObject.WhenStock(typeA).IsHigher().Than(100).Then(doThis);
 
-In this article, we will add a Fluent API on top of [the custom localized code](http://patrickdesjardins.com/blog/improve-the-custom-localized-mvc-routing-with-fluent-api). Why I am saying "on top"? Because the [code previous](http://patrickdesjardins.com/blog/improve-the-custom-localized-mvc-routing-with-fluent-api) coded will still work and because it will not interfere at all with the existing code, we will work with this one without touching this one. But first, let's see what we had and what we will have after. Let's use this complex route that can look like this in English and like that in French:
+In this article, we will add a Fluent API on top of [the custom localized code](./improve-the-custom-localized-mvc-routing-with-fluent-api). Why I am saying "on top"? Because the [code previous](./improve-the-custom-localized-mvc-routing-with-fluent-api) coded will still work and because it will not interfere at all with the existing code, we will work with this one without touching this one. But first, let's see what we had and what we will have after. Let's use this complex route that can look like this in English and like that in French:
 
 - /Administrator/investigate/reject/1
 - /Administrat**eur**/investigat**ion**/reje**ter**/1

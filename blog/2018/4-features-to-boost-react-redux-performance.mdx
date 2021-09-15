@@ -22,6 +22,7 @@ The idea is limited to a set of actions and cannot be applied to every action. T
 
 In the following code, without batching, every five actions that are calling five different reducers would call the mapping code. Since the normalized data changes the store, it would trigger the denormalization code and the component to render because the data has changed. However, in reality, we want to have the UI to change once after all entities are well positioned in the Redux store.
 
+```typescript
 batchNotifications(next,         
 	Actions.normalizedEntityA(normalizedResponse.entities.A),     
 	Actions.normalizedEntityB(normalizedResponse.entities.B),
@@ -29,9 +30,11 @@ batchNotifications(next,
 	Actions.normalizedEntityD(normalizedResponse.entities.D),     
 	Actions.normalizedEntityE(normalizedResponse.entities.E) 
 ); 
+```
 
 I wrote a simple implementation for the batch notification that sets a variable to “on” before executing the first element of the batch and turn it off at the last element.
 
+```typescript
 export function batchNotifications<S>(next: Dispatch<S>,
 	...batchOfActions: Action[]): void {
 	next(SharedActions.actionUiBatchOn());
@@ -43,6 +46,7 @@ export function batchNotifications<S>(next: Dispatch<S>,
 		next(SharedActions.actionUiBatchOff());
 	}
 } 
+```
 
 Because the batch is executed at the middleware level, I can create a [Redux Store Enhancer](https://patrickdesjardins.com/blog/how-to-have-a-hook-before-a-redux-store-notify-its-subscriber-with-typescript) to accumulate all the action between the “on” and “off”. It means that I have a custom code in the _composeEnhancers_. The link in this paragraph covers the code about the batch notification. Overall, the gain is tremendous because no other pattern can reduce these five calls. In my case, the biggest entity was divided into ten reducers which would otherwise cost many milliseconds (about 400ms) wasted.
 
@@ -50,6 +54,7 @@ Because the batch is executed at the middleware level, I can create a [Redux Sto
 
 If you are using the React-Redux library, you are probably using the _connect_ function to create the link between the Redux store notification and your component.
 
+```typescript
 export default connect<YourModel, YourDispatch, {}, {},
      YourStoreModel>(
     (s) => model.mapStateToProps(s),
@@ -61,6 +66,7 @@ export default connect<YourModel, YourDispatch, {}, {},
         areStatesEqual: (n, p) => model.shouldMappingBeSkipped(n, p)
     }
 )(YourComponent);
+```
 
 The pattern is to use the third parameter and assign the value “pure” to true and to set up a function to _areStatesEqual_. If the states are equal between the previous state and the current one, then the change event will not continue to propagate, thereby eliminating any mapping code to occur. The map code is the second and third parameter of the _connect_ function. This can be expensive to run if you need to denormalize your model for no reason. The check can be done simply by looking at the Redux store and comparing the previous value. You can target the exact portion of the state that should change before proceeding. If you are using an immutable model, the check can be quick.
 

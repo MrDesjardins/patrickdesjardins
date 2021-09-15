@@ -9,7 +9,7 @@ categories:
   - "webpack"
 ---
 
-I created an open source project to bootstrap TypeScript and React few months ago. You can see the first article about [TypeScript/React/Gulp](http://patrickdesjardins.com/blog/how-to-setup-typescript-and-react) before this article. It wasn't bundling the code, and was using Gulp which is in mid-2017 not the preferred tool to package JavaScript code. At this moment, Webpack is the most popular tool allowing to do everything Gulp or Grunt was doing but avoiding to rely on the middle man of having Gulp's package (or Grunt's package) to invoke the actual library. Webpack is also very smart in term of exploring the code and figure out dependencies. This article will focus to migrate from Gulp to Webpack for a TypeScript and React project.
+I created an open source project to bootstrap TypeScript and React few months ago. You can see the first article about [TypeScript/React/Gulp](./how-to-setup-typescript-and-react) before this article. It wasn't bundling the code, and was using Gulp which is in mid-2017 not the preferred tool to package JavaScript code. At this moment, Webpack is the most popular tool allowing to do everything Gulp or Grunt was doing but avoiding to rely on the middle man of having Gulp's package (or Grunt's package) to invoke the actual library. Webpack is also very smart in term of exploring the code and figure out dependencies. This article will focus to migrate from Gulp to Webpack for a TypeScript and React project.
 
 First of all, we need to change index.html. The file was using RequireJs and was not referring to any bundles. The change is dual. We need to remove RequireJs. We will use Webpack to handle to load dependencies between modules. We also need to refer to bundles.
 

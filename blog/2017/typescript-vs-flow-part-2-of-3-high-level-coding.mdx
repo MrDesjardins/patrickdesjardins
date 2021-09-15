@@ -6,7 +6,7 @@ categories:
   - "typescript"
 ---
 
-This is the second article of three about differences between TypeScript and Flow. You can read the first part about high level of [TypeScript vs Flow in this article.](http://patrickdesjardins.com/blog/typescript-vs-flow-part-1-of-3-who-they-are) The investigation I conducted was done on August 9 and August 10, 2017. It's a domain where it evolves a lot and my conclusion could change in few months or years. The first article goal was to bring fundamentals around what are TypeScript and Flow.
+This is the second article of three about differences between TypeScript and Flow. You can read the first part about high level of [TypeScript vs Flow in this article.](./typescript-vs-flow-part-1-of-3-who-they-are) The investigation I conducted was done on August 9 and August 10, 2017. It's a domain where it evolves a lot and my conclusion could change in few months or years. The first article goal was to bring fundamentals around what are TypeScript and Flow.
 
 This article will focus on high-level coding feature that differentiates TypeScript and Flow. The get differences, I had to sample a subset of all the feature and the reason is that both support a lot of them and I have limited time. How I decided these features was to go with Flow first by using their documentation. My plan was to convert one TypeScript project already written to Flow and while doing so, I added features that were used which resulted to the features comparison matrix of this article. The result is of the 40 features tested is:
 
@@ -94,7 +94,7 @@ var MyClass = (function () {
 ``` 
 
 
-The encapsulation is not propagated in JavaScript, but could have been there with some [closure](http://patrickdesjardins.com/blog/javascript-private-variable). In all circumstances, Flow decided to not enforce the encapsulation at all. The repercussion is interesting. First, the code becomes harder to maintain because it allows people to access members directly. A common scenario is to inject by constructor some specific class that represent services. You want to control the integrity when the class is instantiated, but if the injected objects are public, they could be modified by anyone in the lifetime of the object. There is much other justification why having a stronger encapsulation is good which will be the subject of future articles.
+The encapsulation is not propagated in JavaScript, but could have been there with some [closure](./javascript-private-variable). In all circumstances, Flow decided to not enforce the encapsulation at all. The repercussion is interesting. First, the code becomes harder to maintain because it allows people to access members directly. A common scenario is to inject by constructor some specific class that represent services. You want to control the integrity when the class is instantiated, but if the injected objects are public, they could be modified by anyone in the lifetime of the object. There is much other justification why having a stronger encapsulation is good which will be the subject of future articles.
 
 ## Enum
 
@@ -297,9 +297,9 @@ This part is getting long. I’ll end it here. In the first part, we saw some fu
 
 **Parts of the serie:**
 
-- [TypeScript vs Flow (Part 1 of 3) – Who are they?](http://patrickdesjardins.com/blog/typescript-vs-flow-part-3-of-3-syntax-difference)
-- [TypeScript vs Flow (Part 2 of 3) – High Level Coding](http://patrickdesjardins.com/blog/typescript-vs-flow-part-2-of-3-high-level-coding)
-- [TypeScript vs Flow (Part 3 of 3) – Syntax Difference](http://patrickdesjardins.com/blog/typescript-vs-flow-part-3-of-3-syntax-difference)
+- [TypeScript vs Flow (Part 1 of 3) – Who are they?](./typescript-vs-flow-part-3-of-3-syntax-difference)
+- [TypeScript vs Flow (Part 2 of 3) – High Level Coding](./typescript-vs-flow-part-2-of-3-high-level-coding)
+- [TypeScript vs Flow (Part 3 of 3) – Syntax Difference](./typescript-vs-flow-part-3-of-3-syntax-difference)
 
 ## References
 

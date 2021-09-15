@@ -7,7 +7,7 @@ categories:
 
 In diverse scenario you could require to give to your user files. You can let them access them directly by having a directory of files and give the complete path to the file but this can lead to different issue. First of all, this will bind the server folders/files structures to the url that you give the the user which might not be interesting. Second, it doesn't give you any control over the files shared. Third, you may want to add algorithm for caching or give expiry to some files. All those customs code can't be done by giving a direct access to files, the solution : using Http Handler.
 
-[HttpHandler was there in Asp.Net traditional](http://patrickdesjardins.com/blog/how-to-access-session-information-from-httphandler-ashx-file "How to access Session information from HttpHandler (Ashx file)") and in Asp.Net MVC is even easier because not configuration is required for IIS.
+[HttpHandler was there in Asp.Net traditional](./how-to-access-session-information-from-httphandler-ashx-file "How to access Session information from HttpHandler (Ashx file)") and in Asp.Net MVC is even easier because not configuration is required for IIS.
 
 First, you need to add a new route to let know the MVC routing system that the url sent is not going to go to a traditional controller but to go to your http handler.
 

@@ -23,13 +23,13 @@ Log.trackEvent(this.props.name,
 
 This layer has many functions from _trackError_, to _trackPage_ or _trackScenario_ which inject itself into Chrome's performance tool to have a neat integration about when code start and end (with between marks). 
 
-![Chrome Performance Tool Integration with Telemetry Track Scenario](https://patrickdesjardins.com/blog/wp-content/uploads/2018/11/ChromePerformanceTrackScenario.png)
+![](images/ChromePerformanceTrackScenario.png)
 
 
 
 Second, we are receiving a lot of telemetries. Some are useful only for development time, some good to send to the backend. The telemetry library allows dispatching which one is mentioned to be developed only or not by a single option when tracking the information. Chrome's console is then showing the information while the application run. I opted to use a mix of color and indentation to distinguish easily the different telemetry type.
 
-![Console with different telemetry collected](https://patrickdesjardins.com/blog/wp-content/uploads/2018/11/ChromeConsoleTelemetry.png)
+![](images/ChromeConsoleTelemetry.png)
 
 
 

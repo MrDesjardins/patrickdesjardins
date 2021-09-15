@@ -9,27 +9,30 @@ categories:
 A quick search on Internet will provide many JavaScript implementations of Redux middleware which all look alike at first look: confusing with the three fat arrows. Here is an illustration of what I mean
 
 ```typescript
-const loggerMiddleware = store => next => action => { console.log("Before"); const result = next(action) console.log("After"); // Can use: store.getState() return result } 
+const loggerMiddleware = store => next => action => { console.log("Before"); 
+const result = next(action);
+console.log("After"); // Can use: store.getState() 
+return result } 
 ``` 
-
-
 Not knowing the type of what is between the arrow, for the store, next or action is very confusing. This is where type can get help to get your head around what is going on. The following code is the same exact code using Microsoft TypeScript.
 
 ```typescript
-import { Middleware, MiddlewareAPI, Dispatch, Action } from "redux"; export const loggerMiddleware: Middleware = <S>(api: MiddlewareAPI<S>) => (next: Dispatch<S>) => <A extends Action>(action: A): A => { console.log("Before"); const result = next(action); console.log("After"); // Can use: api.getState() return result; }; 
+import { Middleware, MiddlewareAPI, Dispatch, Action } from "redux"; 
+export const loggerMiddleware: Middleware = <S>(api: MiddlewareAPI<S>) => (next: Dispatch<S>) => <A extends Action>(action: A): A => { console.log("Before"); 
+const result = next(action); 
+console.log("After"); // Can use: api.getState() 
+return result; }; 
 ``` 
 
+The first line describes that the middleware is typed of `S` which will be the "state" that the middleware can access. If you are using Redux **connect** function, this will be of the type of all your reducers. MiddlewareAPI have two members which one is a function `getState()` that return an object of type `S` and dispatch field of type `Dispatch S`.
 
-The first line describes that the middleware is typed of "S" which will be the "state" that the middleware can access. If you are using Redux **connect** function, this will be of the type of all your reducers. MiddlewareAPI have two members which one is a function **getState()** that return an object of type "S" and dispatch field of type Dispatch S.
-
-It's still not straightforward since the translated TypeScript also uses the three fat arrows. If we come back to the first line, the first confusion may be that it starts with "S". The syntax is borrowed from a generic method which "loggerMiddleware" use as an anonymous function. You can see this line as:
+It's still not straightforward since the translated TypeScript also uses the three fat arrows. If we come back to the first line, the first confusion may be that it starts with `S`. The syntax is borrowed from a generic method which `loggerMiddleware` use as an anonymous function. You can see this line as:
 
 ```typescript
-function loggerMiddleware<S>(api: MiddlewareAPI<S>) ... 
+function loggerMiddleware<S>(api: MiddlewareAPI<S>) // ... 
 ``` 
 
-
-It would be better to have a stronger definition than relying on the generic type when accessing the state with api.getSTate(), however, the contract is defined to receive the generic in Redux.
+It would be better to have a stronger definition than relying on the generic type when accessing the state with `api.getSTate()`, however, the contract is defined to receive the generic in Redux.
 
 ```typescript
 export interface Middleware { <S>(api: MiddlewareAPI<S>): (next: Dispatch<S>) => Dispatch<S>; }
@@ -37,15 +40,23 @@ export interface Middleware { <S>(api: MiddlewareAPI<S>): (next: Dispatch<S>) =>
 export function applyMiddleware(...middlewares: Middleware[]): GenericStoreEnhancer; 
 ``` 
 
+As you see, the Middleware function is used by `applyMiddleware`to hold a collection of this one. This is why your middleware must conform to the same signature.
 
-As you see, the Middleware function is used by **applyMiddleware** to hold a collection of this one. This is why your middleware must conform to the same signature.
-
-One last detail is that even with the type <S> at the **MiddlewareAPI<S>** parameter level, this one won't give you a great experience when using app.getState() because it won't be from your Redux State strongly type. To have MiddlewareAPI to still be generic but specific to your Redux state, you just need to extend this one to your type. Here is an example that also bring the ExtendedMiddleware interface to have a strong middleware type but this is not required.
+One last detail is that even with the type `<S>` at the `MiddlewareAPI<S>` parameter level, this one won't give you a great experience when using `app.getState()` because it won't be from your Redux State strongly type. To have MiddlewareAPI to still be generic but specific to your Redux state, you just need to extend this one to your type. Here is an example that also bring the `ExtendedMiddleware` interface to have a strong middleware type but this is not required.
 
 ```typescript
-import { Middleware, MiddlewareAPI, Dispatch, Action } from "redux"; export interface ExtendedMiddleware<StateType> extends Middleware { <S extends StateType>(api: MiddlewareAPI<S>): (next: Dispatch<S>) => Dispatch<S>; }
+import { Middleware, MiddlewareAPI, Dispatch, Action } from "redux"; 
+export interface ExtendedMiddleware<StateType> extends Middleware { <S extends StateType>(api: MiddlewareAPI<S>): (next: Dispatch<S>) => Dispatch<S>; 
+}
 
-export const loggerMiddleware: ExtendedMiddleware<YourApplicationReduxStateTypeHere> = <S extends YourApplicationReduxStateTypeHere>(api: MiddlewareAPI<S>) => (next: Dispatch<S>) => <A extends Action>(action: A): A => { console.log("Before"); const result = next(action); console.log("After"); // Can use: api.getState() return result; }; 
+export const loggerMiddleware: ExtendedMiddleware<YourApplicationReduxStateTypeHere> = 
+  <S extends YourApplicationReduxStateTypeHere>(api: MiddlewareAPI<S>) => 
+    (next: Dispatch<S>) => <A extends Action>(action: A): A => { 
+      console.log("Before"); 
+      const result = next(action); 
+      console.log("After"); // Can use: api.getState() 
+      return result; 
+}; 
 ``` 
 
 

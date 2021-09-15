@@ -41,7 +41,7 @@ We already have several REST services with many endpoints. They are built in sev
 
 Before going head down into building with Apollo and GraphQL, let's draw what is going to be built. First, everything must be secured. At Netflix, we have a paved path that handles the authentication and it is baken within Apache. As mentioned, Apollo is leveraging NodeJS. This is not an issue because we can deploy on the server the Apache server that will redirect all HTTP requests to NodeJS. Having Apache as the front server wrap NodeJS for the security. NodeJS will not be accessed directly outside the machine and only Apache will be able to communicate with NodeJS. In the eventuality that there is a bug and NodeJS is accessible, the request will not go very far: it won't be authenticated hence will fail on the actual web service.
 
-![GraphQL hosted in NodeJS](https://patrickdesjardins.com/blog/wp-content/uploads/2018/12/GraphQLServers.png)
+![](images/GraphQLServers.png)
 
 To simplify the development, I'll reuse a recipe that I have been using since I joined Netflix which is to develop with a Docker container. The major gain is that I do not have to run Apache locally which could interfere with many other applications that must use Apache as well. 
 

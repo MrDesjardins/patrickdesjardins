@@ -6,7 +6,7 @@ categories:
   - "webservices"
 ---
 
-We have already talk about how to log every call of your WCF service with a [custom factory for all your WCF service](http://patrickdesjardins.com/blog/how-to-use-log-every-call-of-your-wcf-services-methods). This is a good way to log or to verify access to all your service methods. The main point was to create a factory which is called every calls it's done. Once it generated, it creates a new service behavior to which it needs to have a new operation behavior and invoker.
+We have already talk about how to log every call of your WCF service with a [custom factory for all your WCF service](./how-to-use-log-every-call-of-your-wcf-services-methods). This is a good way to log or to verify access to all your service methods. The main point was to create a factory which is called every calls it's done. Once it generated, it creates a new service behavior to which it needs to have a new operation behavior and invoker.
 
 This time, the solution to log every method call it is by using inspector. An inspector is a filter that is executed before and after a request is executed. First of all, this solution works by configuring in the web.config a behavior. An entry to system.serviceModel > extensions > behaviorExtensions needs to be added and will be used to system.serviceModel > endpointBehaviors > behavior.
 

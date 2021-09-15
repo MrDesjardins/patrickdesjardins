@@ -11,7 +11,7 @@ Imagine the scenario that you have a GraphQL schema that is consumed only by eng
 
 In the scenario described, the GraphQL server is deployed into an Amazon VPC -- an [Amazon Virtual Private Cloud](https://aws.amazon.com/vpc/). The environment is secured and the authorization is granted to only a limited to specific security groups.
 
-![](https://patrickdesjardins.com/blog/wp-content/uploads/2019/04/GraphQLServers-Page-11.png)
+![](images/GraphQLServers-Page-11.png)
 
 Internal vs External Environment
 
@@ -123,7 +123,7 @@ The directive converges the two entry points (field and object) into a single fu
 
 A little detail, it is possible to inject a description from the directive that is set on the initialization of this one. In my case, I specify that the field is private and mention which application can access it. If a software engineer needs an application to be on the list, it requires a code change. This is not something that happens often and because a code change is required it involves a pull request where many people will have a look.
 
-![](https://patrickdesjardins.com/blog/wp-content/uploads/2019/04/image-1.png)
+![](images/image-1.png)
 
 Example of how it looks from the GraphQL Interactive Playground. The engineer who build the query knows that it is an internal field as well as under which application the response will return a value
 

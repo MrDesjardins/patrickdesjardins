@@ -14,7 +14,7 @@ type Context<T = any> = T;
 
 The context schema is defined by you. As you can see by the definition of the type, from Apollo Core, it is of type T. The context comes with a req property that Express injects. Because Express works with middleware, that can modify the request before reaching Apollo, we can leverage the architecture by having a custom middleware injected the Apache's header with the user's information in the request and then read the context object from the context to have the resolvers consume it.
 
-![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/12/GraphQLServers-ExpressMiddlewareAuth.png)
+![](images/GraphQLServers-ExpressMiddlewareAuth.png)
 
 Express calls the auth middleware and Apollo uses the injected data that will be passed to resolvers
 

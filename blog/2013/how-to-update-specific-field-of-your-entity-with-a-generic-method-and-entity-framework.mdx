@@ -5,7 +5,7 @@ categories:
   - "entity-framework"
 ---
 
-If you are using **Entity Framework** with a [repository layer](http://patrickdesjardins.com/blog/enterprise-asp-net-mvc-part-4-repository "Enterprise Asp.Net MVC Part 4: Repository") which has the basic method like Get, Update, Insert (or Add) and Delete you are already in a good position. But what if you want to update a single property without having to load the whole entity from the database? If you have only the primary key (id) of your entity and the value of the property you want to update, you may want to simply update the field with a where clause with the id. In SQL, we would create the following query. 
+If you are using **Entity Framework** with a [repository layer](./enterprise-asp-net-mvc-part-4-repository "Enterprise Asp.Net MVC Part 4: Repository") which has the basic method like Get, Update, Insert (or Add) and Delete you are already in a good position. But what if you want to update a single property without having to load the whole entity from the database? If you have only the primary key (id) of your entity and the value of the property you want to update, you may want to simply update the field with a where clause with the id. In SQL, we would create the following query. 
 ```sql
  update [dbo].[WorkoutSessions] set [Name] = 'New Name', [Order] = 1 where ([Id] = 123) 
 ```
@@ -18,7 +18,7 @@ With **Entity Framework**, you could create single method like "UpdateNameAndOrd
  public int Update(T entity, Expression<Func<T, object>>[] properties) { DatabaseContext.Entry(entity).State = EntityState.Unchanged; foreach (var property in properties) { var propertyName = ExpressionHelper.GetExpressionText(property); DatabaseContext.Entry(entity).Property(propertyName).IsModified = true; } return DatabaseContext.SaveChangesWithoutValidation(); } 
 ```
 
-The code above is in the BaseRepository class of the project described in the "[Enterprise project](http://patrickdesjardins.com/blog/enterprise-asp-net-part-1-mvc-the-planification "Enterprise Asp.Net MVC Part 1: The Planification")". As you can see, it takes as its second parameter an **expression of a function**. This will let use this method by specifying in a Lambda expression witch property to update.
+The code above is in the BaseRepository class of the project described in the "[Enterprise project](./enterprise-asp-net-part-1-mvc-the-planification "Enterprise Asp.Net MVC Part 1: The Planification")". As you can see, it takes as its second parameter an **expression of a function**. This will let use this method by specifying in a Lambda expression witch property to update.
 
 
 ```csharp

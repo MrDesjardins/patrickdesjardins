@@ -86,7 +86,7 @@ const serverConfig: ApolloServerConfig = {
 
 There are few caveats with the code above. The first one is that it has a single type definition and a single resolver. The second is the lack of authentication. We also do not pass any parameter that would give the possibility to fetch a single entity instead of a full list. Finally, the context is not set hence we do not know who is making the request and cannot resolve the information for a particular user. Nevertheless, the playground is activated. By running the code and going to the endpoint passed by parameter, in my case "/api/graph" it is possible to query from any HTTP request but by going into the browser and use the playground.
 
-![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/12/GraphQLPlaygroundQuery.png)
+![](images/GraphQLPlaygroundQuery.png)
 
 Example of writing a query in the playground
 

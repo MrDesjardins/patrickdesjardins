@@ -10,7 +10,7 @@ During the process of building your .Net application you may realize that there 
 
 # Isolation
 
-Isolating your code withing your actual code is the first step. You must be able to extract the code you think can be reusable in a unique namespace within your actual project. A good idea is to have a folder where you move all your files and setup a unique namespace. This will probably make your actual code not working because of some missing references, but it should not be a big deal to add using at the top of each file that were using the logic. In this article, I will extract code about [Circuit Breaker](http://patrickdesjardins.com/blog/how-to-create-a-simple-circuit-breaker-in-c). ![](images/IsolateCode.png)
+Isolating your code withing your actual code is the first step. You must be able to extract the code you think can be reusable in a unique namespace within your actual project. A good idea is to have a folder where you move all your files and setup a unique namespace. This will probably make your actual code not working because of some missing references, but it should not be a big deal to add using at the top of each file that were using the logic. In this article, I will extract code about [Circuit Breaker](./how-to-create-a-simple-circuit-breaker-in-c). ![](images/IsolateCode.png)
 
 # Creating a New Project
 
@@ -69,7 +69,7 @@ This is very fast and once it's created you can go in the root of your project w
 
 # Continuous Integration
 
-The next step is to have every time your push new code on GitHub to have this one built and your test ran. The goal is to be sure that what you publish is in a good state. We can also add a step that if everything is fine and that the version of your assembly increase to have a Nuget package generated. You can find all steps in this previous post : [Continuous Integration with Travis CI](http://patrickdesjardins.com/blog/continuous-integration-ci-with-c-net-and-travis-ci).
+The next step is to have every time your push new code on GitHub to have this one built and your test ran. The goal is to be sure that what you publish is in a good state. We can also add a step that if everything is fine and that the version of your assembly increase to have a Nuget package generated. You can find all steps in this previous post : [Continuous Integration with Travis CI](./continuous-integration-ci-with-c-net-and-travis-ci).
 
 # Consume
 

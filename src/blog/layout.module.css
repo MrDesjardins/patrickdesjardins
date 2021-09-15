@@ -40,6 +40,11 @@
   text-align: justify;
 }
 
+.blogPostContainer blockquote p {
+  font-style: italic;
+  color: #a7a7a7;
+}
+
 .blogPostContainer pre {
   overflow: auto;
 }
@@ -78,6 +83,5 @@
 .blogPostContainer p:has(img) {
   text-align: center;
 }
-.blogTopPicture{
-
+.blogTopPicture {
 }

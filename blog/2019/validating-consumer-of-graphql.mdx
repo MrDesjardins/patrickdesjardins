@@ -9,11 +9,11 @@ I will demonstrate a way to configure a continuous environment that gives insigh
 
 I like to start with an image of what I am describing. So here is the solution.
 
-![](https://patrickdesjardins.com/blog/wp-content/uploads/2019/04/GraphQLServers-ConsumersValidation.png)
+![](images/GraphQLServers-ConsumersValidation.png)
 
 The diagram shows on the top-right the GraphQL engineer who push a change in the repository. The normal continuous integration (CI) kicks a build when it receives a new code. So far, nothing changes from a typical workflow. However, the third step is where it changes. The idea is to create a new Jenkins job that is independent of the GraphQL server and independent of the consumer application. The independence of this job keep both existing builds untouched and the whole ecosystem tidy. The Jenkins jobs wait for the GraphQL job to complete. It is possible to configure the option under _Jenkins Build Triggers_.
 
-![Jenkins' Trigger](https://patrickdesjardins.com/blog/wp-content/uploads/2019/04/image-2.png)
+![](images/image-2.png)
 
 
 

@@ -9,7 +9,7 @@ Entity Framework can raise an error concerning a conflict with reference when de
 
 > The DELETE statement conflicted with the REFERENCE constraint.
 
-To solve this issue we need to delete cascade instead of a simple remove. We have seen in a previous post how to use [delete in cascade with Entity Framework](http://patrickdesjardins.com/blog/entity-framework-4-3-delete-cascade-with-code-first-poco).
+To solve this issue we need to delete cascade instead of a simple remove. We have seen in a previous post how to use [delete in cascade with Entity Framework](./entity-framework-4-3-delete-cascade-with-code-first-poco).
 
 In short, you have to specify the many side to the other side (required or optional) and then specify the delete cascade statement with the true parameter.
 

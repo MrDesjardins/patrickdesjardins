@@ -5,7 +5,7 @@ categories:
   - "asp-mvc"
 ---
 
-In a previous post concerning [how to add CSS and Javascript file dynamically](http://patrickdesjardins.com/blog/how-to-add-css-file-or-javascript-file-by-action-of-controller "How to add CSS file or Javascript file by action of controller") depending of the action used, we have found a way to add those by setting a filter to the controller or the action of any controller. The problem with this approach is that it's the controller who choose client side element. In fact, the controller should just tell what view to use and the use itself should be able to handle what CSS or Javascript to load. Of course, adding CSS/Javascript directly into the View ain't the best solution because we want to put the CSS at the top of the Html header and we want to setup the Javascript at the bottom of the html.
+In a previous post concerning [how to add CSS and Javascript file dynamically](./how-to-add-css-file-or-javascript-file-by-action-of-controller "How to add CSS file or Javascript file by action of controller") depending of the action used, we have found a way to add those by setting a filter to the controller or the action of any controller. The problem with this approach is that it's the controller who choose client side element. In fact, the controller should just tell what view to use and the use itself should be able to handle what CSS or Javascript to load. Of course, adding CSS/Javascript directly into the View ain't the best solution because we want to put the CSS at the top of the Html header and we want to setup the Javascript at the bottom of the html.
 
 This is where Asp.Net MVC **section** can shine.
 

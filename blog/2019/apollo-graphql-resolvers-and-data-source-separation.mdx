@@ -8,7 +8,7 @@ categories:
 
 Resolvers can perform asynchronous call to fetch data. Using the specific implementation to perform the fetch in the resolver cause the resolver to have high-coupling into the technology to access the data but also increase the complexity of the resolver by boosting the size of each function with the request's details. Apollo's resolver allows to pass from the Apollo server's configuration a set of data sources that can be used down the line by every resolver.
 
-![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/12/GraphQLServers-DataSource.png)
+![](images/GraphQLServers-DataSource.png)
 
 Resolvers and DataSource Relationship
 
@@ -25,7 +25,7 @@ I create one data source per domain because all Rest and gRPC service are alread
 
 In the Netflix Open Connect GraphQL, I decided to have all my REST data source inherit a generic base class that handles all Axios code. The REST class inherits the DataSource from "apollo\-datasource" package. The REST encapsulate the Axios package which can be changed later for something else without having to touch resolvers.
 
-![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/12/GraphQLServers-DataSourceAxios.png)
+![](images/GraphQLServers-DataSourceAxios.png)
 
 Data Sources and Services
 

@@ -14,7 +14,7 @@ I assume your Redux's state contains only normalized data. Normalized data means
 
 In the Netflix Partner Portal, the first version of the Redux state was dividing the entity per domain. For example, one reducer for Organization, one for Site, one for Cache, etc. Sub-Reducers were available for each area. For instance, under Cache, you can find the Reducer Interfaces, BgpSessions, etc. The separation makes sense conceptually. However, it falls short when within these reducers you start mixing data coming from data API and data from the user.
 
-![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/09/ReducersSeparation.png)
+![](images/ReducersSeparation.png)
 
 Initial Reducer Structure: By domain and sub-domain
 
@@ -22,7 +22,7 @@ The problem with mixing data from the API and from the user is that the user may
 
 Dividing the data from the source of truth, the API, from the one that the user is using while editing cause all the memoize data to remain intact. If a user is changing the active appliance, there is no need to invalidate a whole organization with all its sites and appliances. Thus, the separation allows avoiding computer data that barely change. In that example, the "activeAppliance" moves from "Appliance" sub-reducer to the "AppliancesNotPersisted" reducer. The change the reference on the "AppliancesNotPersisted" state and invalidate a limited amount of selector compared to the ones on the business logics entities.
 
-![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/09/ReducersSeparation-Page-2.png)
+![](images/ReducersSeparation-Page-2.png)
 
 Not persisted data are separated from the main domain reducer
 

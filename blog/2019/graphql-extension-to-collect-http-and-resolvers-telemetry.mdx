@@ -10,7 +10,7 @@ The more my graph was increasing, the more resolvers I built. The more resolvers
 
 The idea I had was to see if there is a way to hook into GraphQL to collect the data at a higher level instead of being at each function. I am using the Apollo library and the answer is yes! There is an experimental feature named "extension". The documentation is dry and does not explain much but with some breakpoint and Visual Studio Code, I was able to build a simple extension in a few hours. Here is the result.
 
-![](https://patrickdesjardins.com/blog/wp-content/uploads/2019/04/GraphQLExtension-1.png)
+![](images/GraphQLExtension-1.png)
 
 A GraphQL Request with its HTTP requests
 
@@ -63,7 +63,7 @@ public willSendRequest(request: RequestOptions) {
 
 The documentation could be better in term of defining all the possibility. Nevertheless, with some breakpoints and a little bit of time I was quite satisfied to see what can be done. You can do much more than what proposed, for instance, you can calculate the payload size and get more insight into what is not efficient. For example, I realized in the process of creating another exception that was throwing an exception when a maximum threshold of HTTP request was reached was still letting GraphQL continue its traversal causing the exception to occurs on every future node. The solution was to clean up the response of redundant error using the overload function _willSendResponse_.
 
-![](https://patrickdesjardins.com/blog/wp-content/uploads/2019/04/SizePayload.png)
+![](images/SizePayload.png)
 
 Bonus: Getting the size of the payload
 

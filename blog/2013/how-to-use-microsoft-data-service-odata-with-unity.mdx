@@ -6,7 +6,7 @@ categories:
   - "webservices"
 ---
 
-If you want to use Unity with a Microsoft Data Service, you need to setup your ioc container once and the perfect time to do it is in the startup. OData service doesn't have global.asax, neither does it have a [ServiceHostFactory](http://patrickdesjardins.com/blog/how-to-use-log-every-call-of-your-wcf-services-methods) where you could setup your container.
+If you want to use Unity with a Microsoft Data Service, you need to setup your ioc container once and the perfect time to do it is in the startup. OData service doesn't have global.asax, neither does it have a [ServiceHostFactory](./how-to-use-log-every-call-of-your-wcf-services-methods) where you could setup your container.
 
 With Microsoft Data Service (OData) you want to setup your Unity container with the method _CreateDataSource_ which is available since you must inherit from _DataService_.
 

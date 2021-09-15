@@ -8,13 +8,13 @@ categories:
 
 I am running a GraphQL server hosted with NodeJS. Under the hood, it is an Express server with Apollo Middleware. I am collecting different information along with errors. The way it works is that I have an Elastic Search server fronted by a simple REST API facade. The endpoint on the REST accepts a single telemetry payload or a collection of them. The latter is recommended. When I use the REST facade for the web, I am collecting all call to the telemetry and batch the request every 5 seconds or when the browser send a beacon (when leaving the page). It reduces the load on the server by limiting the number of HTTP requests. For example, if there is 24 different telemetry within a few seconds, it performs a single HTTP request with 24 entries.
 
-![](https://patrickdesjardins.com/blog/wp-content/uploads/2019/04/Blog.png)
+![](images/Blog.png)
 
 Telemetry Information flow
 
 Under NodeJS, I could do something similar with a timer, but while reading how the [DataLoader](https://github.com/graphql/dataloader) library handles batching I thought I could code a similar pattern. Instead of leveraging on time, I could batch every telemetry on a single NodeJS event loop. In the NodeJS world, this is called a "tick". There are two ways to accomplish the batching, and I leaned on _setImmediate_.
 
-![](https://patrickdesjardins.com/blog/wp-content/uploads/2019/04/Blog-Page-2.png)
+![](images/Blog-Page-2.png)
 
 NodeJS Event Loop
 

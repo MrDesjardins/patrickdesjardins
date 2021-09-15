@@ -5,7 +5,7 @@ categories:
   - "asp-mvc"
 ---
 
-This post won't explain how to do it with [enterprise pattern](http://patrickdesjardins.com/blog/enterprise-asp-net-mvc-part-6-the-three-layers-of-validation) but will focus of some solutions available to validate your Model/ViewModel with Asp.Net MVC. This article won't focus of the advantage to use ViewModel instead of directly use Model object to the view. The article will show you how to validate your view model without having to repeat yourself in several place with your validation. We want to respect the DRY concept which specify that we should never repeat our self.
+This post won't explain how to do it with [enterprise pattern](./enterprise-asp-net-mvc-part-6-the-three-layers-of-validation) but will focus of some solutions available to validate your Model/ViewModel with Asp.Net MVC. This article won't focus of the advantage to use ViewModel instead of directly use Model object to the view. The article will show you how to validate your view model without having to repeat yourself in several place with your validation. We want to respect the DRY concept which specify that we should never repeat our self.
 
 First of all, Asp.Net MVC will call the data annotation and if the class inherit from IValidatableObject the method Validate. The problem as you can see is that the ViewModel which is bound to the controller doesn't have data annotation, neither inherit from IValidatableObject. Also, the mapping from the View Model to the Model occurs later in the process. This mean that we will need to manually call the validation to trigger the validation process which has been done to the view model.
 
@@ -61,4 +61,4 @@ if (!this.TryValidateAndTranslate( modelObject, "ModelClassName", new { FirstNam
 //... else return where you want to go when everything is without error } 
 ```
 
-If something is wrong, we display the view again with the view model, otherwise, we redirect to the list view or to any view you want where no error is found. As you can see, last parameter let you specify that the validation on FirstName property should be mapped to FullName. Of course, a better approach would be to setup in a central place all those mapping. The example is really just informative because you should try to map those property with something like [AutoMapper](http://patrickdesjardins.com/blog/?s=automapper) and reuse the mapping from it.
+If something is wrong, we display the view again with the view model, otherwise, we redirect to the list view or to any view you want where no error is found. As you can see, last parameter let you specify that the validation on FirstName property should be mapped to FullName. Of course, a better approach would be to setup in a central place all those mapping. The example is really just informative because you should try to map those property with something like [AutoMapper](./?s=automapper) and reuse the mapping from it.

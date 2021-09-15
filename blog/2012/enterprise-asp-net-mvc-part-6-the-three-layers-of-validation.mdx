@@ -10,11 +10,11 @@ categories:
 
 Validations is definitely a serious subject. If no validation is made, then the system is compromise. Whatever the architecture, whatever the hardware setup and whatever the idea of the product, you need to implement validations to protect your system. This is why it must be taken seriously.
 
-By default, Asp.Net MVC handles validation and also [Entity Framework uses the same interface to handle validation](http://patrickdesjardins.com/blog/model-validation-and-entity-framework-4-3) entities. So, why not use what is already in place and not try to reinvent the wheel. In fact, we follow the [KISS](http://en.wikipedia.org/wiki/KISS_principle) principle.
+By default, Asp.Net MVC handles validation and also [Entity Framework uses the same interface to handle validation](./model-validation-and-entity-framework-4-3) entities. So, why not use what is already in place and not try to reinvent the wheel. In fact, we follow the [KISS](http://en.wikipedia.org/wiki/KISS_principle) principle.
 
 Here is an overview of the article in a single image. ![](images/Validation-265x400.png)
 
-We have 3 layers of validation. The first layer and third layer are built-in with .Net with the [IValidatableObject interface](http://patrickdesjardins.com/blog/how-to-validate-model-object-with-asp-net-mvc-correctly). I have [already](http://patrickdesjardins.com/blog/how-to-validate-model-object-with-asp-net-mvc-correctly) discussed about this interface for validating entity but I'll show you how to use it in a more "enterprise way".
+We have 3 layers of validation. The first layer and third layer are built-in with .Net with the [IValidatableObject interface](./how-to-validate-model-object-with-asp-net-mvc-correctly). I have [already](./how-to-validate-model-object-with-asp-net-mvc-correctly) discussed about this interface for validating entity but I'll show you how to use it in a more "enterprise way".
 
 ## Using IValidatableObject
 
@@ -174,6 +174,6 @@ The solution proposed here use layers previously defined without adding overhead
 
 ### Series Articles
 
-[Article #1: Asp.Net MVC Enterprise Quality Web Application](http://patrickdesjardins.com/blog/enterprise-asp-net-part-1-mvc-the-planification) [Article #2: Asp.Net MVC Enterprise Quality Web Application Model](http://patrickdesjardins.com/blog/enterprise-asp-net-mvc-part-2-building-the-model) [Article #3: Asp.Net MVC Enterprise Quality Web Application Controller](http://patrickdesjardins.com/blog/enterprise-asp-net-mvc-part-3-controller) [Article #4: Asp.Net MVC Enterprise Quality Web Repository Layer](http://patrickdesjardins.com/blog/enterprise-asp-net-mvc-part-4-repository) [Article #5: Asp.Net MVC Enterprise Quality Web with Entity Framework](http://patrickdesjardins.com/blog/enterprise-asp-net-mvc-part-5-database-context-and-impersonate-data) [Article #6: Asp.Net MVC Enterprise Quality Layers](http://patrickdesjardins.com/blog/enterprise-asp-net-mvc-part-6-the-three-layers-of-validation) [Article #7: Asp.Net MVC Enterprise Quality Web Security](http://patrickdesjardins.com/blog/enterprise-asp-net-mvc-part-7-securing-action-with-role-authorization)
+[Article #1: Asp.Net MVC Enterprise Quality Web Application](./enterprise-asp-net-part-1-mvc-the-planification) [Article #2: Asp.Net MVC Enterprise Quality Web Application Model](./enterprise-asp-net-mvc-part-2-building-the-model) [Article #3: Asp.Net MVC Enterprise Quality Web Application Controller](./enterprise-asp-net-mvc-part-3-controller) [Article #4: Asp.Net MVC Enterprise Quality Web Repository Layer](./enterprise-asp-net-mvc-part-4-repository) [Article #5: Asp.Net MVC Enterprise Quality Web with Entity Framework](./enterprise-asp-net-mvc-part-5-database-context-and-impersonate-data) [Article #6: Asp.Net MVC Enterprise Quality Layers](./enterprise-asp-net-mvc-part-6-the-three-layers-of-validation) [Article #7: Asp.Net MVC Enterprise Quality Web Security](./enterprise-asp-net-mvc-part-7-securing-action-with-role-authorization)
 
 [Source code on GitHub](https://github.com/MrDesjardins/GymWorkout)

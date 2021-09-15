@@ -7,13 +7,13 @@ categories:
 
 Recently, I had the requirement to disable some parts of the user interface if an entity is under a specific state. I decided to create a reusable component that would blur its child and show a message to the user explaining why a section of the screen is inaccessible. You can see the final rendering in the screen capture under this paragraph. The implementation of the solution worked -- except when I was refreshing the page.
 
-![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/10/NotAvailableComponentWrapper.png)
+![](images/NotAvailableComponentWrapper.png)
 
 Refreshing the page cause the React component to be in a different path of execution. It has to fetch the information and mount for the first time the React component. While other navigation displayed the image above, in the case of refreshing the page, the graphic was never loading. In fact, even when the appliance status was in a good status, the component was totally blank.
 
 After a while, I realized something: the wrapper I created was the cause of the issue. The following image shows on the left the problematic arrangement of components and on the right the solution that I will explain shortly.
 
-![](https://patrickdesjardins.com/blog/wp-content/uploads/2018/10/ReactParentChildrenRef.png)
+![](images/ReactParentChildrenRef.png)
 
 Left side is the wrong implementation; Right side is the good implementation
 

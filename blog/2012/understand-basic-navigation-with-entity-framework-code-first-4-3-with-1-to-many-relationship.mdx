@@ -6,7 +6,7 @@ categories:
   - "general"
 ---
 
-Like [configuring Entity Framework Code First for 1 to 1 or 1 to 0](http://patrickdesjardins.com/blog/understand-basic-navigation-with-entity-framework-code-first-4-3-with-1-to-0-1-relationship "Understand basic navigation with Entity Framework Code First (4.3) with 1 to 0..1 relationship") relation, you need to go in your DbContext and to configure your entities.
+Like [configuring Entity Framework Code First for 1 to 1 or 1 to 0](./understand-basic-navigation-with-entity-framework-code-first-4-3-with-1-to-0-1-relationship "Understand basic navigation with Entity Framework Code First (4.3) with 1 to 0..1 relationship") relation, you need to go in your DbContext and to configure your entities.
 
 For 1 to many, the syntax is quite the same but is changed to fill up the need of one to many. First, of all, unlike 0 to 1 or 1 to 1 the choice of the relation is simpler. The foreign key is always at the "1" side. That mean that if you have a Dealer that sale many car, every car will have a reference in the database the its seller.
 

@@ -5,7 +5,7 @@ categories:
   - "entity-framework"
 ---
 
-Logging with Entity Framework is not the same as [logging with Linq to Sql](http://patrickdesjardins.com/blog/how-to-log-with-linq-to-sql "How to log with Linq to Sql?"). First, you need to have a .edx file with at least one entity declared on it because to be able to log, a query must be executed. Like the Linq to Sql, to have a log the query needs to be run and for that it needs to be executed. Here is a snippet of code showing how to log with Entity Framework.
+Logging with Entity Framework is not the same as [logging with Linq to Sql](./how-to-log-with-linq-to-sql "How to log with Linq to Sql?"). First, you need to have a .edx file with at least one entity declared on it because to be able to log, a query must be executed. Like the Linq to Sql, to have a log the query needs to be run and for that it needs to be executed. Here is a snippet of code showing how to log with Entity Framework.
 
 ```csharp
 NorthwindEntities db = new NorthwindEntities(); var source = db.Customers.Where(c => c.CustomerID.StartsWith("A")); this.gridEF.DataSource = source; this.gridEF.DataBind(); sqlEF.Text = (source as ObjectQuery).ToTraceString(); 
@@ -28,7 +28,7 @@ The output of ToTraceString() is the SQL statement executed. Here is an example:
 ```
 
 
-This is interesting if we compare the generated Sql from the Entity Framework and from the [Linq to Sql](http://patrickdesjardins.com/blog/how-to-log-with-linq-to-sql "How to log with Linq to Sql?"). The  main difference is that Linq to SQL will use parameters substitution instead of directly add the value to the query. You can see it in the Where clause of the Sql query. The Linq to Sql code looks like:
+This is interesting if we compare the generated Sql from the Entity Framework and from the [Linq to Sql](./how-to-log-with-linq-to-sql "How to log with Linq to Sql?"). The  main difference is that Linq to SQL will use parameters substitution instead of directly add the value to the query. You can see it in the Where clause of the Sql query. The Linq to Sql code looks like:
 
 
 ```sql

@@ -13,7 +13,7 @@ tags:
   - "web"
 ---
 
-In a previous post, I wrote how to enhance the standard [Asp.Net MVC Routing to have localized URL with controller and action](http://patrickdesjardins.com/blog/asp-net-mvc-localized-url-without-having-to-specify-the-language-in-it). This solution had some flaws that this article will cover. First of all, it was not working with area. Second, you were not able to use all functionalities like constraints and default values and third, it was a lot of configuration by having to use a lot of lists.
+In a previous post, I wrote how to enhance the standard [Asp.Net MVC Routing to have localized URL with controller and action](./asp-net-mvc-localized-url-without-having-to-specify-the-language-in-it). This solution had some flaws that this article will cover. First of all, it was not working with area. Second, you were not able to use all functionalities like constraints and default values and third, it was a lot of configuration by having to use a lot of lists.
 
 This article illustrates an easier way to define your routing configuration by adding a Fluent API but also by giving you all standard routing capabilities. This solution will let you configure every route possibles : values, defaults values, constraints, etc and will enhance the standard MVC routing by figuring out which language to display all your resources by setting the culture for you.
 
