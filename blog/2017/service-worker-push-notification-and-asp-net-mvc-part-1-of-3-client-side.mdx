@@ -1,7 +1,7 @@
 ---
 title: "Service Worker, Push Notification and Asp.Net MVC - Part 1 of 3 Client Side"
 date: "2017-01-03"
-categories: 
+categories:
   - "asp-mvc"
   - "asp-net"
   - "javascript"
@@ -19,35 +19,44 @@ To create a Firebase account, you need to https://console.firebase.google.com an
 
 Firebase is a library that is accessible via API keys and JavaScript API. You can also invoke the API through a Rest API which we will see in the second part. The first challenge is to figure out where to get the right API key because the system has many. The first step is to create the Service Worker. This is registered when the user goes into your website to run in the background of the browser. The default is to create a file called "firebase-messaging-sw.js" and to put that file at the root of your website. The location of the file is important because the service worker can only access assert that are sibling or child to the script registered.
 
-Here is the full code that I have for my Service Worker: 
-```typescript
-importScripts('https://www.gstatic.com/firebasejs/3.5.0/firebase-app.js'); 
-importScripts('https://www.gstatic.com/firebasejs/3.5.0/firebase-messaging.js');
+Here is the full code that I have for my Service Worker:
 
-var config = { apiKey: "AIzaSyDe0Z0NtygDUDySNMRtl2MIV5m4Hp7IAm0", authDomain: "bourse-virtuelle.firebaseapp.com", messagingSenderId: "555061918002", }; 
+```typescript
+importScripts("https://www.gstatic.com/firebasejs/3.5.0/firebase-app.js");
+importScripts("https://www.gstatic.com/firebasejs/3.5.0/firebase-messaging.js");
+
+var config = {
+  apiKey: "AIzaSyDe0Z0NtygDUDySNMRtl2MIV5m4Hp7IAm0",
+  authDomain: "bourse-virtuelle.firebaseapp.com",
+  messagingSenderId: "555061918002",
+};
 firebase.initializeApp(config);
 
-var messaging = firebase.messaging(); 
-messaging.setBackgroundMessageHandler(function (payload) { 
-  var dataFromServer = JSON.parse(payload.data.notification); 
-  var notificationTitle = dataFromServer.title; 
-  var notificationOptions = { 
-    body: dataFromServer.body, 
-    icon: dataFromServer.icon, 
-    data: { url:dataFromServer.url } 
-  }; 
-  return self.registration.showNotification(notificationTitle, notificationOptions); 
+var messaging = firebase.messaging();
+messaging.setBackgroundMessageHandler(function (payload) {
+  var dataFromServer = JSON.parse(payload.data.notification);
+  var notificationTitle = dataFromServer.title;
+  var notificationOptions = {
+    body: dataFromServer.body,
+    icon: dataFromServer.icon,
+    data: { url: dataFromServer.url },
+  };
+  return self.registration.showNotification(
+    notificationTitle,
+    notificationOptions
+  );
 });
 
-self.addEventListener("notificationclick", function (event) { 
-  var urlToRedirect = event.notification.data.url; 
-  event.notification.close(); 
-  event.waitUntil(self.clients.openWindow(urlToRedirect)); 
-}); 
-``` 
- In short, it uses 2 Firebase scripts. One for the Firebase and one for the messaging which is the wrapper around the push notification api. The configuration is tricky. The apiKey is taken from the Firebase's console, under the desired project, under the project settings gear, in the **General**tab. ![](images/WebApiKeyForFirebase-1024x572.png)
+self.addEventListener("notificationclick", function (event) {
+  var urlToRedirect = event.notification.data.url;
+  event.notification.close();
+  event.waitUntil(self.clients.openWindow(urlToRedirect));
+});
+```
 
-The **messagingSenderId** is an id that is available tab next to the **General** tab, called **Cloud Messaging**. 
+In short, it uses 2 Firebase scripts. One for the Firebase and one for the messaging which is the wrapper around the push notification api. The configuration is tricky. The apiKey is taken from the Firebase's console, under the desired project, under the project settings gear, in the **General**tab. ![](images/WebApiKeyForFirebase-1024x572.png)
+
+The **messagingSenderId** is an id that is available tab next to the **General** tab, called **Cloud Messaging**.
 
 ![](images/SenderId-1024x505.png)
 
@@ -58,90 +67,105 @@ This code get the data from the server. In my case, it's under the property _dat
 The next step is to have a page where the user can subscribe to the push notification. In my case, it's done in the user's profile. I have a checkbox, if checked, the browser will request the authorization to the user to install the service worker. So, in my profile.js page I have the following code:
 
 ```typescript
-$(document).ready(function() { 
-  initialiseUI(); 
-}); 
+$(document).ready(function () {
+  initialiseUI();
+});
 
-function initialiseUI() { 
-  $(document).on("click", "#" + window.Application.Variables.IsHavingNotification, function requestPushNotification() { 
-    var $ctrl = $(this); 
-    if ($ctrl.is(":checked")) { 
-      console.log("checked"); 
-      subscribeUser();
-
-    } else { 
-      console.log("unchecked"); unsubscribeUser(); 
-      } 
-    }); 
+function initialiseUI() {
+  $(document).on(
+    "click",
+    "#" + window.Application.Variables.IsHavingNotification,
+    function requestPushNotification() {
+      var $ctrl = $(this);
+      if ($ctrl.is(":checked")) {
+        console.log("checked");
+        subscribeUser();
+      } else {
+        console.log("unchecked");
+        unsubscribeUser();
+      }
+    }
+  );
 }
 
-function subscribeUser() { 
-  var isSubscribed = false; 
-  var messaging = firebase.messaging(); 
-  messaging.requestPermission() .then(function () { 
-    messaging.getToken()
-      .then(function (currentToken) { 
-        if (currentToken) { 
-          updateSubscriptionOnServer(currentToken); 
-          isSubscribed = true; 
-        } else { 
-          updateSubscriptionOnServer(null); 
-        } 
-        $("#" + window.Application.Variables.IsHavingNotificationt).prop('checked', isSubscribed); })
-          .catch(function (err) { 
-            isSubscribed = false; 
-            updateSubscriptionOnServer(null); 
-          }); 
+function subscribeUser() {
+  var isSubscribed = false;
+  var messaging = firebase.messaging();
+  messaging
+    .requestPermission()
+    .then(function () {
+      messaging
+        .getToken()
+        .then(function (currentToken) {
+          if (currentToken) {
+            updateSubscriptionOnServer(currentToken);
+            isSubscribed = true;
+          } else {
+            updateSubscriptionOnServer(null);
+          }
+          $("#" + window.Application.Variables.IsHavingNotificationt).prop(
+            "checked",
+            isSubscribed
+          );
         })
-          .catch(function (err) { 
-            console.log('Unable to get permission to notify.', err); 
-        }); 
-}
-
-function unsubscribeUser() { 
-  var messaging = firebase.messaging(); 
-  messaging.getToken()
-    .then(function (currentToken) { 
-      messaging.deleteToken(currentToken)
-        .then(function () { 
-          updateSubscriptionOnServer(null); 
-        })
-          .catch(function (err) { 
-            console.log('Unable to delete token. ', err); 
-          }); 
-      })
-        .catch(function (err) { 
-          console.log('Error retrieving Instance ID token. ', err); 
-      }); 
-  }
-
-function updateSubscriptionOnServer(subscription) { 
-  var subscriptionDetail = { key: "" }; 
-  if (subscription) { 
-    subscriptionDetail = { key: subscription }; 
-  } else { 
-    console.log("delete on the server the token"); 
-  } 
-  var apiUrl = window.Application.Url.UrlNotifications; 
-  var dateToSent = subscriptionDetail; 
-  $.ajax({ url: apiUrl, 
-          type: 'POST', 
-          data: dateToSent, 
-          cache: true, 
-          dataType: 'json', 
-          success: function (json) { 
-            if (json.IsValid) 
-            { } 
-            else 
-            { } }, 
-          error: function (xmlHttpRequest, textStatus, errorThrown) { 
-            console.log('some error occured', textStatus, errorThrown); 
-          }, 
-          always: function () { } 
+        .catch(function (err) {
+          isSubscribed = false;
+          updateSubscriptionOnServer(null);
+        });
+    })
+    .catch(function (err) {
+      console.log("Unable to get permission to notify.", err);
     });
-} 
-``` 
- We allow to subscribe and unsubscribe. When subscribing, we request the permission to send the notification by the browser. Then, we get the token provided my Firebase. This is needed to be able to save the token back to the server to have targeted message from the server later. With this token, we will be able to send specific message to specific user. This is where the **updateSubscriptionOnServer** come to play. It sends by Ajax the token, and it's saved in the database. In my case, I added a column in the user's table to keep track of the token. The unsubscribe sends a null value and set null in the column. This way, the server can look and see if the user has or not a Firebase token and only send a message when a token is defined.
+}
+
+function unsubscribeUser() {
+  var messaging = firebase.messaging();
+  messaging
+    .getToken()
+    .then(function (currentToken) {
+      messaging
+        .deleteToken(currentToken)
+        .then(function () {
+          updateSubscriptionOnServer(null);
+        })
+        .catch(function (err) {
+          console.log("Unable to delete token. ", err);
+        });
+    })
+    .catch(function (err) {
+      console.log("Error retrieving Instance ID token. ", err);
+    });
+}
+
+function updateSubscriptionOnServer(subscription) {
+  var subscriptionDetail = { key: "" };
+  if (subscription) {
+    subscriptionDetail = { key: subscription };
+  } else {
+    console.log("delete on the server the token");
+  }
+  var apiUrl = window.Application.Url.UrlNotifications;
+  var dateToSent = subscriptionDetail;
+  $.ajax({
+    url: apiUrl,
+    type: "POST",
+    data: dateToSent,
+    cache: true,
+    dataType: "json",
+    success: function (json) {
+      if (json.IsValid) {
+      } else {
+      }
+    },
+    error: function (xmlHttpRequest, textStatus, errorThrown) {
+      console.log("some error occured", textStatus, errorThrown);
+    },
+    always: function () {},
+  });
+}
+```
+
+We allow to subscribe and unsubscribe. When subscribing, we request the permission to send the notification by the browser. Then, we get the token provided my Firebase. This is needed to be able to save the token back to the server to have targeted message from the server later. With this token, we will be able to send specific message to specific user. This is where the **updateSubscriptionOnServer** come to play. It sends by Ajax the token, and it's saved in the database. In my case, I added a column in the user's table to keep track of the token. The unsubscribe sends a null value and set null in the column. This way, the server can look and see if the user has or not a Firebase token and only send a message when a token is defined.
 
 To verify that all the previous steps are well executed, you can look in Chrome developer tool under **Application** and see for the service worker.
 
@@ -149,31 +173,32 @@ To verify that all the previous steps are well executed, you can look in Chrome 
 
 It's important to understand that what we are doing only work under localhost or with HTTPS' website. From Chrome'S debug panel, you can unregister, or click "Update on reload" to force a reinstallation of the service worker. This can be handy when developing to be sure to always have the latest version of your service worker.
 
-The next step is to have your website listen to incoming messages. This cover the scenario when the user is on the website and that we do not want to use the browser notification. To do, we need to use some code that we already used in the service worker concerning Firebase's initialization. In my case, I added in the master page (_layout.cshtml) a reference to Firebase script to initialize the library. It looks like that: 
+The next step is to have your website listen to incoming messages. This cover the scenario when the user is on the website and that we do not want to use the browser notification. To do, we need to use some code that we already used in the service worker concerning Firebase's initialization. In my case, I added in the master page (\_layout.cshtml) a reference to Firebase script to initialize the library. It looks like that:
 
-``` 
- <script src="https://www.gstatic.com/firebasejs/3.6.2/firebase.js"></script> </script> 
- <script> var config = { 
-   apiKey: "AIzaSyDe0Z0NtygDUDySNMRtl2MIV5m4Hp7IAm0", 
-   authDomain: "bourse-virtuelle.firebaseapp.com", 
-   messagingSenderId: "555061918002", 
-   }; 
- firebase.initializeApp(config); </script> 
-```  
+```
+ <script src="https://www.gstatic.com/firebasejs/3.6.2/firebase.js"></script> </script>
+ <script> var config = {
+   apiKey: "AIzaSyDe0Z0NtygDUDySNMRtl2MIV5m4Hp7IAm0",
+   authDomain: "bourse-virtuelle.firebaseapp.com",
+   messagingSenderId: "555061918002",
+   };
+ firebase.initializeApp(config); </script>
+```
 
-I also have a global JavaScript file where I added the listener to message which are used in every page I have. 
+I also have a global JavaScript file where I added the listener to message which are used in every page I have.
 
 ```typescript
-$(document).ready(function() { 
-  var messaging = firebase.messaging(); 
-  messaging.onMessage(function(payload) { 
-    var dataFromServer = JSON.parse(payload.data.notification); 
-    var myMessageBar = new MessageBar(); 
-    myMessageBar.setMessage(dataFromServer.title + " : " + dataFromServer.body); 
-  }); 
-}); 
-``` 
- The listener is **onMessage** is fired when the user has the focus on the website. So, instead of having the service worker to handle the message, this handler is receiving the data. This give the advantage to be able to add the message directly in the webpage Dom, something that the service worker cannot do. It also has the convenience of having the notification in the field of view of the user instead of having a notification outside.
+$(document).ready(function () {
+  var messaging = firebase.messaging();
+  messaging.onMessage(function (payload) {
+    var dataFromServer = JSON.parse(payload.data.notification);
+    var myMessageBar = new MessageBar();
+    myMessageBar.setMessage(dataFromServer.title + " : " + dataFromServer.body);
+  });
+});
+```
+
+The listener is **onMessage** is fired when the user has the focus on the website. So, instead of having the service worker to handle the message, this handler is receiving the data. This give the advantage to be able to add the message directly in the webpage Dom, something that the service worker cannot do. It also has the convenience of having the notification in the field of view of the user instead of having a notification outside.
 
 At this point, you can use any HTTP tools to send a message to Firebase. You can use console.log to output the token and forge a HTTP request with your web api and sender id. I won't give detail in this post and will give how to do it in a future post about how to handle it with a webjob in C# which will send a HTTP request.
 

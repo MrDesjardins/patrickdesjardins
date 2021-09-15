@@ -1,7 +1,7 @@
 ---
 title: "Pros and Cons of Using TypeScript"
 date: "2017-08-09"
-categories: 
+categories:
   - "typescript"
 ---
 
@@ -27,7 +27,7 @@ If you are using React and PropTypes than Flow or TypeScript do the job of enfor
 
 ![](images/Screen-Shot-2017-07-21-at-1.22.33-PM.png)
 
-Here is a [trend graph of the last year of TypeScript vs Babel](https://trends.google.com/trends/explore?cat=31&q=typescript,babel) under the category programming:  
+Here is a [trend graph of the last year of TypeScript vs Babel](https://trends.google.com/trends/explore?cat=31&q=typescript,babel) under the category programming:
 
 ### Used by Big Companies
 
@@ -95,17 +95,25 @@ Finally, having type helps new people coming into a project. They do not need to
 
 This is a relatively new feature that was a big plus of Flow compared to TypeScript. In Flow, the philosophy is that you do not have to define all your types. In TypeScript, you had to do it otherwise it was "any" which is anything. However, since TypeScript 2.1, TypeScript will infer the right type. It means that if you assign a variable a number that this variable will be a number.
 
+```typescript
 let x = 1; // x is a number, not var
+```
 
 This is an advantage for people who do not like the heaviness of typing the type every time and still give good support and validation. It means that it's impossible to assign x to a string from that point of time.
 
-let x = 1; x = "string here"; // Won't compile since x is inferred as a number
+```typescript
+let x = 1;
+x = "string here"; // Won't compile since x is inferred as a number
+```
 
 It brings more security and less problematic in code that can be trickier. For example, if you take numbers and return the sum of them. Do you expect to return a number of a string (concatenated value of the number). Well, if your method returns a number (explicitly) it won't compile if one of the parameters passed is a string and that we implicitly wanted a number. Indeed, we could have defined numbers everywhere and remove all the confusion, to begin with.
 
 Inference work as well with a literal object. If you defined an object and assign a value of an integer, the type will be inferred as a number. It means that if you assign to that object's property a string that it will be caught up by Typescript.
 
-let myObject = { a : 1 }; myObject.a = "string"; // TypeScript will catch the inferred type that the property is of type number
+```typescript
+let myObject = { a: 1 };
+myObject.a = "string"; // TypeScript will catch the inferred type that the property is of type number
+```
 
 TypeScript spreads inference to arrays as well.
 
