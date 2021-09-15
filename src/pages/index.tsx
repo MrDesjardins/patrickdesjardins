@@ -1,42 +1,31 @@
+import "@fontsource/open-sans";
+import "@fontsource/oswald";
+import { Link } from "gatsby";
+import { StaticImage } from "gatsby-plugin-image";
 import * as React from "react";
+import { AboutMeSection } from "../website/AboutMeSection";
+import { AchievementsSection } from "../website/AchievementsSection";
+import { BookSection } from "../website/BookSection";
+import { ConferencesSection } from "../website/ConferencesSection";
+import { ContactSection } from "../website/ContactsSection";
+import { EducationSection } from "../website/EducationSection";
+import { HistorySection } from "../website/HistorySection";
 import {
   container,
-  topHeader,
-  topHeaderMyName,
-  topHeaderBlog,
-  topMenu,
   homeContent,
   homeContentTitles,
   textOnPicture,
-  topPicture,
+  topHeader,
   topHeaderAnchorLink,
-  sectionMainpage,
-  sectionAboutMe,
-  sectionAboutMeContainer,
-  sectionAboutMeContainerContent,
-  sectionVisualOne,
-  sectionVisualOneSubHeader,
-  sectionFixedWitdh,
-  cardFixedWidthImageImg,
-  cardFixedWidthImage,
+  topHeaderBlog,
+  topHeaderMyName,
+  topMenu,
+  topPicture,
 } from "../website/index.module.css";
-import { StaticImage } from "gatsby-plugin-image";
-import { Link } from "gatsby";
-import "@fontsource/oswald";
-import "@fontsource/open-sans";
-import clsx from "clsx";
-import { CardFixedWidth } from "../website/CardFixedWidth";
-import { WorkSection } from "../website/WorkSection";
-import { AboutMeSection } from "../website/AboutMeSection";
-import { BookSection } from "../website/BookSection";
 import { OpenSourceSection } from "../website/OpenSourceSection";
-import { TechnologiesSection } from "../website/TechnologiesSection";
-import { AchievementsSection } from "../website/AchievementsSection";
 import { StatisticsSection } from "../website/StatisticsSection";
-import { EducationSection } from "../website/EducationSection";
-import { HistorySection } from "../website/HistorySection";
-import { ConferencesSection } from "../website/ConferencesSection";
-import { ContactSection } from "../website/ContactsSection";
+import { TechnologiesSection } from "../website/TechnologiesSection";
+import { WorkSection } from "../website/WorkSection";
 
 const IndexPage = (): JSX.Element => {
   return (
@@ -55,25 +44,22 @@ const IndexPage = (): JSX.Element => {
             <a href="#work" className={topHeaderAnchorLink}>
               Works
             </a>
-            <a href="#" className={topHeaderAnchorLink}>
+            <a href="#technologies" className={topHeaderAnchorLink}>
               Technologies
             </a>
-            <a href="#" className={topHeaderAnchorLink}>
+            <a href="#achievements" className={topHeaderAnchorLink}>
               Achievements
             </a>
-            <a href="#" className={topHeaderAnchorLink}>
-              Skills
+            <a href="experiences" className={topHeaderAnchorLink}>
+              Experiences
             </a>
-            <a href="#" className={topHeaderAnchorLink}>
-              Sharing
-            </a>
-            <a href="#" className={topHeaderAnchorLink}>
+            <a href="#past" className={topHeaderAnchorLink}>
               Past
             </a>
-            <a href="#" className={topHeaderAnchorLink}>
+            <a href="#conferences" className={topHeaderAnchorLink}>
               Conferences
             </a>
-            <a href="#" className={topHeaderAnchorLink}>
+            <a href="#contact" className={topHeaderAnchorLink}>
               Contact
             </a>
 

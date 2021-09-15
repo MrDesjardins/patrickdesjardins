@@ -12,7 +12,7 @@ import {
 export const StatisticsSection = (): JSX.Element => {
   return (
     <section
-      id="statistics"
+      id="experiences"
       className={clsx(sectionMainpage, sectionVisualOne)}
     >
       <div className={statisticContainer}>
