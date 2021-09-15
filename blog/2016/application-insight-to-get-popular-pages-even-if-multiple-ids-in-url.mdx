@@ -10,7 +10,13 @@ Application Insight is very powerful system that let you collect telemetry on yo
 One interesting thing you can do, without having to configure anything else than using Application Insight with your website, is to query the **pageViews** table. It allows you to get information about each page requested by user. However, if you are using an application you may have url with ID. For example _http://yourwebsite.com/user/12345/data/group/567/_. The problem is that you will get result with noise. The same page has variables in the url. A simple fix is to replace any integer. Here is a code you can use on your own data which replace integer with a 'x' character.
 
 ``` 
- pageViews | extend replaced_operation_ParentName = replace(@'(\\d+)', @'x', operation_Name) | where timestamp >= ago(7d) | summarize c = count(replaced_operation_ParentName) by replaced_operation_ParentName | where c > 1 | order by c desc 
+ pageViews 
+  | extend replaced_operation_ParentName = replace(@'(\\d+)', @'x', operation_Name) 
+  | where timestamp >= ago(7d) 
+  | summarize c = count(replaced_operation_ParentName) 
+      by replaced_operation_ParentName 
+  | where c > 1 
+  | order by c desc 
 ``` 
 
 The result look like this:

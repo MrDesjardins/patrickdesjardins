@@ -29,17 +29,21 @@ In an ideal world, a single schema exists and we flag the field or entity to be 
 
 GraphQL allows enhancing the graph's schema with annotation. Let's start with the end result which should talk more than any explanation.
 
+```typescript
 type MyTypeA {    
     fieldA: EntityTypeA
     fieldB: EntityTypeA @internalData
 }
+```
 
 The idea is to add "@internalData" to every field that must be only visible to internal usage. The annotation marks field but also can mark a whole type.
 
+```typescript
 type MyTypeA @internalData {    
     fieldA: EntityTypeA
     fieldB: EntityTypeA
 }
+```
 
 The idea is to have a single schema that had an indication that the field is added into a request will have some consequence. Because it is a single graph, the field appears in the interactive Graphql Playground and is a valid field to request; even externally. However, when invoked, GraphQL at runtime will be able to read the directive and perform a logic. In our case, the logic will be to verify the source of the request and figure out if the request is internal or not. In the case of an internal request, the data will be part of the response. If the source is external, an exception will occur and the field will be undefined.
 
@@ -53,6 +57,7 @@ directive @internalData on OBJECT | FIELD_DEFINITION
 
 The second part if to handle the directive. When merging all the resolvers and type definitions you can also specify the collection of directives. What you need to pass is a key-value pair with the directive name and the class of the directive (not the object). It means that you do not instantiate (new) the class, but only give a reference to the class.
 
+```typescript
 const schemas = makeExecutableSchema({
     typeDefs: allSchemas,
     resolvers: allResolvers,
@@ -60,9 +65,11 @@ const schemas = makeExecutableSchema({
         internalData: InternalDataDirective,
         }
 });
+``` 
 
 The class must inherit _SchemaDirectiveVisitor_. Then, because we have specified that it can be applied to a field and a type, we need to override two functions: _visitFieldDefinition_ and _visitObject_.
 
+```typescript
 export class InternalDataDirective extends SchemaDirectiveVisitor {
     private static readonly INTERNAL_APP = ["app1", "app2", "app3"];
 
@@ -95,7 +102,7 @@ export class InternalDataDirective extends SchemaDirectiveVisitor {
 
     private checkField(field: GraphQLField<any, any>): void {
         const { resolve = defaultFieldResolver } = field;
-        field.description = \`🔐 Internal Field. Only available for: ${InternalDataDirective.INTERNAL_APP.join(", ")}.\`;
+        field.description = `🔐 Internal Field. Only available for: ${InternalDataDirective.INTERNAL_APP.join(", ")}.`;
         field.resolve = async function(
             source: any,
             args: any,
@@ -107,9 +114,9 @@ export class InternalDataDirective extends SchemaDirectiveVisitor {
                 !InternalDataDirective.INTERNAL_APP.includes(context.req.appOrigin)
             ) {
                 throw new Error(
-                    \`The field [${field.name}] has an internal scope and does not allow access for the application [${
+                    `The field [${field.name}] has an internal scope and does not allow access for the application [${
                         context.req.appOrigin
-                    }]\`
+                    }]`
                 );
             }
 
@@ -118,6 +125,7 @@ export class InternalDataDirective extends SchemaDirectiveVisitor {
         };
     }
 }
+``` 
 
 The directive converges the two entry points (field and object) into a single function. The two functions are called once when the class is instantiated by the GraphQL code at the startup of the server. It means that you cannot have custom logic in the visit functions. The dynamic aspect appends because we wrap the resolve of the field. It means that the actual resolution is executed but the code specified in "checkField" is also performed at runtime. In the code excerpt, we see that it checks for a list of accepted internal applications. If the field has the directive, it goes into the directive's resolver and checks if the origin if from the list of accepted internal application. If not, it throws an error.
 
@@ -133,15 +141,15 @@ The more I work with different organizations, code bases, and technologies, the 
 
 ## My Other GrapHL Blog Posts
 
-- [Getting Started with GraphQL for Netflix Open Connect](https://patrickdesjardins.com/blog/getting-started-with-graphql-for-netflix-open-connect)
-- [Install Apollo Server to host a GraphQL service](https://patrickdesjardins.com/blog/install-apollo-server-to-host-a-graphql-service)
-- [Apollo Server and Secured Playground](https://patrickdesjardins.com/blog/apollo-server-and-secured-playground)
-- [GraphQL Context](https://patrickdesjardins.com/blog/graphql-context)
-- [GraphQL Query with Argument](https://patrickdesjardins.com/blog/graphql-query-with-argument)
-- [Apollo GraphQL Resolvers and Data Source separation](https://patrickdesjardins.com/blog/apollo-graphql-resolvers-and-data-source-separation)
-- [How to setup a TypeScript, NodeJS, Express Apollo Server to easy debugging with VsCode](https://patrickdesjardins.com/blog/how-to-setup-a-typescript-nodejs-express-apollo-server-to-easy-debugging-with-vscode)
-- [GraphQL Resolvers with Apollo](https://patrickdesjardins.com/blog/graphql-resolvers-with-apollo)
-- [Configuring Apollo Playground and API on two different URL](https://patrickdesjardins.com/blog/configuring-apollo-playground-and-api-on-two-different-url)
-- [How to automatically generate TypeScript for consumers of your GraphQL](https://patrickdesjardins.com/blog/how-to-automatically-generate-typescript-for-consumer-of-your-graphql)
-- [GraphQL and HTTP Telemetry](https://patrickdesjardins.com/blog/graphql-extension-to-collect-http-and-resolvers-telemetry)
-- [GraphQL and TypeScript/React](https://patrickdesjardins.com/blog/how-to-consume-graphql-in-typescript-and-react)
+- [Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)
+- [Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)[Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)[Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)[Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)[Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)[Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)[Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)[Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)[Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)[Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)[Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)
+- [Apollo Server and Secured Playground](apollo-server-and-secured-playground)[Apollo Server and Secured Playground](apollo-server-and-secured-playground)[Apollo Server and Secured Playground](apollo-server-and-secured-playground)[Apollo Server and Secured Playground](apollo-server-and-secured-playground)[Apollo Server and Secured Playground](apollo-server-and-secured-playground)[Apollo Server and Secured Playground](apollo-server-and-secured-playground)[Apollo Server and Secured Playground](apollo-server-and-secured-playground)[Apollo Server and Secured Playground](apollo-server-and-secured-playground)[Apollo Server and Secured Playground](apollo-server-and-secured-playground)[Apollo Server and Secured Playground](apollo-server-and-secured-playground)
+- [GraphQL Context](graphql-context)[GraphQL Context](graphql-context)[GraphQL Context](graphql-context)[GraphQL Context](graphql-context)[GraphQL Context](graphql-context)[GraphQL Context](graphql-context)[GraphQL Context](graphql-context)[GraphQL Context](graphql-context)[GraphQL Context](graphql-context)
+- [GraphQL Query with Argument](graphql-query-with-argument)
+- [Apollo GraphQL Resolvers and Data Source separation](apollo-graphql-resolvers-and-data-source-separation)
+- [How to setup a TypeScript, NodeJS, Express Apollo Server to easy debugging with VsCode](how-to-setup-a-typescript-nodejs-express-apollo-server-to-easy-debugging-with-vscode)
+- [GraphQL Resolvers with Apollo](graphql-resolvers-with-apollo)
+- [Configuring Apollo Playground and API on two different URL](configuring-apollo-playground-and-api-on-two-different-url)
+- [How to automatically generate TypeScript for consumers of your GraphQL](how-to-automatically-generate-typescript-for-consumer-of-your-graphql)
+- [GraphQL and HTTP Telemetry](graphql-extension-to-collect-http-and-resolvers-telemetry)
+- [GraphQL and TypeScript/React](how-to-consume-graphql-in-typescript-and-react)

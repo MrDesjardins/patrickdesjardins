@@ -25,7 +25,7 @@ The class that you create and that inherit from **EventSource** must have an att
 
 What is important here is that the method you define must has only primitive parameter. This is not only true for the **WriteEvent** method used to pass information to the event message but also to the method name. Passing a collection of one of your class and transforming this array into string within the method before passing the produced string to WriteEvent will not work. In fact, the result will be in PerfView under a Guid instead of your event name with the exception message that it cannot read. Here is an output 
 ``` 
- ThreadID="25,652" FormattedMessage="ERROR: Exception during construction of EventSource MyTracingProvider: Unsupported type IEnumerable\`1 in event source. " DataLength="230" 
+ ThreadID="25,652" FormattedMessage="ERROR: Exception during construction of EventSource MyTracingProvider: Unsupported type IEnumerable`1 in event source. " DataLength="230" 
 ``` 
  ![](images/PerfViewErrorParameters-400x229.png)
 

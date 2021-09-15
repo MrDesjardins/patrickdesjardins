@@ -48,7 +48,7 @@ export function batchNotifications<S>(next: Dispatch<S>,
 } 
 ```
 
-Because the batch is executed at the middleware level, I can create a [Redux Store Enhancer](https://patrickdesjardins.com/blog/how-to-have-a-hook-before-a-redux-store-notify-its-subscriber-with-typescript) to accumulate all the action between the “on” and “off”. It means that I have a custom code in the _composeEnhancers_. The link in this paragraph covers the code about the batch notification. Overall, the gain is tremendous because no other pattern can reduce these five calls. In my case, the biggest entity was divided into ten reducers which would otherwise cost many milliseconds (about 400ms) wasted.
+Because the batch is executed at the middleware level, I can create a [Redux Store Enhancer](how-to-have-a-hook-before-a-redux-store-notify-its-subscriber-with-typescript) wasted.
 
 ### Short-circuit Redux mapping
 

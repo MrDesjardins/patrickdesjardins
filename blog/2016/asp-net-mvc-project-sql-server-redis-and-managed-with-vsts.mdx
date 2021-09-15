@@ -915,7 +915,7 @@ Moving from IIS Express to IIS was a natural decision for many reasons like not 
 Cannot get a local application data path. Most probably a user profile is not loaded. If LocalDB is executed under IIS, make sure that profile loading is enabled for the current user. Next warning that you will get is that the Application Pool does not have access to the database.
 
 ``` 
- Process information: Process ID: 7732 Process name: w3wp.exe Account name: IIS APPPOOL\\BourseVirtuelle Exception information: Exception type: SqlException Exception message: The SELECT permission was denied on the object ‘AspNetUserLogins’, database ‘BourseVirtuelle’, schema ‘dbo’. at System.Data.SqlClient.SqlCommand.b__24(Task\`1 result) at System.Threading.Tasks.ContinuationResultTaskFromResultTask\`2.InnerInvoke() at System.Threading.Tasks.Task.Execute() This can be done by going into Microsoft Sql Server Manager, under Security, Logins and add entries for all your Application Pool. For example, here is the application pool that I created. 
+ Process information: Process ID: 7732 Process name: w3wp.exe Account name: IIS APPPOOL\\BourseVirtuelle Exception information: Exception type: SqlException Exception message: The SELECT permission was denied on the object ‘AspNetUserLogins’, database ‘BourseVirtuelle’, schema ‘dbo’. at System.Data.SqlClient.SqlCommand.b__24(Task`1 result) at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke() at System.Threading.Tasks.Task.Execute() This can be done by going into Microsoft Sql Server Manager, under Security, Logins and add entries for all your Application Pool. For example, here is the application pool that I created. 
 ``` 
 
 ![](images/ApplicationPoolIdentity.png)
@@ -929,7 +929,7 @@ The last step is to give the user access to the Database. You have give the acco
 ![](images/UserMapping.png)
 
 The last error that you can have is something about the creation of table. I had this error when migrating this website with the Identity framework when trying to get the user in the authentication window. ``` 
- Exception information: Exception type: SqlException Exception message: CREATE TABLE permission denied in database ‘BourseVirtuelle’. at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action\`1 wrapCloseInAction) at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose) 
+ Exception information: Exception type: SqlException Exception message: CREATE TABLE permission denied in database ‘BourseVirtuelle’. at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction) at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose) 
 ``` 
 
 The solution was to set the default initializer to null

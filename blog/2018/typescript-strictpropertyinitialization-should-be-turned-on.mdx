@@ -14,9 +14,19 @@ TypeScript 2.7 brings a new compiler flag: "strictPropertyInitialization". This 
 Let's see an example that compile prior to the adoption of strictPropertyInitialization or if this flag is set to false. The following code shows three properties. The "m1" is initialized in the constructor. The "m2" is initialized at declaration. The "m3" is initialized by a call to a method from the constructor. The last example works only without the flag to true.
 
 ```typescript
-class C { private m1: number; private m2: string = "2"; private m3: boolean;
+class C { 
+  private m1: number; 
+  private m2: string = "2"; 
+  private m3: boolean;
 
-public constructor() { this.m1 = 1; this.init(); } private init():void { this.m3 = true; } } 
+  public constructor() { 
+    this.m1 = 1; 
+    this.init(); 
+  } 
+  private init():void { 
+    this.m3 = true; 
+  } 
+} 
 ``` 
 
 
@@ -25,9 +35,18 @@ The problem with initializing in a method is the lack of guarantee of invocation
 Let's examine a second example where the compiler catches a missing initialization.
 
 ```typescript
-class C { private m1: number; private m2: string = "2"; private m3: boolean;
+class C { 
+  private m1: number; 
+  private m2: string = "2"; 
+  private m3: boolean;
 
-public constructor(b: boolean) { this.m1 = 1; if (b) { this.m3 = true; } } } 
+  public constructor(b: boolean) { 
+    this.m1 = 1; 
+    if (b) { 
+      this.m3 = true; 
+    } 
+  }
+} 
 ``` 
  The second example initialize the field "m3" but not in every code path. TypeScript detects that the field might not be initialized, hence doesn't compile.
 

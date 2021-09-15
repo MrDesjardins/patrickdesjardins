@@ -9,7 +9,7 @@ While I am well aware of the feature of notifying to the user that a new version
 
 This week, someone raised the point that it would be interesting to have this feature on the application I am working on at Netflix. I wish I had time to do it, but instead of procrastinating, I decided to give it a try. The idea was to implement a way as cheap as possible since I have a backlog that is gargantuan. 
 
-If you recall, a few days ago, I discussed [how to burn the Git hash into your React application](https://patrickdesjardins.com/blog/burning-the-last-git-commit-into-your-telemetry-log). The article described how to inject in the environment variable the Git hash of the actual build. It is done at compilation time and the React has a way to read the information from JavaScript. In my case, the version is stored in an environment variable named `REACT.APP_VERSION`. It is accessible at runtime. That being said, the version remains on the client browser until the user fetches the new JavaScript file that has a new value which happens only on a new build. The idea is to leverage the fact that if the client keeps the version until a new version is available, on a refresh, then checking once in a while for a version change is a matter of comparing the Git hash on the client machine to the actual head of the repository.
+If you recall, a few days ago, I discussed [how to burn the Git hash into your React application](burning-the-last-git-commit-into-your-telemetry-log). The article described how to inject in the environment variable the Git hash of the actual build. It is done at compilation time and the React has a way to read the information from JavaScript. In my case, the version is stored in an environment variable named `REACT.APP_VERSION`. It is accessible at runtime. That being said, the version remains on the client browser until the user fetches the new JavaScript file that has a new value which happens only on a new build. The idea is to leverage the fact that if the client keeps the version until a new version is available, on a refresh, then checking once in a while for a version change is a matter of comparing the Git hash on the client machine to the actual head of the repository.
 
 The idea can be broke down in few steps:
 
@@ -18,7 +18,7 @@ The idea can be broke down in few steps:
 3. Fetch once in a while from the server a file that has the latest Git
 4. If the Git Hash from the JavaScript environment variable is different from the file on the server, show a message to the user to refresh
 
-The first step has been [already discussed](https://patrickdesjardins.com/blog/burning-the-last-git-commit-into-your-telemetry-log), but in short, it consists to change the `npm run build` to take the head Git hash and to pass it down to React.
+The first step has been [already discussed](burning-the-last-git-commit-into-your-telemetry-log), but in short, it consists to change the `npm run build` to take the head Git hash and to pass it down to React.
 
 ``` 
  "build": "REACT_APP_VERSION=$(git rev-parse --short HEAD) react-scripts-ts build"

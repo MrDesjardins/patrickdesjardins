@@ -5,7 +5,7 @@ categories:
   - "general"
 ---
 
-In my work at Netflix, I had to create a page to visualize when a cache (also known as an [appliance](https://openconnect.netflix.com/en/deployment-guide/)) can receive new movies. The former [Partner Portal](https://openconnect.netflix.com/en/partner-portal/) had a table with one row per cache for a specific organization. Every row had one column for every hour of the day (24 columns). The table can be very verbose depending on how structured an organization is in term of sites and appliances. I opted to an improved visualization that removed the redundancy of the unused cells and leveraged [React and animation](https://patrickdesjardins.com/blog/animating-a-react-component) to have the user following the transformation when changing options like timezone and visualization preferences. The result is that a user interfaces less clunky that displays four times more information for the same viewport.
+In my work at Netflix, I had to create a page to visualize when a cache (also known as an [appliance](https://openconnect.netflix.com/en/deployment-guide/)) can receive new movies. The former [Partner Portal](https://openconnect.netflix.com/en/partner-portal/) had a table with one row per cache for a specific organization. Every row had one column for every hour of the day (24 columns). The table can be very verbose depending on how structured an organization is in term of sites and appliances. I opted to an improved visualization that removed the redundancy of the unused cells and leveraged [React and animation](animating-a-react-component) to have the user following the transformation when changing options like timezone and visualization preferences. The result is that a user interfaces less clunky that displays four times more information for the same viewport.
 
 ## Cache Fill Window
 
@@ -56,7 +56,7 @@ return <div className="clusters"
        </div >; 
 ``` 
 
-The animation is using the [React and animation](https://patrickdesjardins.com/blog/animating-a-react-component) technic previous discussed. For each element, it sets the top and left of the final position and rewind with the previous position with CSS animation that has a transition. It means the "FillwindowsCluster.tsx" has in its class the two values as well as a reference to the DOM element to modify the style dynamically.
+The animation is using the [React and animation](animating-a-react-component) technic previous discussed. For each element, it sets the top and left of the final position and rewind with the previous position with CSS animation that has a transition. It means the "FillwindowsCluster.tsx" has in its class the two values as well as a reference to the DOM element to modify the style dynamically.
 
 ```typescript
 private domCluster: HTMLDivElement | null = null; 

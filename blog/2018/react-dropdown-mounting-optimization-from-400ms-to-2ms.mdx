@@ -13,16 +13,38 @@ The profiler was very clear about the issue: every item of the drop-down was mou
 The hosting React component of the dropdown is receiving by property the list of elements to add in the drop-down. The solution was to instead of to bound the list directly to create a state to the control. The component's state contains two fields. One that indicates if the list of elements is mounted to the control and the actual list of items. Here is the TypeScript's interface that defines the state.
 
 ```typescript
-export interface PickerStates<T> { isItemsMounted: boolean; items: T[]; } 
+export interface PickerStates<T> { 
+  isItemsMounted: boolean; items: T[]; 
+} 
 ``` 
 
+The constructor of the hosting React component initializes the state to false and to an empty list. 
 
-The constructor of the hosting React component initializes the state to false and to an empty list. ```typescript
-constructor(props: PickerProps) { super(props); this.state = { isItemsMounted: false, items: [] }; } 
+```typescript
+constructor(props: PickerProps) { 
+  super(props); 
+  this.state = { 
+    isItemsMounted: false, 
+    items: [] 
+  }; 
+} 
 ``` 
- The render needs to render the Semantic React Dropdown control. This one leverages its capability of being able to have a caption label to write the actual selected value. This is great since it gives the possibility to have an active element that is not even yet mounted. The options property, which is the list of item, is set to the state which is empty at the first render. The trick is coded in the "onOpen" method which executes code when the user clicks to open the drop-down. It transfers the list into the state. Since the state change, the render is executed again and render the list with all items. The recursive render is executed only once because of the boolean guard and mounts all the items. ```typescript
-<Dropdown item={true} value={this.props.selectedItemId.toString()} options={this.state.items} search={true} onOpen={() => { if (!this.state.isItemsMounted) { this.setState({ isItemsMounted: true, items: this.props.items }); } }} text={selectedElementText} /> 
+ The render needs to render the Semantic React Dropdown control. This one leverages its capability of being able to have a caption label to write the actual selected value. This is great since it gives the possibility to have an active element that is not even yet mounted. The options property, which is the list of item, is set to the state which is empty at the first render. The trick is coded in the "onOpen" method which executes code when the user clicks to open the drop-down. It transfers the list into the state. Since the state change, the render is executed again and render the list with all items. The recursive render is executed only once because of the boolean guard and mounts all the items. 
+ 
+ ```typescript
+<Dropdown 
+  item={true} 
+  value={this.props.selectedItemId.toString()} 
+  options={this.state.items} 
+  search={true} 
+  onOpen={() => { 
+    if (!this.state.isItemsMounted) { 
+      this.setState({ isItemsMounted: true, items: this.props.items }); 
+    } 
+   }
+  } 
+  text={selectedElementText} 
+/> 
 ``` 
-
 
 A fraction of the users perceive the delay of 400ms and at a time not crucial than the bootstrap of the application. In the end, the justification of using React's state remains adequate by not performing deep logic which keeps the component dummy.

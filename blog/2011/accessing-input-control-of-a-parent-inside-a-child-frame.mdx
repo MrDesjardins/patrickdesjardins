@@ -7,7 +7,7 @@ categories:
 
 Not long time ago, I had to modify a code which was using a **Frameset** with **Frame**.
 
-I had an issue because the code was written for Internet Explorer only and it was accessing the hidden field by using \`parent.window.document.myhiddenfield.value\`.
+I had an issue because the code was written for Internet Explorer only and it was accessing the hidden field by using `parent.window.document.myhiddenfield.value`.
 
 My first reflex was to remove the window and use getElementById. Like this:
 
@@ -16,7 +16,7 @@ parent.document.getElementById('myhiddenfield').value
 ``` 
 
 
-This doesn't work with Firefox either. After some search, I found that we can use \`self.ownerDocument\`. Like this: ```typescript
+This doesn't work with Firefox either. After some search, I found that we can use `self.ownerDocument`. Like this: ```typescript
 self.ownerDocument.getElementById('bar'); 
 ``` 
 

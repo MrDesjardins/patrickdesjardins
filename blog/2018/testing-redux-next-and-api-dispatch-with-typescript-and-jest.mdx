@@ -9,7 +9,7 @@ categories:
 
 A middleware in Redux can have quite a lot of logic. In fact, this is my favorite place to place logic. The rationale is that it can be triggered by an action, still, have the time to request data from the backend server with an Ajax call and can dispatch other actions that can be computed by another middleware or by a reducer. It becomes crucial to unit test any area where logic can go wrong, thus testing if specific logic dispatch or invoke next.
 
-Testing api.dispatch is a matter of leveraging Jest. If you are using React and Redux, it is the defacto testing framework. In fact, it is the one coming with the famous "create-react-app". To test if an action got dispatched from the api.dispatch, you need to mock the dispatch and verify that it has been called. The function `toHavebeenCalledWith` can take another expect which can peek the content of an object passed. [Because every action contains a type and payload](https://patrickdesjardins.com/blog/reducing-boilerplate-of-redux-with-typescript), it is possible to verify if an action has been invoked.
+Testing api.dispatch is a matter of leveraging Jest. If you are using React and Redux, it is the defacto testing framework. In fact, it is the one coming with the famous "create-react-app". To test if an action got dispatched from the api.dispatch, you need to mock the dispatch and verify that it has been called. The function `toHavebeenCalledWith` can take another expect which can peek the content of an object passed. [Because every action contains a type and payload](reducing-boilerplate-of-redux-with-typescript), it is possible to verify if an action has been invoked.
 
 ```javascript
 
@@ -69,7 +69,7 @@ export function nextPayloadTypeSpy(type?: string): SpyActionsWithPayload {
 
 ```
 
-The code is tightly coupled with how you are handling your action. I strongly suggest using the [Redux-TypeScript boilerplate "free"](https://patrickdesjardins.com/blog/reducing-boilerplate-of-redux-with-typescript). It is really a relief to use in a term that you will create action within 30 seconds and to be type safe for the payload.
+The code is tightly coupled with how you are handling your action. I strongly suggest using the [Redux-TypeScript boilerplate "free"](reducing-boilerplate-of-redux-with-typescript). It is really a relief to use in a term that you will create action within 30 seconds and to be type safe for the payload.
 
 The code uses a "mock" property which is a hook to a mock implementation that does nothing else than being recorded in an array. The actual action is doing nothing. The two functions aside the mock property are there to assert the test. Future improvements are obvious. For example, the `hasBeenCalled` could also take an index to ensure that a particular "next" has been called.
 

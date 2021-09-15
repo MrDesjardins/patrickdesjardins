@@ -8,7 +8,7 @@ categories:
 
 Using **IDbSetExtensions.AddOrUpdate** with Migration Tool fail if you are using a custom **IDbSet**.
 
-> Unable to call public, instance method AddOrUpdate on derived IDbSet type 'DataAccessLayer.Database.FilteredDbSet\`1[Model.Workout]'. Method not found.
+> Unable to call public, instance method AddOrUpdate on derived IDbSet type 'DataAccessLayer.Database.FilteredDbSet`1[Model.Workout]'. Method not found.
 
 The exception above is raised when using : _PM> update-database -verbose -force_. The class _**FilteredDbSet**_, inherit _**IDbSet**_ and should be able to use the method AddOrUpdate which is pretty useful when seeding data. But, the exception raise and the reason is that it try to get the method definition with a parameter.
 

@@ -45,7 +45,7 @@ The Apollo website has a great introduction tutorial that mentions a way to host
 const server = new ApolloServer({ typeDefs });
 
 server.listen().then(({ url }) => {
-  console.log(\`🚀 Server ready at ${url}\`);
+  console.log(`🚀 Server ready at ${url}`);
 });
 
 Without having to look very far, many implementations on the Internet also use Express and use ApolloServer has a middleware. The way to proceed is to create an Express Http server and attach Apollo's server.
@@ -63,7 +63,9 @@ app.listen(endpoints.graphQlServerPort, () => {
 
 It is possible to verify the validity of the actual configuration without configuring Apache. While the objective is to use the authentication mechanism by the Netflix's Apache module, at the moment nothing require authentication. The excerpt of the Express server on port "graphQlServerPort" which is no port 80. Apache will be using port 80 and will redirect the request to the "graphQlServerPort". The extract is in the main index.ts file which I have an NPM command that calls TypeScript to build and then calls NodeJS to execute.
 
+```
 "dev": "concurrently \\"tsc -w\\" \\"nodemon build/dist/index.js\\""
+```
 
 Indeed, another command in package.json is required when running Apache in Docker, but I will skip that part to focus on GraphQL. The "dev" command start TypeScript in watch mode and has a node monitoring process that will restart on every change of file which occurs every time TypeScript compile. So far, the project is tiny, it takes less than two seconds.
 
@@ -77,13 +79,15 @@ I will stop there for the moment. The Express server is running which is the HTT
 
 ## My GraphQL Articles
 
-- [Getting Started with GraphQL for Netflix Open Connect](https://patrickdesjardins.com/blog/getting-started-with-graphql-for-netflix-open-connect)
-- [Install Apollo Server to host a GraphQL service](https://patrickdesjardins.com/blog/install-apollo-server-to-host-a-graphql-service)
-- [Apollo Server and Secured Playground](https://patrickdesjardins.com/blog/apollo-server-and-secured-playground)
-- [GraphQL Context](https://patrickdesjardins.com/blog/graphql-context)
-- [GraphQL Query with Argument](https://patrickdesjardins.com/blog/graphql-query-with-argument)
-- [Apollo GraphQL Resolvers and Data Source separation](https://patrickdesjardins.com/blog/apollo-graphql-resolvers-and-data-source-separation)
-- [How to setup a TypeScript, NodeJS, Express Apollo Server to easy debugging with VsCode](https://patrickdesjardins.com/blog/how-to-setup-a-typescript-nodejs-express-apollo-server-to-easy-debugging-with-vscode)
-- [GraphQL Resolvers with Apollo](https://patrickdesjardins.com/blog/graphql-resolvers-with-apollo)
-- [Configuring Apollo Playground and API on two different URL](https://patrickdesjardins.com/blog/configuring-apollo-playground-and-api-on-two-different-url)
-- [How to automatically generate TypeScript for consumers of your GraphQL](https://patrickdesjardins.com/blog/how-to-automatically-generate-typescript-for-consumer-of-your-graphql)
+- [Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)
+- [Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)
+- [Apollo Server and Secured Playground](apollo-server-and-secured-playground)
+- [GraphQL Context](graphql-context)
+- [GraphQL Query with Argument](graphql-query-with-argument)
+- [Apollo GraphQL Resolvers and Data Source separation](apollo-graphql-resolvers-and-data-source-separation)
+- [How to setup a TypeScript, NodeJS, Express Apollo Server to easy debugging with VsCode](how-to-setup-a-typescript-nodejs-express-apollo-server-to-easy-debugging-with-vscode)
+- [GraphQL Resolvers with Apollo](graphql-resolvers-with-apollo)
+- [Configuring Apollo Playground and API on two different URL](configuring-apollo-playground-and-api-on-two-different-url)
+- [How to automatically generate TypeScript for consumers of your GraphQL](how-to-automatically-generate-typescript-for-consumer-of-your-graphql)
+- [GraphQL and HTTP Telemetry](graphql-extension-to-collect-http-and-resolvers-telemetry)  
+- [GraphQL and TypeScript/React](how-to-consume-graphql-in-typescript-and-react)

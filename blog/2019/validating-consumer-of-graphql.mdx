@@ -15,8 +15,6 @@ The diagram shows on the top-right the GraphQL engineer who push a change in the
 
 ![](images/image-2.png)
 
-
-
 When the GraphQL changes, the Jenkins job fetch the consumer code and fetch the GraphQL code. Do not forget we assumed that we had access to both source code. However, if the GraphQL is not internal, you can always download the GraphQL unified schema and accomplish the same end results. In fact, the next step is to run the GraphQL server script that builds the latest schema (stitches the schema). Then, it runs a tool that validates the consumer code. The tool looks for _gql_ tags inside TSX and TS file (TypeScript) and analyzes all queries against the schema. If a breaking change occurs, the build fails and an email is sent to the engineers to act before it reaches deployment.
 
 The Jenkins' execute Shell script install NPM because it must run the tool which is from an NPM library. It gets the server because we do not have a graph unified (stitched) schema. Then, it runs the _graphql-inspector_ tool.
@@ -37,15 +35,15 @@ Most of the time, breaking change should not occur. GraphQL allows additional ch
 
 ## My GraphQL Articles
 
-- [Getting Started with GraphQL for Netflix Open Connect](https://patrickdesjardins.com/blog/getting-started-with-graphql-for-netflix-open-connect)
-- [Install Apollo Server to host a GraphQL service](https://patrickdesjardins.com/blog/install-apollo-server-to-host-a-graphql-service)
-- [Apollo Server and Secured Playground](https://patrickdesjardins.com/blog/apollo-server-and-secured-playground)
-- [GraphQL Context](https://patrickdesjardins.com/blog/graphql-context)
-- [GraphQL Query with Argument](https://patrickdesjardins.com/blog/graphql-query-with-argument)
-- [Apollo GraphQL Resolvers and Data Source separation](https://patrickdesjardins.com/blog/apollo-graphql-resolvers-and-data-source-separation)
-- [How to setup a TypeScript, NodeJS, Express Apollo Server to easy debugging with VsCode](https://patrickdesjardins.com/blog/how-to-setup-a-typescript-nodejs-express-apollo-server-to-easy-debugging-with-vscode)
-- [GraphQL Resolvers with Apollo](https://patrickdesjardins.com/blog/graphql-resolvers-with-apollo)
-- [Configuring Apollo Playground and API on two different URL](https://patrickdesjardins.com/blog/configuring-apollo-playground-and-api-on-two-different-url)
-- [How to automatically generate TypeScript for consumers of your GraphQL](https://patrickdesjardins.com/blog/how-to-automatically-generate-typescript-for-consumer-of-your-graphql)
-- ﻿[GraphQL and HTTP Telemetry](https://patrickdesjardins.com/blog/graphql-extension-to-collect-http-and-resolvers-telemetry)
-- [GraphQL and TypeScript/React](https://patrickdesjardins.com/blog/how-to-consume-graphql-in-typescript-and-react)
+- [Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)
+- [Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)
+- [Apollo Server and Secured Playground](apollo-server-and-secured-playground)
+- [GraphQL Context](graphql-context)
+- [GraphQL Query with Argument](graphql-query-with-argument)
+- [Apollo GraphQL Resolvers and Data Source separation](apollo-graphql-resolvers-and-data-source-separation)
+- [How to setup a TypeScript, NodeJS, Express Apollo Server to easy debugging with VsCode](how-to-setup-a-typescript-nodejs-express-apollo-server-to-easy-debugging-with-vscode)
+- [GraphQL Resolvers with Apollo](graphql-resolvers-with-apollo)
+- [Configuring Apollo Playground and API on two different URL](configuring-apollo-playground-and-api-on-two-different-url)
+- [How to automatically generate TypeScript for consumers of your GraphQL](how-to-automatically-generate-typescript-for-consumer-of-your-graphql)
+- [GraphQL and HTTP Telemetry](graphql-extension-to-collect-http-and-resolvers-telemetry)  
+- [GraphQL and TypeScript/React](how-to-consume-graphql-in-typescript-and-react)

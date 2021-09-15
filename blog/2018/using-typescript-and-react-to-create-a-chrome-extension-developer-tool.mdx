@@ -7,7 +7,7 @@ categories:
   - "typescript"
 ---
 
-I recently have a side project that I am dogfooding at Netflix. It is a library that handles HTTP request by acting as a proxy to cache requests. The goal is to avoid redundant parallel call and to avoid requesting data that is still valid while being as simple as possible. It has few configurations, just enough to make be able to customize the level of cache per request if required. The goal of this article is not to sell the library but to expose information about how I created a Chrome's extension that listens to every action and collects insight to help the developer understanding what is going on underneath the UI. This article will explain how I used TypeScript and React to build the UI. For information about how the communication is executed behind the scene, from the library to Chrome, you should refer to [this previous article](https://patrickdesjardins.com/blog/using-typescript-and-react-to-create-a-chrome-extension-developer-tool).
+I recently have a side project that I am dogfooding at Netflix. It is a library that handles HTTP request by acting as a proxy to cache requests. The goal is to avoid redundant parallel call and to avoid requesting data that is still valid while being as simple as possible. It has few configurations, just enough to make be able to customize the level of cache per request if required. The goal of this article is not to sell the library but to expose information about how I created a Chrome's extension that listens to every action and collects insight to help the developer understanding what is going on underneath the UI. This article will explain how I used TypeScript and React to build the UI. For information about how the communication is executed behind the scene, from the library to Chrome, you should refer to [this previous article](using-typescript-and-react-to-create-a-chrome-extension-developer-tool).
 
 ![](images/DataAccessGatewayOverview.png)
 
@@ -15,7 +15,7 @@ Chrome's extension for developer tool requires a panel which is an HTML file. Re
 
 ![](images/TypeScriptReactChromeExtension.png)
 
-The build folder content can be copied and pasted into your distribution folder along with the manifest.json, the contentScript.js, and background.js files that has been discussed in the [communication article between your code and Chrome extension](https://patrickdesjardins.com/blog/using-typescript-and-react-to-create-a-chrome-extension-developer-tool).
+The build folder content can be copied and pasted into your distribution folder along with the manifest.json, the contentScript.js, and background.js files that has been discussed in the [communication article between your code and Chrome extension](using-typescript-and-react-to-create-a-chrome-extension-developer-tool).
 
 What is very interesting is, you can develop your Chrome's extension without being inside the developer tool. By staying outside, it increases your development velocity because you do not need to build which use Webpack -- this is slow. It also requires to close and open the extension which at the end consume time for every little change. Instead, you can mock the data and leverage the hot-reload mechanism of create-react-app by starting the server (npm run start) and run the Chrome's extension as we independent website until you are ready to test the full fledge extension with communication coming from outside your extension.
 

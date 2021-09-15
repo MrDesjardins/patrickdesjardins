@@ -7,7 +7,7 @@ categories:
   - "web"
 ---
 
-I wrote several months ago about [having telemetry has a centerpiece of your application](https://patrickdesjardins.com/blog/telemetry-has-a-centerpiece-of-your-software). In this article, I'll write how it works more technically.
+I wrote several months ago about [having telemetry has a centerpiece of your application](telemetry-has-a-centerpiece-of-your-software). In this article, I'll write how it works more technically.
 
 First and foremost, the application needs a thin layer to send the telemetry to the backend. I wrote a small internal library that handles basic telemetry needs. For example, if we want to collect a user behavior (clicking, hovering, scrolling, etc) we use the _trackEvent_ function that allows entering a telemetry entry in the system. All telemetries come with a set of information for free. I am collecting information about the user's browser, the user identity, which organization it belongs, the navigator width/height, if the user is under a specific state (e.g. size of the organization the user belong) but also information about where the user is in the single-page application, and more. For each event, it is possible to add a custom payload. For example, it is possible to add the number of time a popup opens in milliseconds.
 
@@ -25,13 +25,9 @@ This layer has many functions from _trackError_, to _trackPage_ or _trackScenar
 
 ![](images/ChromePerformanceTrackScenario.png)
 
-
-
 Second, we are receiving a lot of telemetries. Some are useful only for development time, some good to send to the backend. The telemetry library allows dispatching which one is mentioned to be developed only or not by a single option when tracking the information. Chrome's console is then showing the information while the application run. I opted to use a mix of color and indentation to distinguish easily the different telemetry type.
 
 ![](images/ChromeConsoleTelemetry.png)
-
-
 
 The library has many other features like batching several telemetry events together before sending to the backend the information. Similarly, the library hooks into the browser beacon feature to send what it has in its queue when the user leaves the web application.
 

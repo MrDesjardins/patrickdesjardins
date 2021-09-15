@@ -23,7 +23,7 @@ First of all, there are commands that you will use often. You can create a solut
 
 Write-Host "MigrationName: $migrationName"
 
-Add-Migration -Name $migrationName \` -ConfigurationType YourDLL.Migration.YourDBContextConfiguration \` -StartUpProjectName YourStartupDLL \` -ProjectName YourDLL.Migration \` -Verbose 
+Add-Migration -Name $migrationName ` -ConfigurationType YourDLL.Migration.YourDBContextConfiguration ` -StartUpProjectName YourStartupDLL ` -ProjectName YourDLL.Migration ` -Verbose 
 ```  Usage: ``` 
  .\\AddMigration.ps1 TheMigrationClassToBeGenerated 
 ``` 
@@ -39,7 +39,7 @@ The second script is to update the database. Let say that your team has created 
 The update command is **Update-Database**. To make it simpler, like the Add-Migration, a small power script can be used.
 
 ``` 
- Update-Database -ConfigurationTypeName "YourDLL.Migration.YourDBContextConfiguration" \` -ProjectName "YourDLL.Migration" \` -StartUpProject "YourStartupDLL" \` -Verbose 
+ Update-Database -ConfigurationTypeName "YourDLL.Migration.YourDBContextConfiguration" ` -ProjectName "YourDLL.Migration" ` -StartUpProject "YourStartupDLL" ` -Verbose 
 ``` 
 
 Parameters are pretty much the same. This time, it will execute migration file. If you want to update not every file but just few files you can set the -TargetMigration. It takes after this command the file name to be the last file to be executed. If you have 10 migrations file and that you want to migrate up to the third file, than you need to target the third file. This can be useful if you need to rollback.

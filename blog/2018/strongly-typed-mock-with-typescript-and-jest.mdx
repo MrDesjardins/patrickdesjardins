@@ -11,11 +11,21 @@ TypeScript strongly typed nature help reducing the number of tests but unit test
 Before getting too far into the detail of the implementation, here is a basic interface that a class use in the application and a class that uses that interface by injection to another class. The goal will be to unit test the class that receives the injected interface. We want to abstract the implementation of the concrete injected class and rely on mocking the interface with Jest.
 
 ```typescript
-interface IClassToInject { run(): boolean; } class ClassToInject implements IClassToInject { public run(): boolean { return Math.random() >= 0.5; } } class ClassToTest { constructor(private injectedClass: IClassToInject) { } }
+interface IClassToInject { 
+  run(): boolean; 
+} 
+
+class ClassToInject implements IClassToInject { 
+  public run(): boolean { 
+    return Math.random() >= 0.5; 
+  } 
+} 
+
+class ClassToTest { 
+  constructor(private injectedClass: IClassToInject) { } 
+}
 
 const myClass = new ClassToTest(new ClassToInject());
-
-
 ``` 
 
 
@@ -24,10 +34,10 @@ The idea will be to use jest.Mock which is generic. The problem that we want to 
 The next step is to create a variable that will hold the mocked interface where you can set returned value depending on what is tested in each test. Finally, we set the mock object to the class by injecting the mock by the constructor.
 
 ```typescript
-type Mockify<T> = { [P in keyof T]: jest.Mock<{}>; }; let mockInterfaceToInject: Mockify<IClassToInject> = { run: jest.fn() };
+type Mockify<T> = { [P in ßkeyof T]: jest.Mock<{}>; }; 
+let mockInterfaceToInject: Mockify<IClassToInject> = { run: jest.fn() };
 
 mockInterfaceToInject.run.mockReturnValue(false); const classToTest = new ClassToTest(mockInterfaceToInject); 
 ``` 
-
 
 In this article, we saw that it's possible to keep an existing interface and to map its structure with new returned values that are from Jest's mocking framework. It allows keeping in sync with the model and flexible by adding testing capability like giving returned value or count how many time a property is called.

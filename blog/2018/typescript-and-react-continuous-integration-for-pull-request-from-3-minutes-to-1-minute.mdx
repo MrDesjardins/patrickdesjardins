@@ -11,7 +11,7 @@ At Netflix, software engineers own the full lifecycle of an application, from ga
 
 ### Moving from 3 minutes to 1 minute 30 seconds
 
-The first step was to add the unit tests. Yes! The first few months only the build was running. Mainly because we are using Bitbucket and Jenkins and I never took the time to configure everything -- and it is not straightforward to get [coverage with Jenkins for JavaScript code](https://patrickdesjardins.com/blog/unit-tests-and-coverage-report-in-jenkins-using-jest-from-create-react-app). Nevertheless, I was using the create-react-app "react-scripts-ts build" commands which are way slower than running the command "react-scripts-ts test --env=jsdom --coverage". In my case, it trimmed 1 minutes 30 seconds.
+The first step was to add the unit tests. Yes! The first few months only the build was running. Mainly because we are using Bitbucket and Jenkins and I never took the time to configure everything -- and it is not straightforward to get [coverage with Jenkins for JavaScript code](unit-tests-and-coverage-report-in-jenkins-using-jest-from-create-react-app). Nevertheless, I was using the create-react-app "react-scripts-ts build" commands which are way slower than running the command "react-scripts-ts test --env=jsdom --coverage". In my case, it trimmed 1 minutes 30 seconds.
 
 Still, I was observing in the remaining 1 minute 30 seconds a waste of 1 minute trying to get node_modules by the command "npm install" regardless of my step specifying "npm ci". The difference between "install" and "ci" is that the first one is slower because it performs a task for the package-lock.json which the "ci" command skip by relying on an existing generated package-lock.json file
 

@@ -32,7 +32,6 @@ export class Wrapper extends React.Component<WrapperProps> {
 }
 ``` 
 
-
 The core of the problem is that the component access a ref of an element outside its own render. It accesses a reference from a child that is rendered by the wrapper. Swapping the component, like illustrated in the right column, fixed the issue and rendering the children without having to care about the hierarchy of the elements.
 
 The explanation, for my case, was that Highchart was configured in the `componentDidMount` and then had the data pushed in the chart in the `componentDidUpdate`. However, this was done by accessing the reference of the DOM element which was changing position once rendered by the wrapper. Moving the wrapper a level up and allowing the component to have a reference of a DOM element that it owns (inside its own render) mitigate the issue because of the configuration executed on a reference that does not "move".
@@ -61,8 +60,6 @@ export default class DifferentStructure extends React.Component<Props> {
      } 
   } 
 }
-
-
 ``` 
 
 

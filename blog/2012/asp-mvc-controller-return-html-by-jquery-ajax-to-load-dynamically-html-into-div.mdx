@@ -1,7 +1,7 @@
 ---
 title: "Asp mvc controller return html by Jquery Ajax to load dynamically html into div"
 date: "2012-03-06"
-categories: 
+categories:
   - "asp-mvc"
 ---
 
@@ -12,12 +12,15 @@ You can use JQuery framework to make the call to the server. This is pretty inte
 For example, let say you want to
 
 ```typescript
-var ajaxCall = $.ajax({ url: 'MyController/MyAction/' + id, success: /*...*/, dataType: "html" }); 
-``` 
-
+var ajaxCall = $.ajax(
+  {
+    url: 'MyController/MyAction/' + id,
+    success: /*...*/, dataType: "html"
+  });
+```
 
 This will call the server, get the information of the id and render the html for it.
 
 In the success fonction, you just have to setup with **.html**(contentHere) and you will be fine to load the data from the Model of the server into the html without having to do a request with a PostBack.
 
-One important note is that the controller need to return a **PartialView** and not simply a View. This would cause to load the whole layout back to the client and it's not what you should want.
+One important note is that the controller need to return a `PartialView` and not simply a View. This would cause to load the whole layout back to the client and it's not what you should want.

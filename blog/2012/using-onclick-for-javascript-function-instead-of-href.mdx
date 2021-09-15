@@ -14,6 +14,6 @@ Many people will use Javascript function call directly into the href attribute o
 ```html  <a href='fallbackpage.html' onclick="MyFunction(1,2,3);return false;">Click me</a> 
 ```  In that case, if Javascript is disable, the user will be redirected to the "fallbackpage.html".
 
-You can also not systematic use the \`return false\` and simply use directly the return of your function. 
+You can also not systematic use the `return false` and simply use directly the return of your function. 
 ```html  <a href='nextpage.aspx' onclick="return MyFunction(1,2,3);">Click me</a> 
 ```  In that case, this will call the MyFunction fonction and if the result is false will do nothing with the navigation and if true will move the user to "nextpage.aspx". This can be interesting in a scenario where you need to have to confirm something with the user or if you need to validate data before moving to the next step.

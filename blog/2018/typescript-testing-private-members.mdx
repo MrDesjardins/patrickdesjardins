@@ -7,7 +7,7 @@ categories:
   - "typescript"
 ---
 
-I [wrote about three years ago on how to test private member](https://patrickdesjardins.com/blog/how-to-unit-test-private-method) as well as [last year](https://patrickdesjardins.com/blog/how-to-unit-test-private-method-in-typescript-part-2) and [the year before](https://patrickdesjardins.com/blog/unit-testing-with-typescript-3-tricks-to-help-you-with-private-method). One article was more specific to C# and the two others more abstract and on TypeScript, but still relevant today. In this article, I'll explain how I am testing private members without using any hack with Jest.
+I [wrote about three years ago on how to test private member](how-to-unit-test-private-method). One article was more specific to C# and the two others more abstract and on TypeScript, but still relevant today. In this article, I'll explain how I am testing private members without using any hack with Jest.
 
 The goal of having private and public members is to mark a clear separation about what is restricted as internal use of the object that defines the member from what can be consumed from outside the scope of the object. The idea makes sense. The usage of the keyword "private" does not necessary. Using "private" does not work because you will not be able to test internal logic, neither mock them in your testing -- it is blocked at the scope of the object.
 

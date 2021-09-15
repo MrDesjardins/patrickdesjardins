@@ -27,7 +27,7 @@ Let's be clear, the goal is not to have the user click a lot more, but to be sma
 
 ### #3: Collect Telemetry
 
-I created a [small private library](https://patrickdesjardins.com/blog/telemetry-has-a-centerpiece-of-your-software) that we now share across our website in our division at Netflix. It allows collecting telemetry. I wrote a small [article](https://patrickdesjardins.com/blog/telemetry-has-a-centerpiece-of-your-software) about the principle in the past where you can find what is collected. In short, you have to know how users are interacting with your website as well as gathering performance data about their reality. Then, you can optimize. Not only I know what feature is used but I can establish patterns which allow to preload or position elements on the interface in a smart way. For example, in the past, we were fetching graphs on a page for every specific entity. It was heaving in term of HTTP calls, in term of rendering and in "spinner". By separating into a "metric" pages with one type of graph per tabs we not only been able to establish which graph is really visualized but also which option etc. We removed the possibility to auto-load the graph by letting the user loading which graph he or she wants to see. Not having to wait for something you do not want seem to be a winner (and obvious) strategy.
+I created a [small private library](telemetry-has-a-centerpiece-of-your-software) strategy.
 
 ![](images/ChromeConsole.png)
 
@@ -35,7 +35,7 @@ To summarize, not only data is a keystone of knowing what to optimize, it is cru
 
 ### #4: Rendering Smartly
 
-In a single-page application that optimizes for speed, not clicks, rendering smartly is crucial. React is build around virtualization but it still requires some patterns to be efficient. I wrote several months ago [4 patterns to boost your React and Redux performance](https://patrickdesjardins.com/blog/4-features-to-boost-react-redux-performance). These patterns are still very relevant. Avoiding rendering helps the whole experience. In short, you can batch your Redux actions to avoid having several notifications that trigger potential view update. You can optimize the mapping of your normalized objects into denormalized objects by using a function in Redux-Connect to cancel the mapping. You can also avoid denormalizing by "selecting" the data if the normalize data in your reducers have not changed. Finally, you need to use React to leverage the immutable data and only render when data change without having to compute intense logic.
+In a single-page application that optimizes for speed, not clicks, rendering smartly is crucial. React is build around virtualization but it still requires some patterns to be efficient. I wrote several months ago [4 patterns to boost your React and Redux performance](4-features-to-boost-react-redux-performance). These patterns are still very relevant. Avoiding rendering helps the whole experience. In short, you can batch your Redux actions to avoid having several notifications that trigger potential view update. You can optimize the mapping of your normalized objects into denormalized objects by using a function in Redux-Connect to cancel the mapping. You can also avoid denormalizing by "selecting" the data if the normalize data in your reducers have not changed. Finally, you need to use React to leverage the immutable data and only render when data change without having to compute intense logic.
 
 ### #5: Get only what you need
 
