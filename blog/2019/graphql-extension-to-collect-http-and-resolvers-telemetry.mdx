@@ -1,7 +1,7 @@
 ---
 title: "GraphQL Extension to Collect HTTP and Resolvers Telemetry"
 date: "2019-04-09"
-categories: 
+categories:
   - "graphql"
   - "typescript"
 ---
@@ -16,9 +16,12 @@ A GraphQL Request with its HTTP requests
 
 The first requirement is to create the extension. It must inherit the GraphQLExtension class which is generic. The generic type needs to be your context type. Having access to the context is primordiale because it gives access to your user information. I assume that once authenticated the user is set in the context. Also, it gives you the possibility to inject statistic into the context throughout the exploration of the graph. In my case, I am using the context to collect information at my data service layer where all the HTTP requests are performed.
 
-export class DevConsole<TContext extends ApolloConfigurationContext> implements GraphQLExtension<TContext>
+```typescript
+export class DevConsole<TContext extends ApolloConfigurationContext>
+  implements GraphQLExtension<TContext> {}
+```
 
-There is two importants function that you can override. The first one is "requestDidStart" which is invoked when a GraphQL request is made. It means that when a context is created and it that case a "request" is the GraphQL request and not all HTTP request performed by GraphQL during that GraphQL's request. The function return a function. The return function is invoked when the request is completed. It is the place to output into the console all your statistic or to send the information to your telemetry system.
+There is two importants function that you can override. The first one is `requestDidStart` which is invoked when a GraphQL request is made. It means that when a context is created and it that case a "request" is the GraphQL request and not all HTTP request performed by GraphQL during that GraphQL's request. The function return a function. The return function is invoked when the request is completed. It is the place to output into the console all your statistic or to send the information to your telemetry system.
 
 ```typescript
 public requestDidStart(o: {
@@ -38,7 +41,7 @@ public requestDidStart(o: {
         console.log("Your data can be sent here");
     };
 }
-``` 
+```
 
 The second function is named "willResolveField" and is executed at every node of your graph. You can know the parent field and your field.
 
@@ -49,16 +52,16 @@ willResolveField(source: any, args: { [argName: string]: any }, context: TContex
         // ...
     };
 }
-``` 
+```
 
 The next step is to plug the extension into Apollo GraphQL. The property "extensions" of ApolloServerConfig takes an array of extension.
 
 ```typescript
 const serverConfig: ApolloServerConfig = {
-    // ...,
-    extensions: [() => new DevConsole()]
+  // ...,
+  extensions: [() => new DevConsole()],
 };
-``` 
+```
 
 I am using the RESTDataSource of Apollo as well to perform all HTTP request. The abstract class has the GraphQL's context. If you override the function willSendRequest, you can then have a global hook into all HTTP request. In that function, I am populating a property of my context that I named "stats" where I am storing each URL and parameters.
 
@@ -67,7 +70,7 @@ public willSendRequest(request: RequestOptions) {
     const stats = this.context.stats;
     // push data in the stats object
 }
-``` 
+```
 
 The documentation could be better in term of defining all the possibility. Nevertheless, with some breakpoints and a little bit of time I was quite satisfied to see what can be done. You can do much more than what proposed, for instance, you can calculate the payload size and get more insight into what is not efficient. For example, I realized in the process of creating another exception that was throwing an exception when a maximum threshold of HTTP request was reached was still letting GraphQL continue its traversal causing the exception to occurs on every future node. The solution was to clean up the response of redundant error using the overload function _willSendResponse_.
 
@@ -89,5 +92,5 @@ There is a lot of possibility to get a clear view of what is happening behind th
 - [GraphQL Resolvers with Apollo](graphql-resolvers-with-apollo)
 - [Configuring Apollo Playground and API on two different URL](configuring-apollo-playground-and-api-on-two-different-url)
 - [How to automatically generate TypeScript for consumers of your GraphQL](how-to-automatically-generate-typescript-for-consumer-of-your-graphql)
-- [GraphQL and HTTP Telemetry](graphql-extension-to-collect-http-and-resolvers-telemetry)  
+- [GraphQL and HTTP Telemetry](graphql-extension-to-collect-http-and-resolvers-telemetry)
 - [GraphQL and TypeScript/React](how-to-consume-graphql-in-typescript-and-react)

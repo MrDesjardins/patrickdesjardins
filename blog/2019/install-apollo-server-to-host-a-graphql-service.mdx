@@ -6,24 +6,29 @@ categories:
   - "typescript"
 ---
 
-This is the second post about my journey on prototyping a GraphQL service to abstract all REST and gRPC services that we have at Netflix Open Connect. You can consult the [first article that was describing GraphQL](https://patrickdesjardins.com/blog/?p=6143) and the high-level architecture to have a better idea of the motivation. In this article, I'll start diving into how to get started with Apollo. I will not filter out my pain points: there are way too many articles that continue to spin the hype on GraphQL. While GraphQL is great in theory, the practice is never as shiny.
+This is the second post about my journey on prototyping a GraphQL service to abstract all REST and gRPC services that we have at Netflix Open Connect. You can consult the [first article that was describing GraphQL](getting-started-with-graphql-for-netflix-open-connect) and the high-level architecture to have a better idea of the motivation. In this article, I'll start diving into how to get started with Apollo. I will not filter out my pain points: there are way too many articles that continue to spin the hype on GraphQL. While GraphQL is great in theory, the practice is never as shiny.
 
 ## NPM Packages
 
 The first step is to get Apollo and the general GraphQL package. Using NPM like any other libraries is the best way to get the packages. Apollo is divided into several packages, so far, I had to use the main one, the core, and the express library. Apollo is made with TypeScript, thus no type is required. For GraphQL, there is a definition file package available. Because I will use an Express server, I also needed the Express' type. So far, so good.
 
+```
 npm install --save apollo-server apollo-server-core apollo-server-express graphql npm install --save-dev @types/graphql @types/express typescript
 
+```
 The whole journey will be strongly typed with TypeScript. GraphQL is having its own schemas and we will see in a future article how we can leverage the type from Proto Buffers (gRPC services), GraphQL schema as TypeScript definition type.
 
 ## TypeScript
 
 The quickest way to configure TypeScript is to use the initialize command.
 
+```
 tsc --init
+```
 
 I have been using TypeScript for many years and used many different configurations. In 2018, I have been targeting "es5" and used the "esNext" for the module. However, coding in NodeJS with "esNext" is problematic with many libraries. Apollo libraries are in the group of packages that do not support "esNext". The error "Cannot find module 'x' rise. NodeJS supports "commonjs" module, hence I had to switch the "esNext" to "commonjs". The other characteristic was that the "moduleResolution" was not set explicitly. I assumed that because I am using a TypeScript's version superior to 3.2 that it was the default. Adding the configuration removed over 10 different problems in the terminal (in VsCode). Here is an extract of the TypeScript tsconfig.json file.
 
+```
 "target": "es5" ,
 "module": "commonjs",
 "skipLibCheck": true,
@@ -37,19 +42,23 @@ I have been using TypeScript for many years and used many different configuratio
 "baseUrl": "src",
 "allowSyntheticDefaultImports": true,
 "esModuleInterop": true
+```
 
 ## Express
 
 The Apollo website has a great introduction tutorial that mentions a way to host the GraphQL by simply calling the ApolloServer object. My issue with that approach is that I needed to have custom endpoints. For example, in general, we have a health check endpoint to configure that will be periodically pinged to see if the service is up or down. Also, I wanted to have the flexibility to have any future endpoints on the NodeJS. 
 
+```typescript
 const server = new ApolloServer({ typeDefs });
 
 server.listen().then(({ url }) => {
   console.log(`🚀 Server ready at ${url}`);
 });
 
+```
 Without having to look very far, many implementations on the Internet also use Express and use ApolloServer has a middleware. The way to proceed is to create an Express Http server and attach Apollo's server.
 
+```typescript
 import express, { Request, Response } from "express";
 const app = express();
 app.get("/healthcheck", (req: Request, res: Response) => {
@@ -60,6 +69,7 @@ server.applyMiddleware({ app, path: endpoint, cors: true });
 app.listen(endpoints.graphQlServerPort, () => {
         console.log("Up-and-running");
 });
+```
 
 It is possible to verify the validity of the actual configuration without configuring Apache. While the objective is to use the authentication mechanism by the Netflix's Apache module, at the moment nothing require authentication. The excerpt of the Express server on port "graphQlServerPort" which is no port 80. Apache will be using port 80 and will redirect the request to the "graphQlServerPort". The extract is in the main index.ts file which I have an NPM command that calls TypeScript to build and then calls NodeJS to execute.
 
