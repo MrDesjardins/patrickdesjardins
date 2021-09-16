@@ -1,54 +1,28 @@
-<p align="center">
-  <a href="https://www.gatsbyjs.com/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter">
-    <img alt="Gatsby" src="https://www.gatsbyjs.com/Gatsby-Monogram.svg" width="60" />
-  </a>
-</p>
-<h1 align="center">
-  Gatsby minimal starter
-</h1>
+# Source Code for PatrickDesjardins.com
+## Context
 
-## 🚀 Quick start
+This website contains an introduction about Patrick Desjardins and a migration of all WordPress blog from 2011 that was hosted in a personal VPS.
 
-1.  **Create a Gatsby site.**
+## Technical Details
 
-    Use the Gatsby CLI to create a new site, specifying the minimal starter.
+1. The platform for the _about_ and _blog_ is Gatsby version 3
+2. The blog articles are written in the MDX format
+3. Code blocs are rendered with PrismJS
 
-    ```shell
-    # create a new Gatsby site using the minimal starter
-    npm init gatsby
-    ```
+## Decisions
 
-2.  **Start developing.**
+1. Blog articles are under the `blog` folder, then the year of creation. Each year needs to have an image folder. To have the image deployed we need to ensure that in the `gatsby-config.js` an entry for each `blog/20xx`
+2. To have the website having the pattern: `patrickdesjardins.com/blog/slug-here-for-blog`, there is a custom `slug` field created in `gastby-node.js` and then a function that associate the MDX to the slug. 
 
-    Navigate into your new site’s directory and start it up.
+## Deployments
 
-    ```shell
-    cd my-gatsby-site/
-    npm run develop
-    ```
+The website is hosted in a Github repository. The _master_ branch host the Gatsby project and the _gh-pages_ is where the build files are deployed.
+The website is deployed using Github Workflow. It has a hook on when a code is pushed in the _master_ branch. You can see the workflow's action configuration in the repository [here](https://github.com/MrDesjardins/patrickdesjardins/blob/master/.github/workflows/main.yml).
 
-3.  **Open the code and start customizing!**
+## Todos
 
-    Your site is now running at http://localhost:8000!
-
-    Edit `src/pages/index.js` to see your site update in real-time!
-
-4.  **Learn more**
-
-    - [Documentation](https://www.gatsbyjs.com/docs/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter)
-
-    - [Tutorials](https://www.gatsbyjs.com/tutorial/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter)
-
-    - [Guides](https://www.gatsbyjs.com/tutorial/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter)
-
-    - [API Reference](https://www.gatsbyjs.com/docs/api-reference/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter)
-
-    - [Plugin Library](https://www.gatsbyjs.com/plugins?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter)
-
-    - [Cheat Sheet](https://www.gatsbyjs.com/docs/cheat-sheet/?utm_source=starter&utm_medium=readme&utm_campaign=minimal-starter)
-
-## 🚀 Quick start (Gatsby Cloud)
-
-Deploy this starter with one click on [Gatsby Cloud](https://www.gatsbyjs.com/cloud/):
-
-[<img src="https://www.gatsbyjs.com/deploynow.svg" alt="Deploy to Gatsby Cloud">](https://www.gatsbyjs.com/dashboard/deploynow?url=https://github.com/gatsbyjs/gatsby-starter-minimal)
+1. Animated gif are not rendered
+2. MP4 videos are not rendered
+3. Year + Month list with count of blog
+4. Pagination on the all blog pages
+5. Migrate CSS to Styled Component (or something inside the React component)

@@ -1,3 +1,21 @@
+/* ============================================================ Variables ============================================================*/
+:root {
+  --text-color1: #666666;
+  --text-color2: #fff;
+  --text-color3: #000;
+
+  --header-color1: #fff;
+
+  --background1: #3a393f;
+  --background2: #f0f0f0;
+  --background3: #fff;
+
+  --link-background1: #eb4c44; /*Match the color of the image (red)*/
+
+  --size-column: 400px;
+}
+
+/* ============================================================ Structure ============================================================*/
 .container {
   position: relative;
   height: 100%;
@@ -9,7 +27,7 @@
 }
 
 .topMenu {
-  background-color: #3a393f;
+  background-color: var(--background1);
 }
 section.contactSection a,
 .topMenu a,
@@ -21,14 +39,17 @@ section.contactSection a,
   letter-spacing: 1px;
   line-height: 65px;
   margin-bottom: 15px;
-  color: white;
+  color: var(--header-color1);
 }
 
 section.contactSection a:hover,
 .topMenu a:hover {
-  background-color: #eb4c44; /*Match the color of the image (red)*/
+  background-color: var(--link-background1);
 }
 
+/*
+* Header: My name and my job description
+*/
 .topHeader {
   word-break: break-all; /* For Small Resolution*/
   padding: 16px;
@@ -42,10 +63,20 @@ section.contactSection a:hover,
   margin-left: 20px;
 }
 
+@media only screen and (max-width: 500px) {
+  .topHeader a {
+    display: flex;
+  }
+  .topHeaderBlog {
+    margin-left: 0px;
+  }
+}
+
 body {
   margin: 0;
   font-family: "Oswald";
 }
+
 .homeContent {
   padding-top: 200px;
   padding-left: 40px;
@@ -59,7 +90,13 @@ body {
   letter-spacing: 1px;
   line-height: 65px;
   margin-bottom: 15px;
-  color: #fff;
+  color: var(--header-color1);
+}
+
+@media only screen and (max-width: 500px) {
+  .homeContent h1 {
+    font-size: 40px;
+  }
 }
 
 .homeContentTitles {
@@ -96,7 +133,7 @@ body {
   text-align: center;
   text-transform: uppercase;
   font-family: "Oswald";
-  color: #000;
+  color: var(--text-color3);
   font-weight: 300;
   margin-bottom: 0.9rem;
   font-size: 2.1rem;
@@ -105,7 +142,7 @@ body {
 
 .sectionMainpage h3,
 .sectionMainpage h5 {
-  color: #000;
+  color: var(--text-color3);
   text-align: center;
 }
 
@@ -127,37 +164,46 @@ body {
 }
 .sectionAboutMeContainerContent,
 .sectionFixedWitdhContent {
-  flex: 0 0 400px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: var(--size-column);
+}
+
+@media only screen and (max-width: 500px) {
+  .sectionAboutMeContainerContent,
+  .sectionFixedWitdhContent {
+    flex: 1 1 100%;
+  }
 }
 
 .sectionMainpage p {
   line-height: 1.8rem;
   font-size: 1.1rem;
-  color: #666666;
+  color: var(--text-color1);
   text-align: justify;
 }
 
 .sectionVisualOne {
-  background-color: #f0f0f0;
+  background-color: var(--background2);
 }
 .sectionVisualTwo {
-  background-color: white;
+  background-color: var(--background3);
 }
 .sectionVisualOneSubHeader {
   font-size: 1.2rem;
   margin-bottom: 40px;
   text-align: center;
-  color: #666666;
+  color: var(--text-color1);
 }
 .sectionMainpage p.cardFixedWidthImage {
   text-align: center;
 }
 .cardFixedWidthImageImg {
-  max-width: 400px;
+  max-width: --var(--size-column);
 }
 
 .sectionSingleFixedWidth {
-  max-width: 400px;
+  max-width: --var(--size-column);
   margin: auto;
 }
 
@@ -182,7 +228,7 @@ body {
 
 .cardWithImageContainer > .cardWithImageContainerText > h6 {
   font-style: italic;
-  color: #666666;
+  color: var(--text-color1);
 }
 
 .cardWithImageContainer > .cardWithImageContainerText > p {
@@ -198,13 +244,25 @@ body {
   max-width: 600px;
 }
 
+@media only screen and (max-width: 500px) {
+  .technologiesColumn,
+  .cardWithImageContainer {
+    max-width: --var(--size-column);
+    grid-template-columns: none;
+  }
+  .cardWithImageContainerImage {
+    display: none;
+    width: 0;
+  }
+}
+
 .achievementContainerBackground {
-  background: url(../images/backgrounds/patrickdesjardinsatnetflix2.jpg) no-repeat top
-    center fixed;
+  background: url(../images/backgrounds/patrickdesjardinsatnetflix2.jpg)
+    no-repeat top center fixed;
   background-size: cover;
   width: 100%;
   overflow: hidden;
-  color: #fff;
+  color: var(--text-color2);
   padding: 0;
 }
 
@@ -214,7 +272,7 @@ body {
   font-weight: bold;
 }
 .achivementTextZone > .achievementText p {
-  color: white;
+  color: var(--header-color1);
   font-size: 14px;
 }
 
@@ -226,13 +284,16 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
+@media only screen and (max-width: 500px) {
+  .achievementOverlay {
+    display: block;
+  }
+  .achievementColumn1 {
+  }
 
-.achievementColumn1 {
+  .achievementColumn2 {
+  }
 }
-
-.achievementColumn2 {
-}
-
 .patentFlair,
 .amazonFlair {
   background-color: white;
@@ -241,6 +302,7 @@ body {
   padding: 2px;
   margin: auto;
 }
+
 .mvpFlair {
   margin: auto;
   width: 200px;
@@ -303,16 +365,16 @@ body {
 
 .educationSection ul li > svg {
   margin-right: 16px;
-  color: #666666;
+  color: var(--text-color1);
 }
 
 .historyContainerBackground {
-  background: url(../images/backgrounds/patrickdesjardinsatmicrosoft.jpg) no-repeat top
-    center fixed;
+  background: url(../images/backgrounds/patrickdesjardinsatmicrosoft.jpg)
+    no-repeat top center fixed;
   background-size: cover;
   width: 100%;
   overflow: hidden;
-  color: #fff;
+  color: var(--header-color1);
   padding: 0;
 }
 
@@ -337,6 +399,12 @@ body {
   padding: 40px;
 }
 
+@media only screen and (max-width: 500px) {
+  .historyOverlay {
+    display: block;
+  }
+}
+
 .historyOverlayColumn1 header {
   font-size: 48px;
   text-transform: uppercase;
@@ -345,7 +413,7 @@ body {
 
 .historyOverlayColumn1 p,
 .historyOverlayColumn2 p {
-  color: white;
+  color: var(--header-color1);
 }
 
 .video {
@@ -372,20 +440,33 @@ body {
   margin-top: 80px;
 }
 
+@media only screen and (max-width: 500px) {
+  .contactContainer {
+    grid-template-columns: 1fr;
+  }
+}
+
+/*
+Icons for the email, phone, location and all social media logos
+*/
 .contactDetail svg {
   font-size: 30px;
 }
+
+/*
+The bottom row that contains all the social media logos
+*/
 .contactContainer2 {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
   text-align: center;
   margin-top: 80px;
-  background-color:#3a393f;
-  padding:50px;
+  background-color: var(--background1);
+  padding: 50px;
   margin-bottom: 0;
 }
 
-section.contactSection{
+section.contactSection {
   margin-bottom: 0;
   padding-bottom: 0;
 }
