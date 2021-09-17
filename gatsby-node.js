@@ -80,7 +80,7 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
       const yearEnd = year + "-12-31";
       createPage({
         path: URL_PER_YEAR.replace("{year}", year),
-        component: path.resolve(`./src/pages/blog/BlogsByYear.tsx`),
+        component: path.resolve(`./src/templates/BlogsByYear.tsx`),
         context: {
           yearStart: yearStart,
           yearEnd: yearEnd,
@@ -98,7 +98,7 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
       const pageNumber = pageCounter / LIMIT_BLOG_COUNT + 1;
       createPage({
         path: URL_BY_PAGE.replace("{page}", pageNumber),
-        component: path.resolve(`./src/pages/blog/BlogsByPage.tsx`),
+        component: path.resolve(`./src/templates/BlogsByPage.tsx`),
         context: {
           limit: LIMIT_BLOG_COUNT,
           skip: LIMIT_BLOG_COUNT * (pageNumber - 1),
@@ -116,7 +116,7 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
   const pageNumber = pageCounter / LIMIT_BLOG_COUNT + 1;
   createPage({
     path: "blog",
-    component: path.resolve(`./src/pages/blog/BlogsByPage.tsx`),
+    component: path.resolve(`./src/templates/BlogsByPage.tsx`),
     context: {
       limit: LIMIT_BLOG_COUNT,
       skip: 0,

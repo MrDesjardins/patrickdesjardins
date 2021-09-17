@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Link, graphql } from "gatsby";
-import { Layout } from "../../blog/layout";
-import { blogEntry } from "../../blog/layout.module.css";
+import { Layout } from "../blog/layout";
+import { blogEntry } from "../blog/layout.module.css";
 
 const BlogsByYear = (queryInfo) => {
   const data = queryInfo.data;
