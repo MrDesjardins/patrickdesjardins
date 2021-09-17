@@ -5,8 +5,13 @@ import { blogEntry } from "../../blog/layout.module.css";
 
 const BlogsByYear = (queryInfo) => {
   const data = queryInfo.data;
+  const context = queryInfo.pageContext;
   return (
-    <Layout pageTitle="Blog Posts">
+    <Layout
+      pageTitle="Blog Posts"
+      currentPageYear={context.year}
+      totalPages={context.totalPages}
+    >
       {data.allMdx.nodes.map((node) => (
         <article className={blogEntry} key={node.id}>
           <h2>

@@ -1,24 +1,17 @@
 import * as React from "react";
 import { Link, graphql } from "gatsby";
 import { Layout } from "../../blog/layout";
-import {
-  blogEntry,
-  paginationBar,
-  currentLink,
-  paginationLinks,
-  paginationTitle,
-} from "../../blog/layout.module.css";
-import { URL_BY_PAGE } from "../../../constants";
+import { blogEntry } from "../../blog/layout.module.css";
+
 const BlogPage = (queryInfo) => {
-  console.log(queryInfo);
   const data = queryInfo.data;
   const context = queryInfo.pageContext;
-  const pages = [];
-  for (let i = 1; i <= context.totalPages; i++) {
-    pages.push(i);
-  }
   return (
-    <Layout pageTitle="Blog Posts">
+    <Layout
+      pageTitle="Blog Posts"
+      currentPage={context.currentPage}
+      totalPages={context.totalPages}
+    >
       <>
         {data.allMdx.nodes.map((node) => (
           <article className={blogEntry} key={node.id}>
@@ -28,25 +21,6 @@ const BlogPage = (queryInfo) => {
             <p>Posted: {node.frontmatter.date}</p>
           </article>
         ))}
-        <div className={paginationBar}>
-          <div className={paginationTitle}>Page</div>
-          <div className={paginationLinks}>
-            {pages.map((page) => {
-              let classLink = "";
-              if (page === context.currentPage) {
-                classLink = currentLink;
-              }
-              return (
-                <Link
-                  className={classLink}
-                  to={URL_BY_PAGE.replace("{page}", page)}
-                >
-                  {page}
-                </Link>
-              );
-            })}
-          </div>
-        </div>
       </>
     </Layout>
   );

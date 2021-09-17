@@ -8,16 +8,24 @@ import {
   navLinkText,
   siteTitle,
   blogTopPicture,
+  paginationBar,
+  currentLink,
+  paginationLinks,
+  paginationTitle,
 } from "./layout.module.css";
 import { StaticImage } from "gatsby-plugin-image";
-import { URL_PER_YEAR } from "../../constants";
-export const Layout = ({
-  pageTitle,
-  children,
-}: {
+import { URL_PER_YEAR, URL_BY_PAGE } from "../../constants";
+export interface LayoutProps {
   pageTitle: string;
   children: JSX.Element;
-}): JSX.Element => {
+  currentPageYear?: string;
+  currentPage?: string;
+  totalPages: number;
+}
+export const Layout = (props: LayoutProps): JSX.Element => {
+  const pageTitle = props.pageTitle;
+  const children = props.children;
+
   const data = useStaticQuery(graphql`
     query {
       site {
@@ -32,6 +40,11 @@ export const Layout = ({
   for (let i = currentYear; i >= 2011; i--) {
     years.push(i);
   }
+  const pages = [];
+  for (let i = 1; i <= props.totalPages; i++) {
+    pages.push(i);
+  }
+
   return (
     <div className={container}>
       <title>
@@ -42,16 +55,22 @@ export const Layout = ({
         <ul className={navLinks}>
           <li className={navLinkItem}>
             <Link className={navLinkText} to="/">
-              Back to Main Page
+              Main Page
             </Link>
-            {years.map((y) => (
-              <Link
-                className={navLinkText}
-                to={URL_PER_YEAR.replace("{year}", y)}
-              >
-                {y}
-              </Link>
-            ))}
+            <Link className={navLinkText} to="/blog">
+              Blog
+            </Link>
+            {years.map((y) => {
+              let classN: string = navLinkText;
+              if (y === Number(props.currentPageYear)) {
+                classN += " " + currentLink;
+              }
+              return (
+                <Link className={classN} to={URL_PER_YEAR.replace("{year}", y)}>
+                  {y}
+                </Link>
+              );
+            })}
           </li>
         </ul>
       </nav>
@@ -66,6 +85,25 @@ export const Layout = ({
         <h1 className={heading}>{pageTitle}</h1>
         {children}
       </main>
+      <div className={paginationBar}>
+        <div className={paginationTitle}>Chronological Blog Articles by Page</div>
+        <div className={paginationLinks}>
+          {pages.map((page) => {
+            let classLink = "";
+            if (page === props.currentPage) {
+              classLink = currentLink;
+            }
+            return (
+              <Link
+                className={classLink}
+                to={URL_BY_PAGE.replace("{page}", page)}
+              >
+                {page}
+              </Link>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };

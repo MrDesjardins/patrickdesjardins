@@ -81,7 +81,12 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
       createPage({
         path: URL_PER_YEAR.replace("{year}", year),
         component: path.resolve(`./src/pages/blog/BlogsByYear.tsx`),
-        context: { yearStart: yearStart, yearEnd: yearEnd },
+        context: {
+          yearStart: yearStart,
+          yearEnd: yearEnd,
+          year,
+          totalPages: totalPageCount,
+        },
       });
       years.set(year, year);
     }
@@ -108,17 +113,15 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
   // ----------------------------------------------------------------------------------------
   // Page 4: Redefining the Index page to be the first page (see page 3)
   // ----------------------------------------------------------------------------------------
-  if (pageCounter % LIMIT_BLOG_COUNT === 0) {
-    const pageNumber = pageCounter / LIMIT_BLOG_COUNT + 1;
-    createPage({
-      path: "blog",
-      component: path.resolve(`./src/pages/blog/BlogsByPage.tsx`),
-      context: {
-        limit: LIMIT_BLOG_COUNT,
-        skip: 0,
-        currentPage: 1,
-        totalPages: totalPageCount,
-      },
-    });
-  }
+  const pageNumber = pageCounter / LIMIT_BLOG_COUNT + 1;
+  createPage({
+    path: "blog",
+    component: path.resolve(`./src/pages/blog/BlogsByPage.tsx`),
+    context: {
+      limit: LIMIT_BLOG_COUNT,
+      skip: 0,
+      currentPage: 1,
+      totalPages: totalPageCount,
+    },
+  });
 };

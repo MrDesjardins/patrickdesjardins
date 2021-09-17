@@ -26,6 +26,7 @@
 .navLinkText {
   color: black;
   margin-right: 10px;
+  padding: 2px 6px 2px 6px;
 }
 
 .blogPostContainer {
@@ -87,6 +88,18 @@
 .blogTopPicture {
 }
 
+.paginationBar {
+  margin-top: 36px;
+}
+
+.paginationTitle {
+  padding-top: 8px;
+  border-top: 1px solid #4b4b4b;
+  color: #4b4b4b;
+  font-family: "Oswald";
+  font-size: 24px;
+}
+
 .paginationBar a {
   margin-left: 2px;
   padding: 2px 6px 2px 6px;
@@ -100,11 +113,5 @@
 }
 .paginationLinks {
   font-size: 24px;
-  border-top: 1px solid gray;
-  margin-top: 24px;
-  padding-top: 12px;
-}
-
-.paginationTitle {
-  font-size: 24px;
+  margin-top: 8px;
 }
