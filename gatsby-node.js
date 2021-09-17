@@ -1,6 +1,6 @@
 const { createFilePath } = require("gatsby-source-filesystem");
 const path = require("path");
-const { LIMIT_BLOG_COUNT, URL_PER_YEAR, URL_BY_PAGE } = require("./constants");
+const { LIMIT_BLOG_COUNT, URL_PER_YEAR, URL_BY_PAGE, URL_BLOG_ARTICLE } = require("./constants");
 
 exports.onCreateNode = ({ node, actions, getNode }) => {
   const { createNodeField } = actions;
@@ -14,7 +14,7 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
       trailingSlash: false,
     });
     const newSlug = relativeFilePath.substring(6); // Remove the year
-    const url = `/blog/${newSlug}`;
+    const url = URL_BLOG_ARTICLE.replace("{slug}", newSlug);
     createNodeField({
       name: `slug`,
       node,
@@ -67,8 +67,8 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
     // Curly to dynamicaly change with a field: https://www.gatsbyjs.com/docs/reference/routing/creating-routes/#using-the-file-system-route-api
     createPage({
       path: node.fields.slug /*defined in `onCreateNode`*/,
-      component: path.resolve(`./src/pages/blog/{mdx.slug}.tsx`),
-      context: { id: node.id },
+      component: path.resolve(`./src/templates/BlogArticle.tsx`),
+      context: { id: node.id, totalPages: totalPageCount },
     });
 
     // ----------------------------------------------------------------------------------------

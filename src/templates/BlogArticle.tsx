@@ -2,18 +2,22 @@ import * as React from "react";
 import { graphql } from "gatsby";
 import { MDXRenderer } from "gatsby-plugin-mdx";
 import { MDXProvider } from "@mdx-js/react";
-import { Layout } from "../../blog/layout";
-import CodeBlock from "../../blog/CodeBlock";
+import { Layout } from "../blog/layout";
+import CodeBlock from "../blog/CodeBlock";
 
-import { blogPostContainer, blogPostDate } from "../../blog/layout.module.css";
+import { blogPostContainer, blogPostDate } from "../blog/layout.module.css";
 
 const components = {
   pre: CodeBlock,
 };
-const BlogPost = ({ data }): JSX.Element => {
-  // highlight-line
+const BlogPost = (queryInfo): JSX.Element => {
+  const data = queryInfo.data;
+  const context = queryInfo.pageContext;
   return (
-    <Layout pageTitle={data.mdx.frontmatter.title}>
+    <Layout
+      pageTitle={data.mdx.frontmatter.title}
+      totalPages={context.totalPages}
+    >
       <div className={blogPostContainer}>
         <p className={blogPostDate}>Posted on: {data.mdx.frontmatter.date}</p>
         <MDXProvider components={components}>

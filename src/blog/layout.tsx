@@ -12,6 +12,7 @@ import {
   currentLink,
   paginationLinks,
   paginationTitle,
+  main,
 } from "./layout.module.css";
 import { StaticImage } from "gatsby-plugin-image";
 import { URL_PER_YEAR, URL_BY_PAGE } from "../../constants";
@@ -81,12 +82,14 @@ export const Layout = (props: LayoutProps): JSX.Element => {
           src="../images/backgrounds/patrickdesjardins_conference_bw.jpeg"
         />
       </div>
-      <main>
+      <main className={main}>
         <h1 className={heading}>{pageTitle}</h1>
         {children}
       </main>
       <div className={paginationBar}>
-        <div className={paginationTitle}>Chronological Blog Articles by Page</div>
+        <div className={paginationTitle}>
+          Chronological Blog Articles by Page
+        </div>
         <div className={paginationLinks}>
           {pages.map((page) => {
             let classLink = "";
