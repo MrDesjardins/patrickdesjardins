@@ -18,7 +18,7 @@ const BlogPage = ({ data }) => {
 };
 
 export const query = graphql`
-  query TopXBlogArticles {
+  query TopArticles {
     allMdx(
       sort: { fields: frontmatter___date, order: DESC }
       limit: 10

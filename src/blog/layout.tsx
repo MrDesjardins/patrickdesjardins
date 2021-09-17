@@ -10,6 +10,7 @@ import {
   blogTopPicture,
 } from "./layout.module.css";
 import { StaticImage } from "gatsby-plugin-image";
+import { URL_PER_YEAR } from "../../constants";
 export const Layout = ({
   pageTitle,
   children,
@@ -44,7 +45,10 @@ export const Layout = ({
               Back to Main Page
             </Link>
             {years.map((y) => (
-              <Link className={navLinkText} to={`/blog/${y}`}>
+              <Link
+                className={navLinkText}
+                to={URL_PER_YEAR.replace("{year}", y)}
+              >
                 {y}
               </Link>
             ))}

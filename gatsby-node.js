@@ -1,5 +1,6 @@
 const { createFilePath } = require("gatsby-source-filesystem");
 const path = require("path");
+const { LIMIT_BLOG_COUNT, URL_PER_YEAR, URL_BY_PAGE } = require("./constants");
 
 exports.onCreateNode = ({ node, actions, getNode }) => {
   const { createNodeField } = actions;
@@ -57,23 +58,67 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
 
   const posts = result.data.allMdx.edges;
   const years = new Map();
+  let pageCounter = 0;
+  const totalPageCount = Math.ceil(posts.length / LIMIT_BLOG_COUNT);
   posts.forEach(({ node }, index) => {
-    // Create the individual blog article page (1 per mdx file)
+    // ----------------------------------------------------------------------------------------
+    // Page 1: Individual: Create the individual blog article page (1 per mdx file)
+    // ----------------------------------------------------------------------------------------
+    // Curly to dynamicaly change with a field: https://www.gatsbyjs.com/docs/reference/routing/creating-routes/#using-the-file-system-route-api
     createPage({
       path: node.fields.slug /*defined in `onCreateNode`*/,
-      component: path.resolve(`./src/pages/blog/{mdx.slug}.tsx`) /*Curly to dynamicaly change with a field: https://www.gatsbyjs.com/docs/reference/routing/creating-routes/#using-the-file-system-route-api*/,
+      component: path.resolve(`./src/pages/blog/{mdx.slug}.tsx`),
       context: { id: node.id },
     });
+
+    // ----------------------------------------------------------------------------------------
+    // Page 2: Yearly: All blog post for a specific year
+    // ----------------------------------------------------------------------------------------
     const year = node.frontmatter.date.substr(0, 4);
     if (!years.has(year)) {
       const yearStart = year + "-01-01";
       const yearEnd = year + "-12-31";
       createPage({
-        path: `blog/${year}`,
+        path: URL_PER_YEAR.replace("{year}", year),
         component: path.resolve(`./src/pages/blog/BlogsByYear.tsx`),
         context: { yearStart: yearStart, yearEnd: yearEnd },
       });
       years.set(year, year);
     }
+
+    // ----------------------------------------------------------------------------------------
+    // Page 3: All blog posts by page (offset + limit)
+    // ----------------------------------------------------------------------------------------
+    if (pageCounter % LIMIT_BLOG_COUNT === 0) {
+      const pageNumber = pageCounter / LIMIT_BLOG_COUNT + 1;
+      createPage({
+        path: URL_BY_PAGE.replace("{page}", pageNumber),
+        component: path.resolve(`./src/pages/blog/BlogsByPage.tsx`),
+        context: {
+          limit: LIMIT_BLOG_COUNT,
+          skip: LIMIT_BLOG_COUNT * (pageNumber - 1),
+          currentPage: pageNumber,
+          totalPages: totalPageCount,
+        },
+      });
+    }
+    pageCounter++;
   });
+
+  // ----------------------------------------------------------------------------------------
+  // Page 4: Redefining the Index page to be the first page (see page 3)
+  // ----------------------------------------------------------------------------------------
+  if (pageCounter % LIMIT_BLOG_COUNT === 0) {
+    const pageNumber = pageCounter / LIMIT_BLOG_COUNT + 1;
+    createPage({
+      path: "blog",
+      component: path.resolve(`./src/pages/blog/BlogsByPage.tsx`),
+      context: {
+        limit: LIMIT_BLOG_COUNT,
+        skip: 0,
+        currentPage: 1,
+        totalPages: totalPageCount,
+      },
+    });
+  }
 };
