@@ -16,7 +16,7 @@ export const CardFixedWidth = (props: CardFixedWidthProps): JSX.Element => {
       <p className={cardFixedWidthImage}>{props.image}</p>
       <p>{props.description}</p>
       <p>
-        <a href={props.link} target="_blank">
+        <a href={props.link} target="_blank" rel="noopener noreferrer" >
           Link
         </a>
       </p>

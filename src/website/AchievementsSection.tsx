@@ -15,7 +15,7 @@ import {
   patentFlair,
   mvpFlair,
   achievementGallery,
-  achivementTextZone
+  achivementTextZone,
 } from "./index.module.css";
 export const AchievementsSection = (): JSX.Element => {
   return (
@@ -33,14 +33,15 @@ export const AchievementsSection = (): JSX.Element => {
             <header>Just Do It!</header>
             <div className={achievementText}>
               <p>
-              You know what a person worth when this one must deliver. I'm a
-              balanced software engineer that can do smart designs that are
-              cost-effective and maintainable. You can describe me as someone
-              who enjoys simplicity, with a firm commitment and rigor that allow
-              me to pursue a good delivery and innovative cadence. 
-              </p><p>I do not give
-              up, either surrender. Here are my 2017 objectives for example that
-              illustrate how focus I can be to self-improve.
+                You know what a person worth when this one must deliver. I'm a
+                balanced software engineer that can do smart designs that are
+                cost-effective and maintainable. You can describe me as someone
+                who enjoys simplicity, with a firm commitment and rigor that
+                allow me to pursue a good delivery and innovative cadence.
+              </p>
+              <p>
+                I do not give up, either surrender. Here are my 2017 objectives
+                for example that illustrate how focus I can be to self-improve.
               </p>
             </div>
           </div>
@@ -48,9 +49,9 @@ export const AchievementsSection = (): JSX.Element => {
         <div className={achievementColumn2}>
           <div className={achievementGallery}>
             <div style={{ margin: "auto", width: 200 }}>
-              <a href="http://stackexchange.com/users/7901">
+              <a href="https://stackexchange.com/users/7901" rel="noopener noreferrer">
                 <img
-                  src="http://stackexchange.com/users/flair/7901.png"
+                  src="https://stackexchange.com/users/flair/7901.png"
                   width="208"
                   height="58"
                   alt="profile for Patrick Desjardins on Stack Exchange, a network of free, community-driven Q&amp;A sites"
@@ -128,8 +129,9 @@ export const AchievementsSection = (): JSX.Element => {
                   marginLeft: 5,
                 }}
               >
-                <a href="https://github.com/MrDesjardins" target="_blank">
+                <a href="https://github.com/MrDesjardins" target="_blank" rel="noopener noreferrer">
                   <img
+                    loading="lazy"
                     src="https://avatars0.githubusercontent.com/u/1014796?v=4"
                     alt="Profile Avatar"
                     style={{
@@ -228,7 +230,7 @@ export const AchievementsSection = (): JSX.Element => {
             <br />
             <br />
             <div className={amazonFlair}>
-              <a href="https://www.amazon.com/Patrick-Desjardins/e/B01MZBUL14">
+              <a href="https://www.amazon.com/Patrick-Desjardins/e/B01MZBUL14" rel="noopener noreferrer">
                 <StaticImage
                   alt="Amazon Logo"
                   src="../images/brand-logo/amazonlogo.jpg"
@@ -239,10 +241,7 @@ export const AchievementsSection = (): JSX.Element => {
             <br />
             <br />
             <div className={mvpFlair}>
-              <StaticImage
-                alt="MVP Logo"
-                src="../images/brand-logo/mvp.png"
-              />
+              <StaticImage alt="MVP Logo" src="../images/brand-logo/mvp.png" />
 
               <div>Microsoft MVP in 2013, 2014, 2021</div>
             </div>
@@ -255,27 +254,27 @@ export const AchievementsSection = (): JSX.Element => {
               </a>
               <div style={{ color: "black" }}>
                 Online Available:
-                <a href="https://www.freepatentsonline.com/y2019/0199645.html">
+                <a href="https://www.freepatentsonline.com/y2019/0199645.html" rel="noopener noreferrer">
                   1
                 </a>
                 ,
-                <a href="https://www.freepatentsonline.com/y2018/0356957.html">
+                <a href="https://www.freepatentsonline.com/y2018/0356957.html" rel="noopener noreferrer">
                   2
                 </a>
                 ,
-                <a href="https://www.freepatentsonline.com/y2018/0367478.html">
+                <a href="https://www.freepatentsonline.com/y2018/0367478.html" rel="noopener noreferrer">
                   3
                 </a>
                 ,
-                <a href="https://www.freepatentsonline.com/y2017/0359434.html">
+                <a href="https://www.freepatentsonline.com/y2017/0359434.html" rel="noopener noreferrer">
                   4
                 </a>
                 ,
-                <a href="https://www.freepatentsonline.com/y2018/0316637.html">
+                <a href="https://www.freepatentsonline.com/y2018/0316637.html" rel="noopener noreferrer">
                   5
                 </a>
                 ,
-                <a href="https://www.freepatentsonline.com/y2018/0153458.html">
+                <a href="https://www.freepatentsonline.com/y2018/0153458.html" rel="noopener noreferrer">
                   6
                 </a>
                 ,
