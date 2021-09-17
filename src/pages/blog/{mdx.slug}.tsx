@@ -23,6 +23,10 @@ const BlogPost = ({ data }): JSX.Element => {
     </Layout>
   );
 };
+
+/**
+ * the $id is provided in the `context` of the gatsby-node.js `createPages` function
+ */
 export const query = graphql`
   query ($id: String) {
     mdx(id: { eq: $id }) {

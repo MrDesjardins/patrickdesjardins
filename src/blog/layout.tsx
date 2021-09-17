@@ -7,10 +7,16 @@ import {
   navLinkItem,
   navLinkText,
   siteTitle,
-  blogTopPicture
+  blogTopPicture,
 } from "./layout.module.css";
 import { StaticImage } from "gatsby-plugin-image";
-export const Layout = ({ pageTitle, children }): JSX.Element => {
+export const Layout = ({
+  pageTitle,
+  children,
+}: {
+  pageTitle: string;
+  children: JSX.Element;
+}): JSX.Element => {
   const data = useStaticQuery(graphql`
     query {
       site {
@@ -20,6 +26,11 @@ export const Layout = ({ pageTitle, children }): JSX.Element => {
       }
     }
   `);
+  const years = [];
+  const currentYear = new Date().getFullYear();
+  for (let i = currentYear; i >= 2011; i--) {
+    years.push(i);
+  }
   return (
     <div className={container}>
       <title>
@@ -30,18 +41,13 @@ export const Layout = ({ pageTitle, children }): JSX.Element => {
         <ul className={navLinks}>
           <li className={navLinkItem}>
             <Link className={navLinkText} to="/">
-              Home
+              Back to Main Page
             </Link>
-          </li>
-          <li className={navLinkItem}>
-            <Link className={navLinkText} to="/about">
-              About
-            </Link>
-          </li>
-          <li className={navLinkItem}>
-            <Link to="/blog" className={navLinkText}>
-              Blog
-            </Link>
+            {years.map((y) => (
+              <Link className={navLinkText} to={`/blog/${y}`}>
+                {y}
+              </Link>
+            ))}
           </li>
         </ul>
       </nav>

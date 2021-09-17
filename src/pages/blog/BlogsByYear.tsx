@@ -2,7 +2,9 @@ import * as React from "react";
 import { Link, graphql } from "gatsby";
 import { Layout } from "../../blog/layout";
 import { blogEntry } from "../../blog/layout.module.css";
-const BlogPage = ({ data }) => {
+
+const BlogsByYear = (queryInfo) => {
+  const data = queryInfo.data;
   return (
     <Layout pageTitle="Blog Posts">
       {data.allMdx.nodes.map((node) => (
@@ -17,12 +19,14 @@ const BlogPage = ({ data }) => {
   );
 };
 
+/**
+ * the $yearStart$yearEnd are provided in the `context` of the gatsby-node.js `createPages` function
+ */
 export const query = graphql`
-  query TopXBlogArticles {
+  query BlogsInYear($yearStart: Date!, $yearEnd: Date!) {
     allMdx(
       sort: { fields: frontmatter___date, order: DESC }
-      limit: 10
-      skip: 0
+      filter: { frontmatter: { date: { gte: $yearStart, lte: $yearEnd } } }
     ) {
       nodes {
         frontmatter {
@@ -37,5 +41,4 @@ export const query = graphql`
     }
   }
 `;
-
-export default BlogPage;
+export default BlogsByYear;

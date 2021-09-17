@@ -5,6 +5,7 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
   const { createNodeField } = actions;
   // https://www.gatsbyjs.com/docs/mdx/programmatically-creating-pages/#generate-slugs
   if (node.internal.type === `Mdx`) {
+    // Step 1: Create a new field SLUG for the blog to be /blog/name-here
     // https://www.gatsbyjs.com/plugins/gatsby-source-filesystem/#helper-functions
     const relativeFilePath = createFilePath({
       node,
@@ -18,6 +19,9 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
       node,
       value: url,
     });
+
+    // Step 2: Create a new field to store the year and the
+    const blogDate = node.frontmatter.date; // Format is '2020-10-30'
   }
 };
 
@@ -38,6 +42,9 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
             fields {
               slug
             }
+            frontmatter {
+              date(formatString: "YYYY-MM-DD")
+            }
           }
         }
       }
@@ -49,12 +56,24 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
   }
 
   const posts = result.data.allMdx.edges;
-
+  const years = new Map();
   posts.forEach(({ node }, index) => {
+    // Create the individual blog article page (1 per mdx file)
     createPage({
-      path: node.fields.slug,
-      component: path.resolve(`./src/pages/blog/{mdx.slug}.tsx`),
+      path: node.fields.slug /*defined in `onCreateNode`*/,
+      component: path.resolve(`./src/pages/blog/{mdx.slug}.tsx`) /*Curly to dynamicaly change with a field: https://www.gatsbyjs.com/docs/reference/routing/creating-routes/#using-the-file-system-route-api*/,
       context: { id: node.id },
     });
+    const year = node.frontmatter.date.substr(0, 4);
+    if (!years.has(year)) {
+      const yearStart = year + "-01-01";
+      const yearEnd = year + "-12-31";
+      createPage({
+        path: `blog/${year}`,
+        component: path.resolve(`./src/pages/blog/BlogsByYear.tsx`),
+        context: { yearStart: yearStart, yearEnd: yearEnd },
+      });
+      years.set(year, year);
+    }
   });
 };
