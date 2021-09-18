@@ -2,10 +2,10 @@ import * as React from "react";
 import { graphql } from "gatsby";
 import { MDXRenderer } from "gatsby-plugin-mdx";
 import { MDXProvider } from "@mdx-js/react";
-import { Layout } from "../blog/layout";
-import CodeBlock from "../blog/CodeBlock";
+import { Layout } from "../layout/layout";
+import CodeBlock from "../components/CodeBlock";
 
-import { blogPostContainer, blogPostDate } from "../blog/layout.module.css";
+import { blogPostContainer, blogPostDate } from "../layout/layout.module.css";
 
 const components = {
   pre: CodeBlock,

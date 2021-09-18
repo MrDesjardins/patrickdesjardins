@@ -1,7 +1,7 @@
 import * as React from "react";
-import { Link, graphql } from "gatsby";
-import { Layout } from "../blog/layout";
-import { blogEntry } from "../blog/layout.module.css";
+import { graphql } from "gatsby";
+import { Layout } from "../layout/layout";
+import { BlogEntry } from "../components/BlogEntry";
 
 const BlogsByYear = (queryInfo) => {
   const data = queryInfo.data;
@@ -13,12 +13,13 @@ const BlogsByYear = (queryInfo) => {
       totalPages={context.totalPages}
     >
       {data.allMdx.nodes.map((node) => (
-        <article className={blogEntry} key={node.id}>
-          <h2>
-            <Link to={`${node.fields.slug}`}>{node.frontmatter.title}</Link>
-          </h2>
-          <p>Posted: {node.frontmatter.date}</p>
-        </article>
+        <BlogEntry
+          id={node.id}
+          slug={node.fields.slug}
+          title={node.frontmatter.title}
+          date={node.frontmatter.date}
+          categories={node.frontmatter.categories}
+        />
       ))}
     </Layout>
   );
@@ -37,6 +38,7 @@ export const query = graphql`
         frontmatter {
           date(formatString: "MMMM D, YYYY")
           title
+          categories
         }
         id
         fields {

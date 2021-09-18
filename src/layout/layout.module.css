@@ -70,17 +70,6 @@
   font-size: 20px;
   font-family: "Oswald";
 }
-.blogEntry h2 {
-  margin-bottom: 4px;
-}
-
-.blogEntry p {
-  margin-top: 4px;
-  margin-bottom: 4px;
-  color: #858585;
-  font-size: 0.9em;
-  font-style: italic;
-}
 
 .blogPostContainer p code {
   color: #ff778f;

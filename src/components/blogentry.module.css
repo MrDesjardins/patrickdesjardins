@@ -1,0 +1,29 @@
+.blogEntryArticleTitle {
+  margin-bottom: 4px;
+}
+
+.blogEntryDate {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  color: #858585;
+  font-size: 0.9em;
+  font-style: italic;
+}
+
+.blogEntryDetails {
+  display: flex;
+  align-items: center;
+  line-height: 20px;
+}
+
+.blogEntry a {
+  color:#1569d4;
+}
+
+.blogEntry a:visited {
+  color:#7ba4c5;
+}
+
+.blogEntry a:hover {
+  color:#05c5ff;
+}
