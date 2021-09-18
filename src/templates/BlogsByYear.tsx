@@ -29,10 +29,14 @@ const BlogsByYear = (queryInfo) => {
  * the $yearStart$yearEnd are provided in the `context` of the gatsby-node.js `createPages` function
  */
 export const query = graphql`
-  query BlogsInYear($yearStart: Date!, $yearEnd: Date!) {
+  query BlogsInYear($yearStart: Date!, $yearEnd: Date!, $currentDate: Date!) {
     allMdx(
       sort: { fields: frontmatter___date, order: DESC }
-      filter: { frontmatter: { date: { gte: $yearStart, lte: $yearEnd } } }
+      filter: {
+        frontmatter: {
+          date: { gte: $yearStart, lt: $yearEnd, lte: $currentDate }
+        }
+      }
     ) {
       nodes {
         frontmatter {

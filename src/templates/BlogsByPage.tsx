@@ -28,11 +28,12 @@ const BlogPage = (queryInfo) => {
 };
 
 export const query = graphql`
-  query TopXBlogArticles($limit: Int!, $skip: Int!) {
+  query TopXBlogArticles($limit: Int!, $skip: Int!, $currentDate: Date!) {
     allMdx(
       sort: { fields: frontmatter___date, order: DESC }
       limit: $limit
       skip: $skip
+      filter: { frontmatter: { date: { lte: $currentDate } } }
     ) {
       nodes {
         frontmatter {

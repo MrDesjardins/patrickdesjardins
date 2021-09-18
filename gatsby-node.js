@@ -1,6 +1,11 @@
 const { createFilePath } = require("gatsby-source-filesystem");
 const path = require("path");
-const { LIMIT_BLOG_COUNT, URL_PER_YEAR, URL_BY_PAGE, URL_BLOG_ARTICLE } = require("./constants");
+const {
+  LIMIT_BLOG_COUNT,
+  URL_PER_YEAR,
+  URL_BY_PAGE,
+  URL_BLOG_ARTICLE,
+} = require("./constants");
 
 exports.onCreateNode = ({ node, actions, getNode }) => {
   const { createNodeField } = actions;
@@ -60,7 +65,11 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
   const years = new Map();
   let pageCounter = 0;
   const totalPageCount = Math.ceil(posts.length / LIMIT_BLOG_COUNT);
+  const currentDate = new Date();
+  const formattedCurrentDate = currentDate.toISOString().split("T")[0];
   posts.forEach(({ node }, index) => {
+    //const nodeDate = new Date(node.frontmatter.date);
+
     // ----------------------------------------------------------------------------------------
     // Page 1: Individual: Create the individual blog article page (1 per mdx file)
     // ----------------------------------------------------------------------------------------
@@ -77,7 +86,7 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
     const year = node.frontmatter.date.substr(0, 4);
     if (!years.has(year)) {
       const yearStart = year + "-01-01";
-      const yearEnd = year + "-12-31";
+      const yearEnd = year + 1 + "-01-01";
       createPage({
         path: URL_PER_YEAR.replace("{year}", year),
         component: path.resolve(`./src/templates/BlogsByYear.tsx`),
@@ -86,6 +95,7 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
           yearEnd: yearEnd,
           year,
           totalPages: totalPageCount,
+          currentDate: formattedCurrentDate,
         },
       });
       years.set(year, year);
@@ -104,6 +114,7 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
           skip: LIMIT_BLOG_COUNT * (pageNumber - 1),
           currentPage: pageNumber,
           totalPages: totalPageCount,
+          currentDate: formattedCurrentDate,
         },
       });
     }
@@ -122,6 +133,7 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
       skip: 0,
       currentPage: 1,
       totalPages: totalPageCount,
+      currentDate: formattedCurrentDate,
     },
   });
 };
