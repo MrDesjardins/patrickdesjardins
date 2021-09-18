@@ -25,9 +25,6 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
       node,
       value: url,
     });
-
-    // Step 2: Create a new field to store the year and the
-    const blogDate = node.frontmatter.date; // Format is '2020-10-30'
   }
 };
 
