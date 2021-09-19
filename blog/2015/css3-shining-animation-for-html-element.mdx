@@ -5,19 +5,39 @@ categories:
   - "css"
 ---
 
-In the current application I am developing, I wanted to have an Html element to have a shining effect with CSS3. The goal is to make an Html's element to look new. Here is an animated gif that show the final result. ![](images/AnimationDiv.gif)
+In the current application I am developing, I wanted to have an Html element to have a shining effect with CSS3. The goal is to make an Html's element to look new. Here is an animated gif that show the final result. 
+
+![](images/AnimationDiv.gif)
 
 This animation must be set by setting a class to any Html element that we want the animation. For my purpose, it was a link element, but it could be a Div or an Li without problem. Once the class is set to the element you want, this one must run in an infinite loop. This is done by setting a custom class the CSS3 animation. This example work only for Chrome but you can define additional vendor prefix than **webkit**. The first line ensure that the animation will take place on the whole width of the Html element where we add the class. Then, we specify which animation we want to run, the duration of the animation, that we want to run in infinitely and the animation effect by setting a cubic-bezier tempo. 
 ```css
- .shine-me { width:100%; /*Make sure the animation is over the whole element*/
+.shine-me { 
+  width:100%; /*Make sure the animation is over the whole element*/
 
--webkit-animation-name: ShineAnimation; -webkit-animation-duration: 5s; -webkit-animation-iteration-count: infinite; -webkit-animation-timing-function: cubic-bezier(.12,.89,.98,.47); } 
+  -webkit-animation-name: ShineAnimation; 
+  -webkit-animation-duration: 5s; 
+  -webkit-animation-iteration-count: infinite; 
+  -webkit-animation-timing-function: cubic-bezier(.12,.89,.98,.47); 
+} 
 ```
 
 
 The animation goes from an initial state to an ending state. What we want is to move an background-image that we define totally in CSS by creating a linear-gradient. What we want is to have a transparent color that goes to a white color in the middle and go back to a transparent color. We then move from a position outside the vision to a position out of vision. 
 ```css
- @-webkit-keyframes ShineAnimation{ from { background-repeat:no-repeat; background-image:-webkit-linear-gradient( top left, rgba(255, 255, 255, 0.0) 0%, rgba(255, 255, 255, 0.0) 45%, rgba(255, 255, 255, 0.5) 48%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.5) 52%, rgba(255, 255, 255, 0.0) 57%, rgba(255, 255, 255, 0.0) 100% ); background-position:-250px -250px; background-size: 600px 600px } to { background-repeat:no-repeat; background-position:250px 250px; } } 
+@-webkit-keyframes ShineAnimation{ 
+  from { 
+    background-repeat:no-repeat; 
+    background-image:-webkit-linear-gradient( top left, 
+                    rgba(255, 255, 255, 0.0) 0%, 
+                    rgba(255, 255, 255, 0.0) 45%, rgba(255, 255, 255, 0.5) 48%, 
+                    rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.5) 52%, 
+                    rgba(255, 255, 255, 0.0) 57%, rgba(255, 255, 255, 0.0) 100% ); 
+    background-position:-250px -250px; background-size: 600px 600px } 
+  to { 
+    background-repeat:no-repeat; 
+    background-position:250px 250px;
+  } 
+} 
 ```
  This code has obviously some flaws. First of all, it does not scale very well with big Html element. This is due mainly because of the background-position that is set the specific pixel position. The second flaw is the color of the shining animation. If the background of the Html element is too bright, than we do not see the shining effect, if it is too dark, the shining effect looks fake.
 

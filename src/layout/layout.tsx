@@ -67,7 +67,11 @@ export const Layout = (props: LayoutProps): JSX.Element => {
                 classN += " " + currentLink;
               }
               return (
-                <Link className={classN} to={URL_PER_YEAR.replace("{year}", y)}>
+                <Link
+                  key={y}
+                  className={classN}
+                  to={URL_PER_YEAR.replace("{year}", y)}
+                >
                   {y}
                 </Link>
               );
@@ -98,6 +102,7 @@ export const Layout = (props: LayoutProps): JSX.Element => {
             }
             return (
               <Link
+                key={page}
                 className={classLink}
                 to={URL_BY_PAGE.replace("{page}", page)}
               >
