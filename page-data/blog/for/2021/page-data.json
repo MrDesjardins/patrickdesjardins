@@ -1,5 +1,5 @@
 {
     "componentChunkName": "component---src-templates-blogs-by-year-tsx",
     "path": "/blog/for/2021",
-    "result": {"data":{"allMdx":{"nodes":[{"frontmatter":{"date":"August 27, 2021","title":"Two Patterns with React Context","categories":["react","react-hooks"]},"id":"1434cc58-85c1-5881-b84d-d54eaa9981cd","fields":{"slug":"/blog/two-patterns-with-react-context"}}]}},"pageContext":{"yearStart":"2021-01-01","yearEnd":"20211-01-01","year":"2021","totalPages":68,"currentDate":"2021-09-20"}},
+    "result": {"data":{"allMdx":{"nodes":[{"frontmatter":{"date":"August 27, 2021","title":"Two Patterns with React Context","categories":["react","react-hooks"]},"id":"1434cc58-85c1-5881-b84d-d54eaa9981cd","fields":{"slug":"/blog/two-patterns-with-react-context"}}]}},"pageContext":{"yearStart":"2021-01-01","yearEnd":"20211-01-01","year":"2021","totalPages":68,"currentDate":"2021-09-21"}},
     "staticQueryHashes": ["3159585216"]}
