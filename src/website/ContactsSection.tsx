@@ -15,6 +15,7 @@ import {
   faPaperPlane,
   faMapMarker,
   faPhone,
+  faRss,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faTwitter,
@@ -107,6 +108,16 @@ export const ContactSection = (): JSX.Element => {
             title="Patrick Desjardins Youtube Page"
           >
             <FontAwesomeIcon icon={faYoutube} />
+          </a>
+        </div>
+        <div className={contactDetail}>
+          <a
+            href="https://patrickdesjardins.com/rss.xml"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Patrick Desjardins RSS Blog"
+          >
+            <FontAwesomeIcon icon={faRss} />
           </a>
         </div>
       </div>
