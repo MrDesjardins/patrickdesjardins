@@ -3,7 +3,7 @@ import { graphql } from "gatsby";
 import { MDXRenderer } from "gatsby-plugin-mdx";
 import { MDXProvider } from "@mdx-js/react";
 import { Layout } from "../layout/layout";
-import CodeBlock from "../components/CodeBlock";
+import {CodeBlock} from "../components/CodeBlock";
 
 import { blogPostContainer, blogPostDate } from "../layout/layout.module.css";
 

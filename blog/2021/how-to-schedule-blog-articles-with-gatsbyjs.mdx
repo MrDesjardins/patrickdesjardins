@@ -11,7 +11,7 @@ Each blog article has a header portion called frontmatter. The frontmatter has a
 
 The filtering needs to appear everywhere we have a list of articles. In my case, I have a list by year and a list that paginate all blog articles chronologically. The former GraphQL looks like this:
 
-```typescript
+```typescript {2,7}
 export const query = graphql`
   query BlogsInYear($yearStart: Date!, $yearEnd: Date!, $currentDate: Date!) {
     allMdx(
@@ -40,7 +40,7 @@ export const query = graphql`
 
 And the chronological pagingation:
 
-```typescript
+```typescript {2,7}
 export const query = graphql`
   query TopXBlogArticles($limit: Int!, $skip: Int!, $currentDate: Date!) {
     allMdx(
@@ -67,7 +67,7 @@ export const query = graphql`
 
 As you can see, in both cases, we pass the `$currentDate`. Here is the twist if you are new to GatsbyJS: the GraphQL is not dynamic in the client environment but when we build the whole website. Inside the `gatsby-node.js`, in the `createPages` function we are parsing the current date. Here is the code for the chronological per year page
 
-```typescript
+```typescript {1-2,16}
 const currentDate = new Date();
 const formattedCurrentDate = currentDate.toISOString().split("T")[0];
 
@@ -95,7 +95,7 @@ The last part is that once the code is sent in Github, there is a task to build 
 
 Thus, we need to alter our build script to trigger a build when the code or article changes and every day. It means that inside the `.github/workflows/main.yml` the `on` property changes to
 
-```
+```yaml {4-5}
 on:
   push:
     branches: [master]
