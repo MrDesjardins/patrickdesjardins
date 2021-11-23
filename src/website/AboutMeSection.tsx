@@ -67,29 +67,13 @@ export const AboutMeSection = (): JSX.Element => {
         </div>
 
         <div className={sectionAboutMeContainerContent}>
-          <h5>Doer</h5>
+          <h5>Sharer</h5>
           <p>
             I am naturally sharing my progress throughout my days to seek
             feedback and share the context of my decisions and progress. I share
             screenshots, video captures of my day-to-day work but also share
             nuggets of technology. The idea is to provide a constant stream of
             information that the team can strategically leverage.
-          </p>
-        </div>
-
-        <div className={sectionAboutMeContainerContent}>
-          <h5>Sharer</h5>
-          <p>
-            Expert in doing. Think, plan and execute. I design and write just
-            enough to have the team understand the direction and to lift
-            apparent impediments. I always have daily objectives and never jump
-            in code until a first plan can be presented and then iterate. I
-            master a balance between analyzing and coding, which allows me to
-            have a steady delivery cadence. I polish user interfaces slowly
-            while bringing more features that create the best experience for the
-            user with time. Same for performance, usability, and tests:
-            iterating is the key to success. At every step, I introduce a "wow"
-            factor and innovations to go beyond expectation.
           </p>
         </div>
 
