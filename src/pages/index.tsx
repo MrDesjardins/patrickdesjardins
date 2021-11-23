@@ -10,6 +10,7 @@ import { ConferencesSection } from "../website/ConferencesSection";
 import { ContactSection } from "../website/ContactsSection";
 import { EducationSection } from "../website/EducationSection";
 import { HistorySection } from "../website/HistorySection";
+import { CourseSection } from "../website/CourseSection";
 import {
   container,
   homeContent,
@@ -86,8 +87,7 @@ const IndexPage = (): JSX.Element => {
             <StaticImage
               className={topPicture}
               alt="Patrick Desjardins sitting at Netflix Building F"
-              src="../images/backgrounds/patrickdesjardinsatnetflix.jpg"
-            />
+              src="../images/backgrounds/patrickdesjardinsatnetflix.jpg" />
           </div>
         </div>
         <AboutMeSection />
@@ -95,6 +95,7 @@ const IndexPage = (): JSX.Element => {
         <BookSection />
         <OpenSourceSection />
         <TechnologiesSection />
+        <CourseSection />
         <AchievementsSection />
         <StatisticsSection />
         <EducationSection />
