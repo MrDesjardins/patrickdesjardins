@@ -181,6 +181,8 @@ body {
   font-size: 1.1rem;
   color: var(--text-color1);
   text-align: justify;
+  padding-left: 4px;
+  padding-right: 4px;
 }
 
 .sectionVisualOne {
