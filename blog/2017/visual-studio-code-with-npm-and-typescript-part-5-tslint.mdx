@@ -9,7 +9,9 @@ categories:
 
 Code needs to have some consistency to be able to have a uniform reading later. When your code grows and the number of software developers, it becomes harder to handle it manually. TsLint is a TypeScript linter who is a code analyzer that gives which line needs improvement in term of code readability, maintainability, and functionality errors. TsLint is configurable for your own preferences and can be executed manually, automatically when writing code or as a step in your continuous integration process.
 
-To install TsLint, you need to install the TsLint npm package: ``` 
+To install TsLint, you need to install the TsLint npm package: 
+
+``` 
  npm install -g tslint typescript --savedev npm install gulp-tslint --savedev 
 ``` 
 
@@ -18,7 +20,33 @@ You have to create a configuration file "tslint.json" at the root of your projec
 In this file, you can configure the rules you want. A basic configuration is to extend an existing one and override some properties to your taste.
 
 ```typescript
-{ /* * Possible values: * - the name of a built-in config * - the name of an NPM module which has a "main" file that exports a config object * - a relative path to a JSON file */ "extends": "tslint:latest", "rules": { /* * Any rules specified here will override those from the base config we are extending. */ "curly": true, "triple-equals": true }, "jsRules": { /* * Any rules specified here will override those from the base config we are extending. */ "curly": true }, "rulesDirectory": [ /* * A list of relative or absolute paths to directories that contain custom rules. * See the Custom Rules documentation below for more details. */ ] } 
+{ 
+  /* 
+  * Possible values: 
+  * - the name of a built-in config 
+  * - the name of an NPM module which has a "main" file that exports a config object 
+  * - a relative path to a JSON file 
+  */ 
+  "extends": "tslint:latest", "rules": { 
+    /* 
+    * Any rules specified here will override those from the base config we are extending. 
+    */ 
+   "curly": true, 
+   "triple-equals": true 
+   }, 
+   "jsRules": { 
+     /*
+     * Any rules specified here will override those from the base config we are extending. 
+     */ 
+    "curly": true 
+    }, 
+    "rulesDirectory": [ 
+      /*
+      * A list of relative or absolute paths to directories that contain custom rules. 
+      * See the Custom Rules documentation below for more details. *
+      */
+     ]
+} 
 ``` 
 
 
@@ -44,12 +72,19 @@ const gulp_tslint = require('gulp-tslint');
 The task needs to get all TypeScript files, but skip definition files and node_modules.
 
 ```typescript
-gulp.task('tslint', () => { return gulp.src(['**/*.ts', '!**/*.d.ts', '!node_modules/**']) .pipe(gulp_tslint()) .pipe(gulp_tslint.report()); }); 
+gulp.task('tslint', () => { 
+  return gulp.src(['**/*.ts', '!**/*.d.ts', '!node_modules/**'])
+    .pipe(gulp_tslint()) 
+    .pipe(gulp_tslint.report());
+   }); 
 ``` 
 
 
-To use, in the console use : gulp tslint and you will get a report that looks like below: ``` 
- [20:08:53] Using gulpfile D:\\code\\tsWithCode1\\gulpfile.js [20:08:53] Starting 'tslint'... D:/code/tsWithCode1/src/file1.ts[7, 2]: file should end with a newline D:/code/tsWithCode1/src/file1.ts[4, 1]: Forbidden 'var' keyword, use 'let' or 'const' instead D:/code/tsWithCode1/src/file1.ts[1, 41]: Missing semicolon D:/code/tsWithCode1/src/file1.ts[5, 7]: == should be ===
+To use, in the console use : gulp tslint and you will get a report that looks like below: 
+
+``` 
+ [20:08:53] Using gulpfile D:\\code\\tsWithCode1\\gulpfile.js 
+ [20:08:53] Starting 'tslint'... D:/code/tsWithCode1/src/file1.ts[7, 2]: file should end with a newline D:/code/tsWithCode1/src/file1.ts[4, 1]: Forbidden 'var' keyword, use 'let' or 'const' instead D:/code/tsWithCode1/src/file1.ts[1, 41]: Missing semicolon D:/code/tsWithCode1/src/file1.ts[5, 7]: == should be ===
 
 D:/code/tsWithCode1/src/fileToInclude.ts[9, 2]: file should end with a newline D:/code/tsWithCode1/src/fileToInclude.ts[4, 9]: Calls to 'console.log' are not allowed. D:/code/tsWithCode1/src/fileToInclude.ts[3, 5]: misplaced opening brace D:/code/tsWithCode1/src/fileToInclude.ts[5, 13]: Identifier 'div' is never reassigned; use 'const' instead of 'let'. 
 ``` 

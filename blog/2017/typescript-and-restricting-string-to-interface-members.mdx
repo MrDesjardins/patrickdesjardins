@@ -10,14 +10,23 @@ Imagine the scenario where you have an interface with many members. Each of them
 The solution resides that we do not one to allow every string but just a finite set of string which is the members' name of a specific interface.
 
 ```typescript
-public render(): JSX.Element { // ... <input type="checkbox" checked={this.props.myModel.member1} onClick={(e) => { this.onToggle("member1"); }} /> // ... } 
+public render(): JSX.Element { 
+  // ... 
+  <input type="checkbox" 
+    checked={this.props.myModel.member1} 
+    onClick={(e) => { this.onToggle("member1"); }} 
+  /> 
+  // ... 
+} 
 ``` 
 
 
 The click method won't ask for a string, but for a key of the model.
 
 ```typescript
-private onToggle(filterName: keyof MyModel) { this.props.onToggle(filterName); } 
+private onToggle(filterName: keyof MyModel) { 
+  this.props.onToggle(filterName); 
+} 
 ``` 
 
 

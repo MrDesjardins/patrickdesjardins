@@ -37,15 +37,23 @@ gulp.task('go', ["server", "watch"], function() {
 ``` 
 
 
-We also need to do two changes to actual task. The first one is once we are done building TypeScript, we notify the connector to reload. The second one is to move the index.html, boot page, in the output folder since we will run the server from this server. ```typescript
-gulp.task("build", function () { //... .pipe(connect.reload()); }); 
+We also need to do two changes to actual task. The first one is once we are done building TypeScript, we notify the connector to reload. The second one is to move the index.html, boot page, in the output folder since we will run the server from this server. 
+
+```typescript
+gulp.task("build", function () { 
+  //... 
+  .pipe(connect.reload());
+ }); 
 ``` 
 
 
 and
 
 ```typescript
-gulp.task("copy", function () { //... gulp.src("./src/index.html").pipe(gulp.dest(paths.typescript_out)); }); 
+gulp.task("copy", function () { 
+//...
+ gulp.src("./src/index.html").pipe(gulp.dest(paths.typescript_out)); 
+}); 
 ``` 
 
 

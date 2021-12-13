@@ -13,7 +13,8 @@ If you see three little dots, you saw the object spread property. This property 
 If you want to have a copy of all values but a different object, you can use the spread operator.
 
 ```typescript
-const user = { firstName: "Patrick", lastName : "Desjardins", isMarried: true }; const shallowCopy = { ...user }; 
+const user = { firstName: "Patrick", lastName : "Desjardins", isMarried: true }; 
+const shallowCopy = { ...user }; 
 ``` 
 
 
@@ -26,7 +27,8 @@ One of the very interesting feature of the spread operator is the capability to 
 ```typescript
 const defaultUser = { firstName: "NotDefined", lastName: "NotDefined", hasPaid: false };
 
-const user = { firstName: "Patrick", isMarried: true }; const finalUser = { ...defaultUser , ...user }; 
+const user = { firstName: "Patrick", isMarried: true }; 
+const finalUser = { ...defaultUser , ...user }; 
 ``` 
 
 
@@ -37,7 +39,11 @@ In this example, the final user first name is "Patrick", the last name is "NotDe
 This is a shortcut to the well known trick of using apply to pass an array of parameter to a function that takes parameters. Instead of using yourFunction.apply(this, yourList) you can use yourFunction(...yourList).
 
 ```typescript
-function yourFunction(x:number, y:number, z:number): void { //Use variable x, y and z. } var args:number[] = [0, 1, 2]; yourFunction(...args); 
+function yourFunction(x:number, y:number, z:number): void { 
+  //Use variable x, y and z. 
+} 
+var args:number[] = [0, 1, 2]; 
+yourFunction(...args); 
 ``` 
 
 
@@ -46,7 +52,10 @@ function yourFunction(x:number, y:number, z:number): void { //Use variable x, y 
 In the same way of "array to object" works, you can directly use the spread operator in the parameter. This is done by using the spread operator in front of the name of the parameter. This allow to pass parameter which will be stored into an array automatically.
 
 ```typescript
-function yourFunction(...x: number[]) { console.log(JSON.stringify(x)); } yourFunction(1, 2, 3); 
+function yourFunction(...x: number[]) { 
+  console.log(JSON.stringify(x)); 
+} 
+yourFunction(1, 2, 3); 
 ``` 
 
 
@@ -55,11 +64,14 @@ function yourFunction(...x: number[]) { console.log(JSON.stringify(x)); } yourFu
 This is a good scenario where you know some inputs but want to also take all other inputs that the user set into a subsequent array. For example, you know that the user can pass an array where the first parameter is the unique identifier, followed by a modified date and all other data will be new values to add. You could use the following code to have an array of data to add and two variables to manipulate into a query to save new data.
 
 ```typescript
-var [id, date, ...valuesToAdd] = [1, 2, 3, 4]; console.log(id === 1); //true console.log(date === 2); //true console.log(valuesToAdd[0] === 3); //true console.log(valuesToAdd[1] === 4); //true 
+var [id, date, ...valuesToAdd] = [1, 2, 3, 4]; 
+console.log(id === 1); //true 
+console.log(date === 2); //true 
+console.log(valuesToAdd[0] === 3); //true 
+console.log(valuesToAdd[1] === 4); //true 
 ``` 
 
-
-We could replace var _[id, date, ...valuesToAdd] = [1, 2, 3, 4];_ by _var [id, date, ...valuesToAdd] = anotherArray;_ and _anotherArray_ wouldn't be affected by the operation.
+We could replace `var [id, date, ...valuesToAdd] = [1, 2, 3, 4];` by `var [id, date, ...valuesToAdd] = anotherArray;` and `anotherArray` wouldn't be affected by the operation.
 
 ### Assign values to array
 

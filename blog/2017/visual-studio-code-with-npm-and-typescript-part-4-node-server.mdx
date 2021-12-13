@@ -29,7 +29,10 @@ app.listen(3000, function () { console.log('Server listening on port 3000.') })
 
 To be able to server our static file, the index.html, we need to use the static file and point the folder. Since we have index.html at the root, we can just use dot. Ideally, we would move the whole file structure into a single folder and not server all our configuration file, but for the moment, let's keep it this way.
 
-At that point, you can start the server in a Powershell console simply by using nodejs and the file we just created. ```typescript
+At that point, you can start the server in a Powershell console simply by using nodejs and the file we just created. 
+
+```typescript
 node server.js 
 ``` 
- You should see in the console "Server listening on port 3000." which is the console.log from the listen method. You can go in a browser and write : http://localhost:3000/index.html
+
+You should see in the console "Server listening on port 3000." which is the console.log from the listen method. You can go in a browser and write : http://localhost:3000/index.html

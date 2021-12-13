@@ -166,6 +166,7 @@ What is the advantage of Flow? The advantage is that you can use whatever you wa
 
 I migrated one of my small projects, which is a React project. Here is the TypeScript configuration followed by the BabelJs and Flow configuration.
 
+``` 
 // tsconfig.json
 {
 "compilerOptions": {
@@ -185,12 +186,9 @@ I migrated one of my small projects, which is a React project. Here is the TypeS
 
 // NPM packages required
 "typescript": "^2.3.2"
-
 ``` 
 
 Flow and BabelJs:
-
-``` 
 
 ``` 
 //.flowconfig
@@ -250,6 +248,7 @@ esproposal.class_instance_fields=ignore
 "babel-preset-es2015": "^6.24.1",
 "babel-preset-react": "^6.24.1",
 "babel-preset-stage-0": "^6.24.1"
+``` 
 
 It has more boilerplate. TypeScript offers stage 2 and up feature from EcmaScript because their philosophy is to have all released feature backward compatible (which is true since version 1.0). Earlier stage EcmaScript features are more prone to die or change signatures. With Babel, you can decide which stage you want to subscribe. This freedom has a cost. TypeScript brings simplicity at the cost of a being a less cutting edge. But what does it really mean at the end? If we look at all EcmaScript 2016 features, Babel is supporting 40% of them, TypeScript 36%. At the end, it's only 2 features different.
 

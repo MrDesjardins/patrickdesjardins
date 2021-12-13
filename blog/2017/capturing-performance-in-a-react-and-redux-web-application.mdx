@@ -16,6 +16,11 @@ The confirm what my hypothesis of having to start performance log right before t
 
 The order is:
 
-1- Dispatch 2- ActionCreator (first line) 3-Middleware before action 4-Middleware after action 5-Component Render 6-Component componentDidUpdate
+1. Dispatch 
+2. ActionCreator (first line) 
+3. Middleware before action 
+4. Middleware after action 
+5. Component Render 
+6. Component componentDidUpdate
 
 That being established, calling any kind of stop marker at a middleware level is preamptive. This is even truer if you are using [Perf.start() and Perf.stop()](https://facebook.github.io/react/docs/perf.html) at the Middleware level.

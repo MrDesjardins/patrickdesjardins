@@ -115,7 +115,10 @@ window.setTimeout(() => greeter.greet(), 1000); // this will be user this
 window.setTimeout(greeter.greet2, 2000); // this will be user this
 ```
 
-Be aware that I changed a little bit the method and added a greet2 that is an instance function. You can see that I use inside these methods to log out the string. The output is as expected that the first one won't be able to output the name. The reason is that **this** is in the context of the window and not the user. Here is the output: ```typescript
+Be aware that I changed a little bit the method and added a greet2 that is an instance function. You can see that I use inside these methods to log out the string. The output is as expected that the first one won't be able to output the name. The reason is that **this** is in the context of the window and not the user. Here is the output: 
+
+```typescript
 Hello, Hello, Patrick Hello2, Patrick
+``` 
 
 A rule of thumb is to use class function as much as possible since they are optimized to not waste too much resource. About callback, using the arrow anonymous function is a great way if you do not need to release the pointer to this event. You may have to release memory manually and the easiest way in would be to use instance function. As you can see, it's not always black or white, but your line of though should be always to think about memory first.

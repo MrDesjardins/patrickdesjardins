@@ -11,7 +11,18 @@ TypeScript's type can be highlighting to what is going on if you have been doing
 In JavaScript, the second parameter, the action, can change shape. For example, if your reducer is for your users (let's call it "usersReducer"), this one can let you update users information, as well as their relationship. You won't send back the whole user's state every time. You may just send a list of ids for the relation. Hence, in JavaScript, you could pass in the payload one that is the whole user object when the user gets created or updated, but only a list of integers when the relationship list is changed to one of these users. In JavaScript, it won't matter because depending on the string you pass to determine the type of action, you go to a different branch of code which you will access and work with the expected format of data you know you are passing. Here is a quick example with two actions. One to create, one to update a user's relationship.
 
 ```typescript
-function myReducer( state action) { if (action.type === ACTION_CREATE) { const immutableData = {...state}; immutableData[action.payload.userId] = action.payload.newUser; return immutableData; } else if (action.type === ACTION_UPDATE_LIST_RELATIONSHIPS) { const immutableData = {...state}; immutableData[action.payload.userId].relationShipIds = action.payload.ids; return immutableData; } return state; } 
+function myReducer( state action) { 
+  if (action.type === ACTION_CREATE) { 
+    const immutableData = {...state}; 
+    immutableData[action.payload.userId] = action.payload.newUser; 
+    return immutableData; 
+  } else if (action.type === ACTION_UPDATE_LIST_RELATIONSHIPS) { 
+    const immutableData = {...state}; i
+    mmutableData[action.payload.userId].relationShipIds = action.payload.ids; 
+    return immutableData; 
+  } 
+  return state; 
+} 
 ``` 
 
 
@@ -20,30 +31,57 @@ We can see that the action argument shape change depending on the type. This is 
 In TypeScript, types must be defined. That means that we need to pass a known type for the second argument. This is where it's convenient to have a generic action object that allows you to reuse some part like the one specify the type as well as the payload. Since the payload varies, the use of generic makes sense.
 
 ```typescript
-export interface Actions<T> { readonly type: string; payload: T; } 
+export interface Actions<T> { 
+  readonly type: string; 
+  payload: T; 
+} 
 ``` 
 
 
 You can extend this interface with other members if desired or simply enhance this one directly. From there, you can have your reducer to use a union of potential action:
 
 ```typescript
-function myReducer( state: UsersState, action: Actions<UsersState> | Actions<User> | Actions<{userId:number, ids:number[]}>): UsersState { if (action.type === ACTION_CREATE) { const immutableData = {...state}; immutableData[action.payload.userId] = action.payload.; return immutableData; } else if (action.type === ACTION_UPDATE_LIST_RELATIONSHIPS) { const immutableData = {...state}; immutableData[action.payload.userId].relationShipIds = action.payload.ids; return immutableData; } return state; } 
+function myReducer( state: UsersState, action: Actions<UsersState> | Actions<User> | Actions<{userId:number, ids:number[]}>): UsersState { 
+  if (action.type === ACTION_CREATE) {
+     const immutableData = {...state}; 
+     immutableData[action.payload.userId] = action.payload.; 
+     return immutableData; 
+  } else if (action.type === ACTION_UPDATE_LIST_RELATIONSHIPS) { 
+    const immutableData = {...state}; 
+    immutableData[action.payload.userId].relationShipIds = action.payload.ids; 
+    return immutableData; 
+  } 
+  return state; 
+} 
 ``` 
 
 
 The problem with the code above is that it doesn't transpile. TypeScript will not know which type is the action and won't let you use the object. You need to user defined typed guard which will tell TypeScript which type is actually the argument. With the generic action, we can use also a generic typed guard.
 
 ```typescript
-export function isGenericAction<T>(obj: any): obj is Actions<T> { const castedObject = (obj as Actions<T>); return castedObject.payload !== undefined && castedObject.type !== undefined; } 
+export function isGenericAction<T>(obj: any): obj is Actions<T> { 
+  const castedObject = (obj as Actions<T>); 
+  return castedObject.payload !== undefined && castedObject.type !== undefined; 
+} 
 ``` 
 
 
 The next step is to use the check with the type in conditions.
 
 ```typescript
-function myReducer( state: UsersState, action: Actions<UsersState> | Actions<User> | Actions<UserRelationships>): UsersState { if (action.type === ACTION_CREATE && GenericAction<User>(action)) { const immutableData = {...state}; immutableData[action.payload.userId] = action.payload.; return immutableData; } else if (action.type === ACTION_UPDATE_LIST_RELATIONSHIPS && GenericAction<UserRelationships>(action)) { const immutableData = {...state}; immutableData[action.payload.userId].relationShipIds = action.payload.ids; return immutableData; } return state; } 
+function myReducer( state: UsersState, action: Actions<UsersState> | Actions<User> | Actions<UserRelationships>): UsersState { 
+  if (action.type === ACTION_CREATE && GenericAction<User>(action)) { 
+    const immutableData = {...state}; 
+    immutableData[action.payload.userId] = action.payload; 
+    return immutableData; 
+  } else if (action.type === ACTION_UPDATE_LIST_RELATIONSHIPS && GenericAction<UserRelationships>(action)) { 
+    const immutableData = {...state}; 
+    immutableData[action.payload.userId].relationShipIds = action.payload.ids; 
+    return immutableData; 
+  } 
+  return state; 
+} 
 ``` 
-
 
 The code above compiles and it allows you to use a single reducer with many different actions' payload. An alternative idea could be to have a single reducer per payload type, but this gets fast cumbersome the more your domain grows and require more consolidation once you get back to your React component. Your reducers should be designed to be flat, but also to support the idea of a specific domain. In the example above, a single reducer for user management makes sense.
 

@@ -21,11 +21,16 @@ This will allow us to return a Thunk Action instead of an object, which allows u
 ```typescript
 import { ThunkAction } from "redux-thunk"; import { Dispatch } from "redux";
 
-export function applyFilter(): ThunkAction<void, IAppState, void> { return (dispatch: Dispatch<IUpdateFilterAction>, getState: () => IAppState, extra: any) => { setTimeout(() => { const fakePayload = {} as IResults; // Simulate date from response through Ajax response dispatch(actionApplyResponse(fakePayload)); }, 1500);
-
-return dispatch(actionApplyRequest()); }; } 
+export function applyFilter(): ThunkAction<void, IAppState, void> { 
+  return (dispatch: Dispatch<IUpdateFilterAction>, getState: () => IAppState, extra: any) => { 
+    setTimeout(() => { const fakePayload = {} as IResults; // Simulate date from response through Ajax response 
+    dispatch(actionApplyResponse(fakePayload)); 
+    }, 1500);
+    return dispatch(actionApplyRequest()); }; 
+} 
 ``` 
- In this example, we can see that we are referencing the ThunkAction class and Dispatch. The ThunkAction is the returned type which takes three type in its generic signature. The first one is the returned type we expect. In that case, I do not return anything, thus it is "void". The second parameter is the type of the state in the store. This is useful because it allows us to interrogate the store inside the action creator. This is useful for validation purposed but also to computer possible value from existing values. The last type is any extra value to use. The example shows that the actionApplyRequest action is dispatched immediately and that the actionApplyReponse is dispatched 1.5 seconds later.
+
+In this example, we can see that we are referencing the ThunkAction class and Dispatch. The ThunkAction is the returned type which takes three type in its generic signature. The first one is the returned type we expect. In that case, I do not return anything, thus it is `void`. The second parameter is the type of the state in the store. This is useful because it allows us to interrogate the store inside the action creator. This is useful for validation purposed but also to computer possible value from existing values. The last type is any extra value to use. The example shows that the actionApplyRequest action is dispatched immediately and that the actionApplyReponse is dispatched 1.5 seconds later.
 
 In this article, we brought a new dependency called Thunk that allows us to dispatch multiple actions instead of returning a single action. This allows us to handle an asynchronous scenario like fetching data from a remote source. This approach gave us the capability to consult the store as well which opens endless possibility in term of validations, data to use for data manipulation and so on.
 

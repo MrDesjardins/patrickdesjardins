@@ -8,7 +8,7 @@ categories:
 
 This article explains how to get an exiting **TypeScript** project that use **Gulp** to use **ReactJs**.
 
-## React NPM Packages
+# React NPM Packages
 
 To use **ReactJs** you needs four different NPM packages for **React** and **React-Dom**. 
 
@@ -20,7 +20,7 @@ Two of them are the actual Facebook ReactJs libraries and the two others are Typ
 
 ![](images/intellisenseReact.png)
 
-## Modifying RequiresJs
+# Modifying RequiresJs
 
 Inside the configuration of your RequireJs, you need to add two entries for react and react-dom to indicate where will be the module to load. This is tricky in term that you must point to the "dist" folder. If you look in node_modules you will see that react exist in the main folder but also in the lib folder. These won't work. The other tricky part is that react-dom use a hyphen, which will require you to use quote. Both need to have lowercase path key, and both will be used with the lowercase on the import statement.
 
@@ -38,7 +38,7 @@ requirejs(['file1']);
 
 If your file1.ts was your entry point, this one can remain. You just need to have this one to be file1.tsx since it will use React JSX syntax.
 
-## TypeScript TsConfig.json
+# TypeScript TsConfig.json
 
 The TypeScript's configuration file needs to be altered to indicate the type of JSX we want to compile. 
 ```typescript
@@ -48,7 +48,7 @@ The TypeScript's configuration file needs to be altered to indicate the type of 
 
 If you want, you can add both types under the property "types" but this is optional since TypeScript will looks into the node_modules package to get the definition.
 
-## Gulp and React
+# Gulp and React
 
 If you are using Gulp or any other toolkit for automation, you need to do a change. The change is mainly to change the path of file to compile to get TSX file additional to TS file. 
 
@@ -67,7 +67,7 @@ gulp.task("build", () => {
 ``` 
 This change add ts and tsx file to be compiled by TypeScript Compiler (TSC).
 
-## Using React
+# Using React
 
 Once React is setup, you can modify your entry point by rendering a simple component. Here is an example that use a simple component. The component code:
 

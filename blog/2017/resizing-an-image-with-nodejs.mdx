@@ -33,17 +33,31 @@ The second pre-task is to find the images to resize. Again, this will require a 
 npm install --save glob npm install --save-dev @types/glob
 ```
 
-From there, we need to import the module. We will bring the _path_ and _fs_ module of NodeJs to be able to create proper path syntax and to save file on disk. ```typescript
-import _ as g from "glob"; import _ as path from "path"; import _ as sharp from "sharp"; import _ as fs from "fs";
+From there, we need to import the module. We will bring the _path_ and _fs_ module of NodeJs to be able to create proper path syntax and to save file on disk. 
 
-````
-
+```typescript
+import _ as g from "glob"; 
+import _ as path from "path"; 
+import _ as sharp from "sharp"; 
+import _ as fs from "fs";
+```
 
 The first function that we need to create is the one that return a list of string that represent the file to resize. This will be all our underscore aka best pictures. We want to be sure that we can re-run this function multiple times, thus we need to ignore the output folder where we will save resized images. This function returns the list in a promise fashion because the glob library is asynchronous. Here is the first version which call the module function "Glob" and add everything into an array while sending in the console the file for debugging purpose.
 
 ```typescript
-function getImageToAnalyze(): Promise<string[]> { const fullPathFiles: string[] = []; const promise = new Promise<string[]>((resolve, reject) => { const glob = new g.Glob(pathImagesDirectory, { ignore: "**/" + directoryName + "/**" } as g.IOptions, (err: Error, matches: string[]) => { matches.forEach((file: string) => { console.log(file); fullPathFiles.push(file); }); resolve(fullPathFiles); }); }); return promise; }
-````
+function getImageToAnalyze(): Promise<string[]> { 
+  const fullPathFiles: string[] = []; 
+  const promise = new Promise<string[]>((resolve, reject) => { 
+    const glob = new g.Glob(pathImagesDirectory, { ignore: "**/" + directoryName + "/**" } as g.IOptions, (err: Error, matches: string[]) => { 
+      matches.forEach((file: string) => { 
+        console.log(file); fullPathFiles.push(file); 
+      }); 
+      resolve(fullPathFiles); 
+    }); 
+  }); 
+  return promise; 
+}
+```
 
 This can be simplified by just returning the _matches_ string array and returning the promise instead of using a variable. At the end, if you are not debugging you can use :
 
@@ -144,7 +158,11 @@ function resizeImage(imageToProceed: string): Promise<IImage> {
       }
       const newHeight = Math.round(actualHeight / ratio);
       const newWidth = Math.round(actualWidth / ratio);
-      const thumbnailPath = getThumbnailPathAndFileName(imageToProceed); // Create directory thumbnail first const dir = getMetainfoDirectoryPath(imageToProceed); if (!fs.existsSync(dir)) { fs.mkdirSync(dir); }
+      const thumbnailPath = getThumbnailPathAndFileName(imageToProceed); // Create directory thumbnail first 
+      const dir = getMetainfoDirectoryPath(imageToProceed); 
+      if (!fs.existsSync(dir)) { 
+        fs.mkdirSync(dir); 
+      }
 
       return sharpFile
         .resize(newWidth, newHeight)
