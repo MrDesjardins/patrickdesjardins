@@ -1,5 +1,5 @@
 {
     "componentChunkName": "component---src-templates-blogs-by-year-tsx",
     "path": "/blog/for/2022",
-    "result": {"data":{"allMdx":{"nodes":[{"frontmatter":{"date":"January 6, 2022","title":"The CAP Theorem Explained","categories":["system design","distributed system"]},"id":"6afe12eb-97fc-561f-894a-6bd506cd6767","fields":{"slug":"/blog/the-cap-theorem-explained"}}]}},"pageContext":{"yearStart":"2022-01-01","yearEnd":"20221-01-01","year":"2022","totalPages":69,"currentDate":"2022-01-18"}},
+    "result": {"data":{"allMdx":{"nodes":[{"frontmatter":{"date":"January 6, 2022","title":"The CAP Theorem Explained","categories":["system design","distributed system"]},"id":"6afe12eb-97fc-561f-894a-6bd506cd6767","fields":{"slug":"/blog/the-cap-theorem-explained"}}]}},"pageContext":{"yearStart":"2022-01-01","yearEnd":"20221-01-01","year":"2022","totalPages":69,"currentDate":"2022-01-19"}},
     "staticQueryHashes": ["3159585216"]}
