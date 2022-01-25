@@ -1,0 +1,39 @@
+---
+title: "TypeScript Static Unnamed Method with version 4.4"
+date: "2022-01-20"
+categories:
+  - "typescript"
+---
+
+TypeScript version 4.4 gives the possibility to have a static block inside a class. The addition follows the EcmaScript standard to allow an unnamed function to be called when the static class is accessed for the first time. Like initializing a static variable in a class, the static block is called when the class is accessed first. The block is called right after the static variables.
+ß
+The following example shows that depending of static constants, the static variables are initialized by calling a function or not.
+
+```typescript {11}
+function fetchGlobalCount(): number {
+  return 1;
+}
+class Constants {
+  static isDistributed = true;
+}
+class Telemetry {
+  static globalInstanceCount = 0;
+  static localIntanceCount = 0;
+
+  static {
+    if (Constants.isDistributed) {
+      Telemetry.globalInstanceCount = fetchGlobalCount();
+      Telemetry.localIntanceCount = Telemetry.globalInstanceCount + 1;
+    } else {
+      Telemetry.localIntanceCount = 0;
+    }
+  }
+  public static log(): void {
+    console.log(Telemetry.localIntanceCount);
+  }
+}
+
+Telemetry.log();
+```
+
+The main benefit is the initialization of static private variables. Before the unnamed static block, additional code would be needed to access the static class variable and set the value needed. However, for private variables, it would be problematic. Also, having the possibility to rely on try/catch block is possible inside the static block giving a clean, central place to initialize safely static values for your class.

@@ -1,0 +1,66 @@
+---
+title: "TypeScript Class Override Keyword Increase Maintainability"
+date: "2022-02-11"
+categories:
+  - "typescript"
+---
+
+TypeScript added the keyword `override` with version 4.3. The keyword allows to mark a function in a class which marks the function to be expected to be redefined in a subclass. Before that keyword, or if you do not use it today (at version 4.5) the code still compiles. You can define the same functions in a sub-class without issue.
+
+```typescript
+class BaseClass {
+    public show() {
+        console.log("Show");
+    }
+
+}
+class ChildClass extends BaseClass {
+    public show() {
+        console.log("Overriden the show method");
+    }
+}
+const c = new ChildClass();
+c.show();
+```
+
+The code above displays the text from `ChildClass`. The problem is not on the actual code but in the future code. With the current implementation of the code, we can update `BaseClass` to the following list and have the code still compile.
+
+```typescript
+class BaseClass {
+    public showRenamed() {
+        console.log("Show");
+    }
+
+}
+class ChildClass extends BaseClass {
+    public show() {
+        console.log("Overriden the show method");
+    }
+}
+const c = new ChildClass();
+c.show();
+```
+
+The problem with the above code is that the intention was to rename the method, but the child class has not changed. Therefore, the code is legit but does not reflect the intent. Now, the code has two methods instead of one. However, if we rewind to the former code and add the `override` keyword.
+
+```typescript {8}
+class BaseClass {
+    public show() {
+        console.log("Show");
+    }
+}
+
+class ChildClass extends BaseClass {
+    public override show() {
+        console.log("Overriden the show method");
+    }
+}
+const c = new ChildClass();
+c.show();
+```
+
+However, now, if we rename the base class `show` to `showRenamed` we will get TypeScript warns us with an error.
+
+>This member cannot have an 'override' modifier because it is not declared in the base class 'BaseClass'.
+
+Great! Now, we are safe to rename base class methods and get a warning. Of course, as you can figure out, the only class that `extends` a class can use that feature. Small note, if you are using a code editor that supports TypeScript, when using the renaming feature, the code would have been appropriately renamed before the use of override. The big difference is that now we can explicitly mention that we expect the method to be available in the base class.

@@ -1,0 +1,64 @@
+---
+title: "TypeScript Dynamic Discriminant with Template String"
+date: "2022-01-31"
+categories:
+  - "typescript"
+---
+
+An improvement with TypeScript 4.5 compared to 4.4 is the ability to discriminate on a dynamically constructed type with a pattern. Template string type has been around for a few versions, but it was impossible to narrow down until 4.5. Before getting into the specific, here is an example of two interfaces: `Weapon` and `Magic`. The discriminant, the common property, is called `kind`. However, the type is not unique for the interface; it is dynamically adjustable. Hence, we can have data coming from the backend, giving us several weapons of a different kind that share the same schema (interface).
+
+```typescript
+export interface Weapon {
+    kind: `Weapon_${string}`;
+    range: number;
+    damage: number;
+}
+
+export interface Magic {
+    kind: `Magic_${string}`;
+    costMana: number;
+    multiplier: number;
+}
+
+export function attack(attackerItem: Weapon | Magic) {
+    if (attackerItem.kind === "Weapon_") {
+        console.log("Range:" + attackerItem.range);
+    } else if (attackerItem.kind === "Magic_") {
+        console.log("Mana:" + attackerItem.costMana)
+    }
+}
+```
+
+The code above compiles prior to TypeScript version 4.5 until the line compares the `kind` in the `attach` function.
+
+```
+if (attackerItem.kind === "Weapon_") {
+```
+
+With TypeScript 4.5, it is possible to write the static portion of the type, and TypeScript will narrow down to the type allowing to use of the properties that are unique for the specific interface. So, in that example, the first condition is for _weapon_, and the code compiles (and has auto-complete) for the `range`, which is not available for the second condition.
+
+Small detail, you **must** specify the whole static part and not rely on `else`. The following code does not compile.
+
+```typescript
+export function attack(attackerItem: Weapon | Magic) {
+    if (attackerItem.kind === "Weapon_") {
+        console.log("Range:" + attackerItem.range);
+    } else {
+        console.log("Mana:" + attackerItem.costMana)
+    }
+}
+```
+
+Another detail is that you cannot specify only a portion of the static name of the type. For example, the following code does not work.
+
+```typescript
+export function attack(attackerItem: Weapon | Magic) {
+    if (attackerItem.kind === "Weapon") {
+        console.log("Range:" + attackerItem.range);
+    } else if (attackerItem.kind === "Magic") {
+        console.log("Mana:" + attackerItem.costMana)
+    }
+}
+```
+
+Even though, as a human, we can figure out that we do not need the underscore to identify the type, TypeScript requires to have the whole string. Since we could have a type named `TypeA` and `TypeAA`, it makes sense, and having a partial `Type` would break.

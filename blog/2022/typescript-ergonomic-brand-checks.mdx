@@ -1,0 +1,76 @@
+---
+title: "TypeScript Ergonomic Brand Checks"
+date: "2022-02-04"
+categories:
+  - "typescript"
+---
+
+In short, the term "Ergonomic Brand Checks" is linked to branding. Branding is a way to dynamically check for a type. It comes with JavaScript being schemaless. In JavaScript, you need to check for a field/property that exist on an object to ensure you are manipulating an object desired. For example, if you have an array of different objects, you might want to check if you are modifying a `Person` or an `Animal` before accessing (read or write) the object.
+
+With "Ergonomic Brand Checks" we are especially properties of an object. What is worth talking about is that TypeScript 4.5 allows checking private fields using the `in` operator.
+
+```typescript {10}
+class Person {
+    #shortname: string;
+    public constructor(name: string) {
+        this.#shortname = name;
+    }
+
+    public static isPerson(obj: unknown): unknown {
+        return obj &&
+            typeof obj === "object" &&
+            #shortname in obj;
+    }
+}
+
+class Animal {
+    #shortname: string;
+    public constructor(name: string) {
+        this.#shortname = name;
+    }
+}
+
+const x1 = { shortname: "Test" };
+const x2 = new Person("Test2");
+const x3 = new Animal("Test3");
+console.log(Person.isPerson(x1)); // False
+console.log(Person.isPerson(x2)); // True
+console.log(Person.isPerson(x3)); // False
+```
+
+Line 10 highlights and presents the newest addition for ergonomic brand check-in TypeScript. The `in` operator within the static function of a class is used to check if a private field exists. Oddly, the function does not return a boolean but `unknown`. Changing the parameter type to `any` gives an output of `any`. However, the output is `true` or `false` when executing the code.
+
+An interesting observation is that the last line returns `false` when we pass an instance of the class `Animal` even though the `Person` and `Animal` classes share the same field name. Actually, the value is also not relevant. The previous example modified to have the static function relying on a field that is not used but defined.
+
+```typescript {2, 11, 16}
+class Person {
+    #brand: unknown;
+    #shortname: string;
+    public constructor(name: string) {
+        this.#shortname = name;
+    }
+
+    public static isPerson(obj: unknown): unknown {
+        return obj &&
+            typeof obj === "object" &&
+            #brand in obj;
+    }
+}
+
+class Animal {
+    #brand: unknown;
+    #shortname: string;
+    public constructor(name: string) {
+        this.#shortname = name;
+    }
+}
+
+const x1 = { shortname: "Test" };
+const x2 = new Person("Test2");
+const x3 = new Animal("Test3");
+console.log(Person.isPerson(x1)); // False
+console.log(Person.isPerson(x2)); // True
+console.log(Person.isPerson(x3)); // False
+```
+
+The trick of using unsused private property has been there for a while. What is new is the possibility to use the `in`. I'll conclude by referring to a [great article by Michal Zalecki](https://michalzalecki.com/nominal-typing-in-typescript/) about four ways to nominal typing techniques in TypeScript.

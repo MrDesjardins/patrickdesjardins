@@ -1,0 +1,50 @@
+---
+title: "TypeScript Index Siagnature Dynamic Signature Property with version 4.4"
+date: "2022-01-14"
+categories:
+  - "typescript"
+---
+
+JavaScript as a way to key-value in a dictionary/map way that is very flexible. It works by using a string for the name of the property, and then you can assign a value. TypeScript is providing type association to the value, but before 4.4 you could not.
+
+We can summarize what was possible before TypeScript version 4.4 with index signature with the following example:
+
+```typescript
+interface KeyValue {
+  [k: string]: string; // Very wide
+}
+```
+
+As it appears, you can specify the key to be a `string` or a `number` but not specific other names. Concerning the value, it could be anything. You could still write a specific key by directly writing the name. In the following example, we accept any number or `"test"`.
+
+```typescript
+interface KeyValue {
+  [k: number]: string; // Allows any key as a number
+  ["test"]: string; // Allows the key "test"
+}
+const kv1: KeyValue = {
+  1: "good",
+  "test": "sure"
+};
+```
+
+What is new with TypeScript version 4.4 is defining a pattern instead of being widely open to accept any string or specify the exact string. A use case is with HTML where there is a known set of attribute but also the standard allows anything with a prefix of `data-`.
+
+```typescript
+interface HtmlAttributes {
+  color?: string;
+  left?: number;
+  top?: number;
+}
+
+interface DivHtmlAttributes extends HtmlAttributes {
+  [other: `data-${string}`]: unknown;  
+}
+
+let myDiv: DivHtmlAttributes = {
+  color: "red",
+  "data-blah": true
+};
+```
+
+The syntax might not be something that you are naturally using to define a type. It relies on the backticks with the string you desire to be required and between `${}` the dynamic portion type; in that case, it is a string.
