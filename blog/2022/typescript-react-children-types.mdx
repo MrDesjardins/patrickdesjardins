@@ -1,0 +1,48 @@
+---
+title: "How to type your React Children Property in TypeScript"
+date: "2022-02-21"
+categories:
+  - "typescript"
+---
+
+When you are using TypeScript and React, a good practice is to type your property. Each component is well defined and clear with what to provide. For example:
+
+```typescript
+interface MyOptions {
+  name: string;
+}
+
+export const MyComponent = (props: MyOptions) => {
+  // ...
+};
+```
+
+In React, a popular pattern is allowing the use of children.
+
+```typescript
+interface MyOptions {
+    name: string
+    children?: React.ReactNode;
+}
+export const MyComponent = (props: MyOptions) => {
+  return <div>{props.children</div>;
+}
+```
+
+You can use several types for the children. The `React.ReactNode` is one that is often used, but also `JSX.Element` which inherently uses the `React.ReactElement`
+
+If you look at the type definition of React you can see that:
+
+```typescript
+type ReactNode = ReactChild | ReactFragment | ReactPortal | boolean | null | undefined;
+```
+
+and 
+
+```typescript
+declare global {
+    namespace JSX {
+        interface Element extends React.ReactElement<any, any> { }
+``` 
+
+They are not the same, but in most cases are almost interchangeable. I would lean toward the `ReactNode` if you have no personal preference has it covers specific, explicit types and has the null/undefined for free.
