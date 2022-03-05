@@ -20,6 +20,13 @@ This website contains an introduction about Patrick Desjardins and a migration o
 The website is hosted in a Github repository. The _master_ branch host the Gatsby project and the _gh-pages_ is where the build files are deployed.
 The website is deployed using Github Workflow. It has a hook on when a code is pushed in the _master_ branch. You can see the workflow's action configuration in the repository [here](https://github.com/MrDesjardins/patrickdesjardins/blob/master/.github/workflows/main.yml).
 
+## Dependencies
+Must install ffmpeg
+
+```
+brew install ffmpeg
+```
+
 ## Yearly Task
 
 1. In the `./blog` folder, a new folder with the name of the year must be created.
