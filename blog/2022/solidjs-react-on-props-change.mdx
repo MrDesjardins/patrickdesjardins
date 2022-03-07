@@ -89,7 +89,7 @@ createEffect(() => {
 });
 ```
 
-So, there is a caveat here, what if we want to change the background without using `console.log`? Removing the `console.log` makes the component renders once, as we saw earlier. So, at the moment, the best I found was to use the variable without assigning.
+So, there is a caveat here, what if we want to change the background without using `console.log`? Removing the `console.log` makes the component renders once, as we saw earlier. So, you can cheat your way to use the variable without assigning.
 
 ```typescript
 createEffect(() => {
@@ -97,6 +97,21 @@ createEffect(() => {
   document.bgColor = document.bgColor === "red" ? "white" : "red";
 });
 ```
+However, there is an utility function that can be used that make the code cleaner.
+
+```typescript
+  createEffect(
+    on(
+      () => props.name,
+      () => {
+        document.bgColor = document.bgColor === "red" ? "white" : "red";
+      }
+    )
+  );
+  return <h1>Hello, {derivedName()}!</h1>;
+};
+```
+The `on` function takes a **function** that returns the property you want to _watch_. In that example, the function `() => props.name` cause the effect to be evaluated every time the reference of the `name` is changing. The second function of the `on` is the code you would put directly in the `createEffect`. For one rare time, SolidJS is more complex than React, and the documentation about `on` covers the case of a signal, not props which is confusing.
 
 # Conclusion
 You can find all the code in [CodeSandBox.io](https://codesandbox.io/s/solidjs-props-5omf9f?file=/src/index.tsx:393-551). SolidJS offers simplicity by removing the burden of using a Linter to avoid stale data in React by analyzing what is used within the body of the effect or by being smart enough to update the derivative function. The simplicity comes with the caveat that you may expect an effect to be called but it won't. For example, if you debug and use property in the `console.log`, the effect will suddenly behave differently. Or, if you remove the line in the last example that does nothing to the property, you will end up with a stale background color instead of an alternating one.
