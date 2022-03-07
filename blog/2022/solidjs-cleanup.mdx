@@ -1,0 +1,117 @@
+---
+title: "SolidJS: How to Execute Code When UnMounting or when an Effect Ends"
+date: "2022-03-10"
+categories:
+  - "solidjs"
+  - "typescript"
+---
+I'll cover two scenarios here:
+1) You want to execute code when your component is unmounted
+2) You want to execute code when an effect is completed
+
+# UnMount
+In React, unmounting code was once upon a time the job of a dedicated method of the component class `componentWillUnmount`. With React Hooks, the unmounting moved into a function returned by an effect that is executed when mounting. It means that the `useEffect` does have an empty array of dependencies. In SolidJS, the `useEffect` does not exist. It is replaced with `createEffect` and it does not have a return value. Instead, we must add inside the `createEffect` an `onCleanup` function that will be executed when the component is removed from the DOM.
+
+A short example is when a value changes from `1` that the component is not rendered anymore, but `null` is passed.
+
+```typescript {2-4}
+const ChildToUnMount = () => {
+  onCleanup(() => {
+    console.log("ChildToUnMount UnMounted");
+  });
+  return <div>UnMount Me Please</div>;
+};
+```
+
+The component has a straightforward `onCleanup` function executed only when the parent component removes it from the render function. For example:
+
+```typescript {5}
+const App: Component = () => {
+  const [val, setVal] = createSignal(0);
+  return (
+    <div>
+      {val() === 0 ? <ChildToUnMount /> : null}
+      <button
+        onclick={() => {
+          setVal((p) => p + 1);
+        }}
+      >
+        Increase
+      </button>
+    </div>
+  );
+};
+```
+
+Let's explore the second case, which will solidify this first example.
+
+# Effect
+If you are coming from React Hooks and use `useEffect`, you know that returning a function means that the function is executed once the effect is completed. 
+
+## Comparison with React
+Let's first establish the situation with React. The `useEffect` in React is executed after the DOM is updated. If you used React before Hooks, it would have been at the `componentDidMount` or once mounted at every update with `componentDidUpdate`. So, `useEffect` runs after each render. You can have the same code directly inside your React Hooks, but that would _block_ the render because it is sequential (top to bottom) while rendering. With the `useEffect`, the rendering occurs, and then the effects are called.
+
+There is a possibility to return a function in each effect. The function runs when you need to clean up. It is similar to the `componentWillUnmount` but runs every time the render is about to start again. It allows cleaning up some data before a new render, with new data (new state or props) occurs.
+
+You can visualize the flow being: Mount -> clean effect -> render -> effect
+
+With SolidJS, it is a little bit different. There is no function to return to the `createEffect`. Instead, you must use the `onCleanup` function that you can put directly inside your component or inside a `createEffect` depending on if you want the cleanup to occur during unmounting or before a new render. Here is an example that illustrates the pipeline of events.
+
+```typescript
+import { Component, createEffect, createSignal, onCleanup } from "solid-js";
+import { render } from "solid-js/web";
+export interface ChildProps {
+  val: number;
+}
+const Child = (props: ChildProps) => {
+  console.log("During render");
+  createEffect(() => {
+    console.log("CreateEffect", props.val);
+    onCleanup(() => {
+      console.log("CreateEffect Cleanup");
+    });
+  });
+  return <div>Value is: {props.val}</div>;
+};
+const App: Component = () => {
+  const [val, setVal] = createSignal(0);
+  return (
+    <div>
+      <h1>Hello, world!</h1>
+      <Child val={val()} />
+      <button
+        onclick={() => {
+          setVal((p) => p + 1);
+        }}
+      >
+        Increase
+      </button>
+    </div>
+  );
+};
+
+render(() => <App />, document.getElementById("app"));
+```
+The logs output this way:
+
+```
+During render 
+CreateEffect 
+0
+CreateEffect Cleanup 
+CreateEffect 
+1
+CreateEffect Cleanup 
+CreateEffect 
+2
+CreateEffect Cleanup 
+CreateEffect 
+3
+```
+We can see that the first log is the one in the function, this is the first render. Because SolidJS does not render the function on properties or state change, it is expected. The DOM is changed with the correct value because `{props.val}` difference makes the DOM change. Concerning the other logs, we can see that the first `CreateEffect 0` is output before pushing the button. IT means that after the first rendering, the DOM is changed, and the effect is called.
+
+Then, if we click the button once, we see the `CreateEffect Cleanup`, which is the `onCleanup` function of the `Child`. That is expected. Then, we see the `CreateEffect 1` as the DOM renders the value 1.
+
+# Conclusion
+
+You can see both examples in the following interactive [CodeSandbox.io](https://codesandbox.io/s/uncleanup-m6enu9?file=/src/index.tsx). What is important to remember is that SolidJS provides access for your to have custom code when a component is removed from the DOM or when a component is about to run a new effect. Both rely on the `onCleanup`. The point to keep in mind is to remember that there is a _before_ and _after_ the DOM is changed. The "DOM is changed" is important because it is different from "the render executed." The `onCleanup` allows you to inject custom code _before_ the DOM is changed, the remaining of the component code (render) is executed, and then, there is a possibility to have an injection of code _after_ the DOM is rendered.
