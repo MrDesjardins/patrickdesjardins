@@ -43,11 +43,6 @@ export const ContactSection = (): JSX.Element => {
           <FontAwesomeIcon icon={faMapMarker} />
           <h5>United States, California, San Jose</h5>
         </div>
-
-        <div className={contactDetail}>
-          <FontAwesomeIcon icon={faPhone} />
-          <h5>971-801-0075</h5>
-        </div>
       </div>
       <div className={contactContainer2}>
         <div className={contactDetail}>
