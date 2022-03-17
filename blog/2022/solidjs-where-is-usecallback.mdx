@@ -1,0 +1,21 @@
+---
+title: "SolidJS: Where is useCallback?"
+date: "2022-04-02"
+categories:
+  - "solidjs"
+  - "typescript"
+---
+
+If you are coming from React, you may wonder where the hook useCallback is? SolidJS does not have an equivalency because it does not need one!
+
+# React useCallback
+
+React relies on reference to know if something is changing or not. Similarly, SolidJS does the same thing. However, React executes the component code at every render while SolidJS does not. That slight difference is enormous in many ways, and it impacts events, like `onClick` defined to any HTML element. Using the `useCallback` creates a single _instance_ of a function, keeping across all render the same memory reference. Thus, it does not invalidate React's cache at every render.
+
+# SolidJS
+
+SolidJS executes the code of your component once. Hence, you can have a function, an event callback, directly in the component without relying on any external concept, like the `useCallback`. The simplicity of SolidJS shines again, this time with a callback that does not need to be memoized.
+
+# Conclusion
+
+SolidJS departs of React with its simplicity like with its [state that does not re-render components](./solidjs-first-try-review). The simplicity is a common theme when we think about how easy it is to work with `setTimout` and `setInterval` compared to React, that require using `useRef` to persist value between re-render. Similarly, the lack of default [dependency for `createEffect`](./solidjs-react-on-props-change) to have SolidJS automatically figure out dependency avoid naturally stale data. In this short article, we saw (again) that the non-re-render also provides simplicity with function callback.
