@@ -1,0 +1,187 @@
+---
+title: "SolidJS: How to create an animation of a wave"
+date: "2022-04-12"
+categories:
+  - "solidjs"
+  - "typescript"
+  - "animation"
+---
+
+In this short article, we will see how to create with SolidJS this dynamic wave effect that simulates a water wave that goes from the bottom of the screen. Of course, performing the same with React would be very similar.
+
+![](./videos/Wave.mp4)
+
+# Goal
+
+The goal is to create a dynamic wave over the current application. Hence, we need the SolidJS component to float above the existing component. We also need it to stretch for the width of its parents and grow from the top to bottom of its parent as well.
+
+# CSS
+
+A small portion of the code comes from CSS. When I am using SolidJS, I am using CSS module, which is a CSS file that can be referred inside the `TSX` file, thus convenient.
+
+The CSS relies on two specific CSS positioning detail:
+
+1. Position absolute
+2. Flexbox
+
+The position absolute is used to move the whole container above everything in the parent container. The container size (width and height) relies on the flexbox to expand the parent container.
+
+```css
+.WaterScreen {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: var(--transition-zindex);
+  margin-top: 10px;
+}
+```
+
+We can use our new component by dropping the component inside the parent container.
+
+```typescript
+<ParentContainerHere>
+  <div>{/*... Sibling that will be covered */}</div>
+  {showWater() ? <WaterScreen /> : null} {/* Could be anywhere inside the <ParentContainerHere> */}
+  <div>{/*... Sibling that will be covered */}</div>
+</ParentContainerHere>
+```
+
+A keen observer might notice that we also require to have a `z-order` higher than other sibling components. I am using CSS variables in my application to have all the `z-order` at a unique place. I am configuring the `--transition-zindex` to be higher than the normal content `z-index`.
+
+# Component
+
+The component is not as complex as one might think. It returns a container and a canvas.
+
+```typescript
+return (
+  <div class={styles.WaterScreen}>
+    <canvas ref={canvasRef} class={styles.WaterScreen} width={canvasWidth} height={canvasHeight} />
+  </div>
+);
+```
+
+The container has the parent's size and will always be above everything. This is why it is important in the usage of this component to not render it until ready. We can see that we are returning `null` in the code above.
+
+```typescript
+{showWater() ? <WaterScreen /> : null} 
+```
+We want the component to be the whole page, and we want to cover everything only when the wave animation starts. It has two purposes. The first one is that it allows having an accurate container already in place. The second one is that it blocks the user from clicking anything underneath.
+
+Most of the code is inside the canvas. When we mount the container, we start an animation that will render a single shape. 
+
+```typescript
+onMount(() => {
+  frame = requestAnimationFrame(draw);
+  onCleanup(() => cancelAnimationFrame(frame));
+});
+```
+
+Here lies the complexity. We want to render a sine shape and then go to the bottom-right corner, bottom-left corner and close the shape. We do that 30 times per second until we reach the top.
+
+The `draw` function is within the SolidJS component and repeats the same drawing pattern with a slight variation of the sine function to make the sine wave move.
+
+```typescript
+const draw = (time: number) => {
+  const ctx = canvasRef?.getContext("2d") ?? null;
+
+  if (ctx && isWaveAnimationRunning()) {
+    ctx.fillStyle = "#0288d1";
+    if (time > lastTime + 1000 / CONSTANTS.FPS) {
+      ctx.globalAlpha = waterTransparency;
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight); // Might not need to clear all
+      ctx.beginPath();
+      ctx.moveTo(0 - waveXOffset, lastY);
+      for (x = waveXOffset; x <= canvasWidth + waveXOffset; x += 10) {
+        y = waveYOffset + waveHeight * Math.sin((x / (canvasWidth / WAVE_NUMBER)) * 2 * Math.PI);
+        waveHeight += waveGrowing ? WAVE_GROWING_PIXEL : -WAVE_GROWING_PIXEL;
+        if (waveHeight > WAVE_HEIGHT) {
+          waveGrowing = false;
+        } else if (waveHeight <= -WAVE_HEIGHT) {
+          waveGrowing = true;
+        }
+        ctx.lineTo(x - waveXOffset, y);
+
+        lastY = y;
+        lastX = x;
+      }
+      if (waveYOffset < canvasHeight / 2) {
+        waterTransparency = Math.min(WAVE_FINAL_TRANSPARENCY, waterTransparency + WAVE_TRANSPARENCY_INCREASE);
+      }
+
+      ctx.lineTo(canvasWidth, lastY);
+      ctx.lineTo(canvasWidth, canvasHeight);
+      ctx.lineTo(0, canvasHeight);
+      ctx.closePath();
+      ctx.fill();
+      waveXOffset += WAVE_X_TRANSLATION;
+      waveYOffset -= WAVE_Y_TRANSLATION;
+      lastTime = time;
+    }
+  }
+  if (waveYOffset >= -WAVE_HEIGHT) {
+    frame = requestAnimationFrame(draw);
+  } else {
+    setIsWaveAnimationRunning(false);
+  }
+};
+```
+
+Let's go from top to bottom.
+
+```typescript
+if (time > lastTime + 1000 / CONSTANTS.FPS) {
+``` 
+It allows skipping some rendering. What it goes is check if a minimum of time has elapsed before redrawing the water. Thus, it can skip a couple of times, giving the browser some room to breathe. The constant is set at 30.
+
+The next step, executed 30 times per second, is to clear the canvas and start drawing the shape that we will fill. We move to the top-left and then to the top-right position. The `lastY` is initialized to zero, starting from the bottom.
+
+```typescript
+ctx.clearRect(0, 0, canvasWidth, canvasHeight); // Might not need to clear all
+ctx.beginPath();
+ctx.moveTo(0 - waveXOffset, lastY);
+```
+
+The `waveXOffset` moves left and right the wave. It creates the horizontal oscillation movement. If we hardcode the `lastY` to a specific value, we would see the wave render with a movement that goes left and right without moving up.
+
+```typescript
+for (x = waveXOffset; x <= canvasWidth + waveXOffset; x += 10) {
+  y = waveYOffset + waveHeight * Math.sin((x / (canvasWidth / WAVE_NUMBER)) * 2 * Math.PI);
+  waveHeight += waveGrowing ? WAVE_GROWING_PIXEL : -WAVE_GROWING_PIXEL;
+  if (waveHeight > WAVE_HEIGHT) {
+    waveGrowing = false;
+  } else if (waveHeight <= -WAVE_HEIGHT) {
+    waveGrowing = true;
+  }
+  ctx.lineTo(x - waveXOffset, y);
+
+  lastY = y;
+  lastX = x;
+}
+```
+
+The next step is to render the many curves at the top of the water that creates the wave effect. Actually, What we need to do is to generate a sine function and apply it to the whole width. The loop goes from left to right of the canvas skipping 10 pixels. This is arbitrary and could be less or more depending on how many lines are desired to generate the wave.
+
+Then, to have a nicer effect, we want the sine function to have different heights. We want to start flat and go higher and then go lower. It creates a growing and shrinking effect. That part is handled with the `waveHeight` and `waveGrowing`. When the boolean `waveGrowing` is true, we increase slightly (0.02) pixel. Otherwise, we reduce the height of the same amount.
+
+The complex part is the first line that calculates the `y` which use the `waveYOffset`, the top of the wave starting at zero and increasing to reach the top position of the parent container. Then, it adds the wave height, which is continually pulsing, and finally, we move the result with a `Math.sin` function that is divided in two parts:
+
+```typescript
+Math.sin((x / (canvasWidth / WAVE_NUMBER)) * 2 * Math.PI);
+``` 
+
+The first part is what is on the left side, inside the parentheses. That part determines how many cycles of the sine we want. It means the amount of wave that goes up/down. We need a number of pixels from the whole width and then find the x coordinate for the sine function. That is performed using `x/canvasWidth/WAVE_NUMBER`. In my case, the constant is 4. I have a canvas width of 1024, so the first pixel will give a `1/1024/4`. However, we still need to multiply by the second part. The second part is the `2*Math.PI`. The reason is that a whole circle two times PI. So, what we do is we take a fraction of this complete circle. The fraction is what we computed on the left part, which will end up to be to be `1` because the `x` moves in the loop up to the `canvasWidth` which will result to: `1014/1024/4`... not exactly 1, but 0.25 is close enough for us.
+
+ At each computation, we draw a line with `lineTo` and keep track of the last x and y coordinate, which will tell us where to start on the next loop. The `y` increases, and the `x` goes left and right.
+
+ ```typescript
+ctx.lineTo(x - waveXOffset, y);
+lastY = y;
+lastX = x;
+```
+
+# Conclusion
+The full source code is within a small application I built in [this Github Repository](https://github.com/MrDesjardins/gym-water-app/tree/main/src/components/Transitions). While the component has the width and height hard coded, it would be easy to extract the values as a property for the component and other `const` that determine the transparency of the waves, how much movement, etc.

@@ -12,11 +12,11 @@ A WebWorker is a place in the browser that can be requested by a page to do some
 
 To illustrate the benefit, we will use an intensive script that will be run in the main thread from one button and having a second button that execute the same script into the WebWorker. The main thread will have the time updating every 50ms as well as adding a dot. The first button will have the consequence of having the time and the dot to stop for few seconds, while the WebWorker will have always a smooth time and dot update. Here is the result of the code being executed in the main thread.
 
-![](images/MainThreadBlockUI.gif)
+![](videos/MainThreadBlocking.mp4)
 
 As you can see, when the button is click, the heavy process is taking so much of the processor that it hangs the whole thread. The clock stops ticking, the dots stop moving. However, looks at the result with WebWorker.
 
-![](images/WebWorkerThreadNotBlockUI.gif)
+![](videos/MainThreadNonBlocking.mp4)
 
 The animation keeps working with the dots and the clock is not interfered by calculation. At the end, it's more smooth because the main thread is not doing the heavy lifting -- the WebWorker is doing it.
 

@@ -1,8 +1,7 @@
 ===
-Last Article Date: 2022-04-02
+Last Article Date: 2022-04-19
 
 === Topics
 
 Category: solidjs
-- Canvas wave animation
 - createStore
