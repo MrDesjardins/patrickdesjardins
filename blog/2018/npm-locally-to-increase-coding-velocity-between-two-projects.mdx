@@ -17,8 +17,17 @@ The second step is to go at with your command line at the location of the packag
 
 Finally, once you are done and want to use the node_module library, you can unlink. The command to unlink is "npm unlink " where the parameter is the parameter of the library linked. The library can also be unlinked by going back to the library and executed "npm unlink".
 
-As a recap: ```typescript
-// 1) At the library level npm link // 2) At the project level (consumer) npm link my-library-name // 3) Stop using the local version npm unlink my-library-name // 4) Stop sharing locally my-library-name (must move back to library level) npm unlink 
+As a recap: 
+
+```typescript
+// 1) At the library level 
+npm link 
+// 2) At the project level (consumer) 
+npm link my-library-name 
+// 3) Stop using the local version 
+npm unlink my-library-name 
+// 4) Stop sharing locally my-library-name (must move back to library level) 
+npm unlink 
 ``` 
 
 
