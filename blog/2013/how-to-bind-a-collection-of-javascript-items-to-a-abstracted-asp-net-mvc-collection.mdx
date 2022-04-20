@@ -25,7 +25,16 @@ Having the same name for the hidden field and the model property let Asp.Net MVC
 The Javascript invoked into the serialization is quite simple. It takes all rows and you create a Javascript object that contains the info. The code below display how to serialize with Javascript 2 cells per rows. As you can see, a "data-key" was set by the template to the row to have the unique identifier. This let us know that this row is not new because new row won't have any id. The deserialization will put the default value for your key at the deserialization time.
 
 ```typescript
-var obj = []; $('#YouTable tbody tr').each(function () { var tempo = {}; tempo.PropertyKey = $(this).attr('data-key'); tempo.Property1 = $(this).find('td').eq(0).html(); tempo.Property2 = $(this).find('td').eq(1).html(); obj.push(tempo); }); $('#YourHiddenField').val(JSON.stringify(obj)); 
+var obj = []; 
+$('#YouTable tbody tr').each(function () { 
+  var tempo = {}; 
+  tempo.PropertyKey = $(this).attr('data-key'); 
+  tempo.Property1 = $(this).find('td').eq(0).html(); 
+  tempo.Property2 = $(this).find('td').eq(1).html(); 
+  obj.push(tempo); 
+});
+
+$('#YourHiddenField').val(JSON.stringify(obj)); 
 ``` 
 
 
@@ -35,9 +44,21 @@ The first step is to create a class that inherit from IModelBinder. This will gi
 
 
 ```csharp
- public class MyInterfaceTypeModelBinder:IModelBinder { public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext) { var valueResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName); var modelState = new ModelState {Value = valueResult};
+ public class MyInterfaceTypeModelBinder:IModelBinder { 
+   public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext) { 
+     var valueResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName); 
+     var modelState = new ModelState {Value = valueResult};
 
-MyInterface actualValue = null; try { actualValue = JsonConvert.DeserializeObject<MyInterface>(valueResult.AttemptedValue); } catch (FormatException e) { modelState.Errors.Add(e); } bindingContext.ModelState.Add(bindingContext.ModelName, modelState); return actualValue; } } 
+    MyInterface actualValue = null; 
+    try { 
+      actualValue = JsonConvert.DeserializeObject<MyInterface>(valueResult.AttemptedValue); 
+    } catch (FormatException e) { 
+      modelState.Errors.Add(e); 
+    } 
+    bindingContext.ModelState.Add(bindingContext.ModelName, modelState); 
+    return actualValue;
+  } 
+} 
 ```
 
 We also need to register the ModelBinder in the Global.asax.cs inside the ApplicationStart method.
@@ -50,15 +71,37 @@ We also need to register the ModelBinder in the Global.asax.cs inside the Applic
 In the case that the IMyInterface would have some property which were interface too, you may need to specify to the deserializer to what type to map them. Here is an example.
 
 ```csharp
-public class MyInterfaceTypeModelBinder:IModelBinder { public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext) { var valueResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName); var modelState = new ModelState {Value = valueResult};
+public class MyInterfaceTypeModelBinder:IModelBinder { 
+  public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext) { 
+    var valueResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName); 
+    var modelState = new ModelState {Value = valueResult};
 
-MyInterface actualValue = null; var settings = new JsonSerializerSettings(); settings.Converters.Add(new MyOtherInterfaceTypeConverter()); try { actualValue = JsonConvert.DeserializeObject<MyInterface>(valueResult.AttemptedValue, settings); } catch (FormatException e) { modelState.Errors.Add(e); } bindingContext.ModelState.Add(bindingContext.ModelName, modelState); return actualValue; } } public class MyOtherInterfaceTypeConverter : JsonConverter { public override bool CanConvert(Type objectType) { return (objectType == typeof(IMyOtherInterface)); }
+    MyInterface actualValue = null; 
+    var settings = new JsonSerializerSettings(); 
+    settings.Converters.Add(new MyOtherInterfaceTypeConverter()); 
+    try { 
+      actualValue = JsonConvert.DeserializeObject<MyInterface>(valueResult.AttemptedValue, settings); 
+    } catch (FormatException e) { 
+      modelState.Errors.Add(e); 
+    } 
+    bindingContext.ModelState.Add(bindingContext.ModelName, modelState); 
+    return actualValue; 
+    } 
+  } 
 
-public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) { return serializer.Deserialize<MyOtherInterfaceConcrete>(reader); }
+  public class MyOtherInterfaceTypeConverter : JsonConverter { 
+    public override bool CanConvert(Type objectType) { 
+      return (objectType == typeof(IMyOtherInterface)); 
+    }
 
-public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) { //... to be done if we care about serialization... } }
+  public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) { 
+    return serializer.Deserialize<MyOtherInterfaceConcrete>(reader); 
+  }
 
-
+  public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) { 
+    //... to be done if we care about serialization... 
+  } 
+}
 ```
 
 From here, the model binder of Asp.Net MVC will use your model binder for your type and sub type used in the process. This whole post has been used [Json Newton library](http://james.newtonking.com/pages/json-net.aspx) for deserializing the Javascript JSON object.

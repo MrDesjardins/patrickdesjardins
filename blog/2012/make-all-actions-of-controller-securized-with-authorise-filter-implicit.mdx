@@ -13,19 +13,33 @@ How do we implement that? First, we need to add a new filter that will authorize
 
 
 ```csharp
- public static void RegisterGlobalFilters(GlobalFilterCollection filters) { filters.Add(new LogonAuthorize()); } 
-``` Since version 3 of ASP.NET MVC, you can add the AuthorizeAttribute filter to the global.asax file to protect every action method of every controller. Second, we need to create the LogonAuthorize class that inherit from AuthorizeAttribute.
+public static void RegisterGlobalFilters(GlobalFilterCollection filters) { 
+   filters.Add(new LogonAuthorize()); 
+} 
+``` 
+
+Since version 3 of ASP.NET MVC, you can add the AuthorizeAttribute filter to the global.asax file to protect every action method of every controller. Second, we need to create the LogonAuthorize class that inherit from AuthorizeAttribute.
 
 
 ```csharp
- public sealed class LogonAuthorize : AuthorizeAttribute { public override void OnAuthorization(AuthorizationContext filterContext) { bool skipAuthorization = filterContext.ActionDescriptor.IsDefined(typeof(AllowAnonymousAttribute), true) || filterContext.ActionDescriptor.ControllerDescriptor.IsDefined(typeof(AllowAnonymousAttribute), true); if (!skipAuthorization) { base.OnAuthorization(filterContext); } } } 
+ public sealed class LogonAuthorize : AuthorizeAttribute { 
+  public override void OnAuthorization(AuthorizationContext filterContext) { 
+    bool skipAuthorization = filterContext.ActionDescriptor.IsDefined(typeof(AllowAnonymousAttribute), true) || filterContext.ActionDescriptor.ControllerDescriptor.IsDefined(typeof(AllowAnonymousAttribute), true); 
+    if (!skipAuthorization) { 
+      base.OnAuthorization(filterContext); 
+    } 
+  } 
+} 
 ```
 
-If the base.OnAuthorization() is skip, than we do not have any protection. If the base.OnAuthorization() is called, than the protection mechanism is called and authentification rules are applied.
+If the `base.OnAuthorization()` is skip, than we do not have any protection. If the `base.OnAuthorization()` is called, than the protection mechanism is called and authentification rules are applied.
 
 So, what's happen in the OnAuthorization method? It simply check if the method or the class contain the attribute defined (AllowAnonymous). If it does, than we skip the authorization so we do not call the base class (AuthorizeAttribute).
 
 From there, you need to add [AllowAnonymous] to methods that you want to be allowed without having the visitor authenticated. For example, method for login and creating an account should have this attribute. 
+
 ```csharp
- [AllowAnonymous] public ActionResult LogOn() { //... } 
+[AllowAnonymous] public ActionResult LogOn() { 
+  //... 
+} 
 ```

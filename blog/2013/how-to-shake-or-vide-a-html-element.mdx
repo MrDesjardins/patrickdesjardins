@@ -35,18 +35,36 @@ You can see a working example [here](http://jsfiddle.net/kEVd3/).
 Here is the JQuery Plugin version : [http://jsfiddle.net/kEVd3/3/](http://jsfiddle.net/kEVd3/3/)
 
 ```typescript
-(function($){ $.fn.vibrate = function(options) { options = $.extend({}, $.fn.vibrate.defaultOptions, options); var control = $(this); var vibrateIndex = 0; var selector; vibrateIndex = setInterval(vibe, options.interval); setTimeout(stopVibration, options.duration); function vibe() { var shake = 3; $(control).stop(true, false) .css({ position: 'relative', left: Math.round(Math.random() * shake) + 'px', top: Math.round(Math.random() * shake) +'px', borderColor: 'red' }); };
+(function($){ 
+  $.fn.vibrate = function(options) { 
+    options = $.extend({}, $.fn.vibrate.defaultOptions, options); 
+    var control = $(this); 
+    var vibrateIndex = 0; 
+    var selector; vibrateIndex = setInterval(vibe, options.interval); 
+    setTimeout(stopVibration, options.duration); 
+    function vibe() { 
+      var shake = 3; 
+      $(control).stop(true, false)
+      .css({ position: 'relative', left: Math.round(Math.random() * shake) + 'px', top: Math.round(Math.random() * shake) +'px', borderColor: 'red' }); };
 
-function stopVibration() { clearInterval(vibrateIndex); $(control).stop(true, false) .css({ position: 'static', left: '0px', top: '0px', borderColor: ''}); }; return this; } $.fn.vibrate.defaultOptions = { interval : 10 , duration : 500 } })(jQuery);
+  function stopVibration() { 
+    clearInterval(vibrateIndex); 
+    $(control).stop(true, false)
+      .css({ position: 'static', left: '0px', top: '0px', borderColor: ''}); }; 
 
+    return this; 
+  } 
 
+  $.fn.vibrate.defaultOptions = { interval : 10 , duration : 500 } 
+})(jQuery);
 ``` 
 
-
-Here is an example of how to use it : ```typescript
-$('#btnShake').click(function(){ $('input[type=text]').vibrate(); }); 
+Here is an example of how to use it : 
+```typescript
+$('#btnShake').click(function(){ 
+  $('input[type=text]').vibrate(); 
+}); 
 ``` 
-
 
 You can also specify option like the duration:
 

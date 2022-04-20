@@ -8,20 +8,38 @@ categories:
 If you have a web project that use JQuery framework and you have a lot of functions that has cohesive meaning in a single Javascript file, maybe you should think to create a plugin. The choice to create a JQuery pluging let you act on Html element by using JQuery. You extend JQuery. I won't write here how to create a plugin but how to add to your plugin some public functions. This is something important that may have turn you off concerning to convert all your functions into a JQuery plugin. But, in this article, I'll show you how to extend JQuery for a simple pluging and to allow to use pluging public function. Those public functions will be called commands.
 
 ```typescript
-(function($) { //define the commands that can be used var commands = { publicMethod1Name: innerPluginMethod1, publicMethod2Name: innerPluginMethod2 }; $.fn.yourPlugin = function() { if (typeof arguments[0] === 'string') { var property = arguments[1]; var args = Array.prototype.slice.call(arguments); //Erase command name which is index 0. args.splice(0, 1); commands[arguments[0]].apply(this, args); //Execute command with the rest of argument (1...n) } else { initialize.apply(this, arguments); } return this; }; function initialize(options){
+(function($) { //define the commands that can be used 
+var commands = { publicMethod1Name: innerPluginMethod1, publicMethod2Name: innerPluginMethod2 }; 
+$.fn.yourPlugin = function() { 
+  if (typeof arguments[0] === 'string') { 
+    var property = arguments[1]; 
+    var args = Array.prototype.slice.call(arguments); 
+    //Erase command name which is index 0. 
+    args.splice(0, 1); 
+    commands[arguments[0]].apply(this, args); 
+    //Execute command with the rest of argument (1...n) 
+    } else { 
+      initialize.apply(this, arguments); 
+    } 
+    return this; 
+  }; 
+  function initialize(options){
+  } 
+  function innerPluginMethod1(param1) {
 
-} function innerPluginMethod1(param1) {
+  } 
+  function innerPluginMethod2() {
 
-} function innerPluginMethod2() {
-
-} })(jQuery); 
+  } 
+})(jQuery); 
 ``` 
 
 
 The code above can be used this way:
 
 ```typescript
-$('#htmlElement').yourPlugin({option1:value1, option2:value2}); $('#htmlElement').yourPlugin("innerPluginMethod1", "parameter1"); 
+$('#htmlElement').yourPlugin({option1:value1, option2:value2}); 
+$('#htmlElement').yourPlugin("innerPluginMethod1", "parameter1"); 
 ``` 
 
 

@@ -21,9 +21,34 @@ The second step is to define a style to all those Html markup. It also defines t
 
 
 ```css
- #zone div { width:150px; height:150px; background-color:yellow; color:black; font-size:18px; } #zone { -webkit-perspective: 1200px; } @-webkit-keyframes spinner { from { -webkit-transform: rotateY(0deg); } to { -webkit-transform: rotateY(-180deg); } }
+ #zone div { 
+   width:150px; 
+   height:150px; 
+   background-color:yellow; 
+   color:black; font-size:18px; 
+  } 
+  
+  #zone { 
+    -webkit-perspective: 1200px; 
+  } 
+  
+  @-webkit-keyframes spinner { 
+    from { 
+      -webkit-transform: rotateY(0deg); 
+    } 
+    to {
+      -webkit-transform: rotateY(-180deg); 
+    } 
+  }
 
-.flip { -webkit-animation-name: spinner; -webkit-animation-timing-function: linear; -webkit-animation-iteration-count: 1; -webkit-animation-duration: 1s; -webkit-transform-style: preserve-3d; -webkit-transform-origin:50% 50%; } 
+.flip { 
+  -webkit-animation-name: spinner; 
+  -webkit-animation-timing-function: linear; 
+  -webkit-animation-iteration-count: 1; 
+  -webkit-animation-duration: 1s; 
+  -webkit-transform-style: preserve-3d; 
+  -webkit-transform-origin:50% 50%; 
+} 
 ```
 
 
@@ -33,9 +58,13 @@ The last step is to define the action on the button. This action could have been
 
 
 ```javascript
-
-
-$(document).on("click", "#btnFlip", function flipDiv() { $('#zone div:hidden').removeClass('flip') $('#zone div:visible').addClass('flip') .delay(600) .fadeOut(300, function(){$('#zone div:not(.flip)').fadeIn(300)}); }); 
+$(document).on("click", "#btnFlip", function flipDiv() { 
+  $('#zone div:hidden').removeClass('flip') 
+  $('#zone div:visible').addClass('flip')
+    .delay(600)
+    .fadeOut(300, function(){
+      $('#zone div:not(.flip)').fadeIn(300)});
+}); 
 ``` 
 
 

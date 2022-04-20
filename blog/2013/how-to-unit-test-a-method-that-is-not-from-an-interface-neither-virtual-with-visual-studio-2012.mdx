@@ -11,9 +11,20 @@ For the purpose of this article, let say that we have a library with a single cl
 
 
 ```csharp
- namespace ShimpProjectClassesToShim { public class MyClass { public string MyMethod(string variable) { return "From MyClass = " + variable; } } public class MyClass2 { public string ToTest() { var m = new MyClass(); return m.MyMethod("InsideMyClass2"); } } }
-
-
+namespace ShimpProjectClassesToShim { 
+  public class MyClass { 
+    public string MyMethod(string variable) { 
+      return "From MyClass = " + variable; 
+    } 
+  } 
+  
+  public class MyClass2 { 
+    public string ToTest() { 
+      var m = new MyClass();
+      return m.MyMethod("InsideMyClass2"); 
+    } 
+  } 
+}
 ```
 
 This method is not virtual, but could have been because shim can be bound to static method. As you can see, the purpose of the test would be to change the inside of the method for the time of a test method.
@@ -30,7 +41,9 @@ If you are curious about what contain this file, here is the one of the example 
 
 
 ```xml
- <Fakes xmlns="http://schemas.microsoft.com/fakes/2011/"> <Assembly Name="ShimpProjectClassesToShim"/> </Fakes> 
+ <Fakes xmlns="http://schemas.microsoft.com/fakes/2011/"> 
+  <Assembly Name="ShimpProjectClassesToShim"/> 
+ </Fakes> 
 ```
 
 
@@ -40,11 +53,22 @@ The test my be inside the scope of a ShimContext to be able to set the shim insi
 
 
 ```csharp
- [TestClass] public class UnitTest1 { [TestMethod] public void TestMethod1() { //Shim using (ShimsContext.Create()) { //Arrange ShimMyClass.AllInstances.MyMethodString = (theClass, s) => "FAKE " + s; var classToUnitTest = new MyClass2();
+[TestClass] public class UnitTest1 { 
+  [TestMethod] public void TestMethod1() { 
+    //Shim 
+    using (ShimsContext.Create()) { 
+      //Arrange 
+      ShimMyClass.AllInstances.MyMethodString = (theClass, s) => "FAKE " + s; 
+      var classToUnitTest = new MyClass2();
 
-//Act string result = classToUnitTest.ToTest();
+      //Act 
+      string result = classToUnitTest.ToTest();
 
-//Assert Assert.AreEqual("FAKE InsideMyClass2", result); } } } 
+      //Assert 
+      Assert.AreEqual("FAKE InsideMyClass2", result); 
+    } 
+  } 
+} 
 ```
 
 The arrange section set for all instances of the method the desired return value. As you can see we use "ShimMyClass" class to set all instances. In your case, if you class is called "XYZ", you will have to use "ShimXYZ". This is by design that a class has been created for you with the prefix Shim. From there, you will be able to set return value for all methods. The rest of the unit test is as usual.

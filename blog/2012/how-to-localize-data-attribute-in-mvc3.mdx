@@ -11,14 +11,22 @@ Here is an example:
 
 
 ```csharp
- public class Person { [Required(ErrorMessage="FirstName is required")] public string FirstName { get; set; } //... } 
+public class Person { 
+  [Required(ErrorMessage="FirstName is required")] 
+  public string FirstName { get; set; } 
+  //... 
+} 
 ```
 
 If you want to have the Data Annotation translated in many languages, you should use two others properties that are : **ErrorMessageResourceType** and **ErrorMessageResourceName**. This will let you specify the resource type and the resouce name which is the key of inside the resource file.
 
 
 ```csharp
- public class Person { [Required(ErrorMessageResourceType=typeof(MyResourcesNameSpace.ResourcesFile), ErrorMessageResourceName="FirstNameRequiredKey")] public string FirstName { get; set; } //... } 
+public class Person { 
+  [Required(ErrorMessageResourceType=typeof(MyResourcesNameSpace.ResourcesFile), ErrorMessageResourceName="FirstNameRequiredKey")] 
+  public string FirstName { get; set; } 
+  //... 
+} 
 ```
 
 This way, you will have your application localized from the Model to the View without any problem.

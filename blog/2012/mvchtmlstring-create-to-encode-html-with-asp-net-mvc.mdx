@@ -19,7 +19,11 @@ From here, you can create your own Html extension to extend
 
 
 ```csharp
- public static class HtmlHelpers { public static MvcHtmlString HtmlEncode(this string data) { return MvcHtmlString.Create(data); } } 
+ public static class HtmlHelpers { 
+   public static MvcHtmlString HtmlEncode(this string data) { 
+     return MvcHtmlString.Create(data); 
+    } 
+  } 
 ```
 
 This extension will let you encode any string so you could use it with you properties.
@@ -58,6 +62,7 @@ public static bool IsNullOrEmpty(MvcHtmlString value) { return (value == null ||
 Are you can see, this one return a MvcHtmlString. At the end, both return something similar and encoded html.
 
 In the scenario you want to display the html's string you simply need to use the variable: 
+
 ```csharp
 @{ var x= "<b>Test</b>"; }
 @x 

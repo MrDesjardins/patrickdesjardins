@@ -8,13 +8,21 @@ categories:
 TempDataDictionary (TempData is of type of TempDataDictionary) is useful if you need to keep you data between redirection. I have see some case of error with programmer who use the **TempData** with the **Add** method.
 
 First the Add method won't let you add more than 1 same key. This mean that it will crash if you write: 
+
 ```csharp
- TempData.Add("key1","value1"); TempData.Add("key1","value2"); 
-``` You will tell me why someone will do this, well, in the scenario of redirection, which should occur if you are using **TempData** instead of **ViewBag** you may comeback in the same path of code that the user set the data. In this case, the value are set twice cause the TempData in a redirection keep its values.
+ TempData.Add("key1","value1"); 
+ TempData.Add("key1","value2"); 
+
+``` 
+
+You will tell me why someone will do this, well, in the scenario of redirection, which should occur if you are using **TempData** instead of **ViewBag** you may comeback in the same path of code that the user set the data. In this case, the value are set twice cause the TempData in a redirection keep its values.
 
 So, you can add some validation with the ContainsKey method. 
+
 ```csharp
- if(!TempData.ContainsKey("key1")) { TempData.Add("key1","value1"); } 
+if(!TempData.ContainsKey("key1")) { 
+  TempData.Add("key1","value1"); 
+} 
 ```
 
 Second, this solve the problem but create overwhelming code for a simple task. The solution in my opinion is to simply use the bracket overload of the TempDataDictionary.
@@ -30,7 +38,22 @@ If you are curious about the bracket code, here is the source code of the TempDa
 
 
 ```csharp
- private Dictionary<string, object>_data; private HashSet<string>_initialKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase); //... public object this[string key] { get { object value; if (TryGetValue(key, out value)) {_initialKeys.Remove(key); return value; } return null; } set {_data[key] = value;_initialKeys.Add(key); } } 
+private Dictionary<string, object>_data; 
+private HashSet<string>_initialKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase); 
+//... 
+public object this[string key] { 
+  get { object value; 
+    if (TryGetValue(key, out value)) {
+      _initialKeys.Remove(key); 
+      return value; 
+    } 
+    return null; 
+  } 
+
+  set {
+    _data[key] = value;_initialKeys.Add(key); 
+  } 
+} 
 ```
 
 Of course, the real question now is why does this code has redirection that double set this value, but this is another story.

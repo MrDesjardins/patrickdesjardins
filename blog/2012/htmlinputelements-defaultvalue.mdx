@@ -1,7 +1,7 @@
 ---
 title: "HTMLInputElement's defaultValue"
 date: "2012-04-17"
-categories: 
+categories:
   - "javascript"
   - "web"
 ---
@@ -9,9 +9,8 @@ categories:
 Did you know that you can know the original value written by the server to the client by calling:
 
 ```typescript
-var originalName =document.getElementById("txtUserName").defaultValue; 
-``` 
-
+var originalName = document.getElementById("txtUserName").defaultValue;
+```
 
 Yes, the Dom contain for every Html element of type **HTMLInputElement** and **HTMLTextAreaElement** the possibility to access the original value. This is interesting to know if a form has dirty inputs. It's also interesting because it removes the need to hide values into hidden fields or to hide into a Javascript object all original values.
 
@@ -20,14 +19,46 @@ From the ECMAScript's specification we can see that it's a property that return 
 From here it's easy to know if a Html form is dirty (has something changed). We just need to loop through all inputs and compare.
 
 ```typescript
-function TestDirty(){ var formDirty = false; $('#frm :input').each( function(){
+function TestDirty(){
+  var formDirty = false;
+  $('#frm :input').each( function(){
 
-if($(this).is("input")) { //alert('Name :' + $(this).attr('name') + ">" +$(this).val()+ " != " + $(this)[0].defaultValue); var type = $(this).attr('type'); if (type == "checkbox" || type == "radio") {
+  if($(this).is("input")) {
+    //alert('Name :' + $(this).attr('name') + ">" +$(this).val()+ " != " + $(this)[0].defaultValue);
+    var type = $(this).attr('type');
+    if (type == "checkbox" || type == "radio") {
 
-if ($(this).is(':checked') != $(this)[0].defaultChecked) { //alert('Form dirty by' + $(this).attr('name') + ">" +$(this).is(':checked')+ " != " + $(this)[0].defaultChecked); formDirty = true; } } else if (type == "hidden" || type == "password" || type == "text") { if ($(this).val() != $(this)[0].defaultValue) { //alert('Form dirty by' + $(this).attr('name') + ">" +$(this).val()+ " != " + $(this)[0].defaultValue); formDirty =true; } } } else { var type = $(this).get(0).tagName; if (type == "TEXTAREA") { if ($(this).val() != $(this)[0].defaultValue) { //alert('Form dirty by' + $(this).attr('name') + ">" +$(this).val()+ " != " + $(this)[0].defaultValue); return formDirty; } } else(type == "SELECT") { alert('Form dirty by ' + $(this).attr('name') + ">" +$(this).val()+ " != " + $(this)[0].defaultSelected); if ($(this).val() != $(this)[0].defaultSelected) { //alert('Form dirty by' + $(this).attr('name') + ">" +$(this).val()+ " != " + $(this)[0].defaultValue); return formDirty; } } } });
+      if ($(this).is(':checked') != $(this)[0].defaultChecked) {
+        //alert('Form dirty by' + $(this).attr('name') + ">" +$(this).is(':checked')+ " != " + $(this)[0].defaultChecked);
+        formDirty = true;
+        }
+      } else if (type == "hidden" || type == "password" || type == "text") {
+          if ($(this).val() != $(this)[0].defaultValue) {
+            //alert('Form dirty by' + $(this).attr('name') + ">" +$(this).val()+ " != " + $(this)[0].defaultValue);
+            formDirty =true;
+          }
+        } 
+    } else { 
+      var type = $(this).get(0).tagName; 
+      if (type == "TEXTAREA") { 
+        if ($(this).val() != $(this)[0].defaultValue) { 
+          //alert('Form dirty by' + $(this).attr('name') + ">" +$(this).val()+ " != " + $(this)[0].defaultValue); 
+          return formDirty; 
+        } 
+      } else(type == "SELECT") { 
+        alert('Form dirty by ' + $(this).attr('name') + ">" +$(this).val()+ " != " + $(this)[0].defaultSelected); 
+        if ($(this).val() != $(this)[0].defaultSelected) { 
+          //alert('Form dirty by' + $(this).attr('name') + ">" +$(this).val()+ " != " + $(this)[0].defaultValue); 
+          return formDirty; 
+        } 
+      } 
+    }
+  });
 
-return formDirty; } 
-``` 
- You can have the above code functional [here](http://jsfiddle.net/r8PH4/20/). The only case that doesn't seem to work is the select box which the value is undefined. If someone has the code to fix it, feel free to post it.
+  return formDirty; 
+}
+```
+
+You can have the above code functional [here](http://jsfiddle.net/r8PH4/20/). The only case that doesn't seem to work is the select box which the value is undefined. If someone has the code to fix it, feel free to post it.
 
 [ECMAScript specification about defaultValue](http://www.w3.org/TR/REC-DOM-Level-1/ecma-script-language-binding.html) [DefaultValue W3C reference](http://www.w3schools.com/jsref/prop_text_defaultvalue.asp)

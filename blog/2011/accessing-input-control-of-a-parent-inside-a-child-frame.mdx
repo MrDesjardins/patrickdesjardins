@@ -16,7 +16,8 @@ parent.document.getElementById('myhiddenfield').value
 ``` 
 
 
-This doesn't work with Firefox either. After some search, I found that we can use `self.ownerDocument`. Like this: ```typescript
+This doesn't work with Firefox either. After some search, I found that we can use `self.ownerDocument`. Like this: 
+```typescript
 self.ownerDocument.getElementById('bar'); 
 ``` 
 

@@ -21,7 +21,9 @@ If you are using the Form Collection, the action inside your controller will loo
 
 
 ```csharp
- if (Request.Form[CommandButtonName] == SaveAndContinue) { // ... } else... 
+if (Request.Form[CommandButtonName] == SaveAndContinue) { 
+  // ... 
+} else... 
 ```
 
 As you can see, you will need to define 3 constants. One for the command button name, one for the Save and one for the SaveAndContinue.
@@ -30,5 +32,7 @@ Otherwise, if you are using the ViewModel option, you need to check the value di
 
 
 ```csharp
- if (model.Action == SaveAndContinue) { // ... } 
+if (model.Action == SaveAndContinue) { 
+   // ... 
+} 
 ```

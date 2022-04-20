@@ -11,8 +11,17 @@ Sometime you may need to store information for few times in the memory without h
 
 
 ```csharp
- var cc = HttpRuntime.Cache.Get("Test"); DateTime t; if (cc == null) { t = DateTime.Now; HttpRuntime.Cache.Insert("Test", t); } else { t = (DateTime)cc; } 
-``` The code above set into the cache the value of the current time and for all subsequent calls will get the value from the cache instead of getting the date itself. This demonstrate that in fact, it won't do exhaustive calculation (date in this example).
+ var cc = HttpRuntime.Cache.Get("Test"); 
+ DateTime t; 
+ if (cc == null) { 
+   t = DateTime.Now; 
+   HttpRuntime.Cache.Insert("Test", t); 
+  } else { 
+    t = (DateTime)cc; 
+  } 
+``` 
+
+The code above set into the cache the value of the current time and for all subsequent calls will get the value from the cache instead of getting the date itself. This demonstrate that in fact, it won't do exhaustive calculation (date in this example).
 
 HttpRuntime.Cache.Get let you get an object from a key. The key is set when you are using HttpRuntime.Cache.Insert.
 

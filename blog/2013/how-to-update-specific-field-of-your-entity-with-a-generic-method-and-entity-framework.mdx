@@ -7,7 +7,10 @@ categories:
 
 If you are using **Entity Framework** with a [repository layer](./enterprise-asp-net-mvc-part-4-repository "Enterprise Asp.Net MVC Part 4: Repository") which has the basic method like Get, Update, Insert (or Add) and Delete you are already in a good position. But what if you want to update a single property without having to load the whole entity from the database? If you have only the primary key (id) of your entity and the value of the property you want to update, you may want to simply update the field with a where clause with the id. In SQL, we would create the following query. 
 ```sql
- update [dbo].[WorkoutSessions] set [Name] = 'New Name', [Order] = 1 where ([Id] = 123) 
+ update [dbo].[WorkoutSessions] 
+ set [Name] = 'New Name', 
+ [Order] = 1 
+ where ([Id] = 123) 
 ```
 
 
@@ -15,7 +18,14 @@ With **Entity Framework**, you could create single method like "UpdateNameAndOrd
 
 
 ```csharp
- public int Update(T entity, Expression<Func<T, object>>[] properties) { DatabaseContext.Entry(entity).State = EntityState.Unchanged; foreach (var property in properties) { var propertyName = ExpressionHelper.GetExpressionText(property); DatabaseContext.Entry(entity).Property(propertyName).IsModified = true; } return DatabaseContext.SaveChangesWithoutValidation(); } 
+ public int Update(T entity, Expression<Func<T, object>>[] properties) { 
+   DatabaseContext.Entry(entity).State = EntityState.Unchanged; 
+   foreach (var property in properties) { 
+     var propertyName = ExpressionHelper.GetExpressionText(property); 
+     DatabaseContext.Entry(entity).Property(propertyName).IsModified = true; 
+   } 
+   return DatabaseContext.SaveChangesWithoutValidation(); 
+} 
 ```
 
 The code above is in the BaseRepository class of the project described in the "[Enterprise project](./enterprise-asp-net-part-1-mvc-the-planification "Enterprise Asp.Net MVC Part 1: The Planification")". As you can see, it takes as its second parameter an **expression of a function**. This will let use this method by specifying in a Lambda expression witch property to update.
@@ -29,7 +39,9 @@ As you can see, the Update method first line change the state to **Unchanged**. 
 
 
 ```csharp
- /// <summary> /// Gets the model name from a lambda expression. /// </summary> /// /// <returns> /// The model name. /// </returns> /// <param name="expression">The expression.</param> public static string GetExpressionText(LambdaExpression expression) { Stack<string> stack = new Stack<string>(); Expression expression1 = expression.Body; while (expression1 != null) { if (expression1.NodeType == ExpressionType.Call) { MethodCallExpression methodCallExpression = (MethodCallExpression) expression1; if (ExpressionHelper.IsSingleArgumentIndexer((Expression) methodCallExpression)) { stack.Push(ExpressionHelper.GetIndexerInvocation(Enumerable.Single<Expression>((IEnumerable<Expression>) methodCallExpression.Arguments), Enumerable.ToArray<ParameterExpression>((IEnumerable<ParameterExpression>) expression.Parameters))); expression1 = methodCallExpression.Object; } else break; } else if (expression1.NodeType == ExpressionType.ArrayIndex) { BinaryExpression binaryExpression = (BinaryExpression) expression1; stack.Push(ExpressionHelper.GetIndexerInvocation(binaryExpression.Right, Enumerable.ToArray<ParameterExpression>((IEnumerable<ParameterExpression>) expression.Parameters))); expression1 = binaryExpression.Left; } else if (expression1.NodeType == ExpressionType.MemberAccess) { MemberExpression memberExpression = (MemberExpression) expression1; stack.Push("." + memberExpression.Member.Name); expression1 = memberExpression.Expression; } else if (expression1.NodeType == ExpressionType.Parameter) { stack.Push(string.Empty); expression1 = (Expression) null; } else break; } if (stack.Count > 0 && string.Equals(stack.Peek(), ".model", StringComparison.OrdinalIgnoreCase)) stack.Pop(); if (stack.Count <= 0) return string.Empty; return Enumerable.Aggregate<string>((IEnumerable<string>) stack, (Func<string, string, string>) ((left, right) => left + right)).TrimStart(new char[1] { '.' }); } 
+ /// <summary> 
+ /// Gets the model name from a lambda expression. 
+ /// </summary> /// /// <returns> /// The model name. /// </returns> /// <param name="expression">The expression.</param> public static string GetExpressionText(LambdaExpression expression) { Stack<string> stack = new Stack<string>(); Expression expression1 = expression.Body; while (expression1 != null) { if (expression1.NodeType == ExpressionType.Call) { MethodCallExpression methodCallExpression = (MethodCallExpression) expression1; if (ExpressionHelper.IsSingleArgumentIndexer((Expression) methodCallExpression)) { stack.Push(ExpressionHelper.GetIndexerInvocation(Enumerable.Single<Expression>((IEnumerable<Expression>) methodCallExpression.Arguments), Enumerable.ToArray<ParameterExpression>((IEnumerable<ParameterExpression>) expression.Parameters))); expression1 = methodCallExpression.Object; } else break; } else if (expression1.NodeType == ExpressionType.ArrayIndex) { BinaryExpression binaryExpression = (BinaryExpression) expression1; stack.Push(ExpressionHelper.GetIndexerInvocation(binaryExpression.Right, Enumerable.ToArray<ParameterExpression>((IEnumerable<ParameterExpression>) expression.Parameters))); expression1 = binaryExpression.Left; } else if (expression1.NodeType == ExpressionType.MemberAccess) { MemberExpression memberExpression = (MemberExpression) expression1; stack.Push("." + memberExpression.Member.Name); expression1 = memberExpression.Expression; } else if (expression1.NodeType == ExpressionType.Parameter) { stack.Push(string.Empty); expression1 = (Expression) null; } else break; } if (stack.Count > 0 && string.Equals(stack.Peek(), ".model", StringComparison.OrdinalIgnoreCase)) stack.Pop(); if (stack.Count <= 0) return string.Empty; return Enumerable.Aggregate<string>((IEnumerable<string>) stack, (Func<string, string, string>) ((left, right) => left + right)).TrimStart(new char[1] { '.' }); } 
 ```
 
 What it does is it takes from the lambda the name of the property selected.

@@ -11,7 +11,13 @@ If you want to convert a integer value into the enumerator that contain this val
 ```csharp
  public enum MyEnumType { KeyA = 1, KeyB = 2 }
 
-class Program { static void Main(string[] args) { int myIntegerValue = 1; MyEnumType enu = (MyEnumType)myIntegerValue; Console.Read(); } } 
+class Program { 
+  static void Main(string[] args) { 
+    int myIntegerValue = 1; 
+    MyEnumType enu = (MyEnumType)myIntegerValue; 
+    Console.Read(); 
+  } 
+} 
 ```
 
 This will work if the value, in our example 1, is in the MyEnumType. It will also work if we use an integer over 2. ![](images/enumOutOfRange-400x212.png)

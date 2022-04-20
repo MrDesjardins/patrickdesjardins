@@ -13,7 +13,11 @@ So, for example, if I change a property and sent it back to the client :
 
 
 ```csharp
- [HttpPost] public ActionResult Edit(MyObject objModel) { objModel.Property1 = "NEW VALUE"; //... return View(objModel) } 
+[HttpPost] public ActionResult Edit(MyObject objModel) { 
+  objModel.Property1 = "NEW VALUE"; 
+  //... 
+  return View(objModel) 
+} 
 ```
 
 This won't put on the UI the new value for the property1 because the ModelState values doesn't contain this value but the one entered by the user.
@@ -22,7 +26,12 @@ To be able to override the model state you need to remove all the data from it.
 
 
 ```csharp
- [HttpPost] public ActionResult Edit(MyObject objModel) { objModel.Property1 = "NEW VALUE"; //... ModelState.Clear(); return View(objModel) } 
+[HttpPost] public ActionResult Edit(MyObject objModel) { 
+  objModel.Property1 = "NEW VALUE"; 
+  //... 
+  ModelState.Clear(); 
+  return View(objModel) 
+} 
 ```
 
 To clear the memory of the model state you need to use **ModelState.Clear()**. You could also remove only the desired field by using method of ModelState.

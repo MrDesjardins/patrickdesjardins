@@ -12,7 +12,10 @@ The first approach is the simplest for simple object that you have the same meta
 
 
 ```csharp
- public class MyClass { int a; int b; } 
+public class MyClass { 
+   int a; 
+   int b; 
+} 
 ```
 
 You would need to send from Javascript an object where Asp.Net MVC could map:
@@ -25,7 +28,18 @@ var xyz = {a=1,b=2};
 You can use JQuery to send Ajax:
 
 ```typescript
-$.ajax({ url: 'MyController/MyAction', contentType: "application/json; charset=utf-8", type: "POST", data: JSON.stringify(xyz), dataType: "json", success: function (data) { //... }, error: function () { //... } }); 
+$.ajax({ 
+  url: 'MyController/MyAction', 
+  contentType: "application/json; charset=utf-8", 
+  type: "POST", 
+  data: JSON.stringify(xyz), 
+  dataType: "json", 
+  success: function (data) { 
+    //... 
+    }, error: function () { 
+    //... 
+  } 
+}); 
 ``` 
 
 
@@ -34,6 +48,8 @@ As you can see, we pass the data information using **JSON.stringify()** which se
 When the function return the data, this one is in a string format. If the desired return is Json, like the example above by specifying that the dataType is "json", we need to deserialize the string into Javascript object. JQuery provides the method **jQuery.parseJSON()**. This JQuery function calls the native '**window.JSON.parse()**', if the function doesn't exist for the browser, it falls back to the **eval** function.
 
 ```typescript
-success: function (data) { var obj = jQuery.parseJSON(data); } 
+success: function (data) { 
+  var obj = jQuery.parseJSON(data); 
+} 
 ``` 
 

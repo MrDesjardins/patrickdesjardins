@@ -12,9 +12,13 @@ To do, you need to use the ExpandoObject.
 
 
 ```csharp
- public class YourClass { public int Id{ get; set; } public dynamic Attributes { get; set; }
+public class YourClass { 
+  public int Id{ get; set; } 
+  public dynamic Attributes { get; set; }
 
-public MatriceRow() { Attributes = new ExpandoObject(); } } 
+  public MatriceRow() { Attributes = new ExpandoObject(); 
+  } 
+} 
 ```
 
 This is a working example. From there you can use the YourClass class and set attributes. 

@@ -9,14 +9,18 @@ You can compile any controller to have the same method name if they have differe
 
 
 ```csharp
- public ActionResult Edit(int id) { //... } 
+public ActionResult Edit(int id) { 
+  //... 
+} 
 ```
 
 and in the same controller having:
 
 
 ```csharp
- public ActionResult Edit(MyObjectToEdit obj) { //... } 
+public ActionResult Edit(MyObjectToEdit obj) {
+    //... 
+} 
 ```
 
 This will fail when you will call these because the MVC framework won't know which one to call. You have two solutions to make MVC routing know which action to use. First, you can change the name. I think it's obvious that if you have different name that the routing won't have any problem to know which one to choose.
@@ -25,9 +29,13 @@ The second solution is to add the attribute POST, GET, PUT, DELETE. This will te
 
 
 ```csharp
- [HttpGet] public ActionResult Edit(int id) { //... }
+[HttpGet] public ActionResult Edit(int id) { 
+   //... 
+}
 
-[HttpPost] public ActionResult Edit(MyObjectToEdit obj) { //... } 
+[HttpPost] public ActionResult Edit(MyObjectToEdit obj) { 
+  //... 
+} 
 ```
 
 From here, you could call them by specifying in the Http Request the type of request you sent (Get or Post) and the MVC's routing system will know which one to choose.

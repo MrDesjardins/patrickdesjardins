@@ -11,7 +11,8 @@ This week, I got a situation where I was getting from Silverlight a Json object 
 
 
 ```csharp
- string response = HtmlPage.Window.Invoke("GetMyJson").ToString(); MyObject data = (MyObject)JsonConvert.DeserializeObject(response); 
+ string response = HtmlPage.Window.Invoke("GetMyJson").ToString(); 
+ MyObject data = (MyObject)JsonConvert.DeserializeObject(response); 
 ```
 
 But, I did not wanted to create the MyObject because it was just for transferring data; a simple DTO object. Instead, I used the **dynamic** keyword provided by .Net framework 4.0.
@@ -27,7 +28,10 @@ So, in the C# code, I simply called those properties from the **dynamic** object
 
 
 ```csharp
- string response = HtmlPage.Window.Invoke("GetMyJson").ToString(); dynamic data = JsonConvert.DeserializeObject(response); string s1 = data.Abc; string s2 = data.Def; 
+string response = HtmlPage.Window.Invoke("GetMyJson").ToString(); 
+dynamic data = JsonConvert.DeserializeObject(response); 
+string s1 = data.Abc; 
+string s2 = data.Def; 
 ```
 
 This is pretty useful for accessing quickly some data from Json object.

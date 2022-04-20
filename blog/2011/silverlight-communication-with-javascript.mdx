@@ -38,10 +38,12 @@ The communication between Silverlight and Javascript is straight forward. You ne
 
 
 ```csharp
- System.Windows.Browser.HtmlPage.Window.Invoke("MyFunction", "Parameter1"); System.Windows.Browser.HtmlPage.Window.Invoke("MyFunction", "Parameter1", "Parameter2"); 
+ System.Windows.Browser.HtmlPage.Window.Invoke("MyFunction", "Parameter1"); 
+ System.Windows.Browser.HtmlPage.Window.Invoke("MyFunction", "Parameter1", "Parameter2"); 
 ```
 
 The invoke method has a params[] for its second parameter. That let you add has many parameter value that the function in Javascript require. 
+
 ```csharp
  public virtual object Invoke(string name, params object[] args); 
 ```
@@ -58,7 +60,8 @@ Javascript can also call method inside a Silverlight application. To do, you nee
 The second thing that need to be done inside Silverlight is to add an attribute to the method that you want to expose to the external.
 
 ```csharp
-[ScriptableMember] public void JavascriptWillCallThisMethod(string textFromJavaScript) { 
+[ScriptableMember] 
+public void JavascriptWillCallThisMethod(string textFromJavaScript) { 
   Debug.WriteLine(textFromJavaScript); 
 } 
 ```
@@ -66,7 +69,8 @@ The second thing that need to be done inside Silverlight is to add an attribute 
 The third and last step is to call this method from the Javascript code.
 
 ```typescript
-var control = document.getElementById("silverlightControl"); control.Content.Page123.JavascriptWillCallThisMethod("Hello from Javascript!"); 
+var control = document.getElementById("silverlightControl"); 
+control.Content.Page123.JavascriptWillCallThisMethod("Hello from Javascript!"); 
 ``` 
 
 

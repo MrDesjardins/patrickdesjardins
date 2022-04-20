@@ -15,8 +15,21 @@ The easiest way is to return the error into the return value directly:
  public JsonResult Create(MyObject myObject) { //AllFine return Json(new { IsCreated = True, Content = ViewGenerator(myObject)); //Error return Json(new { IsCreated = false, Content = ViewGenerator(myObject), ErrorMessage = 'Could not save because XYZ'); } 
 ```
 
-In the Javascript, we just need to take the error message and display it. ```typescript
-$.ajax({ type: "POST", dataType: "json", url: "MyObjectController/Create", data: JSON.stringify(myObjectJson), success: function (result) { if(result.IsCreated) { //... } else { alert(result.ErrorMessage); } } }); 
+In the Javascript, we just need to take the error message and display it. 
+```typescript
+$.ajax({ 
+  type: "POST", 
+  dataType: "json", 
+  url: "MyObjectController/Create", 
+  data: JSON.stringify(myObjectJson), 
+  success: function (result) { 
+    if(result.IsCreated) { 
+      //... 
+    } else { 
+      alert(result.ErrorMessage); 
+    } 
+  } 
+}); 
 ``` 
 
 
@@ -26,17 +39,37 @@ This can be done by changing the Response Header with a Http Code that is differ
 
 
 ```csharp
- public JsonResult Create(MyObject myObject) { //AllFine return Json(new { IsCreated = True, Content = ViewGenerator(myObject));
+ public JsonResult Create(MyObject myObject) { 
+   //AllFine 
+   return Json(new { IsCreated = True, Content = ViewGenerator(myObject));
 
-//Use input may be wrong but nothing crashed return Json(new { IsCreated = False, Content = ViewGenerator(myObject)); //Error Response.StatusCode = (int)HttpStatusCode.InternalServerError; return Json(new { IsCreated = false, Content = ViewGenerator(myObject), ErrorMessage = 'Could not save because XYZ'); } 
+  //Use input may be wrong but nothing crashed 
+  return Json(new { IsCreated = False, Content = ViewGenerator(myObject)); 
+
+  //Error 
+  Response.StatusCode = (int)HttpStatusCode.InternalServerError; 
+  return Json(new { IsCreated = false, Content = ViewGenerator(myObject), ErrorMessage = 'Could not save because XYZ'); 
+} 
 ```
 
 The Javascript can than go in three different direction:
 
 ```typescript
-$.ajax({ type: "POST", dataType: "json", url: "MyObjectController/Create", data: JSON.stringify(myObjectJson), success: function (result) { if(result.IsCreated) { //... ALL FINE } else { //... Use input may be wrong but nothing crashed } }, error: function (jqXHR, textStatus, errorThrown) { alert("Error:" + jQuery.parseJSON(jqXHR.responseText).Info); //Error
-
-} }); 
+$.ajax({ 
+  type: "POST", 
+  dataType: "json", 
+  url: "MyObjectController/Create", 
+  data: JSON.stringify(myObjectJson), 
+  success: function (result) { 
+    if(result.IsCreated) { 
+      //... ALL FINE 
+    } else { 
+      //... Use input may be wrong but nothing crashed 
+    } 
+  }, error: function (jqXHR, textStatus, errorThrown) { 
+    alert("Error:" + jQuery.parseJSON(jqXHR.responseText).Info); //Error
+  } 
+}); 
 ``` 
 
 
