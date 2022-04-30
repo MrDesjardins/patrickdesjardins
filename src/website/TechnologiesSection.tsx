@@ -56,7 +56,7 @@ export const TechnologiesSection = (): JSX.Element => {
         <CardWithImage
           title="GraphQL"
           subtitle="Server and Client"
-          description="I created many GraphQL servers that are leveraging backend technologies like gRPC and Protobug to generate TypeScript automatically. A firm believer that GraphQL improves the velocity of the consumers of the information for web applications and scripts."
+          description="I created many GraphQL servers that are leveraging backend technologies like gRPC and Protobuf to generate TypeScript automatically. A firm believer that GraphQL improves the velocity of the consumers of the information for web applications and scripts."
           image={
             <StaticImage
               alt="Screenshot of Netflix"

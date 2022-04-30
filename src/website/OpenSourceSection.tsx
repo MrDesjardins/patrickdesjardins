@@ -17,6 +17,30 @@ export const OpenSourceSection = (): JSX.Element => {
       <header>Open Source</header>
       <div className={sectionFixedWitdh}>
         <CardFixedWidth
+          title="TypeScript Real Time Pixel"
+          description="Main maintainer. Docker containers of a SolidJS frontend server and a NodeJS Socker.IO server for a small realtime pixel game where users place pixel to create image."
+          link="https://github.com/MrDesjardins/realtimepixel"
+          image={
+            <StaticImage
+              className={cardFixedWidthImageImg}
+              alt="Screenshot of the realtime pixel game"
+              src="../images/portfolio/realtimepixelgame.png"
+            />
+          }
+        />
+        <CardFixedWidth
+          title="Gym Water Application"
+          description="Main maintainer. SolidJS frontend application that communicate to a backend to change a Raspberri Pi GPIO pin to turn on/off a water pump. The project goals was to provide a user interface to a system that would automatically adjust weight using water for a home gym pulley system."
+          link="https://github.com/MrDesjardins/gym-water-app"
+          image={
+            <StaticImage
+              className={cardFixedWidthImageImg}
+              alt="Screenshot of a workout screen of the gym app"
+              src="../images/portfolio/gym-water-dev-panel.png"
+            />
+          }
+        />
+        <CardFixedWidth
           title="TypeScript Hilbert Curve"
           description="Main maintainer. TypeScript implementation of the Hilbert Curve algorithm. The project contains Github workflow that build the project for CommonJS and EcmaScript, has a matrix of NodeJS/OS version, unit tests and performance tests."
           link="https://github.com/MrDesjardins/hilbert-curve-ts/"
