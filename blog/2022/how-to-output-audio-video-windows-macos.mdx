@@ -1,0 +1,76 @@
+---
+title: "How to Output Audio and Video from a Windows machine to a MacBook Pro"
+date: "2022-06-17"
+categories:
+  - "general"
+  - "configuration"
+---
+
+I currently work in a rigorous and secure environment. Therefore, I cannot install everything I need to have a high-quality meeting production. I mean using my XLR microphone and my few cameras by high quality. 
+
+![Picture of how I look during a meeting](./images/configuration-computer_videooutput.png)
+
+# Situation
+Currently, I am not an administrator of my Macbook Pro M1 machine. Hence, I cannot install the drivers for my audio interface, nor can I install OBS software or my Atem Mini driver. Furthermore, I cannot install Audio Hijack to equalize the audio.
+
+# Concept
+The solution is to use the audio and video capture from a computer I am an administrator. Also, modify the audio and adjust the video on that other computer, and once everything is ready, stream both into the MacBook Pro.
+
+# Extra
+Also, because the current working computer is very restrictive (block websites, block a lot of software, etc.), it would be convenient if the solution could allow me to switch quickly from one machine to the other to browse or start music etc.
+
+# Part 1: Hardware Solution
+The solution I implemented was to purchase a desktop computer. It is a bit _intense_, but I'll be able to use that computer to continue recording [Youtube Videos](https://www.youtube.com/channel/UCKBBbMaq3Q-MirzMecdJZCQ) and also for gaming. The following diagram shows all the parts.
+
+![Diagram of all physical components](./images/configuration_computer-components.png)
+
+The first detail is that the left side is for the Microsoft ecosystem, which is the new desktop computer. On the right side is the MacBook Pro M1. Around the middle is the gray area where components can be shared.
+
+At the top, you can see two cameras connecting to the Atem Mini. The USB-C connects the Atem to the desktop computer. The computer reads the input as a USB camera. On the left, there are my headphone and external speakers that are both connected to the Scarlett Solo audio interface. Also, my XLR microphone connects as an input to the audio interface. So, when I talk, it goes into the Scarlett Audio, into the computer, is being processed, and gets out in two sources (headphone and external speakers).
+
+In terms of monitors, the left monitor s dedicated to the desktop machine. The Macbook is my work computer and does not connect to the left monitor. The reason is that the left monitor is dedicated to displaying my notes, personal browsers, mp3 players, etc. However, I have a second monitor in the middle of the diagram. That one switch between the desktop and the Macbook. I initially had a KVM switch, but I found it more convenient (and more reliable) to have the desktop connected to an HDMI connection and the Macbook connected through a Dell hub with USB-C. So, when I want both screens for my desktop, I can! I click the button on my screen to use the HDMI. When I am working and want a dual-screen (laptop + right monitor), I click on the monitor to get the input from the USB-C.
+
+![Picture of my desk that shows the three cameras I have, the two monitors, and the computers](./images/configuration-computer_picture.png)
+
+A problem still is not yet solved: How do I get the audio and video from the desktop into the Macbook Pro to be used in Zoom meetings? A _cheap_ video capture card does the trick. An HDMI cable goes from the desktop machine to the video capture card and then goes via USB to the Dell hub. It means from the desktop perspective that there is an additional screen. The extra screen is visible in the Windows display setting but not physically connected to a monitor. However, from OBS, it is possible to right-click on the video and "output" to this third monitor. From the Macbook Pro perspective, the video capture card is represented as a USB camera. In Zoom, the audio and video are coming from that source.
+
+Lastly, I have a single keyboard and mouse connected to a USB hub. With the touch of a single button, the USB switches between the desktop and the Dell hub. It is surprisingly fast. It takes about one-second delay only.
+
+# Part 2: Software Solution
+
+Most of the magic is possible because of three software.
+
+The first one is OBS. OBS allows to take the input from the Atem Mini and push the video and audio into the MacBook. The Atem Mini does have a _preview_ HDMI output. Still, it misses the possibility of adjusting the video by software as well, as it does not allow to use of advanced audio manipulation.
+
+![OBS Fullscreen Projector](./images/configuration-computer_obs.png)
+
+
+The second software is _Voice Meeter Banana_. That is a tricky one. It allows to take the input from the audio interface (Scarlett Solo) and then redirects the audio. The reason to use the software is that it can push the audio into a third software that has all the VST plugins. These plugins allow for manipulating audio. For example, removing the background noise, equalizing the audio, etc. Also, it provides to cherry-pick the audio source. For example, you can set some background music. Finally, I use the software to transmit only the microphone audio into the video capture card.
+
+For more information about the _Voice Meeter Banana_ I strongly recommend this [Youtube Video](https://www.youtube.com/watch?v=5JVysF1-YIU).
+
+The third software is _[Light Host](https://github.com/rolandoislas/LightHost/releases)_. It allows having _Voice Meeter Banana_ to send the audio to the host with many plugins that manipulate the audio. Here is an excellent [source of information](https://www.youtube.com/watch?v=AyzQZScP2Sw) to learn how to configure it. I am surprised it worked on my Windows 11 operating system since the last release of Ligh Host was in 2016!
+
+![Light House with EQ plugin](./images/configuration-computer_lighthost.png)
+
+My primary use case for Light Host is to remove my mechanical keyboard noise using a plugin called [RearFIR](https://www.reaper.fm/reaplugs/). That is pretty impressive since I have a blue key keyboard that is very loud.
+
+
+# Bonus
+I have a Stream Deck that cannot have the software installed on my work machine. So, I am using it to control the desktop when connected to my Macbook machine. It allows me to start a meeting:
+1. Turn on my video lights (using a Z-wave HTTP command)
+2. Turn off my office lights (Z-wave)
+3. Turn on all my three cameras outlets (Z-wave)
+4. Turn on OBS on my desktop
+
+I also have a stop meeting that does the reverse. I also control my music from the desktop and change OBS' scenes from the Stream Deck. I also have one button dedicated to the audio volume from my microphone to see if I am clipping (too loud).
+
+# Conclusion
+There are about 99 ways that something goes wrong somewhere. I know how brittle the whole solution is, but sometimes you must jump more loops or be blocked.
+
+# Addendum
+By the time I published that solution online, I already had some feedback. First of all, the Dell WD19TBS is far from perfect. I am not sure what is happening, but I have two issues. 
+
+The first one is that randomly every USB port from the dock to the USB switcher stops working. I know the issue is not the USB switcher because I have access to my mouse and keyboard when switching to my desktop machine. However, I have no access when switching back to the MacBook (that connects to the USB hub). To solve this, I have to disconnect and reconnect the hub from the MacBook, which is inconvenient during a meeting since it makes the video and audio disconnect. 
+
+The second issue is about the multi-monitor from the dock. I tried to connect a small HDMI monitor to back my [teleprompter configuration](/blog/my-recapitulation-of-2020-another-great-year). For some reason, the dock keeps disconnecting the monitor. I see for a fraction of a second the content of my Macbook, and then it switches black and comes back.
