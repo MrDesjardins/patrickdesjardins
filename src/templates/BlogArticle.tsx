@@ -3,12 +3,13 @@ import { graphql } from "gatsby";
 import { MDXRenderer } from "gatsby-plugin-mdx";
 import { MDXProvider } from "@mdx-js/react";
 import { Layout } from "../layout/layout";
-import {CodeBlock} from "../components/CodeBlock";
-
+import { CodeBlock } from "../components/CodeBlock";
+import { TocAzureContainerSeries } from "../blogcomponents/TocAzureContainerSeries";
 import { blogPostContainer, blogPostDate } from "../layout/layout.module.css";
 
 const components = {
   pre: CodeBlock,
+  TocAzureContainerSeries,
 };
 const BlogPost = (queryInfo): JSX.Element => {
   const data = queryInfo.data;

@@ -28,9 +28,10 @@ The first step is to log in with Docker to the Azure container registry we just 
 ```
 docker login realtimepixel.azurecr.io
 ```
+
 The command asks for a user name. That step is confusing. The help mentions a login URI and credentials from the Access keys page. The Access page does not guide much, but a checkbox allows you to enable `Admin user`. Clicking the button reveals a user name and two passwords! Exactly what is needed! I got an error after pasting the password:
 
->Error response from daemon: Get "https:///v2/": http: no Host in request URL
+> Error response from daemon: Get "https:///v2/": http: no Host in request URL
 
 So, I did it again. It worked! Once you login it is time to tag an image. I also got some questions at that step since I am usually not tagging with `docker-compose` starting in dev always the latest version. A quick way to know what image you have built locally is to perform `docker images`. If there is none, you need to build your images. In my case, I am using `docker-compose build,` and it creates the three images.
 
@@ -39,6 +40,7 @@ docker tag realtimepixel_redis realtimepixel.azurecr.io/realtimepixel_redis:late
 docker tag realtimepixel_backend realtimepixel.azurecr.io/realtimepixel_backend:latest
 docker tag realtimepixel_frontend realtimepixel.azurecr.io/realtimepixel_frontend:latest
 ```
+
 Here is a screenshot before and after the tag commands:
 
 Before:
@@ -62,5 +64,7 @@ The process of pushing is long, about 45 minutes, but that will vary on your net
 ![](images/azure_container_created.png)
 
 # Conclusion
+
 It is not too complicated if you already have your Docker images and you need to host on Azure. However, doing the task from your machine might not be the best solution in the long term. As described, modifying one of the images would require building the image, tagging it, and pushing it, causing another gig of data to be transferred. Therefore, in part two of _how to host docker images_ we will perform the same task from Github. Also, we will avoid using `latest` as the tag and provide a more meaningful tag to keep track of the version throughout the time.
 
+<TocAzureContainerSeries/>

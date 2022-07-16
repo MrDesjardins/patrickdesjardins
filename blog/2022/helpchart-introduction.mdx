@@ -1,0 +1,36 @@
+---
+title: "How to use Helm Chart to configure dynamically your Kubernetes file for beginner?"
+date: "2022-07-25"
+categories:
+  - "Kubernetes"
+  - "helm"
+---
+
+Kubernetes is a powerful tool that allow you to deploy your servers, load-balancers and other infrastructure with a common language. However, it does not handle dynamic portion in the configuration. For example, you might want to inject a specific Docker image tag or inject an environment variable that change depending of the where the infrastructure is deployed (test/prod). Helm Chart is a templating engine that allows to specify values in a tree fashion into your Kubernetes configuration.
+
+
+# Installing Helm Chart
+
+On a Windows machine, you can use Chocolatey:
+
+```
+choco install kubernetes-helm
+```
+
+On MacOs, you can use Brew
+
+```
+brew install helm
+```
+
+There is plenty of alternative depending of your preference or operating system in [the official installation page](https://helm.sh/docs/intro/install).
+
+# Getting Started
+
+The first step is to create a Helm. The `create` command creates a folder with many files and folders. My project already have a `Kubernetes` folder, hence I moved into it and used the Helm Chart's create command. 
+
+```
+helm create realtimepixel
+```
+The last word is your project name and also the name of the folder that is created.
+
