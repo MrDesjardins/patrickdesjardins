@@ -1,6 +1,6 @@
 ---
 title: "How to use Kubernetes with Microsoft Azure and GitHub and how to debug if it does not workout"
-date: "2022-07-28"
+date: "2022-07-31"
 categories:
   - "azure"
   - "docker"
@@ -12,40 +12,35 @@ categories:
 Kubernetes is a convenient way to deploy an infrastructure of services in a central place. Once you have your service Docker images built and deployed you can use Kubernetes to deploy multiple instances across the cloud. In this article, we will see how Microsoft Azure can use a Kubernetes configuration generated with Helm and deploy many images from Azure Registry Container.
 
 # Create an Azure Kubernetes Service (AKS)
-There are two ways to create a Azure Kubernetes Services: Azure Cli and Azure Portal.
 
-## Azure Cli
-A few pieces of information is required that were built when we created our Azure Docker Image Repository.
-You need to use the Azure resource group name after `--resource-group`. The name of the Kubernetes service is after `--name`. The `--attach-acr` is the name of the Azure Container Registry (acr). 
+Few informations is required that was build when we created our Azure Docker Image Repository.
+You need to use the Azure resource group name after `--resource-group`.  The name of the Kubernetes service is after `--name`. The `--attach-acr` is the name of the Azure Container Registry (acr). 
 
 ```
 az aks create --resource-group realtimepixel_resourcegroup --name realpixelask --location eastus --attach-acr realtimepixel --generate-ssh-keys
 ```
-There are a few things to know:
-1. The name cannot have an underscore. Even if you enclose with double quote, it does not work
+
+There is few things to know:
+1. The name cannot have underscore. Even if you enclose with double quote it does not work
 2. The command takes a while to run. Expect at least 1 minute.
 
-## Azure Portal
-Many online tutorials show the Azure CLI (`az` command), but it is also possible to create the Kubernetes service on the Microsoft Azure Portal.
+Most online tutorial shows to use the Azure CLI (`az` command) but it is also possible to create the Kubernetes service on the Microsoft Azure Portal.
 
 ![](./images/azure_kbs_creation.png)
 
-I personally prefer to use a web interface. For creating a Kubernetes cluster, the Azure Portal guides you through several steps, which in my opinion worth doing that step that you will rarely do compared to operation Azure CLI command.
-
 # Configure Github Workflow
-You can edit the existing Github workflow defined [previously](./azure-docker-container-repository-github) that was building the image and pushing it into Azure Container Registry (ACR). However, I created a new workflow to manually decide when to push the image into production.
+You can edit the existing Github workflow defined previously that was building the image and pushing it into Azure Container Registry (ACR). However, I decided to create a new workflow allowing me to decide manually when to push the image into production.
 
-Here is the entire Github workflow that I store in the repository in `.github/workflows/k8sdeploy.yml`
+Here is the full Github workflow that I store into the repository in `.github/workflows/k8sdeploy.yml`
 
 ```
-name: Kubernetes Prod Deployment
 on:
   workflow_dispatch:
 
 # Environment variables available to all jobs and steps in this workflow
 env:
   REGISTRY_NAME: realtimepixel
-  CLUSTER_NAME: realpixelask2
+  CLUSTER_NAME: realpixelask
   CLUSTER_RESOURCE_GROUP: realtimepixel_resourcegroup
   NAMESPACE: realtimepixel-prod
 
@@ -107,19 +102,20 @@ jobs:
           --install 
           --namespace=${{ env.NAMESPACE }} 
           --set namespace=${{env.NAMESPACE}}
-          --set image.pullPolicy=Always
+          --set image.pullpolicy=IfNotPresent
           --set image.redis.repository=${{env.REGISTRY_NAME}}.azurecr.io/realtimepixel_redis
           --set image.redis.tag=${{ steps.latesttagredis.outputs.tag_redis }}
           --set image.backend.repository=${{env.REGISTRY_NAME}}.azurecr.io/realtimepixel_backend
           --set image.backend.tag=${{ steps.latesttagbackend.outputs.tag_backend }}
           --set image.frontend.repository=${{env.REGISTRY_NAME}}.azurecr.io/realtimepixel_frontend
           --set image.frontend.tag=${{ steps.latesttagfrontend.outputs.tag_frontend }}
+
 ```
 Here is a description of what is going on:
 
-1. The first section, called `env`, is variable that can be used across the workflow. It is a simple way to configure data in a central place for the script. It defined the registry (Azure Container Registry) name, the Kubernetes cluster name created in this blog post, the Azure resource group (previous article), and the Kubernetes namespace.
+1. The first section called `env` are variable that can be used across the whole workflow. It is a simple way to configure data in a central place for the script. It defined the registry (Azure Container Registry) name, the Kubernetes cluster name created in this blog post, the Azure resource group (previous article) and the Kubernetes namespace.
 
-2. The second section connects to AKS: Azure Kubernetes Service
+2. The second section connect to AKS: Azure Kubernetes Service
 
 3. We create the namespace
 
@@ -127,7 +123,7 @@ Here is a description of what is going on:
 
 5. First, we get the latest image tag for each image
 
-6. Finally, we use **Helm** to install or update the Kubernetes configuration. What is important is to override a lot of values from `kubernetes\realtimepixel\values.yaml` (Helm values file)
+6. Finally, we use **helm** to install or update the Kubernetes configuration. What is important is to override a lot of values from `kubernetes\realtimepixel\values.yaml` (Helm values file)
 
 # Verification
 
@@ -135,14 +131,15 @@ At this point, the Helm command pushes the instruction to Azure Kubernetes Servi
 
 ![](./images/azure_k8s_workloads.png)
 
-Everything should be running as expected! The screenshot shows three orange symbols next to my three deployments because there is an issue with the Kubernetes configuration, which is outside the goal of this post. However, it is still interesting to know that you can drill and see the error reason being: `ErrImageNeverPull`.
+Everything should be running as expected! The screenshot shows three orange symbols next to my three deployments because there is an issue with the Kubernetes configuration which is outside the goal of this post. However, it is still interesting to know that you can drill and see the error reason being: `ErrImageNeverPull`.
 
-## Debug Azure Kubernetes ErrImageNeverPull
-The first steps are to access the reason the image is not pulling. You need to get one of the pods under the deployment that is falling.
+## Debug ErrImageNeverPull
+
 ```
 kubectl get pods -n realtimepixel-prod
 kubectl describe pod redis-deployment-6495cd48cc-fhzjg -n realtimepixel-prod
 ```
+
 The last command gives more information saying the policy is to `Never`
 
 ```
@@ -153,17 +150,16 @@ Normal   Scheduled          59m                    default-scheduler  Successful
 Warning  Failed             57m (x12 over 59m)     kubelet            Error: ErrImageNeverPull
 Warning  ErrImageNeverPull  4m36s (x260 over 59m)  kubelet            Container image "realtimepixel.azurecr.io/realtimepixel_redis:67dfbf27b868bd0b9e7c77aefafb596f2adb3ca0" is not present with pull policy of Never
 ```
-So, once we know the problem is the `Never`, we can see what is happening between Helm and Azure Kubernetes. Trying to see what is sent to Kubernetes is by using the `template` command of Helm.
+Trying to see what is really sent to Kubernetes using the `template` command:
 
 ```
 helm template realtimepixel ./kubernetes/realtimepixel --set namespace=realtimepixel-prod --set image.pullPolicy=Always --set image.redis.repository=realtimepixel.azurecr.io/realtimepixel_redis --set image.redis.tag=123123 --set image.backend.repository=realtimepixel.azurecr.io/realtimepixel_backend --set image.backend.tag=123123 --set image.frontend.repository=realtimepixel.azurecr.io/realtimepixel_frontend --set image.frontend.tag=123123 > temp.yaml
 ```
+I found a case sensitive issue with the `image.pullPolicy`.
 
-I found a case-sensitive issue with the `image.pullPolicy` where the `p` was lowercase and needed to be uppercase.
+## Debug CrashLoopBackOff
 
-## How to Debug with Azure Kubernetes Containers
-The first issue was out of the way, and a second appeared. This time, the Azure Kubernetes was showing the pods having a `CrashLoopBackOff`.There is a command to get the health of all your pods. In my case, some of them were crashing:
-
+There is a command to get the health of all your pods. In my case, some of them were crashing:
 ```
 kubectl get pods -n realtimepixel-prod
 ```
@@ -177,14 +173,10 @@ backend-deployment-7dfbc4f7f8-vbp24    0/1     CrashLoopBackOff   10 (4m4s ago) 
 frontend-deployment-6f88fdb587-2p2lk   1/1     Running            0                30m
 redis-deployment-5d48cc44bd-8w869      1/1     Running            0                30m
 ```
-
-It is possible to see the logs of the deployment:
-
-```
 kubectl describe pod backend-deployment-69c99548d9-g2w5d -n realtimepixel-prod
+
 kubectl logs backend-deployment-69c99548d9-g2w5d -n realtimepixel-prod
-```
-The output:
+
 ```
 > start:production
 > node -r ts-node/register/transpile-only -r tsconfig-paths/register build/backend/src/index.js
@@ -201,7 +193,6 @@ Error: Cannot find module '/node/build/backend/src/index.js'
 }
 ```
 
-My instinct was to get into the container.
 ```
 kubectl exec -it backend-deployment-69c99548d9-g2w5d -n realtimepixel-prod -- sh
 ```
@@ -210,7 +201,6 @@ But was producing:
 ```
  error: unable to upgrade connection: container not found...
 ```
-The problem is that the issue is on the `run` command of the container that is failing because the starting file (index.js) is not present. However, because it cannot start the command, the container closes not letting me accessing the container to inspect the folder structures and files.
 
 You can test it by creating a Pod for the problematic image that will not restart using the following commands:
 ```
@@ -218,44 +208,40 @@ kubectl run debug-demo -n realtimepixel-prod --image=realtimepixel.azurecr.io/re
 kubectl get pods -n realtimepixel-prod
 kubectl exec -it debug-demo -n realtimepixel-prod -- sh
 ```
-However, the problem will remain that when the Kube Control runs the image that it will crash. However, the log above provides good information. In my case, I realized two things:
+However, the problem will remain that when the Kube Control runs the image that it will crash. However, the log above is providing good information. In my case I realized two things:
 
-1. When testing locally, I wasn't testing correctly. The build was passing because I had a `node_modules` with a dependency that was installed when performing `npm run install` which was adding all the `devDependencies`. On Github, performing the same command, with the `NODE_ENV` to `production` was causing `npm install` to install only the `dependencies` without the `devDependencies`.
-2. I added the `--target` in the build for the multi-stage. I had the impression that it would start the build with the target, but it is saying that it will be the latest. Oddly, using `docker-compose`, the build step is only the one in the target but using the docker command runs the developer portions and the production.
+1. When testing locally, I wasn't testing properly. The build was passing because I had a `node_modules` with a dependency that was installed when performing `npm run install` which was adding all the `devDependencies`. On Github, performing the same command, with the `NODE_ENV` to `production` was causing `npm install` to install only the `dependencies` without the `devDependencies`.
+2. I added the `--target` in the build to ensure that only the production multi-stage is executed
 
-# Still Not Working! What to do next?
-In my case, it was still not green. Same error about `CrashLoopBackOff` on the startup of the container. Time to get back locally.
 
-Instead of using `docker-compose`, I decided to mimic what I was doing on the Github workflow.
+# Still Not Working!
+
 ```
 docker build -f ./services/backend/Dockerfile --target production --build-arg NODE_ENV=production .
-```
-Then get the image built and run it.
-
-```
 docker images
 docker run 40d4941a9092
 docker ps
 ```
 
-Take the _image id_ from the ps command:
+Take the image id from the ps command:
 
 ```
 docker run -it 40d4941a9092 bash
 ```
 
-I could see the error, but like Kubernetes, the container shut down. So now, time to make the container crash but to hang it there in an infinite loop:
+I could see the error. Now time to make the container not crash but to get into:
 
 ```
 docker run 40d4941a9092 /bin/sh -c "while true; do sleep 2; df -h; done"
 ```
 
-In another terminal window, you can connect.
+In another console:
+
 ```
 docker run -it 40d4941a9092 bash
 ```
 
-At that point, I saw that the build was messing around with the folders of the output of TypeScript. So I modified the path and was good to go.
+At that point, I saw that the build was messing around the folders of the ouput of TypeScript. I modified the path and was good to go.
 
 
 # Conclusion
@@ -263,4 +249,4 @@ At this point, the image was created with a build that was successful.
 
 ![](images/azure_kubernetes_deployement.png)
 
-I would say that the experience was enriching. However, one question kept getting in the back of my mind: why isn't the Azure Portal guiding me with more than a single keyword for the failure. As we saw, by messing around with commands, we found the root cause, but some support would have been great. Nonetheless, if something happens to you, now you should be equipped to diagnose a little bit better.
+Once Kubernetes
