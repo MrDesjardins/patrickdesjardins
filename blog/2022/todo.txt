@@ -1,5 +1,17 @@
 ===
-Last Article Date: 2022-07-14
+Last Article Date: 2022-07-29
 
-=== Topics
+=== Future Topics
 - Node JS JWT
+- https://stackoverflow.com/questions/47165108/docker-environment-variables-in-multi-stage-builds
+
+
+=== Past Topics
+✍️ 2022-08-25: How to use Helm Chart to configure dynamically your Kubernetes file for beginner?
+✍️ 2022-08-14: How to Access your Web Application on Kubernetes Azure
+
+
+✍️ 2022-08-09: How to have ViteJS (via SolidJS) to Hot Reload when inside a Docker Container
+
+
+✅ 2022-07-31: How to use Kubernetes with Microsoft Azure and GitHub and how to debug if it does not workout

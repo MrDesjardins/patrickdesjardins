@@ -19,6 +19,11 @@ export const TocAzureContainerSeries = () => {
             Azure Kubernetes with Github Workflow (actions)
           </a>
         </li>
+        <li>
+          <a href="azure-intro-kubernetes">
+            How to Access your Web Application on Kubernetes Azure
+          </a>
+        </li>
       </ol>
     </div>
   );
