@@ -1,0 +1,49 @@
+
+---
+title: "How to Debug a Kubernetes Pod that Crash at Startup (works on Microsoft Azure Kubernetes)?"
+date: "2022-09-07"
+categories:
+  - "azure"
+  - "container"
+  - "kubernetes"
+  - "pod"
+---
+
+I had a pod that worked well on my machine but was not once deployed on Azure Kubernetes. It was constantly rebooting with the status `CrashLoopBackOff`. It was impossible to use `kubectl exec -it` on the ill pod: it was always closing and restarting.
+
+However, there is a trick that is not perfect but might help you. The idea is to create another pod and have a `command` telling the pod to sleep.
+
+
+```sh
+# Get all the pods: find the one that is crashing
+kubectl get pods -n realtimepixel-prod
+
+# Take the name of the crashing pod and find the image
+kubectl describe pod backend-deployment-576495d6f8-nk7rw -n realtimepixel-prod
+
+# Create a new pod from that image and make it sleep
+kubectl run debug-demo -n realtimepixel-prod --image=realtimepixel.azurecr.io/realtimepixel_backend:8ee1dadc954c6217270aaea47fbb8118dd3f1170 --restart=Never --command sleep infinity
+
+# Debug
+kubectl exec -it debug-demo -n realtimepixel-prod -- sh
+
+# Once done, delete the debug pod
+kubectl delete pod debug-demo -n realtimepixel-prod
+```
+
+However, the pod does not have all the information from the Helm. In my case, it meant that environment variables were missing. But, you can pass them manually.
+
+```sh
+kubectl run debug-demo -n realtimepixel-prod \
+--image=realtimepixel.azurecr.io/realtimepixel_backend:8ee1dadc954c6217270aaea47fbb8118dd3f1170 \
+--restart=Never \
+--command sleep infinity \
+--env="IP_BACKEND=backend-service" \
+--env="OUTER_PORT_BACKEND=80" \
+--env="IP_REDIS=redis-service" \
+--env="OUTER_PORT_REDIS=6379" \
+--env="IP_FRONTEND=frontend-service" \
+--env="OUTER_PORT_FRONTEND=80"
+```
+
+I hope it helps you debug your failing pod that keeps crashing at startup. I tested with Microsoft Azure Pod, and it worked flawlessly. I believe it would work on any provider, but always better to clarify under which environment I have tested the debug trick.
