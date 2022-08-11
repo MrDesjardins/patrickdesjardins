@@ -32,70 +32,278 @@ How is this possible? By having 2 interfaces. One is for every element (Area, co
 
 
 ```csharp
- /// <summary> /// A route element is an Area, a Controller, an Action or a list of all these threes. /// </summary> public interface IRouteElement { /// <summary> /// Entry point for the visitor into the element /// </summary> /// <param name="visitor"></param> void AcceptRouteVisitor(IRouteVisitor visitor); }
+ /// <summary> 
+ /// A route element is an Area, a Controller, an Action or a list of all these threes. 
+ /// </summary> 
+ public interface IRouteElement {
+ /// <summary> 
+ /// Entry point for the visitor into the element 
+ /// </summary> 
+ /// <param name="visitor"> </param> 
+ void AcceptRouteVisitor(IRouteVisitor visitor); 
+ }
 
-/// <summary> /// A visitor is the code that will traverse the configuration (tree) of routes. /// </summary> public interface IRouteVisitor { /// <summary> /// Logic to be done by the visitor when this one visit an Area /// </summary> /// <param name="element"></param> /// <returns>True if has found a route that match the area criteria</returns> bool Visit(AreaSectionLocalized element);
+/// <summary> 
+/// A visitor is the code that will traverse the configuration (tree) of routes. 
+/// </summary> 
+public interface IRouteVisitor { 
+  /// <summary> 
+  /// Logic to be done by the visitor when this one visit an Area 
+  /// </summary> 
+  /// <param name="element"></param> 
+  /// <returns>True if has found a route that match the area criteria</returns> 
+  bool Visit(AreaSectionLocalized element);
 
-/// <summary> /// Logic to be done by the visitor when this one visit a Controller /// </summary> /// <param name="element"></param> /// <returns>True if has found a route that match the controller criteria</returns> bool Visit(ControllerSectionLocalized element);
+/// <summary> /
+// Logic to be done by the visitor when this one visit a Controller 
+/// </summary> 
+/// <param name="element"></param> 
+/// <returns>True if has found a route that match the controller criteria</returns> 
+bool Visit(ControllerSectionLocalized element);
 
-/// <summary> /// Logic to be done by the visitor when this one visit an Action /// </summary> /// <param name="element"></param> /// <returns>True if has found a route that match the actopm criteria</returns> bool Visit(ActionSectionLocalized element);
+/// <summary> 
+/// Logic to be done by the visitor when this one visit an Action 
+/// </summary> 
+/// <param name="element"></param> 
+/// <returns>True if has found a route that match the actopm criteria</returns> 
+bool Visit(ActionSectionLocalized element);
 
-/// <summary> /// Flag to indicate that a route has been found and that subsequent visits call be cancelled. /// This is to improve performance. /// </summary> bool HasFoundRoute { get; } } 
+/// <summary> 
+/// Flag to indicate that a route has been found and that subsequent visits call be cancelled. 
+/// This is to improve performance. 
+/// </summary> 
+bool HasFoundRoute { get; } } 
 ```
 
 The **IRouteElement** interface is the entry point to start traversing the route's tree. It's also this interface used to move from one node to another one. This interface is implemented by every nodes (Area, controller, action, list of area, list of controller, list of action). The consumer of the fluent Api shouldn't care else than knowing that this is where he will pass its visitor. For the curious, here is the implementation on the Controller.
 
 
 ```csharp
- public void AcceptRouteVisitor(IRouteVisitor visitor) { if (visitor.Visit(this)) { foreach (var action in this.ActionTranslations) { action.AcceptRouteVisitor(visitor); if (visitor.HasFoundRoute) { break; } } } } 
+ public void AcceptRouteVisitor(IRouteVisitor visitor) { 
+  if (visitor.Visit(this)) { 
+    foreach (var action in this.ActionTranslations) { 
+      action.AcceptRouteVisitor(visitor); 
+      if (visitor.HasFoundRoute) { 
+        break;
+      }
+     } 
+    }
+  } 
 ```
 
 The implementation is very similar for Area. What is does is that it allow the visitor to visit the controller node, if this one is matching (controller name), then it visits every children (actions) of the controller. To improve the performance, the loop is stopped if an action is found has a good one. The most interesting part is how to create a visitor. The visitor is the one that get called by the tree on every **AcceptRouteVisitor**. The visitor is the one having the logic of what you want to do. Here is the full code to get a localized route.
 
 
 ```csharp
- /// <summary> /// Visitor to find from generic information a localized route from an three of routes /// </summary> public class RouteLocalizedVisitor: IRouteVisitor { private readonly CultureInfo culture; private readonly string area; private readonly string controller; private readonly string action; private readonly string[] urlInput; private readonly string[] tokens; private readonly RouteReturn result;
+ /// <summary> 
+ /// Visitor to find from generic information a localized route from an three of routes 
+ /// </summary> 
+ public class RouteLocalizedVisitor: IRouteVisitor { 
+  private readonly CultureInfo culture; 
+  private readonly string area; 
+  private readonly string controller; 
+  private readonly string action; 
+  private readonly string[] urlInput; 
+  private readonly string[] tokens; 
+  private readonly RouteReturn result;
 
-/// <summary> /// /// </summary> /// <param name="culture">Culture used for the route to Url convertion</param> /// <param name="area">Area requested. Can be null.</param> /// <param name="controller">Controller requested. This cannot be null.</param> /// <param name="action">Action requested. This cannot be null</param> /// <param name="urlInput">Specific input. Can be null.</param> /// <param name="tokens">Custom localized token. Can be null.</param> public RouteLocalizedVisitor(CultureInfo culture, string area, string controller, string action, string[] urlInput, string[] tokens) { if (controller == null) { throw new ArgumentNullException(nameof(controller)); } if (action == null) { throw new ArgumentNullException(nameof(action)); } this.culture = culture; this.area = area; this.controller = controller; this.action = action; this.urlInput = urlInput; this.tokens = tokens; this.result = new RouteReturn(); }
+/// <summary> 
+/// 
+/// </summary> 
+/// <param name="culture">Culture used for the route to Url convertion</param> 
+/// <param name="area">Area requested. Can be null.</param> 
+/// <param name="controller">Controller requested. This cannot be null.</param> 
+/// <param name="action">Action requested. This cannot be null</param> 
+/// <param name="urlInput">Specific input. Can be null.</param> 
+/// <param name="tokens">Custom localized token. Can be null.</param> 
+public RouteLocalizedVisitor(CultureInfo culture, string area, string controller, string action, string[] urlInput, string[] tokens) { 
+  if (controller == null) { 
+    throw new ArgumentNullException(nameof(controller));
+   } 
+  if (action == null) { 
+    throw new ArgumentNullException(nameof(action)); 
+  } 
+  this.culture = culture; 
+  this.area = area; 
+  this.controller = controller; 
+  this.action = action; 
+  this.urlInput = urlInput; 
+  this.tokens = tokens; 
+  this.result = new RouteReturn(); 
+}
 
-/// <summary> /// Visitor action for area. If the area match, the result is updated with the localized area name /// </summary> /// <param name="element">Area visited</param> /// <returns>True if found; False if not found</returns> public bool Visit(AreaSectionLocalized element) { if (element.AreaName == this.area) { this.result.UrlParts[Constants.AREA] = element.Translation.First(d => d.CultureInfo.Name == this.Culture.Name).TranslatedValue; return true; } else { return false; } }
+/// <summary> 
+/// Visitor action for area. If the area match, the result is updated with the localized area name 
+/// </summary> 
+/// <param name="element">Area visited</param> 
+/// <returns>True if found; False if not found</returns> 
+public bool Visit(AreaSectionLocalized element) { 
+  if (element.AreaName == this.area) { 
+    this.result.UrlParts[Constants.AREA] = element.Translation.First(d => d.CultureInfo.Name == this.Culture.Name).TranslatedValue; 
+    return true; 
+  } else { 
+    return false; 
+    } 
+  }
 
-/// <summary> /// Visitor action for controller. If the controller match, the result is updated with the localized controller name /// </summary> /// <param name="element">Controller visited</param> /// <returns>True if found; False if not found</returns> public bool Visit(ControllerSectionLocalized element) { if (element.ControllerName == this.controller) { this.result.UrlParts[Constants.CONTROLLER] = element.Translation.First(d => d.CultureInfo.Name == this.Culture.Name).TranslatedValue; return true; } else { return false; } }
+/// <summary> 
+/// Visitor action for controller. If the controller match, the result is updated with the localized controller name 
+/// </summary> 
+/// <param name="element">Controller visited</param> 
+/// <returns>True if found; False if not found</returns> 
+public bool Visit(ControllerSectionLocalized element) { 
+  if (element.ControllerName == this.controller) { 
+    this.result.UrlParts[Constants.CONTROLLER] = element.Translation.First(d => d.CultureInfo.Name == this.Culture.Name).TranslatedValue; 
+    return true; 
+  } else { 
+    return false; 
+  } 
+}
 
-/// <summary> /// Visitor action for action. If the action match, the result is updated with the localized action name /// </summary> /// <param name="element">Action visited</param> /// <returns>True if found; False if not found</returns> public bool Visit(ActionSectionLocalized element) { var urlPartToAddIfGoodPart = new Dictionary<string, string>(); if (element.ActionName == this.action) { if (!this.ExtractTokens(element, urlPartToAddIfGoodPart)) { return false; }
+/// <summary> 
+/// Visitor action for action. If the action match, the result is updated with the localized action name 
+/// </summary> 
+/// <param name="element">Action visited</param> 
+/// <returns>True if found; False if not found</returns> 
+public bool Visit(ActionSectionLocalized element) { 
+  var urlPartToAddIfGoodPart = new Dictionary<string, string>(); 
+  if (element.ActionName == this.action) { 
+    if (!this.ExtractTokens(element, urlPartToAddIfGoodPart)) { 
+      return false; 
+    }
 
-if (!this.ExtractUrlPartValues(element, urlPartToAddIfGoodPart)) { return false; }
+  if (!this.ExtractUrlPartValues(element, urlPartToAddIfGoodPart)) { 
+    return false; 
+  }
 
-this.result.UrlParts[Constants.ACTION] = element.Translation.First(d => d.CultureInfo.Name == this.Culture.Name).TranslatedValue; } else { return false; } this.RemoveOptionalWithDefaultEmpty(element, urlPartToAddIfGoodPart); urlPartToAddIfGoodPart.ToList().ForEach(x => this.result.UrlParts.Add(x.Key, x.Value)); //Merge the result this.result.UrlTemplate = element.Url; this.result.HasFoundRoute = true; return true;
+  this.result.UrlParts[Constants.ACTION] = element.Translation.First(d => d.CultureInfo.Name == this.Culture.Name).TranslatedValue; 
+  } else { 
+    return false; 
+  } 
+  this.RemoveOptionalWithDefaultEmpty(element, urlPartToAddIfGoodPart); 
+  urlPartToAddIfGoodPart.ToList().ForEach(x => this.result.UrlParts.Add(x.Key, x.Value)); //Merge the result 
+  this.result.UrlTemplate = element.Url; 
+  this.result.HasFoundRoute = true; 
+  return true;
 
 }
 
-/// <summary> /// Remove optional value by adding this one in the UrlPart with Empty string which make the GetFinalUrl to replace the {xxx} with nothing /// </summary> /// <param name="element"></param> /// <param name="urlPartToAddIfGoodPart"></param> private void RemoveOptionalWithDefaultEmpty(ActionSectionLocalized element, Dictionary<string, string> urlPartToAddIfGoodPart) { if (element.Values != null) { var dict = (RouteValueDictionary) element.Values; foreach (var keyValues in dict) { var remove = this.urlInput == null || (this.urlInput != null && this.urlInput.All(f => f != keyValues.Key)); if (remove) { urlPartToAddIfGoodPart[keyValues.Key] = string.Empty; } } } }
+/// <summary> 
+/// Remove optional value by adding this one in the UrlPart with Empty string which make the GetFinalUrl to replace the {xxx} with nothing 
+/// </summary> 
+/// <param name="element"></param> 
+/// <param name="urlPartToAddIfGoodPart"></param> 
+private void RemoveOptionalWithDefaultEmpty(ActionSectionLocalized element, Dictionary<string, string> urlPartToAddIfGoodPart) { 
+  if (element.Values != null) { 
+    var dict = (RouteValueDictionary) element.Values; 
+    foreach (var keyValues in dict) { 
+      var remove = this.urlInput == null || (this.urlInput != null && this.urlInput.All(f => f != keyValues.Key)); 
+      if (remove) { 
+        urlPartToAddIfGoodPart[keyValues.Key] = string.Empty; 
+      } 
+    } 
+  } 
+}
 
-/// <summary> /// If the user request a url than we let it through (to let the user replace with his value). If not defined in UrlPart, then use default value. /// </summary> /// <param name="element"></param> /// <param name="urlPartToAddIfGoodPart"></param> /// <returns></returns> private bool ExtractUrlPartValues(ActionSectionLocalized element, Dictionary<string, string> urlPartToAddIfGoodPart) { //Default Values : check if there, nothing to replace if (this.urlInput != null) { foreach (string input in this.urlInput) { if (element.Url.IndexOf(input, StringComparison.CurrentCultureIgnoreCase) >= 0) { var routeValues = (RouteValueDictionary) element.Values; var isDefinedValue = (routeValues != null) && routeValues.Keys.Contains(input); if (isDefinedValue) { var defaultValue = routeValues[input].ToString(); if (defaultValue == string.Empty) { urlPartToAddIfGoodPart[input] = "{" + input + "}"; } else { urlPartToAddIfGoodPart[input] = defaultValue; } } else { //Default if not empty urlPartToAddIfGoodPart[input] = "{" + input + "}"; } } else { return false; } } } return true; }
+/// <summary> 
+/// If the user request a url than we let it through (to let the user replace with his value). If not defined in UrlPart, then use default value. 
+/// </summary> 
+/// <param name="element"></param> 
+/// <param name="urlPartToAddIfGoodPart"></param> 
+/// <returns></returns> 
+private bool ExtractUrlPartValues(ActionSectionLocalized element, Dictionary<string, string> urlPartToAddIfGoodPart) { 
+  //Default Values : check if there, nothing to replace 
+  if (this.urlInput != null) { 
+    foreach (string input in this.urlInput) { 
+      if (element.Url.IndexOf(input, StringComparison.CurrentCultureIgnoreCase) >= 0) { 
+        var routeValues = (RouteValueDictionary) element.Values; 
+        var isDefinedValue = (routeValues != null) && routeValues.Keys.Contains(input); 
+        if (isDefinedValue) { 
+          var defaultValue = routeValues[input].ToString(); 
+          if (defaultValue == string.Empty) { 
+            urlPartToAddIfGoodPart[input] = "{" + input + "}"; 
+          } else { 
+            urlPartToAddIfGoodPart[input] = defaultValue; 
+          } 
+        } else { 
+          //Default if not empty 
+          urlPartToAddIfGoodPart[input] = "{" + input + "}"; 
+        } 
+      } else { 
+        return false; 
+      } 
+    } 
+  } 
+  return true; 
+}
 
-/// <summary> /// Get localized value for every tokens /// </summary> /// <param name="element"></param> /// <param name="urlPartToAddIfGoodPart"></param> /// <returns></returns> private bool ExtractTokens(ActionSectionLocalized element, Dictionary<string, string> urlPartToAddIfGoodPart) { if (this.tokens != null) { if (element.Tokens == null) { return false; } for (int i = 0; i < this.tokens.Length; i++) { if (element.Tokens.ContainsKey(this.tokens[i])) { var tokenFound = element.Tokens[this.tokens[i]]; var tokenTranslation = tokenFound.First(d => d.CultureInfo.Name == this.Culture.Name); urlPartToAddIfGoodPart[this.tokens[i]] = tokenTranslation.TranslatedValue; } else { return false; } } } return true; }
+/// <summary> 
+/// Get localized value for every tokens 
+/// </summary> 
+/// <param name="element"></param> 
+/// <param name="urlPartToAddIfGoodPart"></param> 
+/// <returns></returns> 
+private bool ExtractTokens(ActionSectionLocalized element, Dictionary<string, string> urlPartToAddIfGoodPart) {
+  if (this.tokens != null) { 
+    if (element.Tokens == null) { 
+      return false;
+    } 
+    for (int i = 0; i < this.tokens.Length; i++) { 
+      if (element.Tokens.ContainsKey(this.tokens[i])) { 
+        var tokenFound = element.Tokens[this.tokens[i]]; 
+        var tokenTranslation = tokenFound.First(d => d.CultureInfo.Name == this.Culture.Name); 
+        urlPartToAddIfGoodPart[this.tokens[i]] = tokenTranslation.TranslatedValue; 
+      } else { 
+        return false; 
+      } 
+    } 
+  } 
+  return true; 
+}
 
-/// <summary> /// Indicate if a route has been found. This mean that every condition was met /// </summary> public bool HasFoundRoute { get { return this.result.HasFoundRoute; } }
+/// <summary> 
+/// Indicate if a route has been found. This mean that every condition was met 
+/// </summary> 
+public bool HasFoundRoute { get { return this.result.HasFoundRoute; } }
 
 public CultureInfo Culture { get { return this.culture; } }
 
 public RouteReturn Result() { return this.result; } } 
-``` This code let you specify an area (or not), a controller, an action, expected values to be passed and tokens. If the values has a default value, this one will be used. If the default value is empty, this one is avoided in the url. The token is simply translated. Here is two examples:
+``` 
+This code let you specify an area (or not), a controller, an action, expected values to be passed and tokens. If the values has a default value, this one will be used. If the default value is empty, this one is avoided in the url. The token is simply translated. Here is two examples:
 
 
 ```csharp
- public static ControllerSectionLocalizedList RoutesController = FluentLocalizedRoute .BuildRoute() .ForBilingualController("Account", "Account-en", "Compte") .WithBilingualAction("Profile", "Profile-en", "Afficher-Profile") .WithDefaultValues(new { username = UrlParameter.Optional }) .WithUrl("{action}/{username}") .ToList(); [TestMethod] public void GivenARouteToVisit_WhenNoAreaWithDefaultValue_ThenReturnRouteWithoutAreaWithDefaultValue() { // Arrange var visitor = new RouteLocalizedVisitor(LocalizedSection.EN, null, "Account", "Profile", null, null);
+ public static ControllerSectionLocalizedList RoutesController = FluentLocalizedRoute 
+ .BuildRoute() 
+ .ForBilingualController("Account", "Account-en", "Compte") 
+ .WithBilingualAction("Profile", "Profile-en", "Afficher-Profile") 
+ .WithDefaultValues(new { username = UrlParameter.Optional }) 
+ .WithUrl("{action}/{username}") 
+ .ToList(); 
 
-// Act RoutesController.AcceptRouteVisitor(visitor);
+ [TestMethod] 
+ public void GivenARouteToVisit_WhenNoAreaWithDefaultValue_ThenReturnRouteWithoutAreaWithDefaultValue() { 
+  // Arrange
+   var visitor = new RouteLocalizedVisitor(LocalizedSection.EN, null, "Account", "Profile", null, null);
 
-// Assert var result = visitor.Result().FinalUrl(); Assert.AreEqual("Profile-en",result); }
+  // Act 
+  RoutesController.AcceptRouteVisitor(visitor);
 
-[TestMethod] public void GivenARouteToVisit_WhenNoAreaWithDefaultValueSet_ThenReturnRouteWithoutAreaWithDefaultValue() { // Arrange var visitor = new RouteLocalizedVisitor(LocalizedSection.EN, null, "Account", "Profile", new [] {"username"}, null);
+  // Assert 
+  var result = visitor.Result().FinalUrl(); Assert.AreEqual("Profile-en",result); 
+}
 
-// Act RoutesController.AcceptRouteVisitor(visitor);
+[TestMethod] public void GivenARouteToVisit_WhenNoAreaWithDefaultValueSet_ThenReturnRouteWithoutAreaWithDefaultValue() { 
+  // Arrange 
+  var visitor = new RouteLocalizedVisitor(LocalizedSection.EN, null, "Account", "Profile", new [] {"username"}, null);
 
-// Assert var result = visitor.Result().FinalUrl(); Assert.AreEqual("Profile-en/{username}", result); } 
+  // Act 
+  RoutesController.AcceptRouteVisitor(visitor);
+
+  // Assert 
+  var result = visitor.Result().FinalUrl(); Assert.AreEqual("Profile-en/{username}", result); 
+} 
 ```
 
 ### Mirror Url Support
@@ -104,7 +312,13 @@ Mirror Url is the capability to have more than one Url for a specific route. Thi
 
 
 ```csharp
- public IRouteBuilderAction_ToListOnlyWithAnd WithMirrorUrl(string url) { this.AddInActionList(); var mirrorAction = new ActionSectionLocalized(this.currentAction.ActionName , this.currentAction.Translation , this.currentAction.Values , this.currentAction.Constraints , url); var s = new RouteBuilderAction(this.currentControllerSection, mirrorAction, this.routeBuilder,this.routeBuilderController); this.currentControllerSection.ActionTranslations.Add(mirrorAction); this.currentAction = mirrorAction; return s; } 
+ public IRouteBuilderAction_ToListOnlyWithAnd WithMirrorUrl(string url) { 
+  this.AddInActionList(); 
+  var mirrorAction = new ActionSectionLocalized(this.currentAction.ActionName , this.currentAction.Translation , this.currentAction.Values , this.currentAction.Constraints , url); 
+  var s = new RouteBuilderAction(this.currentControllerSection, mirrorAction, this.routeBuilder,this.routeBuilderController); 
+  this.currentControllerSection.ActionTranslations.Add(mirrorAction); this.currentAction = mirrorAction; 
+  return s; 
+} 
 ```
 
 ### Add Routing for Default Domain Url
@@ -113,7 +327,14 @@ This new feature lets having an action related to the root url, the domain one. 
 
 
 ```csharp
- public IRouteBuilderAction_ToListWithoutUrl AddDomainDefaultRoute(string controller, string action) { var controller1 = ForBilingualController("{controller}", "{controller}", "{controller}"); var action1 = controller1.WithBilingualAction("{action}", "{action}", "{action}"); var action2 = action1.WithDefaultValues(Constants.CONTROLLER, controller); var action3 = action2.WithDefaultValues(Constants.ACTION, action); var action4 = action3.WithUrl("{controller}/{action}"); return action4; } 
+ public IRouteBuilderAction_ToListWithoutUrl AddDomainDefaultRoute(string controller, string action) { 
+  var controller1 = ForBilingualController("{controller}", "{controller}", "{controller}"); 
+  var action1 = controller1.WithBilingualAction("{action}", "{action}", "{action}"); 
+  var action2 = action1.WithDefaultValues(Constants.CONTROLLER, controller); 
+  var action3 = action2.WithDefaultValues(Constants.ACTION, action); 
+  var action4 = action3.WithUrl("{controller}/{action}"); 
+  return action4; 
+} 
 ```
 
 ### Associate Controller to a Specific NameSpace
@@ -122,10 +343,28 @@ The last modification is to have the possibility to associate a namespace for th
 
 
 ```csharp
- public IRouteBuilderControllerAndControllerConfiguration AssociateToNamespace(string @namespace) { if (currentControllerSection.NameSpaces == null) { currentControllerSection.NameSpaces = new[] { @namespace }; } else { var currentNamespaces = currentControllerSection.NameSpaces; var len = currentControllerSection.NameSpaces.Length; Array.Resize(ref currentNamespaces, len + 1); currentNamespaces[len-1] = @namespace; currentControllerSection.NameSpaces = currentNamespaces; } return this; } 
-``` A change is also required inside the **LocalizedRoute** class. 
+public IRouteBuilderControllerAndControllerConfiguration AssociateToNamespace(string @namespace) { 
+  if (currentControllerSection.NameSpaces == null) { 
+    currentControllerSection.NameSpaces = new[] { @namespace }; 
+  } else { 
+    var currentNamespaces = currentControllerSection.NameSpaces; 
+    var len = currentControllerSection.NameSpaces.Length; 
+    Array.Resize(ref currentNamespaces, len + 1); 
+    currentNamespaces[len-1] = @namespace; currentControllerSection.NameSpaces = currentNamespaces; 
+  } 
+  return this; 
+} 
+``` 
+A change is also required inside the **LocalizedRoute** class. 
 ```csharp
- private void AdjustForNamespaces() { var namespaces = this.ControllerTranslation.NameSpaces; bool useNamespaceFallback = (namespaces == null || namespaces.Length == 0); base.DataTokens["UseNamespaceFallback"] = useNamespaceFallback; if ((namespaces != null) && (namespaces.Length > 0)) { base.DataTokens["Namespaces"] = namespaces; } } 
+ private void AdjustForNamespaces() { 
+  var namespaces = this.ControllerTranslation.NameSpaces; 
+  bool useNamespaceFallback = (namespaces == null || namespaces.Length == 0); 
+  base.DataTokens["UseNamespaceFallback"] = useNamespaceFallback; 
+  if ((namespaces != null) && (namespaces.Length > 0)) { 
+    base.DataTokens["Namespaces"] = namespaces; 
+  } 
+} 
 ```
 
 These changes are nice addition to the previous post. You can find the the whole source code in [GitHub](https://github.com/MrDesjardins/AspNetMvcEasyRouting).

@@ -12,19 +12,29 @@ Doing it is also simple, but the documentation around **Lz4net** is practically 
 
 
 ```csharp
- private class CompressedData { public CompressedData() { } public CompressedData(byte[] data) { this.Data = data; } public byte[] Data { get; private set; } } 
+ private class CompressedData { 
+  public CompressedData() { } 
+  public CompressedData(byte[] data) { this.Data = data; } 
+  public byte[] Data { get; private set; } 
+} 
 ```
 
 This object can be serialized and used with StackExchange. It can also be restored from Redis, uncompressed, deserialized and used as object. Inside my Set method, the code looks like this:
 
 
 ```csharp
- var compressed = LZ4Codec.Wrap(Encoding.UTF8.GetBytes(serializedObjectToCache)); var compressedObject = new CompressedData(compressed); string serializedCompressedObject = Serialization.Serialize(compressedObject); //Set serializedCompressedObject with StackExchange Redis library 
+ var compressed = LZ4Codec.Wrap(Encoding.UTF8.GetBytes(serializedObjectToCache)); 
+ var compressedObject = new CompressedData(compressed); 
+ string serializedCompressedObject = Serialization.Serialize(compressedObject); //Set serializedCompressedObject with StackExchange Redis library 
 ```
 
 The Get method do the other way around: 
 ```csharp
- string stringObject = //From StackExchange Redis library var compressedObject = Serialization.Deserialize<CompressedData>(stringObject); var uncompressedData = LZ4Codec.Unwrap(compressedObject.Data); string unCompressed = Encoding.UTF8.GetString(uncompressedData); T obj = Serialization.Deserialize<T>(unCompressed); 
+ string stringObject = //From StackExchange Redis library 
+ var compressedObject = Serialization.Deserialize<CompressedData>(stringObject); 
+ var uncompressedData = LZ4Codec.Unwrap(compressedObject.Data); 
+ string unCompressed = Encoding.UTF8.GetString(uncompressedData); 
+ T obj = Serialization.Deserialize<T>(unCompressed); 
 ```
 
 The result is really stunning. If you look at my personal numbers from a project that I applied this compression you can see that even for 5ko objects we have a gain.
