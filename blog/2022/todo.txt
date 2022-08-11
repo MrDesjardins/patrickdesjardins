@@ -2,20 +2,22 @@
 Last Article Date: 2022-07-29
 
 === Future Topics
-- Node JS JWT
-- https://stackoverflow.com/questions/47165108/docker-environment-variables-in-multi-stage-builds
+💡 Node JS JWT
+💡 https://stackoverflow.com/questions/47165108/docker-environment-variables-in-multi-stage-builds
+💡 How to remove docker container from registry
 
-
-=== Past Topics
-==== Draft
+=== Draft Started
 ✍️ 2022-09-14: How to use Helm Chart to configure dynamically your Kubernetes file for beginner?
 ✍️ 2022-09-07: How to Access your Web Application on Kubernetes Azure
+✍️ 2022-09-14: How to Access your Web Application on Kubernetes Azure with Ingress
+✍️ 2022-10-01: How to Add HTTS to your Kubernetes Ingress
 
-==== Completed waiting
+=== Completed waiting
+⏲️ 2022-08-26: How to Debug a Kubernetes Pod that Crash at Startup (works on Microsoft Azure Kubernetes)
 ⏲️ 2022-08-23: How to reverse proxy your NodeJS frontend server with NGINX using Docker to talk to your backend?
 ⏲️ 2022-08-11: How to have ViteJS (via SolidJS) to Hot Reload when inside a Docker Container
 ⏲️ 2022-08-05: An Introduction to Microsoft Azure and Kubernetes using Helm and Docker Images
 
-==== Published
+=== Published
 
 ✅ 2022-07-28: How to use Kubernetes with Microsoft Azure and GitHub and how to debug if it does not workout

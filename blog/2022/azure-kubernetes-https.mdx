@@ -1,0 +1,43 @@
+---
+title: "How to Add HTTS to your Kubernetes Ingress"
+date: "2022-10-01"
+categories:
+  - "azure"
+  - "docker"
+  - "container"
+  - "kubernetes"
+---
+
+The article's goal is to expose enhance your Kubernetes Ingress [created previously](./azure-kubernetes-public-access) allowing HTTPS (certificate SSL/TLS).
+
+
+# Configuring HTTPS Certificates
+
+Next step, the ingress certificate manager:
+
+```sh
+REGISTRY_NAME=realtimepixel
+CERT_MANAGER_REGISTRY=quay.io
+CERT_MANAGER_TAG=v1.8.0
+CERT_MANAGER_IMAGE_CONTROLLER=jetstack/cert-manager-controller
+CERT_MANAGER_IMAGE_WEBHOOK=jetstack/cert-manager-webhook
+CERT_MANAGER_IMAGE_CAINJECTOR=jetstack/cert-manager-cainjector
+
+az acr import --name $REGISTRY_NAME --source $CERT_MANAGER_REGISTRY/$CERT_MANAGER_IMAGE_CONTROLLER:$CERT_MANAGER_TAG --image $CERT_MANAGER_IMAGE_CONTROLLER:$CERT_MANAGER_TAG
+az acr import --name $REGISTRY_NAME --source $CERT_MANAGER_REGISTRY/$CERT_MANAGER_IMAGE_WEBHOOK:$CERT_MANAGER_TAG --image $CERT_MANAGER_IMAGE_WEBHOOK:$CERT_MANAGER_TAG
+az acr import --name $REGISTRY_NAME --source $CERT_MANAGER_REGISTRY/$CERT_MANAGER_IMAGE_CAINJECTOR:$CERT_MANAGER_TAG --image $CERT_MANAGER_IMAGE_CAINJECTOR:$CERT_MANAGER_TAG
+```
+
+The result is 3 new repository that contain 3 images in your Azure Container Registry (ACR).
+
+![](./images/azure_ingress_nginx_images.png)
+
+
+
+<TocAzureContainerSeries/>
+
+
+
+helm install nginx-ingres ingress-nginx/ingress-nginx \
+  --namespace realtimepixel-prod \
+  --set controller.service.loadBalancerIP=52.255.155.119

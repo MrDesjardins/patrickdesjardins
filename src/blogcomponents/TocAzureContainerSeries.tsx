@@ -35,6 +35,14 @@ export const TocAzureContainerSeries = () => {
             </a>
           </li>
         ) : null}
+        {currentDate >= new Date(2022, 8 - 1, 26) ? (
+          <li>
+            <a href="azure-kubernetes-pod-debug-crash">
+              How to Debug a Kubernetes Pod that Crash at Startup (works on
+              Microsoft Azure Kubernetes)?
+            </a>
+          </li>
+        ) : null}
       </ol>
     </div>
   );
