@@ -80,22 +80,27 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
     // ----------------------------------------------------------------------------------------
     // Page 2: Yearly: All blog post for a specific year
     // ----------------------------------------------------------------------------------------
-    const year = node.frontmatter.date.substr(0, 4);
-    if (!years.has(year)) {
-      const yearStart = year + "-01-01";
-      const yearEnd = year + 1 + "-01-01";
-      createPage({
-        path: URL_PER_YEAR.replace("{year}", year),
-        component: path.resolve(`./src/templates/BlogsByYear.tsx`),
-        context: {
-          yearStart: yearStart,
-          yearEnd: yearEnd,
-          year,
-          totalPages: totalPageCount,
-          currentDate: formattedCurrentDate,
-        },
-      });
-      years.set(year, year);
+    try {
+      const year = node.frontmatter.date.substr(0, 4);
+      if (!years.has(year)) {
+        const yearStart = year + "-01-01";
+        const yearEnd = year + 1 + "-01-01";
+        createPage({
+          path: URL_PER_YEAR.replace("{year}", year),
+          component: path.resolve(`./src/templates/BlogsByYear.tsx`),
+          context: {
+            yearStart: yearStart,
+            yearEnd: yearEnd,
+            year,
+            totalPages: totalPageCount,
+            currentDate: formattedCurrentDate,
+          },
+        });
+        years.set(year, year);
+      }
+    } catch (e) {
+      console.log(e);
+      console.log("File in error:" + node.fields.slug);
     }
 
     // ----------------------------------------------------------------------------------------
