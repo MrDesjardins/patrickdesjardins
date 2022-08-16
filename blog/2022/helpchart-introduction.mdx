@@ -1,13 +1,12 @@
 ---
 title: "How to use Helm Chart to configure dynamically your Kubernetes file for beginner?"
-date: "2022-09-14"
+date: "2122-09-14"
 categories:
   - "Kubernetes"
   - "helm"
 ---
 
-Kubernetes is a powerful tool that allow you to deploy your servers, load-balancers and other infrastructure with a common language. However, it does not handle dynamic portion in the configuration. For example, you might want to inject a specific Docker image tag or inject an environment variable that change depending of the where the infrastructure is deployed (test/prod). Helm Chart is a templating engine that allows to specify values in a tree fashion into your Kubernetes configuration.
-
+Kubernetes is a powerful tool that allows you to deploy your servers, load-balancers, and other infrastructure with a common language. However, it does not handle the dynamic portion of the configuration. For example, you might want to inject a specific Docker image tag or an environment variable that changes depending on where the infrastructure is deployed (test/prod). Helm Chart is a templating engine that allows you to specify values in a tree fashion into your Kubernetes configuration.
 
 # Installing Helm Chart
 
@@ -17,22 +16,79 @@ On a Windows machine, you can use Chocolatey:
 choco install kubernetes-helm
 ```
 
-On MacOs, you can use Brew
+On macOS, you can use Brew.
 
 ```
 brew install helm
 ```
 
-There is plenty of alternative depending of your preference or operating system in [the official installation page](https://helm.sh/docs/intro/install).
+There is plenty of alternatives depending of your preference or operating system in [the official installation page](https://helm.sh/docs/intro/install).
 
 # Getting Started
 
-The first step is to create a Helm. The `create` command creates a folder with many files and folders. My project already have a `Kubernetes` folder, hence I moved into it and used the Helm Chart's create command. 
+The first step is to create a Helm. The `create` command creates a folder with many files and folders. My project already has a `Kubernetes` folder. Hence I moved into it and used the Helm Chart's create command. 
 
 ```
 helm create realtimepixel
 ```
-The last word is your project name and also the name of the folder that is created.
+The last word is your project name and the name of the created folder.
 
+# Generated Files
 
-# Default Pages
+The generated files are template files. The template files are what Helm is all about. Helm is the glue between Kubernetes configuration and configuration values. Helm takes the values from the file and push them into placeholders of the template files. Help templates are written in YAML and are in two formats: `.yaml` and `.tpl` files. The former is the template files and the value files. The second, the `.tpl` is for a template that can be injected inside the main templates. See, this second template has a way to reuse a portion of the template.
+
+# Template Files
+
+When starting, it can be overwhelming to see all these files and template placeholders. With time, it is customary to remove or add new template files. Most of the generated template contains a section that verify if values are configured. When not provided in the values.yaml file, Helm skips injecting any value making the generated Kubernetes configuration shorter.
+
+# Generated Kubernetes YAML from Heml Templates
+
+With Helm, the command executes toward your Kubernetes cluster. You do not see what is sent. However, there is a way to see what would be a hardcoded Kubernetes values without the template with all the substitution performed into a single file with all the Pods, Services, Controllers, etc.
+
+```sh
+helm template realtimepixel ./kubernetes/realtimepixel \
+--set namespace=realtimepixel-prod \
+--set image.pullPolicy=Always \
+--set image.redis.repository=realtimepixel.azurecr.io/realtimepixel_redis \
+--set image.redis.tag=123123 \
+--set image.backend.repository=realtimepixel.azurecr.io/realtimepixel_backend \
+--set image.backend.tag=123123 \
+--set image.frontend.repository=realtimepixel.azurecr.io/realtimepixel_frontend \
+--set image.frontend.tag=123123 \
+> temp.yaml
+```
+
+The command starts with `helm template realtimepixel ./kubernetes/realtimepixel` which tell helm to execute the template located on the last part of the command (`./kubernetes/realtimepixel`).
+
+The remaining commands are a collection of `--set key:value`. The `set` represents values that will override the ones defined in `values.yaml`. In my case, the values provided are the one that are dynamically changed, like the container tag that are injected by the Continous Environment to get the latest.
+
+Finally, the `> temp.yaml` is the portion that will output a single YAML file that is a Kubernetes configuration without a template. That is the place where you can see if the result generated is the desired.
+
+# Pushing the Configuration
+
+Pushing to Azure or any provider is a matter of having the right context defined in `kubectl` and upgrading/installing.
+```sh
+# Get what is available
+kubectl config get-clusters
+
+# Set what the context you want to upgrade or install
+kubectl config use-context realpixelask2
+
+# Ensure you are in the right context
+kubectl config current-context
+
+# Tell Heml to get the values into the template and apply an install if not already present or to upgrade if already there
+helm upgrade realtimepixel ./kubernetes/realtimepixel --install
+```
+
+The few commands above are what you need. If you do not have a context with `get-clusters` you will need to communicate with your Kubernetes provider. For example, with Azure:
+
+```
+az aks get-credentials -g realtimepixel_resourcegroup -n realpixelask2
+```
+
+# Conclusion
+
+I had the initial intention to dive deeper with Helm, but it is a vast system that is complex and, at the same time, with a limited goal: injecting value to form a value Kubernetes configuration file. So for now, let's wrap up with the main point to remember: Helm is a way to inject configuration into the Kubernetes configuration file. You can find online available Helm Chart for a typical pattern. For example, an NGINX Helm chart allows configuring a web server by passing a few values like ports and files.
+
+<TocAzureContainerSeries/>

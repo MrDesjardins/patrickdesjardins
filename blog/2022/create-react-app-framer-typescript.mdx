@@ -1,0 +1,88 @@
+---
+title: "How to fix the import EcmaScript module error with Create React App and Framer"
+date: "2022-09-21"
+categories:
+  - "typescript"
+  - "react"
+  - "cra"
+  - "framer"
+---
+
+[Framer](https://www.framer.com/) is a library that animates React components. The library allows many interactions, from moving HTML elements to moving SVG paths. What is particularly interesting with Framer is the capability to animate when a React component is mounted and unmounted, making the HTML fade in and out or move more aesthetic way.
+
+A problem started after [version 4.1.17](https://www.npmjs.com/package/framer-motion) if you are using Create React App (CRA) with TypeScript.
+
+> Can't import the named export 'Children' from non EcmaScript module (only default export is available)
+
+The issue is that Create React App hides Webpack and it is missing a configuration to handle _non EcmaScript module_.
+
+# The Situation
+
+If you are using the latest version of Create React App (CRA), version 5.0.1, the Webpack configuration is not the one expected by Framer.
+
+Also, Framer has moved in the last year from version 4 to version 7 with many bugs fixed. Unfortunately, many solutions on the Internet promote the downgrade, which is unfortunate and caused me many issues with animating SVG path, for example.
+
+CRA does not let you modify the Webpack configuration.
+
+# The Solution and Problem
+
+It is possible to alter the Webpack configuration using [Craco](https://github.com/dilanx/craco). Craco allows to stay connected (not ejected) from CRA and change Webpack. The problem is that it is poorly maintained and does not support CRA version 5, only version 4. Craco alpha version supports version 5 of CRA, but it causes many issues with other Craco plugins: yes! Craco relies on plugins for third-parties to add features that can be injected into CRA, which I also use. So we are now in a perfect Javascript ecosystem nightmare. In my case, the dilemma was to downgrade CRA or to downgrade Framer.
+
+# The Solution
+
+In my case, I decided to downgrade CRA to version 4. Once Craco is installed with npm, you need two files.
+
+## Craco
+
+```
+npm install @craco/craco --save
+```
+
+The first file is the basic Craco configuration file: `craco.config.js`. The file must be at the root of your project, next to your `package.json` file. The content:
+
+```js {2, 11}
+const { ProvidePlugin } = require("webpack");
+const webpackFramerTyperScriptPlugin = require("./craco-plugin-framer-typescript");
+module.exports = {
+  webpack: {
+    plugins: [
+      new ProvidePlugin({
+        React: "react",
+      }),
+    ],
+  },
+  plugins: [{ plugin: webpackFramerTyperScriptPlugin }],
+};
+```
+
+The second and eleventh lines are important: they are the ones that indicate to Craco to use the plugin we need to develop.
+
+## Craco Plugin
+
+The plugin is injected into Craco. The [documentation](https://github.com/dilanx/craco/blob/master/packages/craco/README.md) is great with many [examples](https://github.com/dilanx/craco/tree/master/recipes), so I was able to write something very simple:
+
+```js
+const { loaderByName, addBeforeLoader } = require("@craco/craco");
+module.exports = {
+  overrideWebpackConfig: ({
+    webpackConfig,
+    cracoConfig,
+    pluginOptions,
+    context: { env, paths },
+  }) => {
+    const ruleToAdd = {
+      test: /\.mjs$/,
+      include: /node_modules/,
+      type: "javascript/auto",
+    };
+    addBeforeLoader(webpackConfig, loaderByName("file-loader"), ruleToAdd);
+    return webpackConfig;
+  },
+};
+```
+
+In short, we inject our new rule before an existing "loader". The `file-loader` is the step that emits files The `include` is set to `node_modules` and ensure is executed only for the `mjs` file extension. Hence, the plugin is for more than just Framer, but the `.mjs` is what Framer produces and is causing the issue. The type `javascript/auto` tells Webpack to ignore doing what was previously configured for `.mjs`. The `javascript/auto` tells Webpack to stop using prior loaders associated to `.mjs` file inside the `node_modules` folder.
+
+# Conclusion
+
+There is a minor modification to do with the `npm run start` to be `"start": "craco start"`. By modifying the Webpack configuration using Craco, Framer works with TypeScript.

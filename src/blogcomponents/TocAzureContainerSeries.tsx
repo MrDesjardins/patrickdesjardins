@@ -1,5 +1,5 @@
 import * as React from "react";
-export const TocAzureContainerSeries = () => {
+export const TocAzureContainerSeries = (): JSX.Element => {
   const currentDate = new Date();
   return (
     <div>
@@ -40,6 +40,14 @@ export const TocAzureContainerSeries = () => {
             <a href="azure-kubernetes-pod-debug-crash">
               How to Debug a Kubernetes Pod that Crash at Startup (works on
               Microsoft Azure Kubernetes)?
+            </a>
+          </li>
+        ) : null}
+        {currentDate >= new Date(2022, 9 - 1, 14) ? (
+          <li>
+            <a href="helpchart-introduction">
+              How to use Helm Chart to configure dynamically your Kubernetes
+              file for beginner?
             </a>
           </li>
         ) : null}
