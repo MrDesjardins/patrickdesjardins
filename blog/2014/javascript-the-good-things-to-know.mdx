@@ -7,20 +7,21 @@ categories:
 
 ## Null and array
 
-The type **null** or the type **array** are in fact of type object. You can verify this by using **typeof**. ```typescript
-console.log(typeof(null)); console.log(typeof([1,2,3]); 
+The type **null** or the type **array** are in fact of type object. You can verify this by using **typeof**. 
+```typescript
+console.log(typeof(null)); 
+console.log(typeof([1,2,3]); 
 ``` 
-
-
 ## Variables Name
 
-Variables name can have illegal character if used with quote when defined. For example, you can use **numeric** and **alphanumeric character** with **underscore** but you cannot use directly a dash for example. The variable name this-is-illegal is not legal but if you define your object with the property name "this-is-illegal" it works. ```typescript
+Variables name can have illegal character if used with quote when defined. For example, you can use **numeric** and **alphanumeric character** with **underscore** but you cannot use directly a dash for example. The variable name this-is-illegal is not legal but if you define your object with the property name "this-is-illegal" it works. 
+```typescript
 var yourObject = { "this-is-illegal":"but it works because of the quote", this_is_legal : "and does not require quote" }; 
 ``` 
- Even if the illegal character can be by-passed by the first approach, using quote, it is not recommended to write you code this way. Retreving the value require to use the array notation instead of the dot notation. ```typescript
+Even if the illegal character can be by-passed by the first approach, using quote, it is not recommended to write you code this way. Retreving the value require to use the array notation instead of the dot notation. 
+```typescript
 var v1 = yourObject["this-is-illegal"]; //instead of var v1 = yourObject.this_is_legal; 
 ``` 
-
 
 ## arguments variable
 
@@ -34,16 +35,26 @@ function add(a,b) { return a + b; // or return arguments[0] + arguments[1]; }
 But this goes far beyond that. You can define your function to not have any arguments and use it with multiple arguments. The **arguments** variable will hold all arguments passed to the function and not only those officially specified.
 
 ```typescript
-function add() { var index var sum = 0; for (index = 0; index < arguments.length; index += 1) { sum += arguments[index]; } return sum } var result = add(1,2,3,4,5); // 15 
+function add() { 
+  var index var sum = 0; 
+  for (index = 0; index < arguments.length; index += 1) { 
+    sum += arguments[index]; 
+  } 
+  return sum 
+} 
+var result = add(1,2,3,4,5); // 15 
 ``` 
-
-
 ## Default Initialization
 
-If you are not sure if a variable has already been initialized you can use the **|| operator** to check and assign. ```typescript
+If you are not sure if a variable has already been initialized you can use the **|| operator** to check and assign. 
+
+```typescript
 var variableWithValueForSure = anotherVariable.variable1 || "defaultValue"; 
 ``` 
- What it does is that it check if the first expression returns _undefined_. If it is undefined, than this one return _false_. Since it returns _false_, the next expression is evaluate which set the value. In the case it is not _undefined_, this one return not _true_ but the value directly. This is why, often in JavaScript we see the same variable doing this trick to itself to be sure that it is defined. The next example ensures that the variable "me" is defined and not undefined. ```typescript
+
+ What it does is that it check if the first expression returns _undefined_. If it is undefined, than this one return _false_. Since it returns _false_, the next expression is evaluate which set the value. In the case it is not _undefined_, this one return not _true_ but the value directly. This is why, often in JavaScript we see the same variable doing this trick to itself to be sure that it is defined. The next example ensures that the variable "me" is defined and not undefined. 
+ 
+```typescript
 var me = me || {}; 
 ``` 
 
@@ -54,13 +65,13 @@ It is possible to add variables at anytime with JavaScript. You just need to set
 var obj = { variable1 : 1 }; obj.newVariable = 2; //newVariable is added to the object obj 
 ``` 
 
-
 ## References is used not copy
 
-Every time you set an existing object to another variable this one pass its reference. This is true for function parameters but also for variable inside a function. ```typescript
-var x1 = x2; //x1 and x2 are the same now x2.v1 = 'value1'; //x1.v1 is also at 'value1' 
+Every time you set an existing object to another variable this one pass its reference. This is true for function parameters but also for variable inside a function. 
+```typescript
+var x1 = x2; //x1 and x2 are the same now 
+x2.v1 = 'value1'; //x1.v1 is also at 'value1' 
 ``` 
-
 
 ## Prototype
 
@@ -68,10 +79,16 @@ Prototype is the concept in JavaScript that allow you to share information throu
 
 ## hasOwnProperty
 
-If you want to loop your object proprety (variables and functions) than you will stumble into prototype properties which you may not want to see. If you want to see only method that you have defined for the object and not those ones from the prototype you must use the function **hasOwnProperty('propertyToCheck')**. ```typescript
-var propertyName ; for (propertyName in yourObject) { if (yourObject.hasOwnProperty(propertyName])) { //Do what you want with the property that is inside YourObject and not inside the its prototype } } 
+If you want to loop your object proprety (variables and functions) than you will stumble into prototype properties which you may not want to see. If you want to see only method that you have defined for the object and not those ones from the prototype you must use the function **hasOwnProperty('propertyToCheck')**. 
+```typescript
+var propertyName ; 
+for (propertyName in yourObject) { 
+  if (yourObject.hasOwnProperty(propertyName])) { 
+    //Do what you want with the property that is inside YourObject and not inside the its prototype 
+  } 
+} 
 ``` 
- We used the for in statement to loop through all properties. This give us property in an non-specific order. If you want to have properties in the order defined in the code you must use a for with a integer that loop every properties in an array.
+We used the for in statement to loop through all properties. This give us property in an non-specific order. If you want to have properties in the order defined in the code you must use a for with a integer that loop every properties in an array.
 
 ## Delete keyword
 
@@ -79,21 +96,39 @@ Using delete can remove a property. For example, if you define a property named 
 
 ## Adding Method to Prototype
 
-You can add methods to an object with the prototype. You just need to use the prototype keyword after the type you want to enhance. The example below add a trim method to any string. ```typescript
-String.prototype['trim'] = function () { return this.replace(/^\\s+|\\s+$/g, ''); }; This add the trim method to all String type. 
+You can add methods to an object with the prototype. You just need to use the prototype keyword after the type you want to enhance. The example below add a trim method to any string. 
+```typescript
+String.prototype['trim'] = function () { 
+  return this.replace(/^\\s+|\\s+$/g, ''); 
+}; // This add the trim method to all String type. 
 ``` 
-
 
 ## Variables Declaration
 
-In JavaScript it is better to define variable in the beginning of the function instead of the best practice that suggest to declare the variable the nearest of its use. The reason is that JavaScript scope works differently than other languages. JavaScript variables defined in a scope can access others variables outside its scopes. ```typescript
-var Program = function() { var var1 = 1; var Program2= function() { var1 = var1 + 1; // This can access var1 function which is not the case in other scoped language. } Program2(); // Call f2 function //The value of var 1 is 2; } 
+In JavaScript it is better to define variable in the beginning of the function instead of the best practice that suggest to declare the variable the nearest of its use. The reason is that JavaScript scope works differently than other languages. JavaScript variables defined in a scope can access others variables outside its scopes. 
+```typescript
+var Program = function() { 
+  var var1 = 1; 
+  var Program2= function() { 
+    var1 = var1 + 1; // This can access var1 function which is not the case in other scoped language.
+  } 
+  Program2(); // Call f2 function 
+  //The value of var 1 is 2; 
+} 
 ``` 
+
  For example, this does not work in C#: 
 ```csharp
- class Program { private int a;
 
-private class Program2 { public Program2() { a = a + 1; // Do not compile } } } 
+class Program { 
+  private int a;
+
+  private class Program2 { 
+    public Program2() {
+       a = a + 1; // Do not compile 
+    } 
+  } 
+} 
 ```
 
 ## Apply Keyword
@@ -104,37 +139,71 @@ You can call any function with by following this function with the method **appl
 function add(a,b) { return a + b; } 
 ``` 
  ```typescript
-//Can be called this way: var result1 = add(1,2); //3 //or var result2 = add.apply(null,[1,2]); //3 
+//Can be called this way: 
+var result1 = add(1,2); //3 
+//or 
+var result2 = add.apply(null,[1,2]); //3 
 ``` 
 
 
 ## Exceptions
 
-You can throw exception and catch them. The exception throw an object you want. You can use any thing. ```typescript
+You can throw exception and catch them. The exception throw an object you want. You can use any thing. 
+```typescript
 throw {name: 'Error Name', message : 'message you want'}; 
 ``` 
- Thrown statement are read by catch block. If you want to catch multiple exception, than you must do a if statement on a property you want, for example the name. ```typescript
-try { throw {name: 'StackOverFlow', message : 'message you want'}; } catch(e) { if(e.name === 'StackOverFlow') { console.log('***' + e.name + ': ' + e.message + '***'); } console.log(e.name + ': ' + e.message); } 
+ Thrown statement are read by catch block. If you want to catch multiple exception, than you must do a if statement on a property you want, for example the name. 
+ ```typescript
+try { 
+  throw {
+    name: 'StackOverFlow', message : 'message you want'
+    }; 
+} catch(e) { 
+  if(e.name === 'StackOverFlow') { 
+    console.log('***' + e.name + ': ' + e.message + '***'); 
+  } 
+  console.log(e.name + ': ' + e.message); 
+} 
 ``` 
-
 
 ## Chaining Calls
 
-It is always good to return the this keyword if your method return nothing. This allow to do chaining calls. ```typescript
-var Human= function() { this.name = 'Not Defined'; this.gender = 'm'; };
+It is always good to return the this keyword if your method return nothing. This allow to do chaining calls. 
 
-Human.prototype.setName = function(name) { this.name = name; return this; };
+```typescript
+var Human= function() { 
+  this.name = 'Not Defined'; 
+  this.gender = 'm'; 
+};
 
-Human.prototype.setGender = function(gender) { this.gender = gender; return this; }; 
+Human.prototype.setName = function(name) { 
+  this.name = name; 
+  return this; 
+};
+
+Human.prototype.setGender = function(gender) { 
+  this.gender = gender; 
+  return this; 
+}; 
 ``` 
- This allow us to chain because every function return the **this** reference. ```typescript
-var patrick = new Humain() .setName('patrick') .setGender('male'); 
+This allow us to chain because every function return the **this** reference. 
+```typescript
+var patrick = new Humain() 
+  .setName('patrick') 
+  .setGender('male'); 
 ``` 
 
 
 ## Javascript Encapsulation with Closure
 
-JavaScript provides Encapsulation with something named **Closure**. Since everything in JavaScript uses function, this one too. The principle of closure is to encapsulate every variables and methods into a cohesive function. This allow us to scope what is private to the object from what is public. It is very similar to object oriented class. Private methods and variables are not returned by the closure while public methods and variable are. Let's start with an example to demystify the concept of closure. ```typescript
-var referenceToTheObject = (function () { var privateVariable = 0; return { publicMethod1: function () { } ,publicMethod2: function () { } }; }() ); 
+JavaScript provides Encapsulation with something named **Closure**. Since everything in JavaScript uses function, this one too. The principle of closure is to encapsulate every variables and methods into a cohesive function. This allow us to scope what is private to the object from what is public. It is very similar to object oriented class. Private methods and variables are not returned by the closure while public methods and variable are. Let's start with an example to demystify the concept of closure. 
+```typescript
+var referenceToTheObject = (function () { 
+  var privateVariable = 0; 
+  return { publicMethod1: function () { } ,
+  publicMethod2: function () { } 
+  }; 
+}()); 
 ``` 
- This is interesting because in fact, we are invoking an anonymous function (see the line before the last one). This function return an object with two public functions. As you must know now, these function can call any methods and variables in their outer scope. This mean that both public method can call each others but also the private variable. The private variable is not reachable outside the anonymous function because it is not returned by the anonymous function.
+
+This is interesting because in fact, we are invoking an anonymous function (see the line before the last one). This function return an object with two public functions. As you must know now, these function can call any methods and variables in their outer scope. This mean that both public method can call each others but also the private variable. The private variable is not reachable outside the anonymous function because it is not returned by the anonymous function.
