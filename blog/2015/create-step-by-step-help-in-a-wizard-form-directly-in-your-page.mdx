@@ -12,7 +12,8 @@ The main idea in this article is to write a custom help for every page without h
 
 The first step is to download the code from [GitHub](https://github.com/linkedin/hopscotch). Their is no Nuget package, so you will have to go in the page, download the Zip file and go into the distribution folder (**dist**). This one contains a CSS file, a JavaScript file and some images. Once you add all those files into your solution you have to alter few of these files. I usually do not like to alter third-party code because it is hard to keep with the next versions, but this time you have no choice if you want to keep your code with the MVC framework (content and script folder). The first modification was with the CSS file that was expecting the image to be on a sibling folder. This is not a big deal if you do not care to have image next to CSS folder. However, the bigger change that must be done is in the JavaScript file. This one need a new public function to add the next element. This is required because the library setup all the wizard's steps when the page load. If you want during your help's steps generate Html and link your help to that dynamically generated Html, than you must also specify dynamically that the next step will be this instance.
 
-This modification is the following: 1) Search for getCurrTarget 2) Add the following code under the code found in step 1: ```typescript
+This modification is the following: 1) Search for getCurrTarget 2) Add the following code under the code found in step 1: 
+```typescript
 this.setNextTarget = function(el) { currTour.steps[currStepNum+1].target = el; }; 
 ``` 
 
@@ -25,8 +26,9 @@ Here is the interface code:
 ```csharp
  public interface IHelp { HelpViewModel GetHelp(); } 
 ``` This interface is just method to get the help ViewModel. The HelpViewModel class is the one that contain codes about the HopScotch JavaScript. This is the class that the Html Helper later will use to generate the JSON object and the JavaScript call. It contains the tour id which is something unique. This is used in the case we use multiple page HopScotch wizard which I do not plan to use. This is why I just generate a random id. The list of steps are every help box. Each one contains the title, the description, which element to link to and also JavaScript action if required. Other than that, this view model can set some JavaScript action when we start the help wizard, stop this one or end it. The difference between close and end is that close is whenever the user stop using the help and end is only after every steps are done. 
+
 ```csharp
- public class HelpViewModel { private readonly string tourId;
+public class HelpViewModel { private readonly string tourId;
 
 public HelpViewModel() { tourId = Guid.NewGuid().ToString(); this.Steps = new List<HelpStep>(); } public string TourId { get { return tourId; } }
 
@@ -42,19 +44,41 @@ Steps are pretty straightforward. The class contains a one to one relationship w
  public class HelpStep { public HelpStep() { }
 
 public HelpStep(string title, string content, JRaw target, string placement) { this.Title = title; this.Content = content; this.Target = target; this.Placement = placement; } public string Title { get; set; } public string Content { get; set; } public JRaw Target { get; set; } public JRaw OnPrev { get; set; } public JRaw OnNext { get; set; } public JRaw OnShow { get; set; } public string Placement { get; set; } } 
-``` The Target property is the JQuery selector to the item. This could be also a straight JavaScript selector to the Dom element. The next part is to have something that use the View Model and to generate the HopScotch code. The partial view that hack has an helper is only used when the View Model implement the IHelp interface. Inside the layout.cshtml : 
+``` 
+
+The Target property is the JQuery selector to the item. This could be also a straight JavaScript selector to the Dom element. The next part is to have something that use the View Model and to generate the HopScotch code. The partial view that hack has an helper is only used when the View Model implement the IHelp interface. Inside the layout.cshtml : 
+
 ```csharp
  @if (Model is IHelp) { @Html.Partial("_helpScript", Model as IHelp) } 
-``` This code call the partial view: 
+``` 
+This code call the partial view: 
 ```csharp
- @model ViewModel.Infrastructures.Definitions.IHelp <script type="text/javascript"> @{ var infoTour = Model.GetHelp(); } var tour = { id: "@infoTour.TourId", steps: @Html.Raw(infoTour.StepsJson), onClose : @infoTour.OnClose, onError : function (e){console.log(e);}, showPrevButton: false };
+ @model ViewModel.Infrastructures.Definitions.IHelp 
+ <script type="text/javascript"> @{ 
+  var infoTour = Model.GetHelp(); 
+} 
+var tour = { id: "@infoTour.TourId", steps: @Html.Raw(infoTour.StepsJson), onClose : @infoTour.OnClose, onError : function (e){console.log(e);}, showPrevButton: false };
 
 //See_Header.cshtml for the ID $('#page-help-button').click(function () { hopscotch.startTour(tour); });
 
 </script> 
-``` This create the help (called tour in Hopscotch). Then, it add to the help button the action to start the help wizard. The generated code look like the one that can be found in the official website. To create the first help wizard, you just need to have your view model having the implementation using the IHelp. Here is an example: 
+``` 
+This create the help (called tour in Hopscotch). Then, it add to the help button the action to start the help wizard. The generated code look like the one that can be found in the official website. To create the first help wizard, you just need to have your view model having the implementation using the IHelp. Here is an example: 
+
 ```csharp
- public HelpViewModel GetHelp() { return new HelpViewModel() { Steps = { new HelpStep("Join Contest", "You can join one or many contests.", new JRaw("$('#contest-unsubscribed-panel-header')[0]"), "bottom"), new HelpStep("Your Contest", "All the contest you are subscribed are listed here.", new JRaw("$('#contest-subscribed-panel-header')[0]"), "top") {OnShow = new JRaw("function(){createTemporaryContest();}")}, new HelpStep("All Existing Contests", "This is the title of the contest", new JRaw("$('tempo-title')[0]"), "top") {OnShow = new JRaw("function(){hopscotch.setNextTarget($('#tempo-description')[0]); }")}, new HelpStep("Time", "This is the remaining time of the contest", new JRaw("$('#tempo-description')[0]"), "bottom") {OnShow = new JRaw("function(){hopscotch.setNextTarget($('#tempo-number')[0]); }")}, new HelpStep("Participants", "This is the number of user already the contest", new JRaw("$('#tempo-number')[0]"), "top") {OnShow = new JRaw("function(){hopscotch.setNextTarget($('#tempo-description')[0]); }")}, new HelpStep("More Details", "Clicking on the contest will show you the full description of the contest. If you see this box having a shining animation, it means that is it a brand new contest.", new JRaw("$('#tempo-click-description')[0]"), "top") {OnShow = new JRaw("function(){deleteTemporaryContest(); }")}, new HelpStep("What Happen If...", "Once you join, the contest will leave this container and get into the joined contest above", new JRaw("$('#contest-subscribed')[0]"), "top") {OnNext = new JRaw("function(){deleteTemporaryContestFromJoinedContest();}")}, new HelpStep("Done", "Now is it your turn!", new JRaw("$('h1')[0]"), "bottom"){OnShow = new JRaw("function(){removeEverything();}")}, }, OnClose = new JRaw("function(){removeEverything();}") }; } 
+ public HelpViewModel GetHelp() { 
+  return new HelpViewModel() { 
+  Steps = { 
+    new HelpStep("Join Contest", "You can join one or many contests.", new JRaw("$('#contest-unsubscribed-panel-header')[0]"), "bottom"), 
+    new HelpStep("Your Contest", "All the contest you are subscribed are listed here.", new JRaw("$('#contest-subscribed-panel-header')[0]"), "top") 
+    {OnShow = new JRaw("function(){createTemporaryContest();}")}, 
+    new HelpStep("All Existing Contests", "This is the title of the contest", new JRaw("$('tempo-title')[0]"), "top") {OnShow = new JRaw("function(){hopscotch.setNextTarget($('#tempo-description')[0]); }")}, 
+    new HelpStep("Time", "This is the remaining time of the contest", new JRaw("$('#tempo-description')[0]"), "bottom") {OnShow = new JRaw("function(){hopscotch.setNextTarget($('#tempo-number')[0]); }")}, 
+    new HelpStep("Participants", "This is the number of user already the contest", new JRaw("$('#tempo-number')[0]"), "top") {OnShow = new JRaw("function(){hopscotch.setNextTarget($('#tempo-description')[0]); }")}, 
+    new HelpStep("More Details", "Clicking on the contest will show you the full description of the contest. If you see this box having a shining animation, it means that is it a brand new contest.", new JRaw("$('#tempo-click-description')[0]"), "top") {OnShow = new JRaw("function(){deleteTemporaryContest(); }")}, 
+    new HelpStep("What Happen If...", "Once you join, the contest will leave this container and get into the joined contest above", new JRaw("$('#contest-subscribed')[0]"), "top") {OnNext = new JRaw("function(){deleteTemporaryContestFromJoinedContest();}")}, 
+    new HelpStep("Done", "Now is it your turn!", new JRaw("$('h1')[0]"), "bottom"){OnShow = new JRaw("function(){removeEverything();}")}, }, OnClose = new JRaw("function(){removeEverything();}") }; 
+} 
 ```
 
 Their is few things that is not perfect there, but it is quite rapid to work this way. It can be easily re-factored later too. As you can see, I setup every steps in order. In that example, string are not yet localized, but we can leverage of .Net Resource file easily by having all steps in the ViewModel. The selector require to use **JRaw** as explained earlier. You can see some method call for _OnShow_. These method create temporary Dom element that are done if the user really do the action. For example, the _createTemporaryContest_ method create some Dom element, and later, the method _deleteTemporaryContest_ or _removeEverything_ take care to remove those temporary html. The fix we did to LinkedIn HopScotch is used in the OnShow, just a step before this one is used. OnShow allows to do an action when the help's step is shown. This is the perfect time to set the next step on the dynamic generated html element.

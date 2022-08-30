@@ -7,20 +7,22 @@ Last Article Date: 2022-07-29
 💡 How to remove docker container from registry
 
 === Draft Started
-✍️ 2022-09-21: 
+✍️ 2022-10-04: 
 
 === Draft Started but frozen
 🥶 2122-09-14: How to Access your Web Application on Kubernetes Azure with Ingress
 🥶 2122-10-01: How to Add HTTS to your Kubernetes Ingress
 
 === Completed waiting
+⏲️ 2022-10-10: How to animate unmounting of a child with Framer Motion
+⏲️ 2022-10-04: Using Framer Motion to transition (position) between two React components
 ⏲️ 2022-09-21: How to fix the import EcmaScript module error with Create React App and Framer
 ⏲️ 2022-09-14: How to use Helm Chart to configure dynamically your Kubernetes file for beginner?
 ⏲️ 2022-09-07: How to Access your Web Application on Kubernetes Azure
-⏲️ 2022-08-26: How to Debug a Kubernetes Pod that Crash at Startup (works on Microsoft Azure Kubernetes)
-⏲️ 2022-08-23: How to reverse proxy your NodeJS frontend server with NGINX using Docker to talk to your backend?
 
 === Published
+✅ 2022-08-26: How to Debug a Kubernetes Pod that Crash at Startup (works on Microsoft Azure Kubernetes)
+✅ 2022-08-23: How to reverse proxy your NodeJS frontend server with NGINX using Docker to talk to your backend?
 ✅ 2022-08-11: How to have ViteJS (via SolidJS) to Hot Reload when inside a Docker Container
 ✅ 2022-08-05: An Introduction to Microsoft Azure and Kubernetes using Helm and Docker Images
 ✅ 2022-07-28: How to use Kubernetes with Microsoft Azure and GitHub and how to debug if it does not workout

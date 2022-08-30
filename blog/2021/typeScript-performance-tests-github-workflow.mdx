@@ -27,7 +27,7 @@ npm install --save-dev @types/benchmark@latest
 
 Then, creating a benchmark test is a matter of defining what you want the library to perform several times. In my case, I wanted to benchmark the algorithm of a function with a specific parameter. Hence, I am creating one function (`.add`) per scenario for this function.
 
-```ts
+```typescript
 const Benchmark = require("benchmark");
 const suite = new Benchmark.Suite();
 const { HilbertAlgorithm } = require("../dist/lib/es5/hilbertAlgorithm");
