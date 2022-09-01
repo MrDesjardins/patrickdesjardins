@@ -82,6 +82,75 @@ The `exit` needs to have the opposite: a quick fade out. Hence, we have no `dela
      sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
    ></iframe>
 
+# When
+
+So far, so good; ready to close the lid on this animation, but we can do better! The `variants` property of the Framer Motion element propagates animation by name to children. Meaning there is a relationship. When sharing the same name, a child can redefine a step, for example, the animation or exit with its term. That is great, but it still does not help with the timing issue. That is wrong! Using `variants` and specifying in the parent's transition a `when` close can tell Framer Motion to wait to execute the children or the parent animation. A quick modification to use variants:
+
+```tsx {3, 8}
+    <motion.div
+      className="box"
+      variants={variantParent}
+      initial="moveOff"
+      animate="moveOn"
+      exit="moveAway"
+    >
+      <motion.div variants={variantChild}>More content</motion.div>
+    </motion.div>
+```
+
+Moving the previous initial, animate, and exit specifications into objects:
+
+```tsx {19}
+const variantParent: Variants = {
+    moveOff: {
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
+      transition: {
+        duration: 0.2,
+        ease: "easeInOut"
+      }
+    },
+    moveOn: {
+      borderRadius: [boxWidth, boxWidth, boxWidth, 10, 10],
+      width: [0, 10, 10, 10, boxWidth],
+      height: [0, 10, 10, 10, boxHeight],
+      x: [0, -400, -400, -400, -400],
+      y: [0, 0, 200, 200, 200],
+      transition: {
+        when: "beforeChildren"
+      }
+    },
+    moveAway: {
+      width: 0,
+      height: 0
+    }
+  };
+
+  const variantChild: Variants = {
+    moveOff: {
+      opacity: 0,
+      transition: {
+        duration: 0.1
+      }
+    },
+    moveOn: {
+      opacity: 1,
+      transition: {
+        duration: 0.1
+      }
+    },
+    moveAway: {
+      opacity: 0,
+      transition: {
+        duration: 0.1
+      }
+    }
+```
+
+As long as both variants share the same name, the line `when: "beforeChildren"` will wait for the `variantChild` to be executed after the parent. Also, it will automatically perform the child animation first on exit.
+
 # Conclusion
 
 Working with Framer Motion simplifies the animation overall, but it is easy to fall into the trap of an overcomplicated solution. It is not obvious how to debug has everything inject CSS animation/transition into HTML styles. Still, by staying simple, you can find a solution like the one proposed in this article.
