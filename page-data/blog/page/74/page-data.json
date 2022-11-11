@@ -1,5 +1,5 @@
 {
     "componentChunkName": "component---src-templates-blogs-by-page-tsx",
     "path": "/blog/page/74",
-    "result": {"data":{"allMdx":{"nodes":[]}},"pageContext":{"limit":10,"skip":730,"currentPage":74,"totalPages":74,"currentDate":"2022-11-10"}},
+    "result": {"data":{"allMdx":{"nodes":[]}},"pageContext":{"limit":10,"skip":730,"currentPage":74,"totalPages":74,"currentDate":"2022-11-11"}},
     "staticQueryHashes": ["3159585216"]}
