@@ -14,7 +14,7 @@ Last Article Date: 2022-07-29
 🥶 2122-10-01: How to Add HTTPS to your Kubernetes Ingress
 
 === Completed waiting
-⏲️ 2022-11-24: How to use mpsc::unbounded to share data between Rust threads
+⏲️ 2022-12-28: Recapitulation 2022
 
 
 === Published
