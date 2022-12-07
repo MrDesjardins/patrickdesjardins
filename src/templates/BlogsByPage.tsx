@@ -1,6 +1,6 @@
 import * as React from "react";
 import { graphql } from "gatsby";
-import { Layout } from "../layout/layout";
+import Layout from "../layout/layout";
 import { BlogEntry } from "../components/BlogEntry";
 
 const BlogPage = (queryInfo) => {
@@ -30,7 +30,7 @@ const BlogPage = (queryInfo) => {
 export const query = graphql`
   query TopXBlogArticles($limit: Int!, $skip: Int!, $currentDate: Date!) {
     allMdx(
-      sort: { fields: frontmatter___date, order: DESC }
+      sort: { frontmatter: { date: DESC } }
       limit: $limit
       skip: $skip
       filter: { frontmatter: { date: { lte: $currentDate } } }
