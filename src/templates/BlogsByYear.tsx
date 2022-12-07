@@ -1,6 +1,6 @@
 import * as React from "react";
 import { graphql } from "gatsby";
-import { Layout } from "../layout/layout";
+import Layout from "../layout/Layout";
 import { BlogEntry } from "../components/BlogEntry";
 
 const BlogsByYear = (queryInfo) => {
@@ -31,7 +31,7 @@ const BlogsByYear = (queryInfo) => {
 export const query = graphql`
   query BlogsInYear($yearStart: Date!, $yearEnd: Date!, $currentDate: Date!) {
     allMdx(
-      sort: { fields: frontmatter___date, order: DESC }
+      sort: { frontmatter: { date: DESC } }
       filter: {
         frontmatter: {
           date: { gte: $yearStart, lt: $yearEnd, lte: $currentDate }
@@ -52,4 +52,5 @@ export const query = graphql`
     }
   }
 `;
+
 export default BlogsByYear;

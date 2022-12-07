@@ -11,72 +11,61 @@ import { ContactSection } from "../website/ContactsSection";
 import { EducationSection } from "../website/EducationSection";
 import { HistorySection } from "../website/HistorySection";
 import { CourseSection } from "../website/CourseSection";
-import {
-  container,
-  homeContent,
-  homeContentTitles,
-  textOnPicture,
-  topHeader,
-  topHeaderAnchorLink,
-  topHeaderBlog,
-  topHeaderMyName,
-  topMenu,
-  topPicture,
-} from "../website/index.module.css";
+import * as styles from "../website/index.module.css";
 import { OpenSourceSection } from "../website/OpenSourceSection";
 import { StatisticsSection } from "../website/StatisticsSection";
 import { TechnologiesSection } from "../website/TechnologiesSection";
 import { WorkSection } from "../website/WorkSection";
 
-const IndexPage = (): JSX.Element => {
+export default function IndexPage(): JSX.Element{
   return (
-    <div className={container}>
+    <div className={styles.container}>
       <title>Patrick Desjardins</title>
       <main>
-        <nav className={topMenu}>
-          <header className={topHeader}>
-            <Link className={topHeaderMyName} to="/">
+        <nav className={styles.topMenu}>
+          <header className={styles.topHeader}>
+            <Link className={styles.topHeaderMyName} to="/">
               Patrick Desjardins
             </Link>
 
-            <a href="#about-me" className={topHeaderAnchorLink}>
+            <a href="#about-me" className={styles.topHeaderAnchorLink}>
               About Me
             </a>
-            <a href="#work" className={topHeaderAnchorLink}>
+            <a href="#work" className={styles.topHeaderAnchorLink}>
               Works
             </a>
-            <a href="#technologies" className={topHeaderAnchorLink}>
+            <a href="#technologies" className={styles.topHeaderAnchorLink}>
               Technologies
             </a>
-            <a href="#achievements" className={topHeaderAnchorLink}>
+            <a href="#achievements" className={styles.topHeaderAnchorLink}>
               Achievements
             </a>
-            <a href="experiences" className={topHeaderAnchorLink}>
+            <a href="experiences" className={styles.topHeaderAnchorLink}>
               Experiences
             </a>
-            <a href="#past" className={topHeaderAnchorLink}>
+            <a href="#past" className={styles.topHeaderAnchorLink}>
               Past
             </a>
-            <a href="#conferences" className={topHeaderAnchorLink}>
+            <a href="#conferences" className={styles.topHeaderAnchorLink}>
               Conferences
             </a>
-            <a href="#contact" className={topHeaderAnchorLink}>
+            <a href="#contact" className={styles.topHeaderAnchorLink}>
               Contact
             </a>
 
-            <Link to="/blog" className={topHeaderBlog}>
+            <Link to="/blog" className={styles.topHeaderBlog}>
               Blog
             </Link>
           </header>
         </nav>
 
         <div className="home-wrapper">
-          <div className={textOnPicture}>
-            <div className={homeContent}>
+          <div className={styles.textOnPicture}>
+            <div className={styles.homeContent}>
               <h1>
                 Patrick<strong>Desjardins</strong>
               </h1>
-              <p className={homeContentTitles}>
+              <p className={styles.homeContentTitles}>
                 Netflix Senior Software Engineer
                 <br />
                 Formerly Microsoft Senior Software Engineer
@@ -85,9 +74,10 @@ const IndexPage = (): JSX.Element => {
           </div>
           <div className="home-photo">
             <StaticImage
-              className={topPicture}
+              className={styles.topPicture}
               alt="Patrick Desjardins sitting at Netflix Building F"
-              src="../images/backgrounds/patrickdesjardinsatnetflix.jpg" />
+              src="../images/backgrounds/patrickdesjardinsatnetflix.jpg"
+            />
           </div>
         </div>
         <AboutMeSection />
@@ -105,5 +95,4 @@ const IndexPage = (): JSX.Element => {
       </main>
     </div>
   );
-};
-export default IndexPage;
+}

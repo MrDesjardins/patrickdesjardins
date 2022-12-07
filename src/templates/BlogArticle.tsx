@@ -1,17 +1,15 @@
 import * as React from "react";
 import { graphql } from "gatsby";
-import { MDXRenderer } from "gatsby-plugin-mdx";
-import { MDXProvider } from "@mdx-js/react";
-import { Layout } from "../layout/layout";
+import Layout from "../layout/Layout";
 import { CodeBlock } from "../components/CodeBlock";
 import { TocAzureContainerSeries } from "../blogcomponents/TocAzureContainerSeries";
-import { blogPostContainer, blogPostDate } from "../layout/layout.module.css";
-
+import * as containerStyles from "../layout/layout.module.css";
+import { MDXProvider } from "@mdx-js/react";
 const components = {
   pre: CodeBlock,
   TocAzureContainerSeries,
 };
-const BlogPost = (queryInfo): JSX.Element => {
+const BlogArticle = (queryInfo) => {
   const data = queryInfo.data;
   const context = queryInfo.pageContext;
   return (
@@ -19,11 +17,11 @@ const BlogPost = (queryInfo): JSX.Element => {
       pageTitle={data.mdx.frontmatter.title}
       totalPages={context.totalPages}
     >
-      <div className={blogPostContainer}>
-        <p className={blogPostDate}>Posted on: {data.mdx.frontmatter.date}</p>
-        <MDXProvider components={components}>
-          <MDXRenderer>{data.mdx.body}</MDXRenderer>
-        </MDXProvider>
+      <div className={containerStyles.blogPostContainer}>
+        <p className={containerStyles.blogPostDate}>
+          Posted on: {data.mdx.frontmatter.date}
+        </p>
+        <MDXProvider components={components}>{queryInfo.children}</MDXProvider>
       </div>
     </Layout>
   );
@@ -39,8 +37,8 @@ export const query = graphql`
         title
         date(formatString: "MMMM D, YYYY")
       }
-      body
     }
   }
 `;
-export default BlogPost;
+
+export default BlogArticle;

@@ -1,5 +1,5 @@
 ---
-title: "Converting anonymous object to Dictionnary<string, string>"
+title: "Converting anonymous object to Dictionnary\<string, string\>"
 date: "2014-06-12"
 categories: 
   - "asp-mvc"
@@ -11,7 +11,9 @@ Some Asp.Net MVC Html Helpers use the possibility to add **anonymous object** as
 
 
 ```csharp
- public string Url(string action, string controller, string area = null, object routeValues = null) { //Code here } 
+ public string Url(string action, string controller, string area = null, object routeValues = null) { 
+  //Code here 
+} 
 ```
 
 The code above is an example. You may want to have a method that generate an url from some parameters. The last parameter named "routeValues" is of type object. This one is created to be used for anonymous object.
@@ -25,16 +27,31 @@ The Url method can then loop through all the properties. Something that can help
 
 
 ```csharp
- public static class ObjectExtensions { public static IDictionary<string, object> AsDictionary(this object source, BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance) { return source.GetType().GetProperties(bindingAttr).ToDictionary ( propInfo => propInfo.Name, propInfo => propInfo.GetValue(source, null) ); } } 
-``` It uses reflection to get all properties and from these properties to get all values.
+ public static class ObjectExtensions { 
+  public static IDictionary<string, object> AsDictionary(this object source, BindingFlags bindingAttr = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance) { return source.GetType().GetProperties(bindingAttr).ToDictionary ( propInfo => propInfo.Name, propInfo => propInfo.GetValue(source, null) ); } } 
+``` 
+
+It uses reflection to get all properties and from these properties to get all values.
 
 Here is a unit test for the AsDictionary extension method.
 
 
 ```csharp
- [TestClass] public class ObjectExtensionsTest { [TestMethod] public void GivenAnObject_WhenThisOneHasMultipleProperties_ThenDictionary() { // Arrange var objectToConvert = new {Id="Test", Name="Test2"};
+[TestClass] 
+public class ObjectExtensionsTest { 
+  [TestMethod] 
+  public void GivenAnObject_WhenThisOneHasMultipleProperties_ThenDictionary() 
+  { 
+    // Arrange 
+    var objectToConvert = new {Id="Test", Name="Test2"};
 
-// Act var dictionary = objectToConvert.AsDictionary();
+    // Act 
+    var dictionary = objectToConvert.AsDictionary();
 
-// Assert Assert.AreEqual(2,dictionary.Keys.Count); Assert.AreEqual(objectToConvert.Id,dictionary["Id"]); Assert.AreEqual(objectToConvert.Name,dictionary["Name"]); } } 
+    // Assert 
+    Assert.AreEqual(2,dictionary.Keys.Count); 
+    Assert.AreEqual(objectToConvert.Id,dictionary["Id"]); 
+    Assert.AreEqual(objectToConvert.Name,dictionary["Name"]); 
+  } 
+} 
 ```

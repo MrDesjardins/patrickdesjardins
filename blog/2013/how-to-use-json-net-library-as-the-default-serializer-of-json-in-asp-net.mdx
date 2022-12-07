@@ -13,11 +13,18 @@ The goal of this article is to show you how to use Json.Net library manually. Th
 First, we need to inherit from ActionResult (or JsonResult) to have your own custom result class. This is where we will use Json.Net library.
 
 ```csharp
-public class JsonNetResult : ActionResult { public Encoding ContentEncoding { get; set; } public string ContentType { get; set; } public object Data { get; set; }
+public class JsonNetResult : ActionResult { 
+  public Encoding ContentEncoding { get; set; } 
+  public string ContentType { get; set; } 
+  public object Data { get; set; }
 
-public JsonSerializerSettings SerializerSettings { get; set; } public Formatting Formatting { get; set; }
+public JsonSerializerSettings SerializerSettings { get; set; } 
+public Formatting Formatting { get; set; }
 
-public JsonNetResult(object data) { this.Data = data; SerializerSettings = new JsonSerializerSettings(); Formatting = Formatting.Indented; }
+public JsonNetResult(object data) { 
+  this.Data = data; SerializerSettings = new JsonSerializerSettings(); 
+  Formatting = Formatting.Indented; 
+}
 
 public override void ExecuteResult(ControllerContext context) { if (context == null) { throw new ArgumentNullException("context"); }
 
