@@ -61,13 +61,17 @@ var me = me || {};
 
 ## Object and Dynamic Variables
 
-It is possible to add variables at anytime with JavaScript. You just need to set a value to have the variable defined inside your object. This is also true for functions. ```typescript
-var obj = { variable1 : 1 }; obj.newVariable = 2; //newVariable is added to the object obj 
+It is possible to add variables at anytime with JavaScript. You just need to set a value to have the variable defined inside your object. This is also true for functions. 
+
+```typescript
+var obj = { variable1 : 1 }; 
+obj.newVariable = 2; //newVariable is added to the object obj 
 ``` 
 
 ## References is used not copy
 
 Every time you set an existing object to another variable this one pass its reference. This is true for function parameters but also for variable inside a function. 
+
 ```typescript
 var x1 = x2; //x1 and x2 are the same now 
 x2.v1 = 'value1'; //x1.v1 is also at 'value1' 
@@ -75,11 +79,13 @@ x2.v1 = 'value1'; //x1.v1 is also at 'value1'
 
 ## Prototype
 
-Prototype is the concept in JavaScript that allow you to share information through different object of the same type. When calling a function or variable on an object, if this one does not find the function or variable it go check if it can find it in its prototype. If it does not find it it goes to the prototype of the prototype and so on until it reach object.prototype. If nothing is found, it return _undefined_.
+Prototype is the concept in JavaScript that allow you to share information through different object of the same type. When calling a function or variable on an object, if this one does not find the function or variable it go check if it can find it in its prototype. If it does not find it it goes to the prototype of the prototype and so on until it reach object.prototype. If nothing is found, it return `undefined`.
 
 ## hasOwnProperty
 
-If you want to loop your object proprety (variables and functions) than you will stumble into prototype properties which you may not want to see. If you want to see only method that you have defined for the object and not those ones from the prototype you must use the function **hasOwnProperty('propertyToCheck')**. 
+If you want to loop your object proprety (variables and functions) than you will stumble into prototype properties which you may not want to see. I
+f you want to see only method that you have defined for the object and not those ones from the prototype you must use the function `hasOwnProperty('propertyToCheck')`. 
+
 ```typescript
 var propertyName ; 
 for (propertyName in yourObject) { 
@@ -88,15 +94,17 @@ for (propertyName in yourObject) {
   } 
 } 
 ``` 
+
 We used the for in statement to loop through all properties. This give us property in an non-specific order. If you want to have properties in the order defined in the code you must use a for with a integer that loop every properties in an array.
 
 ## Delete keyword
 
-Using delete can remove a property. For example, if you define a property named "prop1" and you execute delete on it, this one will return undefined exepted if the prototype has a "prop1" method. Because of the nature of the prototyoe
+Using delete can remove a property. For example, if you define a property named `prop1` and you execute delete on it, this one will return undefined exepted if the prototype has a `prop` method. Because of the nature of the prototyoe
 
 ## Adding Method to Prototype
 
 You can add methods to an object with the prototype. You just need to use the prototype keyword after the type you want to enhance. The example below add a trim method to any string. 
+
 ```typescript
 String.prototype['trim'] = function () { 
   return this.replace(/^\\s+|\\s+$/g, ''); 
@@ -106,6 +114,7 @@ String.prototype['trim'] = function () {
 ## Variables Declaration
 
 In JavaScript it is better to define variable in the beginning of the function instead of the best practice that suggest to declare the variable the nearest of its use. The reason is that JavaScript scope works differently than other languages. JavaScript variables defined in a scope can access others variables outside its scopes. 
+
 ```typescript
 var Program = function() { 
   var var1 = 1; 
@@ -117,9 +126,9 @@ var Program = function() {
 } 
 ``` 
 
- For example, this does not work in C#: 
-```csharp
+For example, this does not work in C#: 
 
+```csharp
 class Program { 
   private int a;
 
@@ -133,12 +142,13 @@ class Program {
 
 ## Apply Keyword
 
-You can call any function with by following this function with the method **apply**. This one takes two parameters. The first one is the value you want to set to **this** for the method you call. The value can be set to null if you do not want to pass a value to the **this** of the function. The second parameter is an array. This array are converted into the function parameter.
+You can call any function with by following this function with the method `apply`. This one takes two parameters. The first one is the value you want to set to `this` for the method you call. The value can be set to null if you do not want to pass a value to the `this` of the function. The second parameter is an array. This array are converted into the function parameter.
 
 ```typescript
 function add(a,b) { return a + b; } 
 ``` 
- ```typescript
+
+```typescript
 //Can be called this way: 
 var result1 = add(1,2); //3 
 //or 
@@ -149,11 +159,14 @@ var result2 = add.apply(null,[1,2]); //3
 ## Exceptions
 
 You can throw exception and catch them. The exception throw an object you want. You can use any thing. 
+
 ```typescript
 throw {name: 'Error Name', message : 'message you want'}; 
 ``` 
- Thrown statement are read by catch block. If you want to catch multiple exception, than you must do a if statement on a property you want, for example the name. 
- ```typescript
+
+Thrown statement are read by catch block. If you want to catch multiple exception, than you must do a if statement on a property you want, for example the name. 
+ 
+```typescript
 try { 
   throw {
     name: 'StackOverFlow', message : 'message you want'
@@ -186,17 +199,19 @@ Human.prototype.setGender = function(gender) {
   return this; 
 }; 
 ``` 
-This allow us to chain because every function return the **this** reference. 
+
+This allow us to chain because every function return the `this` reference. 
+
 ```typescript
 var patrick = new Humain() 
   .setName('patrick') 
   .setGender('male'); 
 ``` 
 
-
 ## Javascript Encapsulation with Closure
 
 JavaScript provides Encapsulation with something named **Closure**. Since everything in JavaScript uses function, this one too. The principle of closure is to encapsulate every variables and methods into a cohesive function. This allow us to scope what is private to the object from what is public. It is very similar to object oriented class. Private methods and variables are not returned by the closure while public methods and variable are. Let's start with an example to demystify the concept of closure. 
+
 ```typescript
 var referenceToTheObject = (function () { 
   var privateVariable = 0; 

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { graphql } from "gatsby";
-import Layout from "../layout/layout";
+import Layout from "../layout/Layout";
 import { BlogEntry } from "../components/BlogEntry";
 
 const BlogsByYear = (queryInfo) => {

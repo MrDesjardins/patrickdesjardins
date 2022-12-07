@@ -14,14 +14,36 @@ This namespace work with SQL Server 2005 and later and offers support for **dist
 For example, here is the example we previously did with the SqlDbConnection with the use of the System.Transactions instead of the one provided by the connection.
 
 ```csharp
-public int SaveCustomers(IEnumerable<Customer> customers) { ConnectionStringSettings connectionStringSettings = ConfigurationManager.ConnectionStrings["ApplicationServices"];
-
-int rowsAffected=0; using (var connection = new SqlConnection(connectionStringSettings.ConnectionString)) { connection.Open(); using (System.Transactions.TransactionScope ts = new System.Transactions.TransactionScope()) { using (var command = new SqlCommand()) { command.Connection = connection; foreach (var customer in customers) { if (customer.IsNew) { command.CommandText = "INSERT INTO customers (CustomerID, CompanyName) VALUES (@id, @name)"; } else { command.CommandText = "UPDATE customers SET CompanyName = @name WHERE CustomerID = @id"; } command.CommandType = System.Data.CommandType.Text; command.Parameters.Clear(); //Remove command.Parameters.Add(new SqlParameter("id", customer.Id)); command.Parameters.Add(new SqlParameter("name", customer.Name)); rowsAffected += command.ExecuteNonQuery(); }
-
-ts.Complete(); } } connection.Close(); } return rowsAffected; } 
+public int SaveCustomers(IEnumerable<Customer> customers) { 
+  ConnectionStringSettings connectionStringSettings = ConfigurationManager.ConnectionStrings["ApplicationServices"];
+  int rowsAffected=0; 
+  using (var connection = new SqlConnection(connectionStringSettings.ConnectionString)) { 
+    connection.Open(); 
+    using (System.Transactions.TransactionScope ts = new System.Transactions.TransactionScope()) { 
+      using (var command = new SqlCommand()) { 
+        command.Connection = connection; 
+        foreach (var customer in customers) { 
+          if (customer.IsNew) { 
+            command.CommandText = "INSERT INTO customers (CustomerID, CompanyName) VALUES (@id, @name)"; 
+          } else { 
+            command.CommandText = "UPDATE customers SET CompanyName = @name WHERE CustomerID = @id"; 
+          } 
+          command.CommandType = System.Data.CommandType.Text; 
+          command.Parameters.Clear(); //Remove 
+          command.Parameters.Add(new SqlParameter("id", customer.Id)); 
+          command.Parameters.Add(new SqlParameter("name", customer.Name)); 
+          rowsAffected += command.ExecuteNonQuery(); 
+        }
+      ts.Complete(); 
+      } 
+    } 
+    connection.Close(); 
+  } 
+  return rowsAffected; 
+} 
 ```
 
-As you can see, few lines have been removed and some changed. You will notice that we do not have anymore any try-catch. That's right, the USING handle any problem and if the _Transaction.Complete()_ is not called, it's automatically a RollBack. If multiple connections are inside the transaction using, all of them will be under the scope of the transaction distributed transactions coordinator.
+As you can see, few lines have been removed and some changed. You will notice that we do not have anymore any try-catch. That's right, the USING handle any problem and if the `Transaction.Complete()` is not called, it's automatically a RollBack. If multiple connections are inside the transaction using, all of them will be under the scope of the transaction distributed transactions coordinator.
 
 ![](images/transactionDLL-400x339.png)
 

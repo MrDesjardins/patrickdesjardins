@@ -15,18 +15,42 @@ For example, you have several link for action like "open item1" and "open item2"
 - http://yourwebsite.com/page1#item1
 - http://yourwebsite.com/page1#item2
 
-If someone go directly to the _item2_ than you need to execute the code behind this hash tag. To have your code executed you need to use the window event called **onhashchange**. ```typescript
-window.onhashchange = function() { //Get the hash value from the url and execute your code }; 
+If someone go directly to the _item2_ than you need to execute the code behind this hash tag. To have your code executed you need to use the window event called **onhashchange**. 
+
+```typescript
+window.onhashchange = function() { 
+  //Get the hash value from the url and execute your code 
+}; 
 ``` 
+
  The **onhashchange** become a hub if all time the url change which can be convenient to have a central place has a content controller. This method removes the need to have action handled in every click that has hash url to just have the click event of these links to change the url and let the **onhashchange** handles which action to execute.
 
 Here is an example: 
-```html  <a id="report">Current Order Report</a> <a id="edit">Edit Current Order</a> 
-```  ```typescript
-$('#report').click(function(){ window.location.assign("#open-current-report"); });
+```html 
+ <a id="report">Current Order Report</a> 
+ <a id="edit">Edit Current Order</a> 
+```  
 
-$('#edit').click(function(){ window.location.assign("#edit-order"); });
+```typescript
+$('#report').click(function(){ 
+  window.location.assign("#open-current-report"); 
+});
 
-window.onhashchange = function(){ if(window.location.hash) { var hashFragment = window.location.hash.substring(1); // Get hash value (without #) switch(hashFragment) { case "open-current-report": //Do your action break; case "edit-order": //Do your action break; } } }; 
+$('#edit').click(function(){ 
+  window.location.assign("#edit-order"); 
+});
+
+window.onhashchange = function(){ 
+  if(window.location.hash) { 
+    var hashFragment = window.location.hash.substring(1); // Get hash value (without #) 
+    switch(hashFragment) { 
+      case "open-current-report": 
+      //Do your action break; 
+      case "edit-order": 
+      //Do your action break;
+       } 
+    } 
+}; 
 ``` 
- This example use JQuery to attach the click event but this is not required for the location assign, neither for the **onhashchange** -- they are both pure JavaScript method and event.
+
+This example use JQuery to attach the click event but this is not required for the location assign, neither for the **onhashchange** -- they are both pure JavaScript method and event.

@@ -19,16 +19,16 @@ The next logical step is to handle the language selection. In my case, the langu
 
 
 ```csharp
-
- private void SetCultureInformation(StartupEventArgs e) { 
-   var languageInfo = new CultureInfo("en"); 
+private void SetCultureInformation(StartupEventArgs e) { 
+  var languageInfo = new CultureInfo("en"); 
   if (e.InitParams.ContainsKey("language")) { 
     if (e.InitParams["language"] == "fr") { 
       languageInfo = new CultureInfo("fr"); 
     } 
   } 
   Thread.CurrentThread.CurrentCulture = languageInfo; 
-  Thread.CurrentThread.CurrentUICulture = languageInfo; } 
+  Thread.CurrentThread.CurrentUICulture = languageInfo; 
+} 
 ```
 
 I were ready to execute to test but I had the problem that Silverlight didn't want to switch to French.
