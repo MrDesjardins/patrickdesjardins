@@ -32,5 +32,8 @@ So, if you want to load a text file you will need to write:
 
 
 ```csharp
- //... StreamResourceInfo sr1 = Application.GetResourceStream(new Uri("Project1;component/Folder1/Folder2/Test.xml", UriKind.Relative)); var file = new StreamReader(sr1.Stream); return file.ReadToEnd(); 
+//... 
+StreamResourceInfo sr1 = Application.GetResourceStream(new Uri("Project1;component/Folder1/Folder2/Test.xml", UriKind.Relative)); 
+var file = new StreamReader(sr1.Stream); 
+return file.ReadToEnd(); 
 ```

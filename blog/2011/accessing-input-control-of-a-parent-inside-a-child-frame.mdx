@@ -5,11 +5,11 @@ categories:
   - "javascript"
 ---
 
-Not long time ago, I had to modify a code which was using a **Frameset** with **Frame**.
+Not long time ago, I had to modify a code which was using a `Frameset` with `Frame`.
 
 I had an issue because the code was written for Internet Explorer only and it was accessing the hidden field by using `parent.window.document.myhiddenfield.value`.
 
-My first reflex was to remove the window and use getElementById. Like this:
+My first reflex was to remove the window and use `getElementById`. Like this:
 
 ```typescript
 parent.document.getElementById('myhiddenfield').value 
@@ -21,7 +21,6 @@ This doesn't work with Firefox either. After some search, I found that we can us
 ```typescript
 self.ownerDocument.getElementById('bar'); 
 ``` 
-
 
 Unfortunately, this doesn't work with Internet Explorer, just Firefox.
 

@@ -25,7 +25,7 @@ For example, in this test project, the .dbml file name is `DataClasses1.dbml`.
 
 From there, this object contain a `Log` property that takes a `TextWriter`. 
 
-The [TextWriter](http://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx) class come from the `System.IO` namespace and it's an abstract class.
+The [TextWriter](http://msdn.microsoft.com/en-us/library/system.io.textwriter.aspx) class comes from the `System.IO` namespace and it's an abstract class.
 
 The namespace contain two concrete classes that inherit from this class. 
 
@@ -44,7 +44,7 @@ The result looks like this:
 -- Context: SqlProvider(Sql2005) Model: AttributedMetaModel Build: 4.0.30319.1 
 ```
 
-The `Log` return the SQL statement (or many SQL statement if many calls has been done) with a parameter way (@p...). 
+The `Log` return the SQL statement (or many SQL statement if many calls has been done) with a parameter way (`@p...`). 
 After the SQL Statement, each parameter details is written. For example, you can find the type and the size of a SQL parameter.
 
 To conclude, using the `Log` property is interesting to get the SQL detail without using a SQL Profiler. 

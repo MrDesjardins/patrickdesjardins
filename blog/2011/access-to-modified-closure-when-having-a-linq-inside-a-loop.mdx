@@ -5,7 +5,7 @@ categories:
   - "linq"
 ---
 
-If you have Resharper, you can see sometime a warning saying that you "Access to modified closure". If you do not have it, you can still have odd behavior something with the values. In both case, this mean that Linq is accessing a value that might (or not) be modified.
+If you have Resharper, you can see sometime a warning saying that you "Access to modified closure". If you do not have it, you can still have odd behavior something with the values. In both cases, it means that Linq is accessing a value that might (or not) be modified.
 
 Linq execute delegate functions. If you try :
 
@@ -25,7 +25,7 @@ foreach(var f in funcs) //Execute functions which should just return the value.
 } 
 ```
 
-You will not see 1,2,3,4,5 but 5,5,5,5,5. 
+You will not see `1,2,3,4,5` but `5,5,5,5,5`. 
 The reason is that is access a modified variable. 
 The function is not adding the value of v but the pointer to it. This is why it remains on the last value of the loop. But, by using a variable inside the loop, the pointer is to this variable and directly to the good value.
 

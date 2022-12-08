@@ -10,8 +10,8 @@ Sometime, when the application is deployed to IIS server you may still need to d
 
 The first step is to be sure that you .xap file deployed on IIS is the same as the one that you have in your developer environment. This can be automated when a Post-Build condition like this:
 
-``` 
- copy $(TargetDir)YOURxapFILEname.xap c:\\wwwroot\\mywebsite\\ClientBin\\YOURxapFILEname.xap 
+```sh
+copy $(TargetDir)YOURxapFILEname.xap c:\\wwwroot\\mywebsite\\ClientBin\\YOURxapFILEname.xap 
 ``` 
 
 The second step is to go in _Debug_ menu of Visual Studio and choose _Attach To Process_. This is a step that you would have to do to debug ASP pages. But, this will require a modification. When debugging .Net code, you usually set your debugging type to Managed. In the case of Silverlight, you must select _Silverlight_. This will automatically popup you a message saying that you cannot continue to debug in Managed. Just accept.
