@@ -12,7 +12,7 @@
     "debug": "node --openssl-legacy-provider --nolazy node_modules/.bin/gatsby develop --inspect-brk",
     "start": "NODE_OPTIONS='--openssl-legacy-provider' && gatsby develop",
     "build": "NODE_OPTIONS='--openssl-legacy-provider --max_old_space_size=8192' && gatsby build",
-    "buildmemory": "NODE_OPTIONS='--max_old_space_size=8192' npm run build",
+    "build:verbose": "NODE_OPTIONS='--openssl-legacy-provider --max_old_space_size=8192' && gatsby build --verbose",
     "serve": "NODE_OPTIONS='--openssl-legacy-provider' && gatsby serve",
     "clean": "gatsby clean",
     "type-check": "tsc --noEmit",
