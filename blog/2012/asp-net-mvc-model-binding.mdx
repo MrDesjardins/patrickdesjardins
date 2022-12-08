@@ -11,7 +11,7 @@ ASP.Net MVC Model Binding is one of the powerful "in-the-box" feature s that mak
 
 The primary goal is to let you get information from the http request without having to map manually all string to your objects. This can be the case of any http request type like POST after a form is submitted or a GET where information are requested. In fact, it will get query string with many values or values in JSON format and take the information to instantiate the object specified with the good values. Of course, this is possible only if some convention are followed.
 
-## Without Model Binding
+# Without Model Binding
 
 Without model binding the code of loading an object from an html form would look like the following code:
 
@@ -26,7 +26,7 @@ Without model binding the code of loading an object from an html form would look
 
 As you can see, we directly go to the Http Request to get every parameters that correspond to the name of the input of the html form.
 
-## Binding simple value with Model Binding
+# Binding simple value with Model Binding
 
 With Asp.Net MVC you can let the model binding automatically parse every parameters to the parameter type specified in the signature of the method. For example, if you have a method with 2 parameters, one is an integer and one a string, if the method (which is called "action" in the MVC world) detect a request parameter name that fit with the action parameter name, it will get by reflection the time required and will automatically parse it. If the parameter is not provided, the null value is used or the default value if one is provided. The code above will now look like this:
 
@@ -42,9 +42,9 @@ public ActionResult Create(DateTime birthdate, int userid, string name) {
 
 This is not bad! In fact, the MVC model binding can do even better which is to create the user object itself. This is called Binding Complex Object.
 
-## Asp.Net MVC Binding Complex Object
+# Asp.Net MVC Binding Complex Object
 
-Complex object will need to have scalar property that has the same name has the form inputs name and if the complex object contains more than only scalar object (like having sub object) will need to receive a JSON object. .Net will be able to transform this JSON object into C# object if every json variable has its property call the same way. With the example that we use since the beginning, this mean that we could have :
+Complex object will need to have scalar property that has the same name has the form inputs name and if the complex object contains more than only scalar object (like having sub object) will need to receive a JSON object. .Net will be able to transform this JSON object into C\# object if every json variable has its property call the same way. With the example that we use since the beginning, this mean that we could have :
 
 ```csharp
 public ActionResult Create(User user) {
@@ -54,7 +54,7 @@ public ActionResult Create(User user) {
 
 This is very strong isn't? The only think we require was to have the signature of the method with User and than, the view to have input names that is similar to the model' properties name. What is even more powerful is that if you use the framework to generate the form, let say to bind the model User to the Razor view, the name used will be automatically the property name. The reason is that the Razor view can use **Html extension** which will reflect the name when bound to property.
 
-````csharp
+```csharp
  @Html.TextBoxFor(model=>model.userId);
 ```
 Will generate something like:
@@ -62,13 +62,13 @@ Will generate something like:
 ```html
 <input name="userId" value=""/>
 ```
-When the user enter a value, let say for example 123, and submit the form, this will put in the http request, inside the http post data in the http header the value. The format look like this: "userId=123". If you have many parameters, every will be seperated with the symbol an ampersand (&). Asp.net MVC will receive the information and will check the type of the parameter that is a User and check for all public property to find match. In our example, it will find the property userId. Since it's an integer time, it will try to parse and convert the string.
+When the user enter a value, let say for example 123, and submit the form, this will put in the http request, inside the http post data in the http header the value. The format look like this: `userId=123`. If you have many parameters, every will be seperated with the symbol an ampersand (`&`). Asp.net MVC will receive the information and will check the type of the parameter that is a User and check for all public property to find match. In our example, it will find the property userId. Since it's an integer time, it will try to parse and convert the string.
 
 Note that you need to have an empty constructor to be able to let the model binding being able to instantiate the object.
 
-If you ask yourself "what's about a wrong type value? how does it handle error?" Don't worry, you can check if the model binding had error. You can see this in a previous [post](./how-to-validate-model-object-with-asp-net-mvc-correctly "How to validate model object with Asp.Net MVC correctly?").
+If you ask yourself "what's about a wrong type value? how does it handle error?" Don't worry, you can check if the model binding had error. You can see this in a previous [post](./how-to-validate-model-object-with-asp-net-mvc-correctly).
 
-## MVC Model Binding Example
+# MVC Model Binding Example
 
 Let image a really simple model object : Customer.
 ```csharp
@@ -95,7 +95,7 @@ These Html helpers will create the Html with the good name to be able to read th
 
 ![](images/ExampleFormInputGenerated-400x284.png)
 
-When the user hit "Save" the server will receive "FirstName=Patrick&LastName=Desjardins".
+When the user hit "Save" the server will receive `FirstName=Patrick&LastName=Desjardins`.
 
 We can save the new customer :
 

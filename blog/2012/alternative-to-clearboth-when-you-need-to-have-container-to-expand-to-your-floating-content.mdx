@@ -9,8 +9,16 @@ Instead of adding a Html tag after floating division, it's better to add a class
 
 
 ```css
- .clear-fix:after { visibility: hidden; display: block; font-size: 0; line-height: 0; content: " "; clear: both; height: 0; width: 0; } 
+ .clear-fix:after { 
+  visibility: hidden; 
+  display: block; 
+  font-size: 0; 
+  line-height: 0; 
+  content: " "; 
+  clear: both; 
+  height: 0; 
+  width: 0; 
+} 
 ```
-
 
 In fact, this will create an invisible division after any dom element that has the clear-fix class. It will act the same as the old way to do it with an empty division with the clear:both style. But it's cleaner.
