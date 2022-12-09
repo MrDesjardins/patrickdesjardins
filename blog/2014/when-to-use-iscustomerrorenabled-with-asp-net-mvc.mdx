@@ -9,10 +9,15 @@ If you are using Asp.Net MVC, your should have a BaseController that every contr
 
 
 ```csharp
- protected override void OnException(ExceptionContext filterContext) { //1) Write log here //2) Redirect from the yellow screen of death to a custom nice error page } 
+ protected override void OnException(ExceptionContext filterContext) { 
+  //1) Write log here 
+  //2) Redirect from the yellow screen of death to a custom nice error page 
+} 
 ```
 
-At least, this is what it should have. The step one as nothing to do with the **ExceptionContext.HttpContext.IsCustomErrorEnabled**. The second step, yes. In fact, when you are developing the yellow screen is very informative. ![](images/yellowscreenofdeath-400x306.png)
+At least, this is what it should have. The step one as nothing to do with the **ExceptionContext.HttpContext.IsCustomErrorEnabled**. The second step, yes. In fact, when you are developing the yellow screen is very informative. 
+
+![](images/yellowscreenofdeath-400x306.png)
 
 This is why it can be interested to not
 
@@ -23,4 +28,4 @@ This is why it can be interested to not
 
 **IsCustomErrorEnabled** is true when in the web.config the **customerror** is set to true. It's false when it's set to false. When the value is set to remoteonly, it's true when executing on localhost (127.0.0.1) and false when not. It's possible to use this variable with the IsCustomErrorEnabled and to leverage of it inside your base controller.
 
-To answer the question, when to use IsCustomErrorEnabled with Asp.Net MVC
+To answer the question, when to use `IsCustomErrorEnabled` with Asp.Net MVC

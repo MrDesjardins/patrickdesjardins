@@ -15,14 +15,13 @@ You are working locally without a SSL certificate and in production with certifi
 
 ```xml
  <?xml version="1.0"?> <configuration xmlns:xdt="http://schemas.microsoft.com/XML-Document-Transform"> <system.webServer> <rewrite xdt:Transform="Insert"> <rules> <rule name="Redirect HTTP to HTTPS"> <match url="(.*)" /> <conditions> <add input="{HTTPS}" pattern="off" ignoreCase="true" /> </conditions> <action type="Redirect" url="https://{HTTP_HOST}/{R:1}" redirectType="Permanent"/> </rule> </rules> </rewrite> </system.webServer> </configuration>
-
-
 ```
 
 
 The second solution is simpler, because it's just a change in code. However, the request needs to go to the Asp.Net pipeline which is more demanding for your webserver. You should have the redirection as soon as you can and doing it at IIS level is the best place. Nevertheless, it's always good to have both solution on hands.
 
 In global.asax.cs: 
+
 ```csharp
  if (!HttpContext.Current.IsDebuggingEnabled) { filters.Add(new RequireHttpsAttribute()); } 
 ```

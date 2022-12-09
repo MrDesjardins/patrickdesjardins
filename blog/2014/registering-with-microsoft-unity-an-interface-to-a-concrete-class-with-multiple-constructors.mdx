@@ -19,4 +19,5 @@ To select which constructors you have to use the **InjectionConstructor** class.
 
 ```csharp
  container .RegisterType<IMainDbContext, MainDbContext>( new InjectionConstructor( new ResolvedParameter<IRunningContext>() ) ); 
-``` As you can see, this indicate to Microsoft Unity to resolve the IRunningContext from its container to inject the object into the single parameter constructor of MainDbContext. In that case, we take the single constructor of MainDbContext that has its parameter of IRunningContext.
+``` 
+As you can see, this indicate to Microsoft Unity to resolve the IRunningContext from its container to inject the object into the single parameter constructor of MainDbContext. In that case, we take the single constructor of MainDbContext that has its parameter of IRunningContext.

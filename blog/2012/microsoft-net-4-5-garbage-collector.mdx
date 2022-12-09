@@ -6,7 +6,7 @@ categories:
   - "c-sharp"
 ---
 
-Microsoft have been working on the garbage collector since version 1 of the .Net framework. Nevertheless, since Framework 4, they have increased their effort to make this one more efficient. The version 4.5 (still in RC version at this moment), go a step further with a garbage collector that run concurrently from the user thread. This result to shorter time to recycle memory for large application. The new garbage collector is called "[background server garbage collection](http://msdn.microsoft.com/library/ee787088(v=vs.110).aspx#background_server_garbage_collection "Background Server Garbage Collector")".
+Microsoft have been working on the garbage collector since version 1 of the .Net framework. Nevertheless, since Framework 4, they have increased their effort to make this one more efficient. The version 4.5 (still in RC version at this moment), go a step further with a garbage collector that run concurrently from the user thread. This result to shorter time to recycle memory for large application. The new garbage collector is called "[background server garbage collection](http://msdn.microsoft.com/library/ee787088(v=vs.110).aspx#background_server_garbage_collection)".
 
 **Heap balancing** Another improvement is that now, the garbage collector heap is balanced (small and large object). That mean that if a thread is using a lot of resource while others thread are not, the charge will be distributed evenly on all threads' heap. This will reduce the time before cleaning memory.
 

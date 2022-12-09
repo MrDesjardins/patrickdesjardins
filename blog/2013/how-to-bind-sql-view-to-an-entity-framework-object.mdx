@@ -5,23 +5,28 @@ categories:
   - "entity-framework"
 ---
 
-If you do not want to create an Entity and to configure this one with the ToTable() to the name of your view, you can use direct method from the context to call the database and bind the result into a class.
+If you do not want to create an Entity and to configure this one with the `ToTable()` to the name of your view, you can use direct method from the context to call the database and bind the result into a class.
 
 Here is how to do it with the ToTable method:
 
 ```csharp
-public class WorkoutConfiguration : EntityTypeConfiguration<Workout> { public WorkoutConfiguration() { base.ToTable("dbo", "ViewNameHere"); base.HasMany(d => d.Sessions) .WithRequired(d=>d.Workout) .WillCascadeOnDelete(true); } } 
+public class WorkoutConfiguration : EntityTypeConfiguration<Workout> { 
+  public WorkoutConfiguration() { 
+    base.ToTable("dbo", "ViewNameHere"); 
+    base.HasMany(d => d.Sessions) 
+    .WithRequired(d=>d.Workout) 
+    .WillCascadeOnDelete(true); 
+  } 
+} 
 ```
 
 Here is how to do it with a direct SQL statement:
-
 
 ```csharp
  var workouts =_dbContext.Database.SqlQuery<Workout>("select * from dbo.Workout") 
 ```
 
 The SqlQuery acts the same with the binding of value than with Entity Framework. Every fields is mapped with the corresponding methods. You can use AS statement to change the return value of some fields to be the same name of your methods.
-
 
 ```csharp
  var workouts =_dbContext.Database.SqlQuery<Workout>("select id as ID, name as nameFR from dbo.Workout") 

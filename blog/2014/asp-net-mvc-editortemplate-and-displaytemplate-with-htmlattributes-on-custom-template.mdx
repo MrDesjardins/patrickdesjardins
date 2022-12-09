@@ -47,33 +47,75 @@ The IF check if the EditorFor html helper contains any html attributes, if it is
 
 The RenderHtmlAttributes loops all html attributes object and extend each of them to create a final RouteValueDictionary. Finally, it creates a string.
 
-
 ```csharp
- /// <summary> /// Render one or many html attribute together /// </summary> /// <param name="htmlAttributes"></param> /// <returns></returns> public MvcHtmlString RenderHtmlAttributes(params object[] htmlAttributes) { var finalRouteValue = new RouteValueDictionary(); foreach (var htmlAttribute in htmlAttributes) { var routeValue = new RouteValueDictionary(htmlAttribute); finalRouteValue = finalRouteValue.Extend(routeValue); } var htmlAttributesString = String.Join(" ", finalRouteValue.Keys.Select(key => String.Format("{0}=\\"{1}\\"", key, this.htmlHelper.Encode(finalRouteValue[key])))); return MvcHtmlString.Create(htmlAttributesString); } 
+ /// <summary> 
+ /// Render one or many html attribute together 
+ /// </summary> 
+ /// <param name="htmlAttributes"></param> 
+ /// <returns></returns> 
+ public MvcHtmlString RenderHtmlAttributes(params object[] htmlAttributes) { 
+  var finalRouteValue = new RouteValueDictionary(); 
+  foreach (var htmlAttribute in htmlAttributes) { 
+    var routeValue = new RouteValueDictionary(htmlAttribute); 
+    finalRouteValue = finalRouteValue.Extend(routeValue); 
+  } 
+  var htmlAttributesString = String.Join(" ", finalRouteValue.Keys.Select(key => String.Format("{0}=\\"{1}\\"", key, this.htmlHelper.Encode(finalRouteValue[key])))); 
+  return MvcHtmlString.Create(htmlAttributesString); 
+} 
 ```
 
 The heavy lift about handling if one html attribute object contains a key that has already been defined or not to handle the merge is done in the **Extend** method. For example, if two html attributes define the key "class" than we want to merge both value to have in the final result a single "class" key with both class value defined.
 
-
 ```csharp
- /// <summary> /// The extend method takes values from the source and add them into the destination. You do not need to use the return value /// because the destination object will already have the element of the source. /// </summary> /// <param name="destination"></param> /// <param name="source"></param> /// <returns></returns> public static RouteValueDictionary Extend(this RouteValueDictionary destination, IEnumerable<KeyValuePair<string, object>> source) { foreach (var srcElement in source.ToList()) { if (destination.ContainsKey(srcElement.Key)) { destination[srcElement.Key] += " " + srcElement.Value; } else { destination[srcElement.Key] = srcElement.Value; } } return destination; } 
+ /// <summary> 
+ /// The extend method takes values from the source and add them into the destination. You do not need to use the return value 
+ /// because the destination object will already have the element of the source. 
+ /// </summary> 
+ /// <param name="destination"></param> 
+ /// <param name="source"></param> 
+ /// <returns></returns> 
+ public static RouteValueDictionary Extend(this RouteValueDictionary destination, IEnumerable<KeyValuePair<string, object>> source) { 
+  foreach (var srcElement in source.ToList()) { 
+    if (destination.ContainsKey(srcElement.Key)) { 
+      destination[srcElement.Key] += " " + srcElement.Value; 
+    } else { 
+      destination[srcElement.Key] = srcElement.Value; 
+    } 
+  } 
+  return destination; 
+} 
 ```
-
 Here is two unit tests. The first one has two different keys. The end result is that both keys are not merged together. The second test has two route value with the same key. Each of them with different values. The result is that both value are in the first object.
 
-
 ```csharp
- [TestClass] public class RouteExtensionsTest { [TestMethod] public void GivenTwoRouteValueDictionary_WhenBothDoesNotContainSameKey_ThenValueAreNotMerged() { // Arrange var valueObject1 = new RouteValueDictionary { { "key1", "value1" } }; var valueObject2 = new RouteValueDictionary { { "key2", "value2" } };
+ [TestClass]
+ public class RouteExtensionsTest { 
+  [TestMethod] 
+  public void GivenTwoRouteValueDictionary_WhenBothDoesNotContainSameKey_ThenValueAreNotMerged() { 
+    // Arrange 
+    var valueObject1 = new RouteValueDictionary { { "key1", "value1" } }; 
+    var valueObject2 = new RouteValueDictionary { { "key2", "value2" } };
 
-// Act valueObject1.Extend(valueObject2);
+    // Act 
+    valueObject1.Extend(valueObject2);
 
-// Assert Assert.AreEqual("value1", valueObject1["key1"].ToString()); }
+    // Assert 
+    Assert.AreEqual("value1", valueObject1["key1"].ToString()); 
+  }
 
-[TestMethod] public void GivenTwoRouteValueDictionary_WhenBothContainSameKey_ThenValueAreMerged() { // Arrange var valueObject1 = new RouteValueDictionary {{"key1", "value1"}}; var valueObject2 = new RouteValueDictionary {{"key1", "value2"}};
+  [TestMethod] 
+  public void GivenTwoRouteValueDictionary_WhenBothContainSameKey_ThenValueAreMerged() { 
+    // Arrange 
+    var valueObject1 = new RouteValueDictionary {{"key1", "value1"}}; 
+    var valueObject2 = new RouteValueDictionary {{"key1", "value2"}};
 
-// Act valueObject1.Extend(valueObject2);
+    // Act 
+    valueObject1.Extend(valueObject2);
 
-// Assert Assert.AreEqual("value1 value2", valueObject1["key1"].ToString()); } } 
+    // Assert 
+    Assert.AreEqual("value1 value2", valueObject1["key1"].ToString()); 
+  } 
+} 
 ```
 
 It requires some work to work with Editor Template and Display Template when you want to go beyond basic functionality. However, it is possible to extend everything with some Html Helper and Extension methods.

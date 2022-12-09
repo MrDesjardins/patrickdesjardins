@@ -6,9 +6,13 @@ categories:
   - "redis"
 ---
 
-I am improving the performance of a system right now with [Redis](http://redis.io/) and the library [StackExchange](https://github.com/StackExchange/StackExchange.Redis). Onne particular case was that I needed to cache a list of data that are ordered by rank from a value that change often. One requirement is that it's possible that two items can have the same rank. For example: ``` 
+I am improving the performance of a system right now with [Redis](http://redis.io/) and the library [StackExchange](https://github.com/StackExchange/StackExchange.Redis). Onne particular case was that I needed to cache a list of data that are ordered by rank from a value that change often. One requirement is that it's possible that two items can have the same rank. For example: 
+
+``` 
  Rank - Data - Value 1 - User 1 - 100 2 - User 2 - 99 3 - User 4 - 99 4 - User 5 - 97 
-```  The data is in fact a serialized object that contains multiples classes. For not making this article too heavy, I will just use a string. Nevertheless, keep in mind that this is not a simple string unique identifier. The value column is required by Redis when using the [Sorted List](http://redis.io/commands/zadd). In reality, this value is inside the data, in a property.
+```  
+
+The data is in fact a serialized object that contains multiples classes. For not making this article too heavy, I will just use a string. Nevertheless, keep in mind that this is not a simple string unique identifier. The value column is required by Redis when using the [Sorted List](http://redis.io/commands/zadd). In reality, this value is inside the data, in a property.
 
 This is also information that must be paged because the list can go around five thousand entries.
 
@@ -28,10 +32,13 @@ To overcome this issue, Redis offers to be able to store an ordered list that is
 // Later when one entity change with a value of 100. This will produce two rank 1. db.SortedSetAdd("MyListOfObjectFoo", objectToCache, 100); 
 ```
 
-This was surprising in many ways. First of all, the main problem was that if you have several same ranks that it is not possible to have a second ordering value from the object. You are stock with value you set which is a double. This allow you to do some mathematics trick but if you would like to sort by alphabetic order than you need to manually in C# do your second sort. I didn't go more deep with that solution because of the second problem. The second bigger problem was the performance. To get the information, you use the get by range method. 
+This was surprising in many ways. First of all, the main problem was that if you have several same ranks that it is not possible to have a second ordering value from the object. You are stock with value you set which is a double. This allow you to do some mathematics trick but if you would like to sort by alphabetic order than you need to manually in C\# do your second sort. I didn't go more deep with that solution because of the second problem. The second bigger problem was the performance. To get the information, you use the get by range method. 
+
 ```csharp
  db.SortedSetRangeByRank("MyListOfObjectFoo", 1, 20) 
-``` From that, you need to loop and deserialize all values which is the same tax to pay that we have when caching the whole page in 1 Redis key-value entry. However, **the performance was disastrous**. My average on three run was 1900ms. This was really surprising. I double check everything because it wasn't making any sense to me. My initial hypothesis was that this was highly optimized for this kind of scenario -- I was wrong. However, the fault is not Redis. After some investigation, I found that the serialization, done with Json.Net library, got some harder time deserializing 20 times a very complex objects than a list of 20 objects. This is mostly because when serializing a list, if the complex object has already a reference that this one is not serialized again but use a reference system. For example, instead of having a deep object, Json.Net will use "$ref": "20". This has a huge impact in performance.
+``` 
+
+From that, you need to loop and deserialize all values which is the same tax to pay that we have when caching the whole page in 1 Redis key-value entry. However, **the performance was disastrous**. My average on three run was 1900ms. This was really surprising. I double check everything because it wasn't making any sense to me. My initial hypothesis was that this was highly optimized for this kind of scenario -- I was wrong. However, the fault is not Redis. After some investigation, I found that the serialization, done with Json.Net library, got some harder time deserializing 20 times a very complex objects than a list of 20 objects. This is mostly because when serializing a list, if the complex object has already a reference that this one is not serialized again but use a reference system. For example, instead of having a deep object, Json.Net will use "$ref": "20". This has a huge impact in performance.
 
 I finally decided to optimize my model classes and have a more light classes for this page. Instead of using a list of objects that has a lot of sub-rich objects, using a simple list of a basic class with properties did an awesome job. The list that was taking 1900ms to get from Redis and deserialize is not taking less than .17 ms. That is right and not a typo, it is less than a single millisecond.
 

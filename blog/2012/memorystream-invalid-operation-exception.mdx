@@ -5,12 +5,13 @@ categories:
   - "c-sharp"
 ---
 
-**Memorystream** that is initialized with the constructor that take another stream can raise the exception "Invalid Operation Exception".
+`Memorystream` that is initialized with the constructor that take another stream can raise the exception "Invalid Operation Exception".
 
-The proper way to is to use the **Write** property after using the empty constructor.
+The proper way to is to use the `Write` property after using the empty constructor.
 
 ```csharp
- var encoding= new UnicodeEncoding(); Byte[] bytesToCompress = encoding.GetBytes("Test123); 
+ var encoding= new UnicodeEncoding(); 
+ Byte[] bytesToCompress = encoding.GetBytes("Test123); 
  var streamToCompress = new MemoryStream(); 
  streamToCompress.Write(bytesToCompress, 0, bytesToCompress.Length); 
 ```

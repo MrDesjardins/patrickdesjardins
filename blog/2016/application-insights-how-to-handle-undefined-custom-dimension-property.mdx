@@ -7,7 +7,8 @@ categories:
 
 Application Insights is awesome. It allows to query your system for events that you define. For example, when your user login you could create a new event to send data to Application Insights and then query it to know how many of your user did a valid login and how many failed.
 
-In C#, you can have something that record if the login was successful and if not giving a reason why. This could be "wrong login" or "account not validated" or "too many tentative" etc. However, when the login is successful we do not need reason. 
+In C\#, you can have something that record if the login was successful and if not giving a reason why. This could be "wrong login" or "account not validated" or "too many tentative" etc. However, when the login is successful we do not need reason. 
+
 ```csharp
  public void SendLogin(bool isValidLogin, string reason = "") { var properties = new Dictionary<string, string> { {"IsValidLogin" , isValidLogin.ToString()} ,{"LoginDetail" , reason} }; this.telemetry.TrackEvent("LoginRequestSuccess", properties); } 
 ```
@@ -15,7 +16,15 @@ In C#, you can have something that record if the login was successful and if not
 The end result desired is a graph that gives the number of successful login, and the number of failed tentative by reason. The challenge is that the _customDimension_ property of a success will not have any reason. A solution is to check if the custom dimension is defined, which mean null, and assign a temporary string for detail. By assigning a string, we can group by this detailed reason and then by time to spread the result on a time x-axis.
 
 ```
-customEvents | where name == "LoginRequestSuccess" | where timestamp >= ago(14d) | extend d=parsejson(customDimensions) | extend isValidLogin = d.IsValidLogin | extend detail = iff(isnull(d.LoginDetail), "Okay", tostring(d.LoginDetail)) | project detail, timestamp | summarize count(detail) by detail, bin(timestamp, 1d) | order by timestamp asc 
+customEvents 
+| where name == "LoginRequestSuccess" 
+| where timestamp >= ago(14d) 
+| extend d=parsejson(customDimensions) 
+| extend isValidLogin = d.IsValidLogin 
+| extend detail = iff(isnull(d.LoginDetail), "Okay", tostring(d.LoginDetail)) 
+| project detail, timestamp 
+| summarize count(detail) by detail, bin(timestamp, 1d) 
+| order by timestamp asc 
 ``` 
 
-The important line if the one that extend detail. This on-the-fly column is getting the login detail which is provided when the login fail. Since it's not provided when success, we do a check with **isnull**. If it is null, we set a temporary string, otherwise, we cast the provided login detail. The cast is required because the custom dimension is a dynamic type, not a string. The **iff** must return the same type for each condition. The first one is a hard-coded string, thus, the second must be a string.
+The important line if the one that extend detail. This on-the-fly column is getting the login detail which is provided when the login fail. Since it's not provided when success, we do a check with `isnull`. If it is null, we set a temporary string, otherwise, we cast the provided login detail. The cast is required because the custom dimension is a dynamic type, not a string. The `iff` must return the same type for each condition. The first one is a hard-coded string, thus, the second must be a string.

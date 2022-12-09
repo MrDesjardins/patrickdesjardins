@@ -5,7 +5,7 @@ categories:
   - "entity-framework"
 ---
 
-**DetectChanges** can be set to false inside the configuration of the **DbContext**.
+`DetectChanges` can be set to false inside the configuration of the `DbContext`.
 
 
 ```csharp
@@ -17,7 +17,9 @@ or can be turned off for the context life cycle:
 
 ```csharp
  using (var context = new YourContext()) { context.Configuration.AutoDetectChangesEnabled = false; } 
-``` This will increase the overall performance of Entity Framework because it will not execute the verification of changes of the entities inside the **DbContext** and the database. Disabling the auto detection of changes come with the cost that if you do not call it manually that you will not have the good result.
+``` 
+
+This will increase the overall performance of Entity Framework because it will not execute the verification of changes of the entities inside the `DbContext` and the database. Disabling the auto detection of changes come with the cost that if you do not call it manually that you will not have the good result.
 
 In the case that the AutoDetectChangesEnabled is kept to true, or set to true again, than you can be sure that a verification is done when:
 
@@ -33,12 +35,15 @@ In the case that the AutoDetectChangesEnabled is kept to true, or set to true ag
 
 If you are doing few queries or that you add several new entities you may want to detect change only after all commands instead of letting Entity Framework detecting change on every command.
 
-To tell Entity Framework to detect changes, you must use the **DbContext** and call the **ChangeTracker** property that has the **DetectChanges** method.
+To tell Entity Framework to detect changes, you must use the `DbContext` and call the `ChangeTracker` property that has the `DetectChanges` method.
 
 The followed example will not update the user. 
+
 ```csharp
  private static void DetectChangesExample() { using (var context = new YourContext()) { context.Configuration.AutoDetectChangesEnabled = false; var personToModify = context.Persons.Find(1); personToModify.BirthDate = new DateTime(3050,12,12); context.SaveChanges(); } } 
-``` This is because the DbContext does not know about the change of the Person Id 1. If we change the above code by adding the DetectChanges than the database is notified of the changes.
+``` 
+
+This is because the DbContext does not know about the change of the Person Id 1. If we change the above code by adding the DetectChanges than the database is notified of the changes.
 
 
 ```csharp
@@ -49,8 +54,10 @@ It is also possible to get from the Entry collection the state of the entity. If
 
 ![](images/Unchanged-400x96.png)
 
-With DetectChanges: ![](images/StateChanged-400x157.png)
+With DetectChanges: 
 
-Something interesting about **Complex Type** is that the whole class has a simple state. If you change one property of the whole class that is marked as complex type, the whole complex type is market has modified. The reason is that Entity Framework does not create a proxy object for complex type.
+![](images/StateChanged-400x157.png)
+
+Something interesting about `Complex Type` is that the whole class has a simple state. If you change one property of the whole class that is marked as complex type, the whole complex type is market has modified. The reason is that Entity Framework does not create a proxy object for complex type.
 
 This say, you must use DetectChanges before saving otherwise your changes will never reach the database. You can find the code in this post on [GitHub](https://github.com/MrDesjardins/EntityFrameworkTestConsole/tree/94af9ed008a3cd021a7cd8732cbb1f9a3f375e03) or get the [Zip file](https://github.com/MrDesjardins/EntityFrameworkTestConsole/archive/94af9ed008a3cd021a7cd8732cbb1f9a3f375e03.zip).

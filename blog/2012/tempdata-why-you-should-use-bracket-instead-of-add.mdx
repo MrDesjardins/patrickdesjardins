@@ -5,7 +5,7 @@ categories:
   - "asp-mvc"
 ---
 
-TempDataDictionary (TempData is of type of TempDataDictionary) is useful if you need to keep you data between redirection. I have see some case of error with programmer who use the **TempData** with the **Add** method.
+TempDataDictionary (TempData is of type of TempDataDictionary) is useful if you need to keep you data between redirection. I have see some case of error with programmer who use the `TempData` with the `Add` method.
 
 First the Add method won't let you add more than 1 same key. This mean that it will crash if you write: 
 
@@ -15,7 +15,7 @@ First the Add method won't let you add more than 1 same key. This mean that it w
 
 ``` 
 
-You will tell me why someone will do this, well, in the scenario of redirection, which should occur if you are using **TempData** instead of **ViewBag** you may comeback in the same path of code that the user set the data. In this case, the value are set twice cause the TempData in a redirection keep its values.
+You will tell me why someone will do this, well, in the scenario of redirection, which should occur if you are using `TempData` instead of `ViewBag` you may comeback in the same path of code that the user set the data. In this case, the value are set twice cause the TempData in a redirection keep its values.
 
 So, you can add some validation with the ContainsKey method. 
 
@@ -34,7 +34,7 @@ Second, this solve the problem but create overwhelming code for a simple task. T
 
 The code is shorter, cleaner and do what we want. It set the value and if it's a redirection to the same code who has set the value this one will just reset the same value. That's it! Simple and clean.
 
-If you are curious about the bracket code, here is the source code of the TempData for the property [].
+If you are curious about the bracket code, here is the source code of the TempData for the property `[]`.
 
 
 ```csharp

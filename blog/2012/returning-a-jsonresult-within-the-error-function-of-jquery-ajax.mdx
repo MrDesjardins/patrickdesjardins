@@ -12,10 +12,16 @@ The easiest way is to return the error into the return value directly:
 
 
 ```csharp
- public JsonResult Create(MyObject myObject) { //AllFine return Json(new { IsCreated = True, Content = ViewGenerator(myObject)); //Error return Json(new { IsCreated = false, Content = ViewGenerator(myObject), ErrorMessage = 'Could not save because XYZ'); } 
+public JsonResult Create(MyObject myObject) { 
+  //AllFine 
+  return Json(new { IsCreated = True, Content = ViewGenerator(myObject)); 
+  //Error 
+  return Json(new { IsCreated = false, Content = ViewGenerator(myObject), ErrorMessage = 'Could not save because XYZ'); 
+} 
 ```
 
 In the Javascript, we just need to take the error message and display it. 
+
 ```typescript
 $.ajax({ 
   type: "POST", 
@@ -75,11 +81,15 @@ $.ajax({
 
 This way, you handle in a clear way how to display error to the user or to display problem with his inputs. It also give you the possibility to do it in a clean way at the server side and also to the client side.
 
-For you curiosity, if you want to play with different status you can go see in **System.Net** the enumeration **HttpStatusCode** all different possible values.
+For you curiosity, if you want to play with different status you can go see in `System.Net` the enumeration `HttpStatusCode` all different possible values.
 
 Here is it:
 
 
 ```csharp
- namespace System.Net { public enum HttpStatusCode { Continue = 100, SwitchingProtocols = 101, OK = 200, Created = 201, Accepted = 202, NonAuthoritativeInformation = 203, NoContent = 204, ResetContent = 205, PartialContent = 206, Ambiguous = 300, MultipleChoices = 300, Moved = 301, MovedPermanently = 301, Found = 302, Redirect = 302, RedirectMethod = 303, SeeOther = 303, NotModified = 304, UseProxy = 305, Unused = 306, RedirectKeepVerb = 307, TemporaryRedirect = 307, BadRequest = 400, Unauthorized = 401, PaymentRequired = 402, Forbidden = 403, NotFound = 404, MethodNotAllowed = 405, NotAcceptable = 406, ProxyAuthenticationRequired = 407, RequestTimeout = 408, Conflict = 409, Gone = 410, LengthRequired = 411, PreconditionFailed = 412, RequestEntityTooLarge = 413, RequestUriTooLong = 414, UnsupportedMediaType = 415, RequestedRangeNotSatisfiable = 416, ExpectationFailed = 417, InternalServerError = 500, NotImplemented = 501, BadGateway = 502, ServiceUnavailable = 503, GatewayTimeout = 504, HttpVersionNotSupported = 505, } } 
+namespace System.Net { 
+  public enum HttpStatusCode { 
+    Continue = 100, SwitchingProtocols = 101, OK = 200, Created = 201, Accepted = 202, NonAuthoritativeInformation = 203, NoContent = 204, ResetContent = 205, PartialContent = 206, Ambiguous = 300, MultipleChoices = 300, Moved = 301, MovedPermanently = 301, Found = 302, Redirect = 302, RedirectMethod = 303, SeeOther = 303, NotModified = 304, UseProxy = 305, Unused = 306, RedirectKeepVerb = 307, TemporaryRedirect = 307, BadRequest = 400, Unauthorized = 401, PaymentRequired = 402, Forbidden = 403, NotFound = 404, MethodNotAllowed = 405, NotAcceptable = 406, ProxyAuthenticationRequired = 407, RequestTimeout = 408, Conflict = 409, Gone = 410, LengthRequired = 411, PreconditionFailed = 412, RequestEntityTooLarge = 413, RequestUriTooLong = 414, UnsupportedMediaType = 415, RequestedRangeNotSatisfiable = 416, ExpectationFailed = 417, InternalServerError = 500, NotImplemented = 501, BadGateway = 502, ServiceUnavailable = 503, GatewayTimeout = 504, HttpVersionNotSupported = 505, 
+  } 
+} 
 ```

@@ -5,6 +5,7 @@ import { CodeBlock } from "../components/CodeBlock";
 import { TocAzureContainerSeries } from "../blogcomponents/TocAzureContainerSeries";
 import * as containerStyles from "../layout/layout.module.css";
 import { MDXProvider } from "@mdx-js/react";
+import { MDXEmbedProvider } from "mdx-embed";
 const components = {
   pre: CodeBlock,
   TocAzureContainerSeries,
@@ -21,7 +22,11 @@ const BlogArticle = (queryInfo) => {
         <p className={containerStyles.blogPostDate}>
           Posted on: {data.mdx.frontmatter.date}
         </p>
-        <MDXProvider components={components}>{queryInfo.children}</MDXProvider>
+        <MDXEmbedProvider>
+          <MDXProvider components={components}>
+            {queryInfo.children}
+          </MDXProvider>
+        </MDXEmbedProvider>
       </div>
     </Layout>
   );

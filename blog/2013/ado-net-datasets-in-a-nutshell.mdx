@@ -9,17 +9,22 @@ Since few years, developer are more and more far from ADO.Net with the popularit
 
 A DataSet is a snapshot of tables of your database but once it's filled, this one is not anymore connected to the database. A modification to the DataSet won't update the database's tables. It doesn't mean that we could not send the information back to the desired tables but it will requires a new connection to the database. The DataSet is a layer of abstraction between your application data and the persistence storage. By using a DataSet, you do not know exaclty if you are saving into one database or several databases, or if you are saving into XML file.
 
-The first property is the **DataTableCollection**. This property contains the set of DataTable which can be see as a SQL table columns. The definition of the DataTable ( metadata of the table) is defined by a collection of type DataColumnCollection. For data, these are located into DataRowCollection. This one is also a collection. So far, you can see a lot of similarity between DataSet properties and how SQL works. Both have tables, columns and rows.
+The first property is the `DataTableCollection`. This property contains the set of DataTable which can be see as a SQL table columns. The definition of the DataTable ( metadata of the table) is defined by a collection of type DataColumnCollection. For data, these are located into DataRowCollection. This one is also a collection. So far, you can see a lot of similarity between DataSet properties and how SQL works. Both have tables, columns and rows.
 
 In SQL, you can use what is called a view to manipulate the output of a table or many tables. With a DataSet, the DataView act the same way by selecting what is shown. This is perfect to map data between your application and data from your persistence storage.
 
-The DataSet contains some properties and one of this one is the **DataRelationCollection**.
+The DataSet contains some properties and one of this one is the `DataRelationCollection`.
 
 Usually, a DataSet is fill up with a DataAdapter which use a DbConnection with DbCommand. This fill up the DataSet and all connection can then be closed.
 
 
 ```csharp
- var con = new SqlConnection(/*Connexion String*/); var dataset = new DataSet(); var adapter = new SqlDataAdapter(); adapter.SelectCommand = new SqlCommand(/*Your SELECT statement*/,con) con.Open(); adapter.Fill(dataset); //The dataset is fill up with data, it's now possible to close the connection and use the data con.Close(); 
+var con = new SqlConnection(/*Connexion String*/); 
+var dataset = new DataSet(); 
+var adapter = new SqlDataAdapter(); 
+adapter.SelectCommand = new SqlCommand(/*Your SELECT statement*/,con) con.Open(); 
+adapter.Fill(dataset); //The dataset is fill up with data, it's now possible to close the connection and use the data 
+con.Close(); 
 ```
 
 The main advantage is that you are closing rapidly the connection to the database by releasing to the connection pool. You should always open the connection, do your query and close it. This will give the possibility to other request to connect to the database. It's a good practice because every database has a limited amount of connection that can be accepted in the same time.
@@ -28,12 +33,14 @@ Once the connection is closed and the dataset filled up, you can manipulate the 
 
 
 ```csharp
- var dataset = new DataSet(); var prop = dataset.YourEntitiesSet[0].YourProperty; 
+var dataset = new DataSet(); 
+var prop = dataset.YourEntitiesSet[0].YourProperty; 
 ```
 
 The second way by using the UnTyped DataSet.
 
 
 ```csharp
- var dataset = new DataSet(); var prop = (string)dataset.Tables["YourEntitiesSet"].Row[0].["YourProperty"]; 
+var dataset = new DataSet(); 
+var prop = (string)dataset.Tables["YourEntitiesSet"].Row[0].["YourProperty"]; 
 ```

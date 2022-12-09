@@ -15,5 +15,7 @@ In short, you have to specify the many side to the other side (required or optio
 
 
 ```csharp
- ...HasMany(e => e.ParentDetails) .WithOptional(s => s.Parent) .WillCascadeOnDelete(true); 
+ ...HasMany(e => e.ParentDetails) 
+ .WithOptional(s => s.Parent) 
+ .WillCascadeOnDelete(true); 
 ```

@@ -6,11 +6,11 @@ categories:
   - "azure"
 ---
 
-Website that use custom fonts in **.woff**, **woff2**, **.otf** or **.ttf** can works fine on your local IIS and not working at all on Azure. You can have a 404 response or the following message.
+Website that use custom fonts in `.woff`, `woff2`, `.otf` or `.ttf` can works fine on your local IIS and not working at all on Azure. You can have a 404 response or the following message.
 
 > The resource you are looking for has been removed, had its name changed, or is temporarily unavailable.
 
-Azure doesn't have a mime type associated for **.woff**, **woff2**, **.otf** or **.ttf** and it requires to setup those mime types.
+Azure doesn't have a mime type associated for `.woff`, `woff2`, `.otf` or `.ttf` and it requires to setup those mime types.
 
 Fortunately, this is simple to do and can be done directly in the web.config.
 
@@ -20,7 +20,7 @@ Fortunately, this is simple to do and can be done directly in the web.config.
 ```
 
 
-The **mimeMap**'s element needs to be added for each font type. The **mimeMap** goes under **configuration** \> **system.WebServer** > **staticContent**.
+The `mimeMap`'s element needs to be added for each font type. The `mimeMap` goes under `configuration` \> `system.WebServer` > `staticContent`.
 
 If you publish to Azure, your font should be render correctly. However, maybe in your local IIS you have no more any static resource loading. No more CSS, no more JavaScript! This is because your IIS may already have the .otf and .ttf font defined, whence having them defined twice creates an error. To resolve that issue, remove the mimemap for these fonts.
 

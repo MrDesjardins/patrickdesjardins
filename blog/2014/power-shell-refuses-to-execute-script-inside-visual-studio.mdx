@@ -5,12 +5,18 @@ categories:
   - "visual-studio"
 ---
 
-If you are running Visual Studio 2013 and execute inside the Package Manager Console a Power Shell script, you may stumble into a failure. A message concerning PSSecurityException that cannot load the script because of something disabled. Even if few minutes ago you were able to run the command, this can appear.
+If you are running Visual Studio 2013 and execute inside the Package Manager Console a Power Shell script, you may stumble into a failure. A message concerning `PSSecurityException` that cannot load the script because of something disabled. Even if few minutes ago you were able to run the command, this can appear.
 
 > Script.ps1 cannot be loaded because the execution of scripts is disabled on this system. Please see "get-help about_signing" for more details.
 
-The trick is to execute the following line. ``` 
+The trick is to execute the following line. 
+
+```powershell
  Set-ExecutionPolicy RemoteSigned 
-```  This will raise a question that you have to write "y" to accept. ``` 
+```  
+
+This will raise a question that you have to write "y" to accept. 
+
+``` powershell
  Execution Policy Change The execution policy helps protect you from scripts that you do not trust. Changing the execution policy might expose you to the security risks described in the about_Execution_Policies help topic. Do you want to change the execution policy? [Y] Yes [N] No [S] Suspend [?] Help (default is "Y"):y 
 ``` 

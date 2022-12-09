@@ -11,13 +11,16 @@ Something very interesting is to know which version was affected by a telemetry.
 A telemetry initializer is a a piece of code that is executed when a telemetry starts. There is two steps to make it works. First, create a class that inherit `ITelemetryInitializer`. Second, register the class to Application Insights.
 
 To accomplish the goal of having the system version in every telemetry, let's create a class that will add in Application Insights' context a property named _BuildVersion_. I place this class in my website project which allows me to grap the assembly version. Indeed, you need to use the **AssemblyInfo.cs** file and its versions on every release to have this method to work. 
+
 ```csharp
 public class AssemblyVersionInitializer : ITelemetryInitializer { 
    public void Initialize(Microsoft.ApplicationInsights.Channel.ITelemetry telemetry) { 
      telemetry.Context.Properties["BuildVersion"] = this.GetType().Assembly.GetName().Version.ToString(); 
   }
 } 
-``` The next and final step is to use this class.
+``` 
+
+The next and final step is to use this class.
 
 
 ```csharp

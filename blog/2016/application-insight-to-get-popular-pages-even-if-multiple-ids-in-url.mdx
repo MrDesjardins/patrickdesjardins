@@ -7,7 +7,7 @@ categories:
 
 Application Insight is very powerful system that let you collect telemetry on your website. It's a service on Azure, which is currently free with the limitation to keep data for 7 days and aggregated data for 90 days.
 
-One interesting thing you can do, without having to configure anything else than using Application Insight with your website, is to query the **pageViews** table. It allows you to get information about each page requested by user. However, if you are using an application you may have url with ID. For example _http://yourwebsite.com/user/12345/data/group/567/_. The problem is that you will get result with noise. The same page has variables in the url. A simple fix is to replace any integer. Here is a code you can use on your own data which replace integer with a 'x' character.
+One interesting thing you can do, without having to configure anything else than using Application Insight with your website, is to query the **pageViews** table. It allows you to get information about each page requested by user. However, if you are using an application you may have url with ID. For example `http://yourwebsite.com/user/12345/data/group/567/`. The problem is that you will get result with noise. The same page has variables in the url. A simple fix is to replace any integer. Here is a code you can use on your own data which replace integer with a 'x' character.
 
 ``` 
  pageViews 

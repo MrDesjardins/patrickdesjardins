@@ -13,18 +13,22 @@ WCF Data Service is a type of service that provide information through url. This
 
 WCF Data Service lets you use two well know structured semantic which is Atom (XML) and JSON. Both of these protocole are RestFul. That mean that when a call is executed, the life cycle end once the data is sent back to the consumer.
 
-To create a WCF Data Service, simply create a class that inherit from DataService. It's a generic class so you will have to specify a DataContext type. To use this class, you need to reference the dll : **System.Data.Services**.
+To create a WCF Data Service, simply create a class that inherit from DataService. It's a generic class so you will have to specify a DataContext type. To use this class, you need to reference the dll : `System.Data.Services`.
 
 
 ```csharp
- public partial class MyService: DataService<MyDbContext> { //... } 
+public partial class MyService: DataService<MyDbContext> { 
+  //... 
+} 
 ```
 
 You will have to also specify which entities is allowed to be accessed in InitializeService.
 
 
 ```csharp
- public static void InitializeService(DataServiceConfiguration config) { //... } 
+public static void InitializeService(DataServiceConfiguration config) { 
+  //... 
+} 
 ```
 
 The simplicity lets you add this service in a later stage of your project. It's even more true if your project is already using Entity Framework because OData is tightly coupled Entity Framework way to handle entity. This is why it's very easy to create a WCF Data Service with Entity Framework because of the Data Model that both share.
@@ -33,4 +37,4 @@ OData is between the consumer and the source, the consumer could be a simple web
 
 The OData protocol lets you send more than only GET request. GET http request will only give you the possibility to receive data. In the case you want to delete data, a DELETE http request would be required. POST is used to insert, PUT to update. The protocol uses string and not a reference, this is why XML and JSON is used. It also respect the concept of not being tight to the server by being RestFul. So in short, a SQL table (rows) is converted into Entity Set (entity) which is converted to a collection of entry (entry).
 
-WCF Data Services also supports data models that are based on common language runtime (CLR) objects that return an instance of the **IQueryable** interface.
+WCF Data Services also supports data models that are based on common language runtime (CLR) objects that return an instance of the `IQueryable` interface.

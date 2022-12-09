@@ -28,6 +28,7 @@ Before going any further in the theory, let's create a small project with a simp
 This is the model class. I have created the PrimeNumberOnly attribut which is my custom Data Annotation. I used the Display attribute because will use this instead of the property name in the custom Data Annotation for error. But, this is not required. If it is not declared, the property name is used.
 
 The controller is very simple. It checks for the ModelState to see if it has error, if yes, it displays back the form otherwise it redirects to the list of my class. 
+
 ```csharp
 [HttpPost] 
 public ActionResult Create(MyClass myClass) { 
@@ -45,24 +46,24 @@ Here come what is interesting, the custom Data Annotation.
 ```csharp
 public class PrimeNumberOnly : ValidationAttribute {
   protected override ValidationResult IsValid(object value, ValidationContext validationContext) {
-    if (value != null) { 
-    int valueInteger; 
-    if (int.TryParse(value.ToString(), out valueInteger)) { 
-      if (IsPrime(valueInteger)) { 
-        return ValidationResult.Success; 
+      if (value != null) { 
+      int valueInteger; 
+      if (int.TryParse(value.ToString(), out valueInteger)) { 
+        if (IsPrime(valueInteger)) { 
+          return ValidationResult.Success; 
+        } else { 
+          return new ValidationResult(string.Concat(validationContext.DisplayName, " is not a prime number")); 
+        } 
       } else { 
-        return new ValidationResult(string.Concat(validationContext.DisplayName, " is not a prime number")); 
+        return new ValidationResult(string.Concat(validationContext.DisplayName, " must be an integer"));
       } 
-    } else { 
-      return new ValidationResult(string.Concat(validationContext.DisplayName, " must be an integer"));
     } 
-  } 
-  return ValidationResult.Success; 
-}
+    return ValidationResult.Success; 
+  }
 
-private bool IsPrime(int number) { 
-//...
-} 
+  private bool IsPrime(int number) { 
+  //...
+  } 
 } 
 ```
 
@@ -90,9 +91,9 @@ In the case you want to have multiple parameters like having numbers or property
  return new ValidationResult(string.Format(this.ErrorMessageString,"One", "Two", DateToBeAfter), new[] { validationContext.MemberName); 
 ```
 
-So far, half of the job is done because if we erase the number and type a valid entry, the error will not go away before the form is submitted again. This is normal, we have coded only the server side aspect of the Data Annotation. A second interface is required to be inherited to have client side validation. This time, it is named **IClientValidatable**. This interface come from the System.Web.Mvc interface. This mean that if you are using View Model, do not inherit the model from this attribute but the view model. Otherwise, you are mixing back end classes and front end classes. For the purpose of this exercise, I am mapping directly the model class to the view, which mean that it is acceptable to have my model class inherit of System.Web.Mvc.IClientValidatable. Please, do not copy and paste that if you are developing serious application.
+So far, half of the job is done because if we erase the number and type a valid entry, the error will not go away before the form is submitted again. This is normal, we have coded only the server side aspect of the Data Annotation. A second interface is required to be inherited to have client side validation. This time, it is named **IClientValidatable**. This interface come from the `System.Web.Mvc interface`. This mean that if you are using View Model, do not inherit the model from this attribute but the view model. Otherwise, you are mixing back end classes and front end classes. For the purpose of this exercise, I am mapping directly the model class to the view, which mean that it is acceptable to have my model class inherit of `System.Web.Mvc.IClientValidatable`. Please, do not copy and paste that if you are developing serious application.
 
-The IClientValidatable interface comes with the **GetClientValidationRules** method. This give us the possibility to extend the html generated for property. When Asp.Net MVC generates the input, it can add additional data- tag. These tag are required for the client side. They are called unobtrusive since it adds information to the Html input without attaching the Javascript. This mean that we have a third step to do which will be to tell Javascript to use those added attribute. But first, why adding data- to our Html input that has the custom Data Annotation? It is required for several reasons. First, if the logic is in error, we need an error message. It cannot be hard coded into the Javascript because this message can be localized. Adding a data- tag with the error message gives you the possibility to get the message and to expose it to your user if the error occurs. Second, you can add additional information to the Html input by attribute like value to be used in the Javascript validation. Here is an example.
+The IClientValidatable interface comes with the **GetClientValidationRules** method. This give us the possibility to extend the html generated for property. When Asp.Net MVC generates the input, it can add additional data- tag. These tag are required for the client side. They are called unobtrusive since it adds information to the Html input without attaching the Javascript. This mean that we have a third step to do which will be to tell Javascript to use those added attribute. But first, why adding data- to our Html input that has the custom Data Annotation? It is required for several reasons. First, if the logic is in error, we need an error message. It cannot be hard coded into the Javascript because this message can be localized. Adding a `data-`tag with the error message gives you the possibility to get the message and to expose it to your user if the error occurs. Second, you can add additional information to the Html input by attribute like value to be used in the Javascript validation. Here is an example.
 
 
 ```csharp
@@ -144,11 +145,13 @@ This need also to have some libraries installed and referenced in your Html page
 <script src="~/Scripts/PrimeNumberOnlyValidation.js"></script> 
 ``` 
 
-You may need to add with NuGet the unobstructive.js. ![](images/UnobstructiveJQuery-400x99.png)
+You may need to add with NuGet the `unobstructive.js`. 
 
-The validate.js must be before the unobstructive.js file.
+![](images/UnobstructiveJQuery-400x99.png)
 
-The PrimeNumberOnlyValidation.js file contains the validation in Javascript. It is required to be configured once than you just need to have the script added to your file. Here is the complete file:
+The `validate.js` must be before the `unobstructive.js` file.
+
+The `PrimeNumberOnlyValidation.js` file contains the validation in Javascript. It is required to be configured once than you just need to have the script added to your file. Here is the complete file:
 
 ```typescript
 $.validator.addMethod("primenumber", function (value, element, params) { 
@@ -171,7 +174,7 @@ $.validator.unobtrusive.adapters.add('primenumber' , ['primenumberparam1', 'prim
 ); 
 ``` 
 
-The first statement register the method to be called when the validation is trigged. It is the same algorithm to check prime number in Javascript than in C#. If it return false, then the error message specified in the C# code is shown. This is possible because the error message is inside the data tag of the input. The tag is "data-val-primenumber". The second adds an adapter to JQuery validator. The first parameter is the name of the validator. It is the same name than the method. Then, you specify the parameter set in C#. Finally, a anonymous function let you transfert the value of each parameters from C# to the JQuery validation plugin. It does the hook between the html attribute data- generated from C# to Javascript.
+The first statement register the method to be called when the validation is trigged. It is the same algorithm to check prime number in Javascript than in C\#. If it return false, then the error message specified in the C\# code is shown. This is possible because the error message is inside the data tag of the input. The tag is "data-val-primenumber". The second adds an adapter to JQuery validator. The first parameter is the name of the validator. It is the same name than the method. Then, you specify the parameter set in C\#. Finally, a anonymous function let you transfert the value of each parameters from C\# to the JQuery validation plugin. It does the hook between the html attribute data- generated from C\# to Javascript.
 
 ### Conclusion
 

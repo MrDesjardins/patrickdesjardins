@@ -5,7 +5,7 @@ categories:
   - "entity-framework"
 ---
 
-A value object can be anything that would be in an enum in C#. However, we have this one in the database since it is an entity. The difference is that inside the code you have the id and description. This way, we have a fast access in the code without requiring to go in the database and we have a strong database that has all foreign key to the value object class. Even if Entity Framework supports Enum, it is not strongly typed inside the database. The database does not have a foreign key so it could be possible to set a value that would not be in C#.
+A value object can be anything that would be in an enum in C\#. However, we have this one in the database since it is an entity. The difference is that inside the code you have the id and description. This way, we have a fast access in the code without requiring to go in the database and we have a strong database that has all foreign key to the value object class. Even if Entity Framework supports Enum, it is not strongly typed inside the database. The database does not have a foreign key so it could be possible to set a value that would not be in C\#.
 
 Because of how Entity Framework works, we cannot simply have an entity to have a list of value objects. This would produce Entity Framework to set the entity id into the value object table. The desired effect is to have only one entry per value object. For example, I have a Contest entity that has a list of possible Stock Market. I want the value object, Stock Market to have in its table all possible stock exchange market and not have duplicate for different contest.
 

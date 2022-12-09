@@ -15,7 +15,9 @@ The first step is to create the interface that will be used.
 
 ```csharp
  public interface ICache { void SetString(string key, string objectToCache, TimeSpan? expiry = null); void Set<T>(string key, T objectToCache, TimeSpan? expiry = null) where T : class; string GetString(string key); T Get<T>(string key) where T : class; void Delete(string key); void FlushAll(); } 
-``` This interface gives primary operations that can be execute against Redis (or any other cache system). It's possible to enhance this interface with more methods, This is the basic operations that is required to run a cache. The first two methods are to set a value inside the cache. One set a simple string, the second take a class of type T. The second one will be mostly used to take an object and serialize it. The next two methods are to get from a key the unserialized data. The next two methods is to delete. One use a key to delete a specific object and the other one delete everything from the cache.
+``` 
+
+This interface gives primary operations that can be execute against Redis (or any other cache system). It's possible to enhance this interface with more methods, This is the basic operations that is required to run a cache. The first two methods are to set a value inside the cache. One set a simple string, the second take a class of type T. The second one will be mostly used to take an object and serialize it. The next two methods are to get from a key the unserialized data. The next two methods is to delete. One use a key to delete a specific object and the other one delete everything from the cache.
 
 A second interface is used. This one will allow us to get some status about if the cache is enable and if the cache is running properly.
 
@@ -96,7 +98,10 @@ The idea is that that the only layer to know about the cache is the accessor. Th
 
 ```csharp
  public class ContestAccessor: IContestAccessor { private readonly IContestRepository contestRepository; private readonly ICache cache; public ContestAccessor(IContestRepository repository, ICache cache) { //... } } 
-``` This class can have methods to get specific information. Here is an example to get a contest by id. 
+``` 
+
+This class can have methods to get specific information. Here is an example to get a contest by id. 
+
 ```csharp
  public Contest GetById(int id) { var key = string.Format("contest_by_id_", id); var contestObject = this.cache.Get<Contest>(key); if (contestObject == null) { contestObject = this.contestRepository.GetById(id); this.cache.Set(key, contestObject); } return contestObject; } 
 ```

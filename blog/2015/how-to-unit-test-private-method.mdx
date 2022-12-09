@@ -84,11 +84,15 @@ if (item.IsDiscontinued) { canBuy = false; } // ...
 ```
 
 Instead of calling twice the item we should think. These two operations has something in common: it validates the item for purchase. We should have a method in the item that does that for us. Not only it will self-document what it is going on but that logic could be reused later without having to duplicate both calls. We end up having a single validation method for purchase in item. 
+
 ```csharp
  public bool IsValidForPurchase() { if (!this.IsPriceLegitForPurchase()) { return false; }
 
 if (this.IsDiscontinued) { return false; } return true; } 
-``` The test is also clearer. 
+``` 
+
+The test is also clearer. 
+
 ```csharp
  //... if(!item.IsValidForPurchase()) { canBuy = false; } //... 
 ```
@@ -110,9 +114,8 @@ The condition in the Shopping Basket is just to call the method.
 ```
 
 So the final code looks like this for the test **about unique**. 
+
 ```csharp
-
-
 private ShoppingBasket GetShoppingBasket() { var shoppingBasket = new ShoppingBasket(); var item1 = new Item() {Id = 1, IsDiscontinued = false, Money = 5}; var item2 = new Item() {Id = 2, IsDiscontinued = false, Money = 10}; var item3 = new Item() {Id = 3, IsDiscontinued = false, Money = 20}; var item4 = new Item() {Id = 1, IsDiscontinued = false, Money = 5}; shoppingBasket.Items = new List<Item> {item1, item2, item3, item4}; return shoppingBasket; }
 
 [TestMethod] public void TestIfIsUniqueMethodWorksWhenListHasNotUniqueItem() { // Arrange var shoppingBasket = this.GetShoppingBasket();
@@ -129,6 +132,7 @@ private ShoppingBasket GetShoppingBasket() { var shoppingBasket = new ShoppingBa
 ```
 
 And the classes code look. 
+
 ```csharp
  public class Item { public int Id { get; set; }
 

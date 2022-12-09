@@ -29,6 +29,4 @@ public simpleMethod (abc: string): boolean {
    return !!this.zzz && (this.zzz === abc); 
 } 
 ``` 
-
-
 To sum up that post, unit test every conditions, even simple one. It’s not because it works today that it won’t fail tomorrow. Tests all possible routes that your code allows. The `simpleMethod` has now 4 unit tests that test null from the parameter, from the this variable and with and without the same string variable.

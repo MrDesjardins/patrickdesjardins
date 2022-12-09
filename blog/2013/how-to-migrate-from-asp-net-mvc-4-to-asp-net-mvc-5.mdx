@@ -16,11 +16,11 @@ This is not an easy step to do, migrating, but if you have your MVC4 already up-
 
 The second step is to run Nuget to update every packages. This can be done with a single statement in the Nuget Console.
 
-``` 
+```sh
  PM> Update-Package 
 ``` 
 
-This may take several minutes if you use a lot of package. This will do about half of the job. You will need to do this for every of your project that use package from Nuget. A good practice is to have always referenced your external library with Nuget. Even if you are using the same package from some of your projects, this won't duplicate them in your _solution/packages_.
+This may take several minutes if you use a lot of package. This will do about half of the job. You will need to do this for every of your project that use package from Nuget. A good practice is to have always referenced your external library with Nuget. Even if you are using the same package from some of your projects, this won't duplicate them in your `solution/packages`.
 
 The third step is to be done in every of your project. I suggest you start from your web site project since it's the one that will have the most job to do. Open the web.config of the web project. Verify that you have Entity Framework set to version 6. The information is set inside configuration>configSections inside a section named "EntityFramework".
 

@@ -18,7 +18,7 @@ I am take for grant that you have a [GitHub](https://github.com/) account. If yo
 
 ![](images/TravisCiAddRepository-1024x678.png)
 
-Once that is done, you need to add something into your repository which will give instruction to the continuous integration system. This is where we will tell what to build and to run unit tests. The file must be set at the root of your repository with the name ".travis.yml". There is a lot of options. Here is a sample of my C# project.
+Once that is done, you need to add something into your repository which will give instruction to the continuous integration system. This is where we will tell what to build and to run unit tests. The file must be set at the root of your repository with the name ".travis.yml". There is a lot of options. Here is a sample of my C\# project.
 
 ``` 
  language: csharp solution: AspNetMvcEasyRouting.sln install: - nuget restore AspNetMvcEasyRouting.sln - nuget install xunit.runners -Version 1.9.2 -OutputDirectory testrunner script: - xbuild /p:Configuration=Release AspNetMvcEasyRouting.sln - mono ./testrunner/xunit.runners.1.9.2/tools/xunit.console.clr4.exe ./AspNetMvcEasyRoutingTest/bin/Release/AspNetMvcEasyRoutingTest.dll 

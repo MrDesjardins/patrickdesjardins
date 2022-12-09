@@ -12,20 +12,28 @@ I am publishing more and more code to [GitHub](https://github.com/MrDesjardins) 
 - With the packages included in the repository, team members may add references directly to package contents on disk rather than referencing packages through NuGet.
 - It becomes harder to "clean" your solution of any unused package folders, as you need to ensure you don't delete any package folders still in use.
 
-But, how can we send a project into a repository and have NuGet knows that it needs to download every references on the first build? This can be done by changing the solution to use **NuGet Package Restore**. To enable this feature, right click the solution in the Solution Explorer and select _Enable Restore NuGet Package Restore_. ![](images/nugetfiles.png)
+But, how can we send a project into a repository and have NuGet knows that it needs to download every references on the first build? This can be done by changing the solution to use **NuGet Package Restore**. To enable this feature, right click the solution in the Solution Explorer and select _Enable Restore NuGet Package Restore_. 
+
+![](images/nugetfiles.png)
 
 This will install all referenced packages before a project is built, thereby ensuring that all dependencies are available to a project without requiring them to be stored in source control!
 
-## Two NuGet Restore Approach
+# Two NuGet Restore Approach
 
 When NuGet Restore is enabled, you have two different option. The first one allow Visual Studio to download automatically the reference. This is the default approach and the recommended one. The second approach is the console one that is more manual.
 
-### Automatic Approach
+# Automatic Approach
 
-The automatic approach is the default one since NuGet 2.7. When the code is compiled, Visual Studio raises an event that NuGet is hooked to. This allow NuGet in a pre-event to execute itself. NuGet reads the packages.config file and download every package not present. This mean that the first time you get the code that the build is slower. The speed is not reduced because of the compilation but because NuGet downloads every package. The second time you will compile, the speed will be back at only having the source code to compile. Of course, Visual Studio needs to have the option to download NuGet package. This can be found in the Tools>Option menu of Visual Studio. ![](images/PackageManagerPackageRestoreOptions-400x232.png)
+The automatic approach is the default one since NuGet 2.7. When the code is compiled, Visual Studio raises an event that NuGet is hooked to. This allow NuGet in a pre-event to execute itself. NuGet reads the packages.config file and download every package not present. This mean that the first time you get the code that the build is slower. The speed is not reduced because of the compilation but because NuGet downloads every package. The second time you will compile, the speed will be back at only having the source code to compile. Of course, Visual Studio needs to have the option to download NuGet package. This can be found in the Tools>Option menu of Visual Studio. 
 
-### Manual Approach
+![](images/PackageManagerPackageRestoreOptions-400x232.png)
 
-As we have mentioned, NuGet added 3 files. One is an executable called NuGet.exe that can be called manually to download package from the packages.config. Here is an example of the command you can write to get every files. ``` 
+# Manual Approach
+
+As we have mentioned, NuGet added 3 files. One is an executable called NuGet.exe that can be called manually to download package from the packages.config. Here is an example of the command you can write to get every files. 
+
+```sh
  nuget.exe restore YourSolutionFile.sln 
-```  I recommend you to read the [NuGet console command](http://docs.nuget.org/docs/reference/command-line-reference#Restore_command).
+```  
+
+I recommend you to read the [NuGet console command](http://docs.nuget.org/docs/reference/command-line-reference#Restore_command).

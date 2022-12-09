@@ -11,13 +11,17 @@ This scenario is plausible in multiple business domain. Let say that you have a 
 First, let's take some minutes to understand the mecanism. The example of a the collection is simpler to understand. We have a Model that is bound to the View and the collection is ICollection. Having to create a table is a simple matter of looping the collection and display the properties needed of the interface to the UI.
 
 For example here is what could be the Model: 
+
 ```csharp
  UIHint("MyTableTemplate")] public readonly ICollection<IMyInterface> MyCollection; 
-``` The MyTableTemplate simply loop the collection and display everything inside a TABLE, with multiple TR and TD. When it's the time to save back everything to the server, we need to send back the collection which could have changed via Javascript. Rows can have been deleted, and some added. How to send back this table to the Asp.Net server? Simply by using serialization. On the submit, we need to hook the click even and store the table serialized into an hidden field. The hidden field must have the same name of the Model bound. In our case, we will have an hidden field with the name "MyCollection". The code below show you how to do it generically, by having the Template using the information about the name of the property and use it for the hidden field.
+``` 
+
+The MyTableTemplate simply loop the collection and display everything inside a TABLE, with multiple TR and TD. When it's the time to save back everything to the server, we need to send back the collection which could have changed via Javascript. Rows can have been deleted, and some added. How to send back this table to the Asp.Net server? Simply by using serialization. On the submit, we need to hook the click even and store the table serialized into an hidden field. The hidden field must have the same name of the Model bound. In our case, we will have an hidden field with the name "MyCollection". The code below show you how to do it generically, by having the Template using the information about the name of the property and use it for the hidden field.
 
 
 ```csharp
- @{ var controlPropertyName = ViewData.TemplateInfo.HtmlFieldPrefix; } <input type="hidden" value="" name="@controlPropertyName"/> 
+ @{ var controlPropertyName = ViewData.TemplateInfo.HtmlFieldPrefix; } 
+ <input type="hidden" value="" name="@controlPropertyName"/> 
 ```
 
 Having the same name for the hidden field and the model property let Asp.Net MVC know where to map the information.

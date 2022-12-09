@@ -5,15 +5,15 @@ categories:
   - "git"
 ---
 
-Let's start by building the scenario that you have two files that you want to share to everybody and one that is a configuration file that should not be shared. In some point in the development you want to get the latest version of the master branch into your feature branch. This require to you to do a merge or to rebase. **Merging** is interesting but will cause having in your feature branch all file becoming modified which will be hard later for the pull request. The reason is that you want to pull request only your modification and not the files that has been merged. This is where **rebase** can be interesting. The problem is that if you try to rebase you will get a message saying that you need to commit or stash or change first. This is comprehensive since when rebase you are moving the HEAD of your feature branch in the front of the master one. It needs to have a "node" to move. To do, you have to go into your feature branch, add all files you want to commit and commit. 
+Let's start by building the scenario that you have two files that you want to share to everybody and one that is a configuration file that should not be shared. In some point in the development you want to get the latest version of the master branch into your feature branch. This require to you to do a merge or to rebase. `Merging` is interesting but will cause having in your feature branch all file becoming modified which will be hard later for the pull request. The reason is that you want to pull request only your modification and not the files that has been merged. This is where `rebase` can be interesting. The problem is that if you try to rebase you will get a message saying that you need to commit or stash or change first. This is comprehensive since when rebase you are moving the HEAD of your feature branch in the front of the master one. It needs to have a "node" to move. To do, you have to go into your feature branch, add all files you want to commit and commit. 
 
 ``` 
  git checkout Feature1 git add File1 git add File2 git rebase master 
 ``` 
 
-The last line will fail. The reason is that you still have the configuration file not commited, and you do not want to. This is where the **stash** command shine. The git stash command allow you to put somewhere the remaining files that have change into a "stash" which will allow you later to get back (after the rebase). To execute the stash, you have to execute the stash command in the branch you want the files not staged to be stashed.
+The last line will fail. The reason is that you still have the configuration file not commited, and you do not want to. This is where the `stash` command shine. The git stash command allow you to put somewhere the remaining files that have change into a "stash" which will allow you later to get back (after the rebase). To execute the stash, you have to execute the stash command in the branch you want the files not staged to be stashed.
 
-``` 
+```sh
  git checkout Feature1 git stash git rebase master git stash pop 
 ``` 
 

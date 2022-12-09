@@ -12,7 +12,7 @@ You may have a private constructor for your class. This is often useful if you w
  new JsonSerializerSettings { ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor } 
 ```
 
-The **JsonSerializerSettings** required is the **ConstructorHandling** which need to be set to **AllowNonPublicDefaultConstructor**.
+The `JsonSerializerSettings` required is the `ConstructorHandling` which need to be set to `AllowNonPublicDefaultConstructor`.
 
 Also, you may have public getter but private setter. Often the case when the property value must be set with private logic. However, when serializing and deserializing, these values will not be set. To allow Json.Net to use the private setter, you must set a new contract resolver.
 
@@ -25,4 +25,6 @@ Json.Net can have custom contract resolver. The trick is to tell to Json.Net tha
 if (!prop.Writable) { var property = member as PropertyInfo; if (property != null) { var hasPrivateSetter = property.GetSetMethod(true) != null; prop.Writable = hasPrivateSetter; } }
 
 return prop; } } 
-``` This is it. ![](images/DefaultContract-400x222.png)
+``` 
+
+This is it. ![](images/DefaultContract-400x222.png)

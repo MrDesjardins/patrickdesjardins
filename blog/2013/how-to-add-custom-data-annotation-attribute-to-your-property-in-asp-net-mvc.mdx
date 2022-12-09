@@ -5,18 +5,24 @@ categories:
   - "asp-mvc"
 ---
 
-In many scenarios the ViewModel will need to provide to the View some additional information could be useful. The case of having an UIHint attribut with the conjunction of this additional information is probably the situation where most people will face at some point.
+In many scenarios the ViewModel will need to provide to the View some additional information could be useful. The case of having an `UIHint` attribut with the conjunction of this additional information is probably the situation where most people will face at some point.
 
 
 ```csharp
- [DoSomething] public MyClass MyProperty { get; set; } 
+[DoSomething] 
+public MyClass MyProperty { get; set; } 
 ```
 
 Let say you have a template that display multiple information from your view model (in the example above "MyClass"). If this one require to display something more (or less) depending of who use it, and that the view model know this information, the only way to pass this information is by data annotation.
 
 Let's base the theory on the following example. 
 ```csharp
- [DisableShape("Heavy")] [UIHint("ShapeSelector")] public Shape TopShape { get; set; } [UIHint("ShapeSelector")] public Shape BottomShape { get; set; } 
+[DisableShape("Heavy")] 
+[UIHint("ShapeSelector")] 
+public Shape TopShape { get; set; } 
+
+[UIHint("ShapeSelector")] 
+public Shape BottomShape { get; set; } 
 ```
 
 The view model class has two properties which define 2 shapes. One must be selected from a list of shape but only accept light shape while the other require to have strong shape. We could create two templates but we could also create a simple template and allow to disable some shape. This is the case of the property "TopShape" where we will disable all heavy shape but keep everything selectable for the "BottomShape".
@@ -25,14 +31,21 @@ The first thing to keep in mind is that we will change "ModelMetadataProviders" 
 
 
 ```csharp
- public class CustomModelMetadataProvider : DataAnnotationsModelMetadataProvider { protected override ModelMetadata CreateMetadata( IEnumerable<Attribute> attributes, Type containerType, Func<object> modelAccessor, Type modelType, string propertyName) { var modelMetadata = base.CreateMetadata(attributes, containerType, modelAccessor, modelType, propertyName); attributes.OfType<MetadataAttribute>().ToList().ForEach(x => x.Process(modelMetadata)); return modelMetadata; } } 
+public class CustomModelMetadataProvider : DataAnnotationsModelMetadataProvider { 
+  protected override ModelMetadata CreateMetadata( IEnumerable<Attribute> attributes, Type containerType, Func<object> modelAccessor, Type modelType, string propertyName) { 
+    var modelMetadata = base.CreateMetadata(attributes, containerType, modelAccessor, modelType, propertyName); 
+    attributes.OfType<MetadataAttribute>().ToList().ForEach(x => x.Process(modelMetadata)); return modelMetadata; 
+  } 
+} 
 ```
 
 This code lets you have multiple attributes of type "MetadataAttribute".
 
 
 ```csharp
- public abstract class MetadataAttribute : Attribute { public abstract void Process(ModelMetadata modelMetaData); } } 
+public abstract class MetadataAttribute : Attribute { 
+  public abstract void Process(ModelMetadata modelMetaData);  
+} 
 ```
 
 As you can see, it's simply an abstract class that lets you define a Process method which is executed in the CreateMetadata method.
@@ -41,14 +54,19 @@ From there, you can define what parameter you want for your custom attribute.
 
 
 ```csharp
- public class DisableShapeAttribute : MetadataAttribute { public bool TypeShape { get; set; } public DisableShapeAttribute(string type) { TypeShape = type; }
+public class DisableShapeAttribute : MetadataAttribute { 
+  public bool TypeShape { get; set; } 
+  public DisableShapeAttribute(string type) { TypeShape = type; }
 
-public DisableShapeAttribute() { TypeShape = ""; }
+  public DisableShapeAttribute() { TypeShape = ""; }
 
-public override void Process(ModelMetadata modelMetaData) { modelMetaData.AdditionalValues.Add("DisableShape", TypeShape); } } 
+  public override void Process(ModelMetadata modelMetaData) { 
+    modelMetaData.AdditionalValues.Add("DisableShape", TypeShape); 
+  } 
+} 
 ```
 
-The last step is to register the CustomModelMetadataProvider that loop every MetadataAttribute. This is done via the Global.asax.cs, inside the Application_Start method.
+The last step is to register the CustomModelMetadataProvider that loop every MetadataAttribute. This is done via the Global.asax.cs, inside the `Application_Start` method.
 
 
 ```csharp
@@ -59,5 +77,6 @@ From here you can read the attribute from your view or template.
 
 
 ```csharp
- var attr = ViewData.ModelMetadata.AdditionalValues.SingleOrDefault(x => x.Key == "DisableShape").Value; var attrValue = attr != null && (string)attr; 
+ var attr = ViewData.ModelMetadata.AdditionalValues.SingleOrDefault(x => x.Key == "DisableShape").Value; 
+ var attrValue = attr != null && (string)attr; 
 ```

@@ -25,7 +25,7 @@ The code above set into the cache the value of the current time and for all subs
 
 HttpRuntime.Cache.Get let you get an object from a key. The key is set when you are using HttpRuntime.Cache.Insert.
 
-The Insert method has many parameters. The first parameter is the key, the second the value. Other parameters are concerning the time the value will stay in cache. The third parameter is by default NULL but could be anything that if changed will flush the cache. The forth parameter is the time when the data must be removed form the cache in an absolute time. For example, you can wrote that you want the data to be removed 20 minutes later by setting the DateTime.Now + 20 minutes ( _DateTime.UtcNow.AddMinutes(20)_ ).
+The Insert method has many parameters. The first parameter is the key, the second the value. Other parameters are concerning the time the value will stay in cache. The third parameter is by default NULL but could be anything that if changed will flush the cache. The forth parameter is the time when the data must be removed form the cache in an absolute time. For example, you can wrote that you want the data to be removed 20 minutes later by setting the DateTime.Now + 20 minutes ( `DateTime.UtcNow.AddMinutes(20)` ).
 
 The last possible parameter is the sliding which decide if it gives additional time to the expiration of the cache if the data is accessed. This parameter is a TimeSpan. If you say 1 minute in this parameter you will have the data stored for 1 minute after the last get is done. This give you 1 minute time frame every time a user Get the value from the time you Inserted it. If at anytime no body access the cache, even the first 1 minute, the cache is resetted for this key. You can say that you do not want to use absolute time by setting this one to Cache.NoAbsoluteExpiration and only set a TimeSpan.
 
@@ -52,7 +52,7 @@ This mean you can only use one of the type in the same time. It's also possible 
  HttpRuntime.Cache.Insert("Test", t, null, DateTime.UtcNow.AddMinutes(1), Cache.NoSlidingExpiration, CacheItemPriority.Normal, onRemoveCallback); 
 ```
 
-This method will give you also the detail about why it has been removed. Your item might have been set to stay 30 minutes but because low memory is running that the cache system will removed it. You will get the reason with the enumerator **CacheItemRemovedReason**.
+This method will give you also the detail about why it has been removed. Your item might have been set to stay 30 minutes but because low memory is running that the cache system will removed it. You will get the reason with the enumerator `CacheItemRemovedReason`.
 
 ![](images/reason-400x174.png)
 

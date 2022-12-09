@@ -7,10 +7,11 @@ categories:
 
 With JQuery you can use Parent, Parents and Closest to search element at a higher level of the one selected. What are the differences?
 
-## JQuery Parent selector
+# JQuery Parent selector
 
-Parent() will search one level up only. For example here is the html code of a situation where you can see two level deep of div and a paragraph. 
-```html  <div class="parent1">; <div class="parent2">; <p>;Hello Again</p>; </div>; </div>; 
+`Parent()` will search one level up only. For example here is the html code of a situation where you can see two level deep of div and a paragraph. 
+```html  
+<div class="parent1">; <div class="parent2">; <p>;Hello Again</p>; </div>; </div>; 
 ``` 
 
 If we use the Parent selector on the paragraph it will select parent2 division.
@@ -33,25 +34,24 @@ You can see the result : [http://jsfiddle.net/L953U/](http://jsfiddle.net/L953U/
 
 The reason is that parent go only one level up.
 
-## JQuery Parents selector
+# JQuery Parents selector
 
 Parents will return an array of elements. It returns all element from root to the selected element.
 
 ```typescript
 $("p").parents('div').css("background", "yellow"); 
 ``` 
- This return 2 divisions, the parent1 and the parent2. The reason is that the parent1 is the root parent and parent2 is the parent between the selected one (p) and the searched element.
+This return 2 divisions, the parent1 and the parent2. The reason is that the parent1 is the root parent and parent2 is the parent between the selected one (p) and the searched element.
 
 You can see the example in action here : [http://jsfiddle.net/u7SaF/](http://jsfiddle.net/u7SaF/)
 
-## JQuery Closest selector
+# JQuery Closest selector
 
-closest() looks up the tree like .parent() but stop when the search is found. It return a single element or nothing is nothing is found.
+`closest()` looks up the tree like `.parent()` but stop when the search is found. It returns a single element or nothing is nothing is found.
 
 ```typescript
 $("p").closest("div").css("background", "blue"); 
 ``` 
-
 
 This will color in blue the closest division from the p.
 
@@ -61,11 +61,14 @@ If we summarize everything in bullet point:
 
 **Parent**: - Begins with the current element and go only one level up - The returned jQuery object contains zero or one element - The returned jQuery object contains zero or one element **Parents**: - Begins with the parent element - Travels up the DOM tree but return element in reverse - The returned jQuery object contains zero, one, or multiple elements **Closest**: - Begins with the current element - Travels up the DOM tree until it finds a match for the supplied selector - The returned jQuery object contains zero or one element
 
-Finally, I often see code with multiple parent() called. For example, $("p").parent().parent()..css("background", "blue"). Instead, you can use _eq_ with _parents_.
+Finally, I often see code with multiple `parent()` called. For example, `$("p").parent().parent()..css("background", "blue")`. Instead, you can use _eq_ with _parents_.
 
 
-```html  <div>; <div>; <div>; <p>;Hello Again</p>; </div>; </div>; </div>; 
-```  ```typescript
+```html  
+<div>; <div>; <div>; <p>;Hello Again</p>; </div>; </div>; </div>; 
+```  
+
+```typescript
 $("p").parents().eq(2).css("background", "blue"); 
 ``` 
 

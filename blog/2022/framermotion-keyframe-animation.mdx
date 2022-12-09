@@ -31,13 +31,7 @@ transition={{
 ```
 For example, if you set the transition to be 2 seconds and have a timeline of `[0, 0.25, 1]`, it means that at 0 second, the position is 50 pixels. At 500ms (2 sec * 0.25), the position is 75 pixels. And finally, at 2 seconds (2 seconds * 1.00) the `x` position is at pixel 125.
 
-
- <iframe src="https://codesandbox.io/embed/framer-motion-keyframe-nxfdx3?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-     style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
-     title="Framer Motion: Keyframe"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>
+<CodeSandbox codeSandboxId="framer-motion-keyframe-nxfdx3?fontsize=14" />
 
 # The Problem with Parent-Child
 
@@ -75,12 +69,7 @@ The solution is more straightforward than it seems. Instead of using keyframes o
 ```
 The `exit` needs to have the opposite: a quick fade out. Hence, we have no `delay` property and a brief `duration` of 100ms that is executed immediately as the parent starts moving out.
 
-<iframe src="https://codesandbox.io/embed/framer-motion-keyframe-part-2-e7ob6w?fontsize=14&hidenavigation=1&theme=dark"
-     style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
-     title="Framer Motion: Keyframe Part 2"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>
+<CodeSandbox codeSandboxId="framer-motion-keyframe-part-2-e7ob6w" />
 
 # When
 

@@ -6,11 +6,14 @@ categories:
 ---
 
 Instantiating an object calls obviously the controller of the class. In the case that the class inherit from a second class, the base constructor is called before the code inside the derived class. This can be shown very easily by printing to the console every times the constructor is called. 
+
 ```csharp
  class Program { static void Main(string[] args) { var classA = new ClassA(); Console.ReadLine(); } }
 
 public class ClassA:ClassB { public ClassA() { Console.WriteLine("ClassA Constructor"); } } public class ClassB { public ClassB() { Console.WriteLine("ClassB Constructor"); } } 
-``` ![](images/ConstructorOrderCalls-400x345.png)
+``` 
+
+![](images/ConstructorOrderCalls-400x345.png)
 
 Having a method virtual allow the derived class to override the method. If the base class call the method, this one call, if overrided, call the one in the derived class. This mean that if you are instantiating value in the derived class that this one will not have the data instantiated yet. This can produce unexpected error like having null reference or working with a set of data that is not initialized with the desired value. The problem is that in the life time of the class, this one could be inherited which create new unexpected scenarios of where the virtual method is defined.
 
@@ -23,7 +26,9 @@ We can transform the previous code into this scenario. For example, let's create
 public override string TestMethod() { return currentProcess.ProcessName; } } public class ClassB { public ClassB() { Console.WriteLine("ClassB Constructor"); TestMethod(); }
 
 public virtual string TestMethod() { return "Test"; } } 
-``` The result is that the TestMethod() from the base class call the TestMethod() of the derived class and crash at the currentProcess line.
+``` 
+
+The result is that the TestMethod() from the base class call the TestMethod() of the derived class and crash at the currentProcess line.
 
 ![](images/CallingVirtualMethodInConstructorError-400x240.png)
 

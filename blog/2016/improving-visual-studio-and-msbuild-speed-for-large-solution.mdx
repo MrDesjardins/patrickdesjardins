@@ -83,7 +83,7 @@ I decided to have every project to output in the bin folder of the website. The 
 From there, I cleaned up everything (all bin folder empty) and re-build everything to see how the performance improved. First, the Build Monitor extension is showing some improvements: 
 
 ``` 
-- 00h 00m 00s 505ms -- ComplexTypes 
+00h 00m 00s 505ms -- ComplexTypes 
 00h 00m 00s 601ms -- ModelContracts 
 00h 00m 00s 352ms -- ComplexTypesUnitTest 
 00h 00m 01s 453ms -- MySqlToMsSql 
@@ -145,7 +145,7 @@ Finally, if I unload all jobs project (scripts) one, I have a build time of 1m13
 An other direction is to remove the most possible projects. This approach is fine but limited to what you can group together. For example, I have 1 web project, and about 14 web jobs. This mean a minimum of 15 projects. If we want to divide unit tests from the code, we can add 1 more project. If we want to share webjobs and website logic we add one more project. Still, we have half the number of project and while working on the shared tier and website, it is always possible to unload from the main solution every webjob projects. The best way to move everything is to create a shared project, that I called "ApplicationTier". The website project remains the same but refers this new project. Inside Visual Studio, we need to go one by one in each project to drag-and-drop all files in a folder with the same name of the project. The final result is easy to read and consolidate a lot of project within one but with familiar structure. At the end, the result was very impressive. Instead of taking **2 minutes 51 seconds** the build time was at **54 seconds**.
 
 ``` 
- - 00h 00m 00s 775ms -- MySqlToMsSql 
+00h 00m 00s 775ms -- MySqlToMsSql 
 00h 00m 06s 799ms -- ApplicationTier 
 00h 00m 06s 064ms -- DataAccessMigration 
 00h 00m 03s 400ms -- ApplicationTierUnitTest 
@@ -176,7 +176,7 @@ An other direction is to remove the most possible projects. This approach is fin
 By reducing the amount of project, we have a lot less references that needs to be cut. The number of megs written on disk is about 550 megs now. The main bottle neck is all the scripts for webjobs. Since all jobs are just entry points to the ApplicationTier, if they share the same bin folder, it will reduce by a lot the building time. This is because that the first script project to build will get the binary files in the bin folder, and subsequent scripts will just build the executable project without building again the references. The result is the following **31 seconds**, mainly because only 196 megs go written on the disk.
 
 ``` 
- - 00h 00m 01s 633ms -- MySqlToMsSql 
+00h 00m 01s 633ms -- MySqlToMsSql 
 00h 00m 06s 483ms -- ApplicationTier 
 00h 00m 06s 696ms -- DataAccessMigration 
 00h 00m 01s 458ms -- ApplicationTierUnitTest 

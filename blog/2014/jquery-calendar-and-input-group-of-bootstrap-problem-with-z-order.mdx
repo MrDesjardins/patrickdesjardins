@@ -6,7 +6,7 @@ categories:
   - "css"
 ---
 
-BootStrap has a class named **input-group** that allows you to have a input box with a button, before or after. The problem is that it set all inputs with a z-index to 2. JQuery Calendar is bound to control, like input box. If you have multiple rows of input, and if one of them is bound to JQuery Calendar, the result is having a calendar behind a text box.
+BootStrap has a class named **input-group** that allows you to have a input box with a button, before or after. The problem is that it set all inputs with a `z-index` to 2. JQuery Calendar is bound to control, like input box. If you have multiple rows of input, and if one of them is bound to JQuery Calendar, the result is having a calendar behind a text box.
 
 ![](images/JQueryCalendarBehindInputBox-400x291.png)
 
@@ -14,7 +14,10 @@ To fix this issue, we need to set JQuery Calendar over the z-index, over 2. This
 
 
 ```css
- /*Fix a bug with BootStrap that set input within input-group with a z-order to 2. This make the JQuery Calendar to appear behind the input box*/ .ui-datepicker{ z-index: 3 !important;} 
+ /*Fix a bug with BootStrap that set input within input-group with a z-order to 2. This make the JQuery Calendar to appear behind the input box*/ 
+ .ui-datepicker{ 
+    z-index: 3 !important;
+ } 
 ```
 
 

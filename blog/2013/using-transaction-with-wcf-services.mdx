@@ -6,18 +6,25 @@ categories:
   - "webservices"
 ---
 
-If you need to call two different WCF service and be sure that both are successful before committing, you'll need to use transaction. This will require that both service's operation contain the attribute **TransactionFlow** with the option to **Allowed**. Many other option could have been possible. NotAllowed is when you do not want to be part of transaction, which is the default value. Allowed allows to participate in a transaction if the client specify in his code a transaction scope. Finally, mandatory force that the operation is called within a transaction scope.
+If you need to call two different WCF service and be sure that both are successful before committing, you'll need to use transaction. This will require that both service's operation contain the attribute `TransactionFlow` with the option to `Allowed`. Many other option could have been possible. NotAllowed is when you do not want to be part of transaction, which is the default value. Allowed allows to participate in a transaction if the client specify in his code a transaction scope. Finally, mandatory force that the operation is called within a transaction scope.
 
 
 ```csharp
- [ServiceContract] public interface IServiceContractOne { [OperationContract] [TransactionFlow(TransactionFlowOption.Allowed)] void Method1(); } 
+ [ServiceContract] 
+ public interface IServiceContractOne { 
+  [OperationContract] 
+  [TransactionFlow(TransactionFlowOption.Allowed)] 
+  void Method1(); 
+} 
 ```
 
-The next step is the implementation of this contract. The method Method1() that has the TransactionFlow attribute needs to have also an attribute, this time it's **OperationBehavior**. 
+The next step is the implementation of this contract. The method Method1() that has the TransactionFlow attribute needs to have also an attribute, this time it's `OperationBehavior`. 
+
 ```csharp
-
-
-[OperationBehavior(TransactionScopeRequired = true)] public void Method1() { //Entity Framework here } 
+[OperationBehavior(TransactionScopeRequired = true)] 
+public void Method1() { 
+  //Entity Framework here 
+} 
 ```
 
 The method of the contract has an operation behavior that tell that it's require to be inside a transaction scope.
@@ -44,7 +51,14 @@ Finally, you can test the transaction by having an application that use the two 
 
 
 ```csharp
- using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew)) { try { var obj = new ServiceReference1.Service1(); obj.Method1(); var obj1 = new ServiceReference2.Service1(); obj1.Method1(); ts.Complete(); //Commit everything! } catch (Exception ex) { ts.Dispose(); } } 
+ using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew)) { 
+  try { var obj = new ServiceReference1.Service1(); 
+  obj.Method1(); 
+  var obj1 = new ServiceReference2.Service1(); 
+  obj1.Method1(); 
+  ts.Complete(); //Commit everything! 
+  } catch (Exception ex) { ts.Dispose(); } 
+} 
 ```
 
 If any exception occur during the scope of the transaction, everything is rollback.

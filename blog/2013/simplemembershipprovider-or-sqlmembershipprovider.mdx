@@ -6,13 +6,14 @@ categories:
   - "asp-mvc"
 ---
 
-I am using since few months in most of my project the **SimpleMembershipProvider** instead of the old **SqlMembershipProvider**. SqlMembershipProvider is there for over 10 years and since Asp.Net MVC4, a new mechanism is available. This new provider comes by default with new Asp.Net MVC project and use the reference : WebMatrix.WebData.
+I am using since few months in most of my project the `SimpleMembershipProvider` instead of the old `SqlMembershipProvider`. SqlMembershipProvider is there for over 10 years and since Asp.Net MVC4, a new mechanism is available. This new provider comes by default with new Asp.Net MVC project and use the reference : WebMatrix.WebData.
 
 The main goal of this new library is to simplify the use of user-password application. It also gives the possibility to extend more how to store the information. Sql Server is still behind but you can now use easily Azure storage if desired. It also simplify by a lot the number of tables and views requires in the past by SqlMembershipProvider. Now, the tables are limited to only few and you can customize their schema, the name of the tables and also fields names.
 
 ![](images/sqlSimpleProviderTables.png)
 
 As you can see in the image above, you can add a Language field. This require only to add a property and let Entity Framework handle the rest. 
+
 ```csharp
  [Table("UserProfile")] public class UserProfile : ICurrentUser { public UserProfile() { this.UserName = "Anonymous"; this.Language = "en-US"; }
 

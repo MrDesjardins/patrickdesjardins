@@ -16,7 +16,7 @@ The first step is to download some libraries. Here is a list of libraries used i
 - [Swiper](http://www.idangero.us/swiper/)
 - [Stellar](http://markdalgleish.com/projects/stellar.js/)
 
-**JQuery** is there because I am already using the library and is useful in some part of this process. Mostly because we will associate **Swiper** and **Stellar** with JQuery to Html elements. Swiper is used as a pillar in this one page scenario. The reason is that it is the JavaScript library that transform the default web browser into a Power Point presentation. The Stellar library is used to improve the experience by adding the parallax effect when scrolling from top to bottom and the other way around. Let's start with the JavaScript configuration and then the Html. Keep in mind that some decisions are based on specific choices that are custom to the website I am creating -- mostly optional in a default case.
+`JQuery` is there because I am already using the library and is useful in some part of this process. Mostly because we will associate `Swiper` and `Stellar` with JQuery to Html elements. Swiper is used as a pillar in this one page scenario. The reason is that it is the JavaScript library that transform the default web browser into a Power Point presentation. The Stellar library is used to improve the experience by adding the parallax effect when scrolling from top to bottom and the other way around. Let's start with the JavaScript configuration and then the Html. Keep in mind that some decisions are based on specific choices that are custom to the website I am creating -- mostly optional in a default case.
 
 ```typescript
 var mySwiper = new Swiper('.swiper-container', { 
@@ -80,7 +80,7 @@ $('.swiper-wrapper').stellar({ scrollProperty: property, positionProperty: prope
 ``` 
 
 
-The **Stellar** library code is pretty short and works with the Html with a specific data attribute. You must select the parent container that contains all slides. The JavaScript will loops through all html element and will apply some parallax effect on all elements with the **data-stellar-ratio**.
+The `Stellar` library code is pretty short and works with the Html with a specific data attribute. You must select the parent container that contains all slides. The JavaScript will loops through all html element and will apply some parallax effect on all elements with the `data-stellar-ratio`.
 
 ![](images/SwiperHtmlSections-400x125.png)
 
@@ -115,10 +115,10 @@ Every sections Html code looks as follow:
 </div> 
 ```  
 
-The slide must have an unique identifier and the class _swiper-slide_. Everything inside is really custom. I am using the _container_ class, _row_ class and _col_ class just because I am using **BootStrapper** inside the slide to align my text. The data attribute for Stellar allows to have different speeds between Html elements. The Id is also important because inside the Swipe setting, we specify the use of hasNav which is a custom plugin that I have modified a little. The default plugin change the browser Url with the hashtag of the tag (slide id). Instead of using just the hash tag, I make it use the bang-hash-tag. This way, we do not have weird scroll behavior with the library and still be able to give the url to anyone. Also, the Url is indexable by search engine! All-wins.
+The slide must have an unique identifier and the class _swiper-slide_. Everything inside is really custom. I am using the _container_ class, _row_ class and _col_ class just because I am using `BootStrapper` inside the slide to align my text. The data attribute for Stellar allows to have different speeds between Html elements. The Id is also important because inside the Swipe setting, we specify the use of hasNav which is a custom plugin that I have modified a little. The default plugin change the browser Url with the hashtag of the tag (slide id). Instead of using just the hash tag, I make it use the bang-hash-tag. This way, we do not have weird scroll behavior with the library and still be able to give the url to anyone. Also, the Url is indexable by search engine! All-wins.
 
 ![](images/OneSlide-400x322.png)
 
 Here is the result of the first slide. You can see at the left the pagination with the little round switched. At the left is the image that is floating. I have set also an other image for the shadow under it. Both have different stellar ratio which create a nice effect. The right side contains different Html element, like headers and paragraphs. This way, we can set different ratio number and have everything float during scrolling in a different speed. For the full visual experience here is a short video.
 
-![](./images/ParallaxSmall.mp4)
+![](./videos/ParallaxSmall.mp4)

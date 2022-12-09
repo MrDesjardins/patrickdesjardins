@@ -60,7 +60,7 @@ exec sp_executesql N'SELECT [Extent1].[OrderID] AS [OrderID], [Extent1].[Custome
 
 But, this is pretty manual task and if want to use lazy loading instead of explicit loading it's possible. This will give the control of loading objects of the class to the system.
 
-The C# code will be like this: 
+The C\# code will be like this: 
 ```csharp
 var db = new NorthWindContainer(); //Instantiate the Object Context 
 db.ContextOptions.LazyLoadingEnabled = true; //Default value 

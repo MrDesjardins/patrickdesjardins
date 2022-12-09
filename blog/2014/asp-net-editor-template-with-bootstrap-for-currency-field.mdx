@@ -11,13 +11,25 @@ If you are developing an application that require to have money, they are big ch
 
 For example.
 
-
 ```csharp
- public class Contest { public Money InitialCapital { get; set; } }
+public class Contest { 
+  public Money InitialCapital { get; set; } 
+}
 
-public class Money { public Money() { Currency = CurrencyType.Canada; }
+public class Money { 
+  public Money() { Currency = CurrencyType.Canada; }
 
-public decimal Value { get; set; } public int CurrencyTypeId { get { return this.Currency.Id; } set { this.Currency = CurrencyType.GetFromId(value); } } /// <summary> /// This is ignored by EntityFramework /// </summary> public CurrencyType Currency { get; set; } } 
+  public decimal Value { get; set; } 
+  public int CurrencyTypeId { 
+    get { return this.Currency.Id; } 
+    set { this.Currency = CurrencyType.GetFromId(value); } 
+  } 
+  
+  /// <summary> 
+  /// This is ignored by EntityFramework 
+  /// </summary> 
+  public CurrencyType Currency { get; set; } 
+} 
 ```
 
 This code use the pattern **Value Object** for all currencies. This is why it has additional code that you may not need. In fact, what is important is the the Money class has the money itself inside the Value property and then the currency inside CurrencyType property.
@@ -26,19 +38,29 @@ From there, you have the **View Model** that is different. This is a good exampl
 
 
 ```csharp
- public class ContestViewModel { [UIHint("SelectorForMoneyViewModel")] public SelectorForMoneyViewModel InitialCapital { get; set; } } 
+public class ContestViewModel { 
+  [UIHint("SelectorForMoneyViewModel")] 
+  public SelectorForMoneyViewModel InitialCapital { get; set; }
+ } 
 ```
 
 The SelectorForMoneyViewModel is a simple class that has the Money and the list of available currencies.
 
 
 ```csharp
- public class SelectorForMoneyViewModel { public MoneyViewModel Current { get; set; }
+public class SelectorForMoneyViewModel { 
+  public MoneyViewModel Current { get; set; }
 
-public List<SelectorItem> AvailableCurrencies { get; set; }
+  public List<SelectorItem> AvailableCurrencies { get; set; }
 
-public SelectorForMoneyViewModel() { this.Current = new MoneyViewModel(); this.AvailableCurrencies = new List<SelectorItem>(); } } 
-``` From there, the **Editor Template** can use this list and put the whole list into the currency drop down. The result should look like the following picture. The first image is the control when not open and the second picture when the user click the currency field.
+  public SelectorForMoneyViewModel() { 
+    this.Current = new MoneyViewModel(); 
+    this.AvailableCurrencies = new List<SelectorItem>(); 
+  } 
+} 
+``` 
+
+From there, the **Editor Template** can use this list and put the whole list into the currency drop down. The result should look like the following picture. The first image is the control when not open and the second picture when the user click the currency field.
 
 ![](images/BootStrapperCurrency1-400x59.png)
 
@@ -51,16 +73,39 @@ This is possible with the use of **BootStrap** but can be reproduced without it.
  @model ViewModel.Selectors.Implementations.Money.SelectorForMoneyViewModel
 
 <div class="input-group"> @Html.EditorFor(viewModel => viewModel.Current.Value) @Html.HiddenFor(viewModel => viewModel.Current.Currency.Id) <div class="input-group-btn"> <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">@Model.Current.Currency.DisplayText<span class="caret"></span></button> <ul class="dropdown-menu pull-right"> @foreach (var currency in Model.AvailableCurrencies) { <li><a href="#" data-id="@currency.Id">@currency.DisplayText</a></li> } </ul> </div><!-- /btn-group --> </div><!-- /input-group --> 
-``` First of all, we need to setup an hidden field to set the value of the selected currency. This would require some JavaScript to set from the the dropdown value into the hidden field that will be sent to the server. The first EditorFirst is important because it shows the value. The rest of the code is the drop down that is set at the right of the textbox of the decimal value.
+``` 
+
+First of all, we need to setup an hidden field to set the value of the selected currency. This would require some JavaScript to set from the the dropdown value into the hidden field that will be sent to the server. The first EditorFirst is important because it shows the value. The rest of the code is the drop down that is set at the right of the textbox of the decimal value.
 
 Here is the Javascript that must be used for every pages that has the component.
 
 
 ```javascript
+//For each link that is inside a FORM when used as DropDown-Menu Item we want to be able 
+//to click an element and set this one as the visual one. We also set the value of the selected 
+//item into the hidden field of the selected dropdown to have this value pushed to the server. 
+$('form').on('click', '.dropdown-menu>li>a', function () { return dropdownMenuLinkAction($(this)); } );
 
-
-//For each link that is inside a FORM when used as DropDown-Menu Item we want to be able //to click an element and set this one as the visual one. We also set the value of the selected //item into the hidden field of the selected dropdown to have this value pushed to the server. $('form').on('click', '.dropdown-menu>li>a', function () { return dropdownMenuLinkAction($(this)); } );
-
-//@description: Dropdown menu for a choice //@param link: a link that must be under the dropdown-menu function dropdownMenuLinkAction(link) { //Current link information var htmlLink = $(link); var clickedId = htmlLink.attr('data-id'); var clickedDisplayName = htmlLink.html(); var controlContainer = htmlLink.closest('.input-group'); //Change the hidden field (should only have one) controlContainer.find(':hidden').each( function () { $(this).val(clickedId); } ); //Change the visual of the dropdown (should only have one) controlContainer.find('.dropdown-toggle').each( function () { var htmlDropDown = $(this); var currentFullHtml = htmlDropDown.html(); var toRemove = htmlDropDown.text(); var toWriteBack = currentFullHtml.replace(toRemove, ""); htmlDropDown.html(clickedDisplayName + " " + toWriteBack); } ); $(this).dropdown("toggle"); //Close the menu once clicked return false; } 
+//@description: Dropdown menu for a choice 
+//@param link: a link that must be under the dropdown-menu 
+function dropdownMenuLinkAction(link) { 
+  //Current link information 
+  var htmlLink = $(link); 
+  var clickedId = htmlLink.attr('data-id'); 
+  var clickedDisplayName = htmlLink.html(); 
+  var controlContainer = htmlLink.closest('.input-group'); 
+  //Change the hidden field (should only have one) 
+  controlContainer.find(':hidden').each( function () { $(this).val(clickedId); } ); 
+  //Change the visual of the dropdown (should only have one) 
+  controlContainer.find('.dropdown-toggle').each( function () { var htmlDropDown = $(this); 
+    var currentFullHtml = htmlDropDown.html(); 
+    var toRemove = htmlDropDown.text(); 
+    var toWriteBack = currentFullHtml.replace(toRemove, ""); 
+    htmlDropDown.html(clickedDisplayName + " " + toWriteBack); 
+  }); 
+  $(this).dropdown("toggle"); //Close the menu once clicked 
+  return false; 
+} 
 ``` 
- It attaches to every form that has a dropdown an action that is linked into each link of the drop down. This action takes the information set into the html attribute data-id to be able to move it into the html hidden field. The second part is to update the dropdown label to display the selected currency to the control when this one is closed.
+
+It attaches to every form that has a dropdown an action that is linked into each link of the drop down. This action takes the information set into the html attribute `data-id` to be able to move it into the html hidden field. The second part is to update the dropdown label to display the selected currency to the control when this one is closed.

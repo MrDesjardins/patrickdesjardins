@@ -5,7 +5,7 @@ categories:
   - "general"
 ---
 
-Selectivizr is a small javascript library (under 20ko when not compressed and under 5ko when compressed) that has the goal to make work your CSS with older browser like IE8, IE7, IE6. Selectivizr require you to have a javascript library to your html file. This is not a problem usually because most website use JQuery. So, to make it works, first download [Selectivizr](http://selectivizr.com "Selectivizr home page").
+Selectivizr is a small javascript library (under 20ko when not compressed and under 5ko when compressed) that has the goal to make work your CSS with older browser like IE8, IE7, IE6. Selectivizr require you to have a Javascript library to your html file. This is not a problem usually because most website use JQuery. So, to make it works, first download [Selectivizr](http://selectivizr.com).
 
 ![](images/logo-selectivizr-400x94.png)
 
@@ -21,6 +21,6 @@ Second, go just under the line where you add JQuery and add the following code.
 
 Of course, the code above use Url.Content that come from the Asp.Net framework but you could simply add both Javascript with a relative or absolute path manually. So, it works with any web framework like PHP.
 
-From here, all code that were using more specific selector like :hover, :focus, :first-child, :last-child, :nth-child, :not... will works!
+From here, all code that were using more specific selector like `:hover, :focus, :first-child, :last-child, :nth-child, :not` ... will works!
 
 What happen it's that it will be simulate with Javascript instead of using CSS for IE 6-8 and will remain with CSS for all others browser.

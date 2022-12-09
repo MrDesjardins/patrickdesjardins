@@ -9,7 +9,10 @@ It means that the entity is not attached to the database context (DbContext). Yo
 
 
 ```csharp
- if (!_set.Local.Contains(entity)) {_set.Attach(entity); }_set.Remove(entity); 
+if (!_set.Local.Contains(entity)) {
+  _set.Attach(entity); 
+}
+_set.Remove(entity); 
 ```
 
 That's it! We check if the entity is already attached. If it is, then we do not need to do anything. Otherwise, we attach. Attaching will take the primary key of the entity and delete this one even if it's not fully loaded. The code above could be in a _Remove_ method.

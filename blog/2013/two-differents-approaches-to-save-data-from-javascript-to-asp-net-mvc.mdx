@@ -89,7 +89,7 @@ public JsonResult SaveWorkoutSessionOrder(WorkoutSessionOrder workoutSessionOrde
 }
 ```
 
-As you can see, the first signature as changed to have a parameter. That mean that we need to provide this data from the Javascript. In fact, we were sending this object previously but this time we have to specify the data type to indicate to Asp.Net MVC framework what information we are sending to deserialize. To mark the data sent to be JSON format, we need to add this line in the Ajax's call : contentType: 'application/json'.
+As you can see, the first signature as changed to have a parameter. That mean that we need to provide this data from the Javascript. In fact, we were sending this object previously but this time we have to specify the data type to indicate to Asp.Net MVC framework what information we are sending to deserialize. To mark the data sent to be JSON format, we need to add this line in the Ajax's call : `contentType: 'application/json'`.
 
 ```javascript
 $(document).on("click", "#btnSaveOrder", function () {

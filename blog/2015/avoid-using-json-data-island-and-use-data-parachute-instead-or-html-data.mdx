@@ -12,7 +12,8 @@ Finally, we got rid of those data island. What was the problem? First, at the en
 However, some people thought that we could replace Xml Data Island with Json Data. The principle is the same, you create from your server side inside a Script tag your JSON. Here is an example:
 
 
-```html  <script id="my-island"> { prop1:'value1' , prop2:'value2' } </div> 
+```html  
+<script id="my-island"> { prop1:'value1' , prop2:'value2' } </div> 
 ``` 
 
 The problem is to read that you need to use Eval.
@@ -27,13 +28,17 @@ I am not a big fan of evaluating on the fly information form the Html. I also th
 The concept of **Data Parachute** is almost the same but instead of creating an island of data, you drop calmly a Json object into a structure of your application.
 
 
-```html  <script> windows.application.variables = { prop1:'value1' , prop2:'value2' }; </script> 
-```  No need to eval, you can access the windows.application variable from your JavaScript files. The structure is created on the master page (layout) so you can have the _variables_ object created and later in the process to create the page fill up with your variable. Usually, I have also under the application object an object called "localizedstring" which allow me to add string localized in the language of the user. This solution is cleaner than that Json Data Island and remains similar so it is easy to change a current Json Data Island into a Data Parachute one.
+```html  
+<script> windows.application.variables = { prop1:'value1' , prop2:'value2' }; </script> 
+```  
+
+No need to eval, you can access the windows.application variable from your JavaScript files. The structure is created on the master page (layout) so you can have the _variables_ object created and later in the process to create the page fill up with your variable. Usually, I have also under the application object an object called "localizedstring" which allow me to add string localized in the language of the user. This solution is cleaner than that Json Data Island and remains similar so it is easy to change a current Json Data Island into a Data Parachute one.
 
 An other alternative, if possible, is to use the **Html5 data attribute**. So instead of adding information into a global variable or in a floating script in your Html, you attach the information directly into the Html element that need the information. This is a good approach but is limited.
 
 
-```html  <div id="abc" data-prop1="value1"></div> 
+```html 
+ <div id="abc" data-prop1="value1"></div> 
 ``` 
 
 The problem is that if you wanted to pass from the resource file of the server an error string that is displayed only during an Ajax call than you need to have that error inside an html's data attribute of the element in error. This can result to some duplication if the same error is shown on every of your controls.

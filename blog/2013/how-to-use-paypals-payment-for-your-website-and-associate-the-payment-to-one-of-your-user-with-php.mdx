@@ -9,7 +9,7 @@ It's rare that I wrote something in PHP but since I have worked with Paypal with
 
 Paypal offers many ways to use their system for transaction. By memory, at least since 2009 x.com has become the reference website for Paypal. By then, they have developed rich API and documentation. Nevertheless, the IPN method, the one that I'll show you is simple and works since many years. From what I know, it's been over 6 years that this method is working (and could be more).
 
-## Coding the button to send the Paypal's request
+# Coding the button to send the Paypal's request
 
 First of all, you need to have a Paypal account and create a **Merchant account**. You can get one for free, no need to have the "Premium Merchant" account. The Paypal account is required to receive the fund and the merchant account to be able to charge your customer. Second, you need to create a button that will redirect your user to Paypal with an amount to pay. You need to go to "Merchant Services" and create your button.
 
@@ -34,7 +34,7 @@ https://www.paypal.com/cgi-bin/webscr
 
 https://www.sandbox.paypal.com/cgi-bin/webscr
 
-## Creating the IPN's callback
+# Creating the IPN's callback
 
 From here, you need to write the call back page. This is where all the hard work is required.
 
@@ -86,7 +86,7 @@ If the answer is the string "VERIFIED" then everything is fine. From here, I do 
 
 Paypal IPN service is fast and your user can be granted of what he bought immediately when you receive the request from the post back. This is a huge advantage because no manual intervention is required and the user can access everything right after he sent you the money.
 
-## Testing with the sandbox
+# Testing with the sandbox
 
 You can create fake customer with Paypal's Sandbox. Go to: [https://developer.paypal.com](https://developer.paypal.com). Once you have your developer account, which doesn't require you more than having a valid Paypal's account, you'll be able to create fake customer with fake email. This will allow you to use these fake Paypal account to do fake payment in the sandbox. It will also let you do fake refund. This is ideal to practice and to test your button, your post back page and how save into your database information about a transaction.
 
@@ -94,7 +94,7 @@ You can create fake customer with Paypal's Sandbox. Go to: [https://developer.pa
 
 To test with the sandbox you absolytely need to create the button from the fake merchant account you have created in the sandbox. So once you have created a merchant account, log to https://www.sandbox.paypal.com/ and recreate the button.
 
-## Watch out about fraud
+# Watch out about fraud
 
 Paypal is well know to protect the buyer more than the seller. Once, I have live a situation that he user pay and within the 30 days of refund, the user requested a refund. Even more, the user called his credit card company which created a fee of few dollar on me. In that case, if you provide premium service, it will be very hard to prove that you really provided this service. Trust me, Paypal won't fight for you. This is really sad because if you have downloadable content, and the user download everything and then request for refund, you will lose. The best way to organize your premium service is something that require to user to access only from your website and never more then few months (ideally recurrent payment every month).
 

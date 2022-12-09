@@ -13,17 +13,19 @@ $("a.offsite").live("click", function(){ alert("Goodbye!"); }); // jQuery 1.3+
 
 
 In the version 1.4.3, we could have used the delegate function. 
+
 ```typescript
 $(document).delegate("a.offsite", "click", function(){ alert("Goodbye!"); }); // jQuery 1.4.3+ 
 ``` 
- But now, to reduce the confusion between all the function to attach event (bind(), live(), delegate()) to Html Dom object, we simply use the ON function. 
+
+But now, to reduce the confusion between all the function to attach event (`bind(), live(), delegate()`) to Html Dom object, we simply use the ON function. 
  
 ```typescript
 $(document).on("click", "a.offsite", function(){ alert("Goodbye!"); }); // jQuery 1.7+ 
 ``` 
 
 
-In this example, since the .on() function is called from the $(document) this will listen every html that change to hook the function if the selector match.
+In this example, since the `.on()` function is called from the `$(document)` this will listen every html that change to hook the function if the selector match.
 
 The syntax of the on function in Jquery is : 
 
@@ -46,6 +48,6 @@ This will add to every line of the myTable the possibility to click. If you want
 $("#myTable").on("click", "tr", function(event){ alert($(this).text()); }); 
 ``` 
 
- This way, it bubbles up to the myTable, which is always available and the click will occur.
+This way, it bubbles up to the myTable, which is always available and the click will occur.
 
 Watch out with attaching from the document. Attaching many delegated event handlers near the top of the document tree can degrade performance rapidly. This is even more true with event like mousemouve that is called a lot of time consequently.

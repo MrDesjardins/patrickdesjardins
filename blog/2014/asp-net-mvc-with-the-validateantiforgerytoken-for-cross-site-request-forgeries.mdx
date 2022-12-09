@@ -8,9 +8,9 @@ categories:
 Cross Site Request Forgeries is also know as CSRF. It is a type of malicious exploit that send commands from a user without his consent to another website. CSRF exploits the trust that a site has in a user's browser. 
 For example, a website could try to execute a form to add something in your Amazon basket! This can be limited by adding an hidden field to a form and a cookie. Both will contain the same value and when the form is submitted the hidden field is compared to the cookie value. If it's the same value, we know that the user has sent the form. If it's not, we know it's a malicious attack.
 
-In Asp.Net MVC, ValidateAntiForgeryToken is a combination of an html helper (hidden field) and attribute(cookie) that allows to verify if the form as been created and sent by the same user.
+In Asp.Net MVC, `ValidateAntiForgeryToken` is a combination of an html helper (hidden field) and attribute(cookie) that allows to verify if the form as been created and sent by the same user.
 
-The first step is to add the HtmlHelper method @Html.AntiForgeryToken() inside the form in your view.
+The first step is to add the HtmlHelper method `@Html.AntiForgeryToken()` inside the form in your view.
 
 ```csharp
 @using (Html.BeginForm()) { @Html.AntiForgeryToken() //... 
@@ -92,6 +92,7 @@ The attribute does have a `ValidateAntiForgeryTokenAttribute` method that call t
 ```
 
 This method go through several method of the framework to end to the `ValidateTokens(...)` methods that look like the code below. 
+
 ```csharp
 public void ValidateTokens(HttpContextBase httpContext, IIdentity identity, AntiForgeryToken sessionToken, AntiForgeryToken fieldToken) { 
   if (sessionToken == null) 

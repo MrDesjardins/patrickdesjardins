@@ -13,10 +13,11 @@ To fix this kind of issue, you may want to add 3 dots after a certain amount of 
 
 
 ```css
-
-
-.yourGridClassName td { white-space: nowrap; overflow: hidden; text-overflow: ellipsis } 
+.yourGridClassName td { 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis 
+} 
 ```
 
-
-The _white-space:nowrap_ is used to make sure that even if space are present that nothing will be warped under neat. The _overflow:hidden_ make the text not overlapping to the next cell or outside the table. Finally, the _text-overflow: ellipsis_ add three little dots to indicate that the text continue but has not space to show.
+The `white-space:nowrap` is used to make sure that even if space are present that nothing will be warped under neat. The `overflow:hidden` make the text not overlapping to the next cell or outside the table. Finally, the `text-overflow: ellipsis` add three little dots to indicate that the text continue but has not space to show.

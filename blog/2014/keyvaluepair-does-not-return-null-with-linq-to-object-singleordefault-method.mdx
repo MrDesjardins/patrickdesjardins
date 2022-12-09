@@ -6,7 +6,7 @@ categories:
   - "linq"
 ---
 
-If you have a list of **key value pair** and you are searching something that might not be there, you may want to use **SingleOrDefault**, or **FirstOrDefault** to get this element. If it does not exist, you may think that the Linq to object return null but in fact, it return the default value which is a new instance of KeyValuePair class.
+If you have a list of `key value pair` and you are searching something that might not be there, you may want to use `SingleOrDefault`, or `FirstOrDefault` to get this element. If it does not exist, you may think that the Linq to object return null but in fact, it return the default value which is a new instance of KeyValuePair class.
 
 
 ```csharp
@@ -22,7 +22,7 @@ In fact, this is the case of any of your classes that you search and that this o
 public class MyKeyValuePair { public string Key { get; set; } public string Value { get; set; } } 
 ```
 
-The result is that value2 is an **Exception** and this is because SingleOrDefault has returned NULL. How come? It returns the default value has the name of the method specify. So, if we verify the default value of a class we will get an empty object right? Wrong! We are getting a NULL.
+The result is that value2 is an `Exception` and this is because SingleOrDefault has returned NULL. How come? It returns the default value has the name of the method specify. So, if we verify the default value of a class we will get an empty object right? Wrong! We are getting a NULL.
 
 
 ```csharp
@@ -35,6 +35,6 @@ If we check the source code of SingleOrDefault, we realize that it uses the exac
 public static TSource SingleOrDefault<TSource>(this IEnumerable<TSource> source, Func<TSource, bool> predicate) { if (source == null) throw Error.ArgumentNull("source"); if (predicate == null) throw Error.ArgumentNull("predicate"); TSource result = default(TSource); long count = 0; foreach (TSource element in source) { if (predicate(element)) { result = element; checked { count++; } } } switch (count) { case 0: return default(TSource); case 1: return result; } throw Error.MoreThanOneMatch(); } 
 ```
 
-KeyValuePair class, or should I say the KeyValuePair **struct** default is different. The reason is that the default value of a structure is not the same as a class. It returns an new structure and not null. The mystery is now resolved. For your information, you cannot define you "default value" for your classes. Here are something interesting from MSDN.
+KeyValuePair class, or should I say the KeyValuePair `struct` default is different. The reason is that the default value of a structure is not the same as a class. It returns an new structure and not null. The mystery is now resolved. For your information, you cannot define you "default value" for your classes. Here are something interesting from MSDN.
 
 > The solution is to use the default keyword, which will return null for reference types and zero for numeric value types. For structs, it will return each member of the struct initialized to zero or null depending on whether they are value or reference type.

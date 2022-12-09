@@ -15,7 +15,6 @@ In this article, I will concentrate on RequireJS which is in my opinion very wel
 <script data-main="scripts/main.js" src="scripts/require.js"></script> 
 ``` 
 
-
 The example above could have been written without the .js for the main attribute. This is because RequireJS knows that we are handling JavaScript file and will handle extension byitself if the reference does not start with an http protocol (http or https) or does not start with a slash (/). Advanced configurations are possible for path like defining specific path alias for folders or to define the base path. You can find more information directly on [RequireJS Api Web Page](http://requirejs.org/docs/api.html#jsfiles).
 
 Once paths are define you can now decide which JavaScript file to load for the page you want. The example below is from RequireJs. It loads JQuery, a JavaScript for canvas and something that use a predefined subpath called "app" that us a module named "sub". 
