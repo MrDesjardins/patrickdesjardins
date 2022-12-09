@@ -13,9 +13,9 @@ To have inheritance with JavaScript there is two steps once the class are create
 
 The first step is to call the base class constructor with the the this parameter. This is done by using the name of the function (the class) followed by "call" with `this` as parameter.
 
-The second step is to set the prototype of the child class to an instance of a new base object. This is done my calling assigning the prototype to Object.Create(.prototype). An important detail is that this must be set before you associate any new prototype to the object, otherwise, every prototype defined will be overridden.
+The second step is to set the prototype of the child class to an instance of a new base object. This is done my calling assigning the prototype to `Object.Create(.prototype)`. An important detail is that this must be set before you associate any new prototype to the object, otherwise, every prototype defined will be overridden.
 
-The third step is to set the prototype of the child class to be setup to the childclass. That is that the Object.create set the prototype to the base class which need to set back to the child. We can see that without setting this constructor that the value of console.log(ChildClass1.prototype.constructor) is the base class instead of the child class.
+The third step is to set the prototype of the child class to be setup to the childclass. That is that the Object.create set the prototype to the base class which need to set back to the child. We can see that without setting this constructor that the value of `console.log(ChildClass1.prototype.constructor)` is the base class instead of the child class.
 
 ```typescript
 var BaseClass1 = function () {
@@ -117,7 +117,7 @@ If we remove the base instance function, this will print: "instance1.function1: 
 
 If we remove the base prototype function, this will print: "instance1.function1: Base Prototype"
 
-In this last example, we were using **Object.create**, but also **new** to create the instance that we manipulate the data. If we want to avoid completely the "new", we need to create the child class with Object.Create. This is possible, but will require to change the child class. For example, we won't specify function 1 inside ChildClass1 function, neither call BaseClass with call. The code would look like:
+In this last example, we were using `Object.create`, but also `new` to create the instance that we manipulate the data. If we want to avoid completely the `new`, we need to create the child class with Object.Create. This is possible, but will require to change the child class. For example, we won't specify function 1 inside ChildClass1 function, neither call BaseClass with call. The code would look like:
 
 ```typescript
 var BaseClass1 = function () {

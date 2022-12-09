@@ -40,7 +40,7 @@ depthFirstRecursive(graph, function (node) {
 });
 ```
 
-This output : Root, Node1, Node3, Node4, Node2, Node5
+This output : `Root, Node1, Node3, Node4, Node2, Node5`
 
 The iterative approach is similar. However, we loop from the length of the children array to zero. We do this if we want to have the exact same output of the recursive one. Without loop in reverse, we still do a depth first but from the right side of the tree first instead of the left side.
 
@@ -69,7 +69,3 @@ depthFirstIterative(graph, function (node) {
 ```
 
 We are using unshift to push any new child at the beginning of the array (stack) and get the data from the beginning of the array to (it's a stack!).
-
-```
-
-```

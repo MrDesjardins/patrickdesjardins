@@ -9,7 +9,7 @@ categories:
 
 Redux is a simple data flow that many React developers are using. Recently, Redux introduced the option to be able to shim a callback function when the Redux store send the notification that its state has changed. This is great because it allows us to perform logic between the store and to connected components. This possibility is so much more important if you are not keeping calculated values in the store and only normalized value as well. A good pattern is to denormalized the value into rich objects in the mapping, as well as performing logic on the data just before rending the object. However, this comes at a cost that can be saved if we knew that the information is not complete or that some crucial pieces are not fully loaded yet. A common scenario is that you are waiting for several Ajax call to finish and once all the data in the store to perform a visual update.
 
-To be able to use the following code, you must have Redux version 5 and above. The [Redux Connect API](https://github.com/reactjs/react-redux/blob/HEAD/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options) contains multiple options and the one we need is **areStatesEqual**. The method is hidden under the forth parameters of **connect** as a member of an option object.
+To be able to use the following code, you must have Redux version 5 and above. The [Redux Connect API](https://github.com/reactjs/react-redux/blob/HEAD/docs/api.md#connectmapstatetoprops-mapdispatchtoprops-mergeprops-options) contains multiple options and the one we need is `areStatesEqual`. The method is hidden under the forth parameters of `connect` as a member of an option object.
 
 Usually, you may have used connect the following way, but you can now use the latter one to have a custom function to evaluate the equality of the data.
 
@@ -44,4 +44,4 @@ export function shouldMappingBeSkipped(
 }
 ```
 
-Recently, I have incorporated the **areStateEqual** and I have seen a reduction of mapping between 30% to 75%. You can see a big gain if you have deep normalized objects or advanced filtering and sorting capabilities on grids. By avoiding to recompute for no reason, the application is more responsive.
+Recently, I have incorporated the `areStateEqual` and I have seen a reduction of mapping between 30% to 75%. You can see a big gain if you have deep normalized objects or advanced filtering and sorting capabilities on grids. By avoiding to recompute for no reason, the application is more responsive.

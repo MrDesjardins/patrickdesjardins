@@ -5,7 +5,7 @@ categories:
   - "typescript"
 ---
 
-If you are using a dictionary or map in TypeScript you may want to know how many elements are mapped. This can be done with Object.Entries(myMappedObject).length. However, the default Typescript configuration won't let use this latest function because it's only available in EcmaScript 2017. To get access to it, you need to change the tsconfig.json. Tsconfig.json has a portion called "lib" which increments TypeScript with libraries. To have access to Object.Entries, you need to add "es2017.object".
+If you are using a dictionary or map in TypeScript you may want to know how many elements are mapped. This can be done with `Object.Entries(myMappedObject).length`. However, the default Typescript configuration won't let use this latest function because it's only available in EcmaScript 2017. To get access to it, you need to change the tsconfig.json. Tsconfig.json has a portion called "lib" which increments TypeScript with libraries. To have access to `Object.Entries`, you need to add `es2017.object`.
 
 ```typescript
  "lib": [ "es6", "dom", "es2017.object" ]

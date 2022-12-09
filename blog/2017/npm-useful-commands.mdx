@@ -10,30 +10,30 @@ This article will be pretty slim but can be helpful for more than just myself so
 
 To know packages that are installed globally:
 
-```
+```sh
  npm list -g --depth=0
 ```
 
 To know where the packages are installed. It gives the global location if no node_modules folder in the direct folder parent tree:
 
-```
+```sh
  npm root npm root -g // The global folder
 ```
 
 To know your NPM version and the actual released version
 
-```
+```sh
  npm root
 ```
 
 To know all available version of a library:
 
-```
+```sh
  npm show react-native versions
 ```
 
 To get all your direct dependencies current version and latest:
 
-```
+```sh
  npm out --depth=0
 ```

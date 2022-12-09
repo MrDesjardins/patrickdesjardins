@@ -36,7 +36,7 @@ In this example, the final user first name is "Patrick", the last name is "NotDe
 
 ### Array to object
 
-This is a shortcut to the well known trick of using apply to pass an array of parameter to a function that takes parameters. Instead of using yourFunction.apply(this, yourList) you can use yourFunction(...yourList).
+This is a shortcut to the well known trick of using apply to pass an array of parameter to a function that takes parameters. Instead of using `yourFunction.apply(this, yourList)` you can use `yourFunction(...yourList)`.
 
 ```typescript
 function yourFunction(x:number, y:number, z:number): void { 
@@ -78,7 +78,10 @@ We could replace `var [id, date, ...valuesToAdd] = [1, 2, 3, 4];` by `var [id, d
 This could also be called merging array. You take a first array, by adding it as an element with the spread operator inside the square bracket of the new array. This array element with the spread operator will transform all values of this array and make it like if you were using every values of this one as parameter.
 
 ```typescript
-var list = [1, 2]; var list2 = [...list, 3, 4]; console.log(list); // [1,2] console.log(list2); // [1,2,3,4] 
+var list = [1, 2]; 
+var list2 = [...list, 3, 4]; 
+console.log(list); // [1,2] 
+console.log(list2); // [1,2,3,4] 
 ``` 
 
 

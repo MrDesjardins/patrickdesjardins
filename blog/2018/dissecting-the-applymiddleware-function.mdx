@@ -5,17 +5,17 @@ categories:
   - "redux"
 ---
 
-`applyMiddleware` is probably the most popular [store enhancer](./dissecting-redux-compose)[1]. 
+`applyMiddleware` is probably the most popular [store enhancer](./dissecting-redux-compose)\[1\]. 
 Most people don't realize that a middleware is a concept built as a store enhancer and in this article, we will see how the concept of middleware leverages Redux's store enhancer hook on the store to allows creating custom code to be executed between the dispatch of an action and the time the action reaches the reducers.
 
-The `applyMiddleware` is called when the store is created by the [_createStore_ function](./dissecting-the-createstore-of-redux)[2]. The first parameter are the reducers, and the second parameter is the composition of store enhancer. `applyMiddleware` is most of the time called with the compose function and allows to setup many middlewares. Here is a basic setup with _createStore_ where we can see how the `applyMiddleware` is invoked.
+The `applyMiddleware` is called when the store is created by the [_createStore_ function](./dissecting-the-createstore-of-redux)\[2\]. The first parameter are the reducers, and the second parameter is the composition of store enhancer. `applyMiddleware` is most of the time called with the compose function and allows to setup many middlewares. Here is a basic setup with _createStore_ where we can see how the `applyMiddleware` is invoked.
 
 ```typescript
 const store = createStore( reducers, compose( applyMiddleware(middleware1, middleware2, middleware2), aSecondStoreEnhancerHere ) ) 
 ``` 
 
 
-If we recall from the article entitled "dissecting the createstore"[2], the _createStore_ function call at some point the composition of enhancers like the code below this paragraph. For the sake of simplicity, we will assume that we are not composing store enhancer but only have one which will be the `applyMiddleware`. The only difference with the composition is that the composition would be called one after the other one in sequence. The main idea to grasp at the moment is not the possibility of calling several enhancers one after the other but that the enhancer calls the store and that the return function of the enhancer is called with the reducers and the preloaded state.
+If we recall from the article entitled "dissecting the createstore"\[2\], the _createStore_ function call at some point the composition of enhancers like the code below this paragraph. For the sake of simplicity, we will assume that we are not composing store enhancer but only have one which will be the `applyMiddleware`. The only difference with the composition is that the composition would be called one after the other one in sequence. The main idea to grasp at the moment is not the possibility of calling several enhancers one after the other but that the enhancer calls the store and that the return function of the enhancer is called with the reducers and the preloaded state.
 
 ```typescript
 return enhancer(createStore)(reducer, preloadedState) 
@@ -91,7 +91,7 @@ export default function applyMiddleware(...middlewares) {
 } 
 ``` 
 
-As we can see, it's possible to have different behavior like altering the dispatch function in the actual case with the middleware. The function is actually called once at the creation of the store which set up the chain to be called once a dispatch is executed. Since the code is overriding the dispatch and returning a wrapper of composed functions (middleware), every time something is dispatched it will be pass-through all the middleware. The capability to alter dispatch in a [store enhancer allows injecting code to be executed after a store](./how-to-have-a-hook-before-a-redux-store-notify-its-subscriber-with-typescript)[3] is being modified. The code below is an excerpt that illustrates how the compose function could be replaced and used to be returned allowing a _hook_ function.
+As we can see, it's possible to have different behavior like altering the dispatch function in the actual case with the middleware. The function is actually called once at the creation of the store which set up the chain to be called once a dispatch is executed. Since the code is overriding the dispatch and returning a wrapper of composed functions (middleware), every time something is dispatched it will be pass-through all the middleware. The capability to alter dispatch in a [store enhancer allows injecting code to be executed after a store](./how-to-have-a-hook-before-a-redux-store-notify-its-subscriber-with-typescript)\[3\] is being modified. The code below is an excerpt that illustrates how the compose function could be replaced and used to be returned allowing a _hook_ function.
 
 ```typescript
 function dispatch(...args) { 

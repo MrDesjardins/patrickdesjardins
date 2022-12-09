@@ -7,7 +7,7 @@ categories:
   - "visual-studio"
 ---
 
-TypeScript is a wonderful language for front-end developing. It helps by make front-end code feels like C#. At the end you compile the TypeScript code in JavaScript like if you had do without TypeScript. The first step is to setup Visual Studio to use TypeScript. On the official website, there is [instruction for Asp.Net MVC4](https://www.typescriptlang.org/docs/handbook/asp-net-4.html) which doesn't work very smoothly with MVC5 and the latest version of TypeScript. In fact, following those instructions will lead you into a compilation problem that would tell you that VSTSC doesn't exist. In this article, I'll show you the quickest way to use TypeScript.
+TypeScript is a wonderful language for front-end developing. It helps by make front-end code feels like C\#. At the end you compile the TypeScript code in JavaScript like if you had do without TypeScript. The first step is to setup Visual Studio to use TypeScript. On the official website, there is [instruction for Asp.Net MVC4](https://www.typescriptlang.org/docs/handbook/asp-net-4.html) which doesn't work very smoothly with MVC5 and the latest version of TypeScript. In fact, following those instructions will lead you into a compilation problem that would tell you that VSTSC doesn't exist. In this article, I'll show you the quickest way to use TypeScript.
 
 The first step is to download the latest version of TypeScript. This will install TypeScript in Program Files (C:\Program Files (x86)\Microsoft SDKs\TypeScript). Be aware that you may already have some older version of TypeScript (like 1.6 and 1.8) but you want to have 2.1.
 
@@ -35,7 +35,7 @@ That said to take the file app.ts from the src folder and create the correspondi
 
 Before going any further, let's talk about the tsconfig.json. The option are very basic, the first one indicate that we want sourcemap which allow you to debug directly the TypeScript file instead of the JavaScript. The second parameter is the target. It indicates in which version of JavaScript (EcmaScript) to output. The third one if where to save the JavaScript files compiled. Files is the input.
 
-From here, you just need to have a TypeScript file called app.ts and write some code. Do as normally with C#, go in Visual Studio's menu under Build and do Build Solution. This will output JavaScript. You may not see the output file if you do not have "Show all Files" selected in the Solution Explorer.
+From here, you just need to have a TypeScript file called app.ts and write some code. Do as normally with C\#, go in Visual Studio's menu under Build and do Build Solution. This will output JavaScript. You may not see the output file if you do not have "Show all Files" selected in the Solution Explorer.
 
 ![](images/SolutionExplorer.png)
 

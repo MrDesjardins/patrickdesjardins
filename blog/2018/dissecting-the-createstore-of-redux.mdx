@@ -36,6 +36,7 @@ const store = createStore( reducer, compose( applyMiddleware(thunk), DevTools.in
 
 The code above should be familiar. The first parameter is the reducer and the second one is the store enhancer which contains two stores enhancer: `applyMiddleware` and `Devtool.instrument`. 
 Let's continue the dissection of the `createStore` function. Before going any further, the code validates that reducer is a function. Once again, reducers are also composable function! Which mean that every reducer will call each of them in sequence. 
+
 There are some variables that hold all reducers, the list of listeners and the state. The reducers list is required since everytime something will be dispatched, the action must go through the list. The list of listeners is used to inform any changes and the state is the final state at the end of a loop through all the reducers. 
 The getState function lets you have access to Redux state, the subscribe method allows subscription to get notified when changes happen. Most React developer use the React-Redux package that subscribes beneath the scene and it renders the attached React control for you. 
 

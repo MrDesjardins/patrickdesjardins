@@ -17,7 +17,7 @@ In this article, I'll show how to transform a list built with a single UL and ma
 Before explaining, the official library has many examples which are great. However, they are not all written in JSX which can be cumbersome to read. I hope that this article might help some people in understanding how you can do it with JSX as well as with your own React components. To explain my scenario, here how it was before and how we will modify the structure in term of React components hierarchy. The following diagram shows that I am simulating a header of the grid, outside the range of what can be scrolled with the first UL. The second UL, contains a collection of "ConsoleMessageLine" component which is a LI with many DIV. One DIV per column positioned with a FLEX display. When one row is clicked, it toggles the possibility to render an additional component the "ConsoleMessagesLineDetails" or to render undefined which do not display anything.
 
 ![](images/VirtualizedDAGConsole.png)
-![](images/VirtualizedDAGConsole.png)
+
 
 The division of the component satisfy my needs and I desired to alter the composition as little as possible. It ended that I only had to add two different components from the [React-Virtualized library](https://github.com/bvaughn/react-virtualized) without having to change the UL>LI>DIV composition.
 
@@ -56,6 +56,7 @@ The next step is to add the AutoSizer and the List component from the library to
 
 
 The AutoSizer component has an unusual way to use its children by allowing a width and a height. You can see an extract of the definition file under this paragraph. The Size type has a width and a height determined by the AutoSizer. 
+
 ```typescript
 children: (props: Size) => React.ReactNode; 
 ``` 

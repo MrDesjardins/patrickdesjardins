@@ -22,6 +22,6 @@ This is the code with a dedicated function that a middleware was creating anothe
 
 Chrome Performance on the Click Event After the Modification
 
-Creating the additional dispatch function, passing this one down to the component and creating the actions was more work. It takes about 20 minutes mostly because I wanted to have the middleware to handle the logic of selecting all because I keep all reducers very slim and dummy. So, I had to create 2 actions. However, this 20 minutes was well worth it because the user sees a user interface that is O(1) when clicking the "select all" instead of being O(n).
+Creating the additional dispatch function, passing this one down to the component and creating the actions was more work. It takes about 20 minutes mostly because I wanted to have the middleware to handle the logic of selecting all because I keep all reducers very slim and dummy. So, I had to create 2 actions. However, this 20 minutes was well worth it because the user sees a user interface that is `O(1)` when clicking the "select all" instead of being `O(n)`.
 
 The underlying problem is that every action goes back to a [full Redux's lifetime loop](a-simple-react-and-redux-architecture) format. Indeed, optimization can occur at that level as well, but avoiding starting Redux's cycle was a step in sound practice.

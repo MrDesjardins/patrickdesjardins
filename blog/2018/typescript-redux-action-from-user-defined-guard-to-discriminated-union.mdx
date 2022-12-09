@@ -114,7 +114,6 @@ export function yourReducer( state: AppState = initialState, action: Actions<A> 
 } 
 ``` 
 
-
 There is one dirty trick that you can see the action being cast to `any` and cast to the list of accepted type. Ideally, the action would be of type of the union. However, Redux definition files require having a type A. Extending the type create confusion to the compiler which doesn't know which of the type and thus have the payload of all the unionized type.
 
 In this article, we saw two function ways to handle action from React to Redux's state. The first one is using a user-defined guard which was quicker to write but loosely strongly typed. The second approach is more convoluted but is strongly typed and protect you from having a false sense of security that the code is typed with a specific type which may be deceptive. Neither of the design are peculiar but the latter is by experience worth the additional typing.

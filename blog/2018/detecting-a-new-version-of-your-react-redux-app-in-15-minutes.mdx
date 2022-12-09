@@ -20,13 +20,13 @@ The idea can be broke down in few steps:
 
 The first step has been [already discussed](burning-the-last-git-commit-into-your-telemetry-log), but in short, it consists to change the `npm run build` to take the head Git hash and to pass it down to React.
 
-``` 
+```sh 
  "build": "REACT_APP_VERSION=$(git rev-parse --short HEAD) react-scripts-ts build"
 ``` 
 
 The second step require a change on the build system. At Netflix, we are using Jenkins. I added a Bash Script step that look like the following:
 
-``` 
+```sh
 CommitHash=$(git rev-parse --short HEAD) 
 echo "HASH" 
 echo $CommitHash 

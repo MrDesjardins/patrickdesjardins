@@ -10,7 +10,7 @@ I have always been a fan of having user interfaces that are smooth for the eyes.
 
 React is great on many points but if you want to customize how a component change from a position/size to another it can be mesmerizing. The reason is that React when receiving new information will render and the rendered component will be at its final position. In this article, I will cover how to handle the case of a React's component that needs to move its "left" and "top" position but it could be any property you want.
 
-Before jumping in the code, let's describe what we will do. The idea is to get the actual data right before we are getting the new value and save a copy of it inside the component before it renders. A good place is **componentWillReceiveProps** where you can access the DOM element by reference and save a copy of it before the new props are propagated into the whole React's lifecycle of your component. React render function does not paint to the screen when the render function is invoked. It is once the **componentDidUpdate** is called that the browser paint. With the information in mind, and the data saved in the **componentWillReceiveProps** we can access the before and after the position/size of a component. The before being gathered in **componentWillReceiveProps** and after in **render** function.
+Before jumping in the code, let's describe what we will do. The idea is to get the actual data right before we are getting the new value and save a copy of it inside the component before it renders. A good place is `componentWillReceiveProps` where you can access the DOM element by reference and save a copy of it before the new props are propagated into the whole React's lifecycle of your component. React render function does not paint to the screen when the render function is invoked. It is once the `componentDidUpdate` is called that the browser paint. With the information in mind, and the data saved in the `componentWillReceiveProps` we can access the before and after the position/size of a component. The before being gathered in `componentWillReceiveProps` and after in `render` function.
 
 What you can do is to create one variable to hold the value that change and that you care for your animation. You also need one variable to have a reference to the HTML element. This should be a variable in the class component and not in the state. Changing the state invokes the lifecycle of your component to render again which is not required in that case. In the following example, I am saving my HTML element that I want to animate with the left and top position.
 
@@ -56,7 +56,8 @@ public componentDidUpdate(previousProps: FillWindowsClusterProps): void {
     const deltaPositionLeft = this.lastLeftPosition - coord.left; 
     const deltaPositionTop = this.lastTopPosition - coord.top; 
     if (this.domCluster !== null) { 
-      this.domCluster.style.transform = `translate(${deltaPositionLeft}px, ${deltaPositionTop}px)`; this.domCluster.style.transition = "transform 0s"; 
+      this.domCluster.style.transform = `translate(${deltaPositionLeft}px, ${deltaPositionTop}px)`; 
+      this.domCluster.style.transition = "transform 0s"; 
     } 
     requestAnimationFrame(() => { 
       if (this.domCluster !== null) { 
