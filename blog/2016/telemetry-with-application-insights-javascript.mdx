@@ -29,7 +29,9 @@ function attachTelemetries() { $('#all-contests').click(function () { appInsight
 ``` 
 
 
-You can use the _appInsights_ variable, defined when setuping Application Insights with the method _trackEvent_. The method take a name for the telemetry captured following by properties and if needed some metric. In our case, we can just sum the each properties (each link location) and determine which one is the most popular. Something not clear in the documentation is that it is required to call the _flush_ method. The reason is that once the click event is done, the browser move to the next page. Flush ensures that the telemetry is sent. ![](images/Events.png)
+You can use the _appInsights_ variable, defined when setuping Application Insights with the method _trackEvent_. The method take a name for the telemetry captured following by properties and if needed some metric. In our case, we can just sum the each properties (each link location) and determine which one is the most popular. Something not clear in the documentation is that it is required to call the _flush_ method. The reason is that once the click event is done, the browser move to the next page. Flush ensures that the telemetry is sent. 
+
+![](images/Events.png)
 
 You can add a chart in the Metric blade, see a the top. Select Sum, in a grid, and group by the property you want to get the data. In our example, it is the property that change which is the location of the link. What can be confusing is to be able to select the property you need to go at the bottom of that blade and select the metric **event**.
 

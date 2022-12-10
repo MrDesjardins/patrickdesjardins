@@ -11,10 +11,12 @@ It is possible to have the Creation.cshtml and Edition.cshtml use the same parti
 
 ![](images/PartialViewForSharing-400x205.png)
 
-One way to do it is to use the html helper **EditorForModel**. Often, EditorFor and DisplayFor are used for individual input control but this can be used also for regrouping them. So, the **EditorForModel** is used to share between edition and creation the same group of edition control and inside the **EditorTemplates** you have a file name that has the model (or view model if you are using view model) used by the controller. Inside the editor templates of the model, you can use EditorFor to leverage the dynamic of editor template for controls.
+One way to do it is to use the html helper `EditorForModel`. Often, EditorFor and DisplayFor are used for individual input control but this can be used also for regrouping them. So, the `EditorForModel` is used to share between edition and creation the same group of edition control and inside the `EditorTemplates` you have a file name that has the model (or view model if you are using view model) used by the controller. Inside the editor templates of the model, you can use EditorFor to leverage the dynamic of editor template for controls.
 
 ![](images/EditorForForSharedModel-400x194.png)
 
 The form are not shared because they generate by the controller that have called them. For example, the edition one. 
-```html  <form action="/House/Edit/1" method="post"> 
+
+```html  
+<form action="/House/Edit/1" method="post"> 
 ``` 

@@ -23,7 +23,7 @@ The article focus on:
 Here is a sketch of the frontend service with at the top the dev environment and the bottom the production environment.
 ![Docker Frontend Architecture with Docker](./images/Docker-FrontendDiagram.png)
 
-If these specifications fit your need, then you are in luck! In my perspective, these requirements are pretty standard. For example, when developing, we want TypeScript to transpile the code, and we want to see the change directly. Using React or SolidJS and Docker, we can save the TypeScript file and see the result on your browser within a few seconds (<2 seconds). Similarly, when working on the NodeJS server, adding HTTP endpoints or modifying the logic is a matter of saving the file; the developer server running in the Docker's container will see the change and be rebooted automatically. On the opposite, when it's time to publish the production code, everything should be isolated inside the Docker container. Hence, we have a specific Docker configuration to manage that case.
+If these specifications fit your need, then you are in luck! In my perspective, these requirements are pretty standard. For example, when developing, we want TypeScript to transpile the code, and we want to see the change directly. Using React or SolidJS and Docker, we can save the TypeScript file and see the result on your browser within a few seconds (\<2 seconds). Similarly, when working on the NodeJS server, adding HTTP endpoints or modifying the logic is a matter of saving the file; the developer server running in the Docker's container will see the change and be rebooted automatically. On the opposite, when it's time to publish the production code, everything should be isolated inside the Docker container. Hence, we have a specific Docker configuration to manage that case.
 
 # Prerequisite
 It is without saying that you need to have Docker installed on your developer machine. You should also already know a little bit about how Node and NPM work.
@@ -32,6 +32,7 @@ It is without saying that you need to have Docker installed on your developer ma
 You will need two Dockerfile files —one per service, not one per environment. The importance of having two Dockerfile might be confusing at first, but it is the case only because I am making two services into a single repository in this article. Hence, if you have one repository for one service, you would have one Dockerfile.
 
 In short, you need one Dockerfile per micro-service. However, you might be constrained to have everything in a single repository in many cases. A single place is quite convenient to share code, and it is less moving for small and medium applications. So, in this project, let's have the mindset that we have a single repository with two services.
+
 ```
 Project
   |

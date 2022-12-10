@@ -10,14 +10,14 @@ I have been using Redis since few weeks now and I stumble into a weird problem a
 
 First of all, I am using [JSON.Net](http://www.newtonsoft.com/json) for serialization and deserialization. It is the common serializer library for a long time, it's even the one Microsoft is using now for all its new projects. Second, I was already using some configurations to handle references. The problem was that one of the object had a collection of an interface which it was not deserialized correctly because JSON.Net did not know to which concrete type to instanciate.
 
-To fix this issue and have during serialization the concrete type added to the serialization, you need to use **JsonSerializerSettings** with the **TypeNameHandling** property to **All**. The result look like the following code: 
+To fix this issue and have during serialization the concrete type added to the serialization, you need to use `JsonSerializerSettings` with the `TypeNameHandling` property to `All`. The result look like the following code: 
 ```csharp
  var serializedObjectToCache = JsonConvert.SerializeObject(objectToCache , Formatting.Indented , new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Serialize, PreserveReferencesHandling = PreserveReferencesHandling.Objects, TypeNameHandling = TypeNameHandling.All }); 
 ```
 
-The result of the serialization is a JSON attribute named **"$type"** which has the complete namespace and class name. You can find more detail on [JSON.Net documentation about TypeNameHandling](http://www.newtonsoft.com/json/help/html/SerializeTypeNameHandling.htm).
+The result of the serialization is a JSON attribute named `"$type"` which has the complete namespace and class name. You can find more detail on [JSON.Net documentation about TypeNameHandling](http://www.newtonsoft.com/json/help/html/SerializeTypeNameHandling.htm).
 
-The deserialization contains also the same **JsonSerializerSettings**.
+The deserialization contains also the same `JsonSerializerSettings`.
 
 
 ```csharp

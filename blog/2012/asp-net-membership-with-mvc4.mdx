@@ -30,7 +30,7 @@ Of course, now you have to setup your DbContext to be able to do what UsersConte
 
 ## Configure Entity Framework Migration
 
-The next step is to make sure the the web.config contain the right provider for the role and membership. Inside web.config, in the system.web section be sure that you have the code below. If not, add it.
+The next step is to make sure the the web.config contain the right provider for the role and membership. Inside web.config, in the `system.web` section be sure that you have the code below. If not, add it.
 
 ```xml
  <roleManager enabled="true" defaultProvider="SimpleRoleProvider">
@@ -51,10 +51,11 @@ Once done, you need to build the Migration Configuration. This is automatically 
 
 ![](images/packageConsoleManager-329x400.png)
 
-The next step is to use this command below that will force the creation of the configuration file. This will be required only once. Do not forget to use `EnableAutomaticMigration`. This will let you update the database later accordingly to changes you made to your model and entity configuration. ```
-Enable-Migrations –EnableAutomaticMigrations -Force
+The next step is to use this command below that will force the creation of the configuration file. This will be required only once. Do not forget to use `EnableAutomaticMigration`. This will let you update the database later accordingly to changes you made to your model and entity configuration. 
 
-````
+```sh
+Enable-Migrations –EnableAutomaticMigrations -Force
+```
 
 Since we have removed the _UsersContext_ we won't have any conflict doing the command above. Otherwise, we would have need to specify which DbContext we want the migration to occur. Also, if you already had a database initializer (IDatabaseInitializer) like a `DropCreateDatabaseIfModelChanges`, this won't work with the `DbMigrationsConfiguration`. 
 In fact, you need to remove any initializer because we are switching to the Migration configuration. Nevertheless, this will give us additionnal control, more manual control but at least the possibility to generate the database automatically and also seed the database with Membership and custom tables.
@@ -90,13 +91,12 @@ protected override void Seed(WorkoutPlanner.Database.DatabaseContext context) {
 
 The last step is to create table schema and insert those values from the seed configuration. This is done by this command : 
 
-```
+```sh
 update-database -verbose -force
 ```
 
 The verbose will show you the SQL statement executed and the force will regenerate the table even if data already exist in those tables.
 
-## Conclusion
-
+# Conclusion
 Any time you change your model or the configuration of your entities, you need to run _update-database_ command. This will drop tables, create them again, create FK and insert seed data.
 

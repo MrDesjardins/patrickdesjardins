@@ -8,7 +8,7 @@ categories:
 
 I played with React in 2015 during a Microsoft hackathon. It was without any application architecture like Flux. It was a first experience that didn't impressed me. The page I created was a Visual Studio Team Services hub extension that had some textboxes, combobox, graphics and information were pushed through SignalR. The hackathon was 4 days of development and like anything new, some ramp up was needed. Nevertheless, it was working at then end with a sour taste in mouth. I couldn't really find why I wasn't in love with React since everybody seemed to love it so much. Argumentation about having a clear separation between component and logic didn't make a lot of sense since we could do as well since many years, with some rigor. I also found that this argument is a weak one since you can create messy code with React too and have logic in the component. In any cases, I didn't touch it since this spring with a new project in Visual Studio Team Services where I would need to design the whole page in React Facebook. This time, I wanted to leverage as much as possible and went with an application architecture that was a mix of Flux and Reflux.
 
-## Application Architecture a.k.a. Flux Cycle
+# Application Architecture a.k.a. Flux Cycle
 
 This was a first big decision to go. Do we use Flux, Reflux, Redux, or any other variant that exist. The community seems to prefer Redux, but this come with some heavier knownledge. Everything needs to be immutable and more restriction about where to change the information. Today, I understand more all the advantage of it, but it still more work to do. Also, beaware that we are using TypeScript so it's more than just single NPM command to get the boilerplate for a new project. I decided to take a simpler approach that doesn't need much and that could be done in TypeScript with just React and React Dom library. It ends up being Flux and Reflux. Flux because we are using Action Creator, and Reflux because we do not use Dispatcher. Why Action Creator? Because we wanted to have all business logic, call to the server with Ajax to be made not by the UI component, neither the store. Why no dispatcher because we wanted to have strong dependency between action and the store.
 
@@ -23,7 +23,7 @@ The main concept is :
 - Almost single store. Some shared concept are possible, we try to avoid. Every Flux cycle has one main store.
 - The page can have as many Flux cycle as required. We try to go by business domain.
 
-### Store
+## Store
 
 The store started to not be immutable. We rapidly find that even with a good rigor, it was easy to have the Action Creator changing values. Since the data passed by to the component was passed by reference, the data given from the component to the action creator could me modified and thus changed automatically in the store. This caused some problem in regard of the ShouldUpdateComponent method. The current properties always look the same as the next properties, which make it harder to compare for performance optimization. We had to refactor the code. We couldn't simply pass the information cloned ($.extend()) because it's expensive and also because our classes stored in the store had some method (see more detail later about it).
 
@@ -31,7 +31,7 @@ The store has multiple methods to set information in the tree of data. In Redux,
 
 We started as one big store for all the pages. But our page has a wizard to create data, and multiple views. It was heavy to have to handle all the information for all cases. We finished to have one main store that handle the application views, one store per view and one store for the creation wizard. The Flux cycle that was handling the creation of data was doing it's own business. Every keystroke was doing a full cycle, doing validation, getting data with Ajax (from the Action Creator), etc. When ready to save, pass the information to the main page Flux cycle. The communication between the Flux cycle is done via shared Action that the main Flux Cycle is listening to. This design is good since day one. Clean separation between domain.
 
-### Components
+## Components
 
 At first, some UI logic was in component. This went away very fast. It's harder to unit test and even if the logic seem to be really just for a single component, this is not true most of the time. It's also easier to optimize the logic when this one is not in the component. You can cache data, do some batch processing, etc outside the component.
 
@@ -39,25 +39,25 @@ I was and still am a strong believer of not layover the style in seperated CSS f
 
 We are not using any mixin. It's official, by Facebook that this is not a good pattern and before this was announced I found it to add complexity for nothing. Shared logic are using TypeScript class at the proper time.
 
-### Action Creators
+## Action Creators
 
 We use the action creator as a "controller" in MVC pattern. It's the one to receive actions from the component. You click something, the component call the action creators. The action creators is easily testable since it takes some input values and call actions. Like MVC controller, this one is not huge in code, it delegates logic to business logic classes.
 
 Action creator handles synchronous and asynchronous calls. In fact, any calls from the component that needs to get information from the server (Ajax calls) send always 2 actions to the store. One that is rapidly handled, which usually make the UI having a progress bar, and one when we receive the data from the server. The last one remove the progress bar and show the data.
 
-### Actions
+## Actions
 
 We have one file per Flux cycle that store all actions for the Flux cycle. Usually it has a dozen of action which are really just events. Nothing to test here. Pretty dry file.
 
-## Immutable
+# Immutable
 
 Immutability is something discussed a lot and I didn't took it as serious as a lot of article say. However, I found it harder to handle the store without it. Even if the Facebook document say that you can leverage the ShouldUpdateComponent without being immutable, it's not straight forward. Comparing values doesn't work. The only way that we find is to have inside the classes of our store some properties that say when to update or not. The logic was defined in the Action Creators. We are still in the road of making it more and more immutable since our UI is intensive in term of changing.
 
-## Object Oriented vs Functional
+# Object Oriented vs Functional
 
 That is the mistake I did. I am a strong object oriented advocate and I designed our model classes (used in the store) to have properties but also methods and dynamic properties. Properties are fine, but the two others are wrong with React Flux. Properties that are calculated shouldn't be in the class because they might use logic that make the object being modified in some situation (like with date). Methods are bad for two reasons. First, no one should call them else than the Action Creators. You can hide them by having an interface but the problem is just delayed. It's delayed because if you need to clone the object, the methods won't be copied and you end up with just data without prototype methods. At the end, you want to have your stores with just plain properties and all the logic inside classes that only the Action Creator can invokes. It's simple to test, protect you to have the store or the components to invoke any logic and can be make easily immutable.
 
-## Tests
+# Tests
 
 I am a strong believer of automatic tests. React helps but like any framework this can be a mess too. Since we respect the architecture and all logics are in the actions creators and business logic classes we are able to unit tests easily. It still requires some skill to have proper tests that are easily maintainable as well to create classes and methods small to have not too much to stub, but this is like any framework, not just React. Our strategy is to have > 90% coverage on action creator and business logic. We have a good coverage on classes mapping between the server contracts and our store/model classes. Store is tested to be sure information that is sent by action are stored at the right place. The priority is business logic classes, action creators, stores and components. Components are really dummy and tests are longer to test. Since we can easily see the end result on the browser, we do some minimum tests. Of course, we would like to do tests everywhere but reality is that we need to ship software at some point.
 

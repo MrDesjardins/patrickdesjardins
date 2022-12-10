@@ -33,7 +33,7 @@ The second pre-task is to find the images to resize. Again, this will require a 
 npm install --save glob npm install --save-dev @types/glob
 ```
 
-From there, we need to import the module. We will bring the _path_ and _fs_ module of NodeJs to be able to create proper path syntax and to save file on disk. 
+From there, we need to import the module. We will bring the `path` and `fs` module of NodeJs to be able to create proper path syntax and to save file on disk. 
 
 ```typescript
 import _ as g from "glob"; 
@@ -87,9 +87,9 @@ getImageToAnalyze().then((fullPathFiles: string[]) => {
 });
 ```
 
-The code inside the "then" is the one executed if the promise is resolved successfully. It will start resizing the list of pictures and pass this list into the function that we will create in an instant.
+The code inside the `then` is the one executed if the promise is resolved successfully. It will start resizing the list of pictures and pass this list into the function that we will create in an instant.
 
-The _resize_ function is not the one that will do the resize. It will call the function that does the resize only if the picture has not been yet resized. This is great if something happen to fail and you need to re-run. The resize function will check in the "metainfo" folder, where we output the resized picture and only resize this one if not present. In both case, this function return a promise. The type of the promise is a list of _IImage_.
+The _resize_ function is not the one that will do the resize. It will call the function that does the resize only if the picture has not been yet resized. This is great if something happen to fail and you need to re-run. The resize function will check in the "metainfo" folder, where we output the resized picture and only resize this one if not present. In both case, this function return a promise. The type of the promise is a list of `IImage`.
 
 ```typescript
 export interface IImage {
@@ -98,7 +98,7 @@ export interface IImage {
 }
 ```
 
-This type allows to have the detail about the full path of the thumbnail "resized" picture and the original picture. When we have already resized, we just create an instance, when we do not have an image we create this one and then return a new instance. This method waits all resize to occur before resolving. This is the reason of the _.all_. We are doing so just to have a clear cut before moving to the next step and since we are launching multiple resizes in parallel, we are waiting to have them all done before analyzing.
+This type allows to have the detail about the full path of the thumbnail "resized" picture and the original picture. When we have already resized, we just create an instance, when we do not have an image we create this one and then return a new instance. This method waits all resize to occur before resolving. This is the reason of the `.all`. We are doing so just to have a clear cut before moving to the next step and since we are launching multiple resizes in parallel, we are waiting to have them all done before analyzing.
 
 ```typescript
 function resize(fullPathFiles: string[]): Promise<IImage[]> {
@@ -123,7 +123,7 @@ function resize(fullPathFiles: string[]): Promise<IImage[]> {
 }
 ```
 
-This function use a function to get the thumbnail path to lookup if it's been already created or not. This function call another one too, and both of these methods are having the same goal of providing a path. The first one, the _getThumbnailPathAndFileName_ get the original full quality picture path and return the full image path of where the resized thumbnail is stored. The second one is a function that will be resused in some occasion and it gives the metainfo directory. This is where the resized picture are stored, but also the JSON file with the analytic data are saved.
+This function use a function to get the thumbnail path to lookup if it's been already created or not. This function call another one too, and both of these methods are having the same goal of providing a path. The first one, the `getThumbnailPathAndFileName` get the original full quality picture path and return the full image path of where the resized thumbnail is stored. The second one is a function that will be resused in some occasion and it gives the metainfo directory. This is where the resized picture are stored, but also the JSON file with the analytic data are saved.
 
 ```typescript
 function getThumbnailPathAndFileName(imageFullPath: string): string {

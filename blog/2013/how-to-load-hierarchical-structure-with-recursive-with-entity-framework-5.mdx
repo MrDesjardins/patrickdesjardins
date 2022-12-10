@@ -5,7 +5,7 @@ categories:
   - "entity-framework"
 ---
 
-Everything has many way to do it, here is two ways to handle data structure that is recursive. The structure in which the solution that I will present you work is a structure that look like a tree. A main parent node with children in which can have entity or/and have itself a parent node to start a sub-tree. Also, children cannot contain parent that are already used somewhere in the tree, which could raise additional problems, like having infinite recursion.
+Everything has many way to do it, here is two ways to handle data structure that is recursive. The structure in which the solution that I will present you work is a structure that look like a tree. A main parent node with children in which can have entity or\/and have itself a parent node to start a sub-tree. Also, children cannot contain parent that are already used somewhere in the tree, which could raise additional problems, like having infinite recursion.
 
 ![](images/hiearchicalStructure-400x400.png)
 
@@ -19,9 +19,9 @@ _context.Parent .Include(d => d.OtherProperty)
 .Include(d => d.Children)
 .Include(d => d.Children.Select(dd=>dd.OtherProperty)
 .Include(d => d.Children.Select(dd=>dd.Children)
-.Include(d => d.Children.Select(dd=>dd.OtherProperty........) 
-//We cannot proceed this way because we do not know how many level .Include(d => d.Children.Select(dd=>dd.Children.......)
-//We cannot proceed this way because we do not know how many level .Single(p => p.ID == id); 
+.Include(d => d.Children.Select(dd=>dd.OtherProperty........) //We cannot proceed this way because we do not know how many level 
+.Include(d => d.Children.Select(dd=>dd.Children.......) //We cannot proceed this way because we do not know how many level 
+.Single(p => p.ID == id); 
 ```
 
 This give us the option to load the Children, if this one has children then load it the way we just load the parent since every child become a parent. This require recursive method. The problem is that it work but every load will create a new parent. We need to map every values to the first parent to have at the end a single hierarchical tree.

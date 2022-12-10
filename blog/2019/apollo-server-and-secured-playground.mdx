@@ -10,7 +10,7 @@ In the [last article of the series on how to create a GraphQL server with TypeSc
 
 Fortunately, the _ApolloServerConfig_ has the property playground that can be something else than a boolean. It can be a _ISettings_. The interface has a "request.credentials" and by default "omit". Changing the default to "same-origin" will carry the missing headers.
 
-```
+```json
 playground: {
     settings: {
         "general.betaUpdates": false,
@@ -28,11 +28,11 @@ playground: {
 
 ![](images/GraphQLPlaygroundSettingsGear.png)
 
-## Summary
+# Summary
 
 In this article we configured subsequent calls to keep the authentication set in the former request that brought the playground in the browser. In the next article we will see how to read the content of the header to know which user is authenticated. The next step is crucial to have a user experience secured and tailored to the active user.
 
-## My Other GraphQL Articles
+# My Other GraphQL Blog Posts
 
 - [Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)
 - [Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)
@@ -44,5 +44,5 @@ In this article we configured subsequent calls to keep the authentication set in
 - [GraphQL Resolvers with Apollo](graphql-resolvers-with-apollo)
 - [Configuring Apollo Playground and API on two different URL](configuring-apollo-playground-and-api-on-two-different-url)
 - [How to automatically generate TypeScript for consumers of your GraphQL](how-to-automatically-generate-typescript-for-consumer-of-your-graphql)
-- [GraphQL and HTTP Telemetry](graphql-extension-to-collect-http-and-resolvers-telemetry)  
+- [GraphQL and HTTP Telemetry](graphql-extension-to-collect-http-and-resolvers-telemetry)
 - [GraphQL and TypeScript/React](how-to-consume-graphql-in-typescript-and-react)

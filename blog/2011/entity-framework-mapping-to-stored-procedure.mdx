@@ -22,11 +22,10 @@ To test, lets use the Microsoft Northwind database and add inside the Sql server
 
 
 ```sql
-
-
-CREATE PROCEDURE UpdateRegion ( @id INT ,@txt VARCHAR(50) ) AS BEGIN UPDATE region SET RegionDescription = @txt WHERE RegionID = @id END 
+CREATE PROCEDURE UpdateRegion ( @id INT ,@txt VARCHAR(50) ) AS BEGIN
+ UPDATE region SET RegionDescription = @txt WHERE RegionID = @id 
+END 
 ```
-
 
 After, lets add it into the entity model and map the stored procedure to the update function of the region table.
 
@@ -38,7 +37,12 @@ To see the difference. Lets try to change the region without the stored procedur
 
 
 ```csharp
- var db = new NorthWindContainer(); var region = db.Region.First(); Console.WriteLine("The first region description is : " + region.RegionDescription); region.RegionDescription = "Est"; db.SaveChanges(); region = db.Region.First(); Console.WriteLine("The first region description is : " + region.RegionDescription); Console.ReadLine(); 
+var db = new NorthWindContainer(); var region = db.Region.First(); 
+Console.WriteLine("The first region description is : " + region.RegionDescription); 
+region.RegionDescription = "Est"; 
+db.SaveChanges(); region = db.Region.First(); 
+Console.WriteLine("The first region description is : " + region.RegionDescription); 
+Console.ReadLine(); 
 ```
 
 This produce without the stored procedure mapped:
@@ -48,16 +52,13 @@ This produce without the stored procedure mapped:
  exec sp_executesql N'update [dbo].[Region] set [RegionDescription] = @0 where ([RegionID] = @1) ',N'@0 nchar(50),@1 int',@0=N'Est',@1=1 
 ```
 
-
 And with:
-
 
 ```sql
  exec [dbo].[UpdateRegion] @id=1,@txt='Est' 
 ```
 
-
-Before going to the next part of this post, in the mapping details theirs 2 columns that we have not talk yet. The first one is "Use Original Value" and the second one is "Rows Affected Parameter". The original value is a boolean that is to false by default. If you change it to true, this will pass to the database the original loaded value of the entity. This can be used in situation where multiple concurrences could have changed the value and you want the original one. The second columns is the "Rows Affected Parameter". This one can be used if you have an integer parameter with an output specification in the stored procedure that will return the number of rows that has been changed. In the example above, that would be the value 1 that would have been passed if we had changed the stored procedure to have an additional parameter of type Int ( @paramReturnValue integer OUTPUT).
+Before going to the next part of this post, in the mapping details theirs 2 columns that we have not talk yet. The first one is "Use Original Value" and the second one is "Rows Affected Parameter". The original value is a boolean that is to false by default. If you change it to true, this will pass to the database the original loaded value of the entity. This can be used in situation where multiple concurrences could have changed the value and you want the original one. The second columns is the "Rows Affected Parameter". This one can be used if you have an integer parameter with an output specification in the stored procedure that will return the number of rows that has been changed. In the example above, that would be the value 1 that would have been passed if we had changed the stored procedure to have an additional parameter of type `Int ( @paramReturnValue integer OUTPUT)`.
 
 ## Executing a function in Sql Server with Entity Framework
 
@@ -70,7 +71,6 @@ Once added, the stored procedure is set under the Function Imports of the Entity
 ![](images/addedfunction.png)
 
 When it's added, you can do the call by using directly the object context followed by the name of the function. At anytime you can change the name of it by going in the Model Browser and going in the property of the function.
-
 
 ```csharp
  db.UpdateRegion(1, "Estern!"); 

@@ -12,7 +12,9 @@ An example that can raise is that you want to be able to create a new entity for
 The secret is that the submit button is also an input which can have a name and a value. You simply need to have the same name and two different values.
 
 
-```html  <button type="submit" name="ActionSave" value="insert">Save</button> <button type="submit" name="ActionSave" value="insertAndContinue">Save and continue</button> 
+```html  
+<button type="submit" name="ActionSave" value="insert">Save</button> 
+<button type="submit" name="ActionSave" value="insertAndContinue">Save and continue</button> 
 ``` 
 
 You can from here change your view model to have a property ActionSave (string) or you can go directly into the Form collection.

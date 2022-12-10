@@ -13,7 +13,9 @@ The attribute is set anywhere in the code of your assembly. It can be at the top
 
 
 ```csharp
- [assembly:InternalsVisibleTo("MyBusinessAssembly")] [assembly:InternalsVisibleTo("MyOtherBusinessRelatedAssembly")] [assembly:InternalsVisibleTo("MyUnitTestProjectName")] 
+ [assembly:InternalsVisibleTo("MyBusinessAssembly")] 
+ [assembly:InternalsVisibleTo("MyOtherBusinessRelatedAssembly")] 
+ [assembly:InternalsVisibleTo("MyUnitTestProjectName")] 
 ```
 
 If you are using signed DLL, than you will need to use the **sn.exe** command line tool. This one can be used directly in the **Visual Studio Command Prompt**. It will produce a public token that can be used in the InternalsVisibleTo attribute.
@@ -24,5 +26,7 @@ If you are using signed DLL, than you will need to use the **sn.exe** command li
 
 
 ```csharp
- [assembly:InternalsVisibleTo("MyBusinessAssembly, PublicKey=00000000000111111111111122222222222.....")] [assembly:InternalsVisibleTo("MyOtherBusinessRelatedAssembly, PublicKey=00000000000111111111111122222222222.....")] [assembly:InternalsVisibleTo("MyUnitTestProjectName, PublicKey=00000000000111111111111122222222222.....")] 
+ [assembly:InternalsVisibleTo("MyBusinessAssembly, PublicKey=00000000000111111111111122222222222.....")] 
+ [assembly:InternalsVisibleTo("MyOtherBusinessRelatedAssembly, PublicKey=00000000000111111111111122222222222.....")] 
+ [assembly:InternalsVisibleTo("MyUnitTestProjectName, PublicKey=00000000000111111111111122222222222.....")] 
 ```

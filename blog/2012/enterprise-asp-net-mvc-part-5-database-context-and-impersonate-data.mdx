@@ -86,14 +86,17 @@ That doesn't mean that you cannot save to an other user, but will require more w
 Also, repository doesn't have access directly to the user id. That's say, it's a painful process. Not letting access directly to the Set avoid the mistake to simply user `Set` method for an entity. An exception will be thrown and the developer will automatically remember to user the SetOwnable method instead. If he really mean to use the `Set` method, than the impersonate method will be appropriate.
 
 For general entity, let say that we have a list of status that are shared across all entities or shared across all users, the entity won't inherit of `IUserOwnable` because it's not a user ownable entity. So in theory it works, let check in practice! 
+
 ```csharp
 using (var db = DatabaseContext.Impersonate(new UserProfile { UserId = 1 })) { 
    db.SetOwnable<Workout>().Add(entity);
 } 
 ``` 
+
 This would be in the repository instead of the last piece of code. As you can see, we impersonate with a UserProfile with the Id 1. The code is around curly bracket and give us the scope of when the impersonation start and end.
 
 The DatabaseContext class implementation of Impersonate simply call a new DbContext. 
+
 ```csharp
  public UserProfileImpersonate Impersonate(ICurrentUser userProfile) { return new UserProfileImpersonate(this, userProfile); } 
 ``` 
@@ -139,16 +142,17 @@ public class UserProfileImpersonate : IDatabaseContext, IDisposable {
 #endregion } 
 ```
 
-Simple isn't? We simply call the same database context method but only change the current logged user profile. Single task to do which respect the single responsibility principle.
+We call the same database context method but only change the current logged user profile. Single task to do which respect the single responsibility principle.
 
-### Series Articles
 
-[Article #1: Asp.Net MVC Enterprise Quality Web Application](./enterprise-asp-net-part-1-mvc-the-planification) 
-[Article #2: Asp.Net MVC Enterprise Quality Web Application Model](./enterprise-asp-net-mvc-part-2-building-the-model) 
-[Article #3: Asp.Net MVC Enterprise Quality Web Application Controller](./enterprise-asp-net-mvc-part-3-controller) 
-[Article #4: Asp.Net MVC Enterprise Quality Web Repository Layer](./enterprise-asp-net-mvc-part-4-repository) 
-[Article #5: Asp.Net MVC Enterprise Quality Web with Entity Framework](./enterprise-asp-net-mvc-part-5-database-context-and-impersonate-data) 
-[Article #6: Asp.Net MVC Enterprise Quality Layers](./enterprise-asp-net-mvc-part-6-the-three-layers-of-validation) 
-[Article #7: Asp.Net MVC Enterprise Quality Web Security](./enterprise-asp-net-mvc-part-7-securing-action-with-role-authorization)
+# Series Articles
+
+- [Article #1: Asp.Net MVC Enterprise Quality Web Application](./enterprise-asp-net-part-1-mvc-the-planification) 
+- [Article #2: Asp.Net MVC Enterprise Quality Web Application Model](./enterprise-asp-net-mvc-part-2-building-the-model) 
+- [Article #3: Asp.Net MVC Enterprise Quality Web Application Controller](./enterprise-asp-net-mvc-part-3-controller) 
+- [Article #4: Asp.Net MVC Enterprise Quality Web Repository Layer](./enterprise-asp-net-mvc-part-4-repository) 
+- [Article #5: Asp.Net MVC Enterprise Quality Web with Entity Framework](./enterprise-asp-net-mvc-part-5-database-context-and-impersonate-data) 
+- [Article #6: Asp.Net MVC Enterprise Quality Layers](./enterprise-asp-net-mvc-part-6-the-three-layers-of-validation) 
+- [Article #7: Asp.Net MVC Enterprise Quality Web Security](./enterprise-asp-net-mvc-part-7-securing-action-with-role-authorization)
 
 [Source code on GitHub](https://github.com/MrDesjardins/GymWorkout)

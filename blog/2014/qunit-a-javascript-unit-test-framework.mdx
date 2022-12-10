@@ -6,32 +6,40 @@ categories:
   - "test"
 ---
 
-QUnit is a unit testing framework developed by JQuery Team. It is available at http://qunitjs.com/ but can be found also if you go to JQuery website and click the last button of the header toolbar. The framework has assertion methods that you are used to use with Java or C# but also a webpage that has all your tests status displayed in a clean way. This is interesting to have the big picture of your test suites health. ![](images/QUnit-400x198.png)
+QUnit is a unit testing framework developed by JQuery Team. It is available at http://qunitjs.com/ but can be found also if you go to JQuery website and click the last button of the header toolbar. The framework has assertion methods that you are used to use with Java or C# but also a webpage that has all your tests status displayed in a clean way. This is interesting to have the big picture of your test suites health. 
+
+![](images/QUnit-400x198.png)
 
 To start testing, you need to create a Html page that refer the .css and the .js file of the QUnit Framework. The last required action that you must do before coding your test is to define in the html two places holders. One must have the id qunit and the other one qunit-fixture. The first one contains all your unit tests and unit test result. The second one is used to insert Html that your test can test against it.
 
 
-```html  <div id="qunit"></div> <div id="qunit-fixture"></div> 
+```html  
+<div id="qunit"></div> <div id="qunit-fixture"></div> 
 ``` 
 
-Here is the result of a falling test. ![](images/qunit-example-400x366.png)
+Here is the result of a falling test. 
+
+![](images/qunit-example-400x366.png)
 
 In a nutshell, Qunit provides some method to organize your test, to compare values, to test your assertion expectation and to test exceptions.
 
-To organize your test into categories, you must call the **module** method. At its simplest expression, only a name can be defined. Otherwise, you can specify some lifecycle methods. One method before each tests of your category and one method after each tests of your category. 
+To organize your test into categories, you must call the `module` method. At its simplest expression, only a name can be defined. Otherwise, you can specify some lifecycle methods. One method before each tests of your category and one method after each tests of your category. 
+
 ```typescript
 QUnit.module('Category of test'); // Create a group of test 
 ``` 
 
 
-QUnit specify each test within the method **test**. The first parameter is the name of your test, the second is a function that contains your test. 
+QUnit specify each test within the method `test`. The first parameter is the name of your test, the second is a function that contains your test. 
+
 ```typescript
 QUnit.test('This is test 1', function(){ //Test goes here }); 
 ``` 
 
 
-The function can use several methods of assertion and expectation. The first one is the **equal** method. This is the same as any equal method of any other unit testing framework. You do not have to provide a third parameter for the message, this one is optional. It is also possible to use notEqual method to compare something that should not be equal to a specific value. These method use the double equal and if you need something more robust, like your would do with the triple equal than you must use the strictEqual.
- ```typescript
+The function can use several methods of assertion and expectation. The first one is the `equal` method. This is the same as any equal method of any other unit testing framework. You do not have to provide a third parameter for the message, this one is optional. It is also possible to use notEqual method to compare something that should not be equal to a specific value. These method use the double equal and if you need something more robust, like your would do with the triple equal than you must use the strictEqual.
+
+```typescript
 QUnit.equal('x','x'); // Assert a value 
 QUnit.equal('x','y', 'X and Y are not equal and it must be'); // Assert a value 
 QUnit.notEqual('x','z', 'X and Z are equal and must not'); // Assert a value 
@@ -46,19 +54,21 @@ QUnit.test('This is test 1', function(q){ q.equal(...); });
 ``` 
 
 
-Another primitive assertion is to test against a boolean. This can be done with the **ok** method. 
+Another primitive assertion is to test against a boolean. This can be done with the `ok` method. 
 ```typescript
 QUnit.ok(true, 'This is true');//If true it passes 
 ``` 
 
 
-If you know that something must throw an exception in a specific case, than you can call the expected method that throw inside the **throws** method. You can specify an expected error object to match the thrown exception also. 
+If you know that something must throw an exception in a specific case, than you can call the expected method that throw inside the `throws` method. You can specify an expected error object to match the thrown exception also. 
+
 ```typescript
 QUnit.throws(()=>{});// Test if something has been thrown with throw "error"... 
 ``` 
 
 
-Another way to test is to see how many assertions have been called. This is useful in case of looping and call back function. The **expect** method must be used before any assertion inside the **test** method. 
+Another way to test is to see how many assertions have been called. This is useful in case of looping and call back function. The `expect` method must be used before any assertion inside the `test` method. 
+
 ```typescript
 QUnit.expect(3); // Expect to have 3 asserts, good for call back method testing 
 ``` 

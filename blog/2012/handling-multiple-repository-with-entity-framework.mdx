@@ -11,15 +11,19 @@ The best way to solve this issue is to share the dbcontext between all your repo
 
 
 ```csharp
- public class RepositoryFactory : IRepositoryFactory { private IClassA a; private IClassB b; private IClassC c;
+public class RepositoryFactory : IRepositoryFactory { 
+  private IClassA a; 
+  private IClassB b; 
+  private IClassC c;
 
-private readonly DatabaseContext dbContext;
+  private readonly DatabaseContext dbContext;
 
-public RepositoryFactory() { this.dbContext = new DatabaseContext(); }
+  public RepositoryFactory() { this.dbContext = new DatabaseContext(); }
 
-public IClassA RepoA { get { return a ?? (a = new RepoA(this.dbContext)); } }
+  public IClassA RepoA { get { return a ?? (a = new RepoA(this.dbContext)); } }
 
-public IClassB RepoB { get { return b ?? (b = new RepoB(this.dbContext)); } }
+  public IClassB RepoB { get { return b ?? (b = new RepoB(this.dbContext)); } }
 
-public IClassC RepoC { get { return c ?? (c = new RepoC(this.dbContext)); } } } 
+  public IClassC RepoC { get { return c ?? (c = new RepoC(this.dbContext)); } } 
+} 
 ```

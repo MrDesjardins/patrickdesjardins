@@ -8,10 +8,13 @@ categories:
 Some time, task that we do often seem easy but when we stop to go deeper we realize that we do action by reflex and that we have forgotten the meaning of the detail underneat the action.
 
 One action that we have to do quite often is to remove data from tables. This can be done with the keyword delete or truncate. Here is two examples. 
-```sql
- --Delete DELETE FROM Table123
 
---Truncate TRUNCATE TABLE Table123 
+```sql
+--Delete 
+ DELETE FROM Table123
+
+--Truncate 
+TRUNCATE TABLE Table123 
 ```
 
 
@@ -21,11 +24,12 @@ On the other side, truncate statement is won't log anything, it won't go row by 
 
 
 ```sql
- --This will work DELETE FROM Table123 WHERE startDate <= 2013-06-14
+--This will work 
+DELETE FROM Table123 WHERE startDate <= 2013-06-14
 
---This won't work TRUNCATE TABLE Table123 WHERE startDate <= 2013-06-14 -- Error! 
+--This won't work 
+TRUNCATE TABLE Table123 WHERE startDate <= 2013-06-14 -- Error! 
 ```
-
 
 It also doesn't trig any trigger. OnDelete or OnUpdate won't be trigged which could cause undesired behavior.
 

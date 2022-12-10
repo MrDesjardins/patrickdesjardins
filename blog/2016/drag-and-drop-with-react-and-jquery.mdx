@@ -5,26 +5,28 @@ categories:
   - "typescript"
 ---
 
-Dragging element is possible through different library. One option that has been around for more than 8 years is JQuery UI. It comes with different API : **Droppable, Draggable and Sortable** which allow you to click an Html element and move it around with some restriction that you configure. Few months ago, we needed to have dragging capability with out React page. Initially, we though to use Html5 but we the experience was different between browsers in term of dragging experience. There is some nice well build third party library but we also had the constraint of bringing new library in with all the trouble of handling licencing which become fast a nightmare with today's library that have a lot of dependencies. We ended up to use JQuery UI, which the product already have.
+Dragging element is possible through different library. One option that has been around for more than 8 years is JQuery UI. It comes with different API : `Droppable, Draggable and Sortable` which allow you to click an Html element and move it around with some restriction that you configure. Few months ago, we needed to have dragging capability with out React page. Initially, we though to use Html5 but we the experience was different between browsers in term of dragging experience. There is some nice well build third party library but we also had the constraint of bringing new library in with all the trouble of handling licencing which become fast a nightmare with today's library that have a lot of dependencies. We ended up to use JQuery UI, which the product already have.
 
 The problem with JQuery UI and React is that the modification done by JQuery is done to the Dom element and not the React's component. That means that when an event is raised about something being dragged or dropped, the component doesn't render. The consequence is that if you do something to re-render your component that the change made to the Html Dom by JQuery will be overridden.
 
 The solution is that when JQuery UI drop the element at its new position to tell JQuery UI to cancel the move and have the React component to render its elements with with the new position. In practice, the user won't notice because it is very fast.
 
-Some quick pointers: 1- On the stop of the drag, listen the stop event which take JQueryEventObject and JQueryUI.SortableUIParams as parameter. This can be done when your component is mounted or dynamically when you need after the component is mounted. It's important that the component it's mounted because you need to access the rendered Dom element by refs.
+Some quick pointers: 
+
+1. On the stop of the drag, listen the stop event which take JQueryEventObject and JQueryUI.SortableUIParams as parameter. This can be done when your component is mounted or dynamically when you need after the component is mounted. It's important that the component it's mounted because you need to access the rendered Dom element by refs.
 
 ```typescript
 public componentDidMount() { const $element= $(this.refs.dom); const options = { update: (e: JQueryEventObject, ui: JQueryUI.SortableUIParams) => { this.onUpdate(e, ui) }, } as JQueryUI.SortableOptions; $element.sortable(options); } 
 ``` 
 
 
-2- On the onUpdate, cancel the drag. This can be done by getting using the **sortable** method.
+2. On the onUpdate, cancel the drag. This can be done by getting using the `sortable` method.
 
 ```typescript
 private onUpdate(e: JQueryEventObject, ui: JQueryUI.SortableUIParams): void { const $element= $(this.refs.dom); $element.sortable("cancel"); //Step 3 goes here } 
 ``` 
 
 
-3- The last step is to get React render your list again with the new position. This can be done by setting a state, calling a property callback or directly calling the action creator to have this one set the new position in the store to kick a new round of render. At that step, you need to send the all the items or the items that got moved.
+3. The last step is to get React render your list again with the new position. This can be done by setting a state, calling a property callback or directly calling the action creator to have this one set the new position in the store to kick a new round of render. At that step, you need to send the all the items or the items that got moved.
 
 This solution is not perfect and it would be great to not have to mess with JQuery UI cancel and to invoke a render. However, it's a quick way to use an old library that you may already have in your system with a new technology like React.

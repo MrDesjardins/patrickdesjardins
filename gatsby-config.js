@@ -1,6 +1,7 @@
 const currentDate = new Date();
 const formattedCurrentDate = currentDate.toISOString().split("T")[0];
 module.exports = {
+  trailingSlash: "always",
   siteMetadata: {
     siteUrl: "https://patrickdesjardins.com",
     title: "Patrick Desjardins Blog",

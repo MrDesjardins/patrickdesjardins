@@ -8,17 +8,13 @@ categories:
 
 The technic I will demonstrate in this article comes from what I was using with the traditional React and Redux. Now, with React Hooks we do not need to use Redux anymore but the same principles exist with the hook _useReducer_. I have witnessed many people struggling using TypeScript and Redux because they are passing strings around instead of a string literal. Often, the struggle I hear is around the boilerplate required as well as it is not strongly typed. Let's try to make it as simple as possible and strongly typed in term of action name and action payload
 
-## Code
+# Code
 
 If you want to play around with what I will present, you can jump into the code sandbox available under this paragraph. However, keep in mind that you will not see the benefit of having Intellisense showing available actions and the security of working in VsCode where it will warn you if you are passing something of the wrong type -- this is a limitation of the online sandbox tool. _The demonstration has many files, I suggest you click "Open in Editor" and click the hamburger menu to navigate between files._
 
-<iframe
-  src="https://codesandbox.io/embed/ll6n2p8omq?fontsize=14view=editor"
-  style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
-  sandbox="allow-modals allow-forms allow-popups allow-scripts allow-same-origin"
-></iframe>
+<CodeSandbox codeSandboxId="ll6n2p8omq" />
 
-## Configuring the Actions
+# Configuring the Actions
 
 The first step is to get some types. Once you have that code in your project, you will be good to go without touching it. I am posting the code and will explain what it does.
 
@@ -121,7 +117,7 @@ dispatch(setName("MyNewNameHere")); // Before
 dispatch(AppActions.setName("MyNewNameHere")); // After
 ```
 
-## Reducer
+# Reducer
 
 The reducer is exactly like with Redux, it is a function that takes a state and an action. However, our actions will be constrained to the group of action we allow for the reducer.
 
@@ -170,7 +166,7 @@ export function appReducer(
 }
 ```
 
-## React Hooks useReducer
+# React Hooks useReducer
 
 The last piece of the puzzle is how to consume the data from the reducer's state and how to mutate the value. The _useReducer_ function is a React Hooks that take the reducer function and the initial state as parameter. It returns the state and the dispatcher funciton.
 
@@ -196,6 +192,6 @@ The dispatch requires a function. We reuse the tidy object to select the action.
 >
 ```
 
-## Conclusion
+# Conclusion
 
 With about 50 lines of TypeScript, you get few utility functions and types to handle React Hooks's reducer with TypeScript in a pleasant way. As a developer, a new action is a matter of adding a line to uniquely identifier the action, and to define a one-line function to associate the action to a payload type. The reducer is strongly typed, the dispatch of action is also strongly typed. The solution scales well with multiple reducers, it works well with clarifying what can be dispatched and ensure consistency within the application by having a design that group actions of a similar domain together.

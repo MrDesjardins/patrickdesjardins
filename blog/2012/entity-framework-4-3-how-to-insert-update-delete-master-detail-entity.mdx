@@ -1,47 +1,81 @@
 ---
 title: "Entity Framework 4.3 : How to insert, update, delete master-detail entity"
 date: "2012-06-03"
-categories: 
+categories:
   - "entity-framework"
 ---
 
-I have already talk about complex object in a previous post concerning [Entity Framework and complex entity](./entity-framework-4-3-update-a-complex-object-from-asp-mvc-controller "Entity Framework 4.3 Update a complex object from Asp.Mvc controller") with MVC and Entity Framework. This time, I'll explain you how to insert, update and delete detail of a master-detail scenario.
+I have already talk about complex object in a previous post concerning [Entity Framework and complex entity](./entity-framework-4-3-update-a-complex-object-from-asp-mvc-controller) with MVC and Entity Framework. This time, I'll explain you how to insert, update and delete detail of a master-detail scenario.
 
 First of all, you need to update the master properties. This is done by getting the entity from the database and to update all its scalar information from the controller (if you are using Asp.Net MVC).
 
-
 ```csharp
- [HttpPost] public ActionResult Update(MyModel formModel) { var fromDatabase = Database.MyModel.Single(formModel.ID); //Scalar Database.Entry(fromDatabase).CurrentValues.SetValues(formModel); Database.Entry(fromDatabase).State = EntityState.Modified; 
+[HttpPost]
+public ActionResult Update(MyModel formModel) {
+  var fromDatabase = Database.MyModel.Single(formModel.ID); //Scalar
+  Database.Entry(fromDatabase).CurrentValues.SetValues(formModel);
+  Database.Entry(fromDatabase).State = EntityState.Modified;
 ```
 
 The next step is to update relationship that are easier which are the 1 to 1 relation or the 0 to 1 relation. These one would have in the MyModel an object that reference another object. To update the reference it just need to be set to the object and to be sure that the Database context know about it. From the primary key of the object, everything will be binded correctly.
 
-
 ```csharp
- // Relationship -> 1 to 1 if (formModel.OneOneObject != null) { Database.OneOneObjects.Attach(formModel.OneOneObject); } fromDatabase.OneOneObject = formModel.OneOneObject; 
+// Relationship -> 1 to 1 
+if (formModel.OneOneObject != null) { 
+  Database.OneOneObjects.Attach(formModel.OneOneObject); 
+} 
+fromDatabase.OneOneObject = formModel.OneOneObject;
 ```
 
 The last step is to handle 0 to many relationship. This need to work in multiple case like adding a new detail, removing a detail or editing a scalar property of this entity.
 
 The first thing to do is if the master doesn't have any children to remove any trace of them. To do you need to null the reference and if you do not allow NULL in the database, kill all children reference to the master.
 
-
 ```csharp
- // Relationship -> MyModelDetail if (formModel.MyModelDetails != null && formModel.MyModelDetails.Any()) { //Here Update, individual delete, and insertion } else { fromDatabase.MyModelDetails = null; var MyModelDetailsToRemove = Database.MyModelDetails.Where(x=>x.MyModel.ID==formModel.ID); foreach (var MyModelDetailToRemove in MyModelDetailsToRemove) { Database.MyModelDetails.Remove(MyModelDetailToRemove); } } 
-``` As you can see, we set to NULL the reference to any detail and we remove from all children any reference to the master.
+// Relationship -> MyModelDetail 
+if (formModel.MyModelDetails != null && formModel.MyModelDetails.Any()) { 
+  //Here Update, individual delete, and insertion 
+} else { 
+  fromDatabase.MyModelDetails = null; 
+  var MyModelDetailsToRemove = Database.MyModelDetails.Where(x=>x.MyModel.ID==formModel.ID); 
+  foreach (var MyModelDetailToRemove in MyModelDetailsToRemove) { 
+    Database.MyModelDetails.Remove(MyModelDetailToRemove); 
+  } 
+}
+``` 
+
+As you can see, we set to NULL the reference to any detail and we remove from all children any reference to the master.
 
 Now, we need to replace the line 3 of the previous code which is the update, insert, delete of the master-detail relationship.
 
 
 ```csharp
- foreach (var MyModelDetail in formModel.MyModelDetails) { MyModelDetail.MyModel = fromDatabase; if (MyModelDetail.ID == 0) { Database.MyModelDetails.Add(MyModelDetail); } else { if (!Database.Set<MyModelDetail>().Local.Any(e => e.ID == MyModelDetail.ID)) { Database.MyModelDetails.Attach(MyModelDetail); } var fromDatabaseMyModelDetail = Database.MyModelDetails.Single(x => x.ID == MyModelDetail.ID); Database.Entry(fromDatabaseMyModelDetail).CurrentValues.SetValues(MyModelDetail); Database.Entry(fromDatabaseMyModelDetail).State = EntityState.Modified; } } 
-``` This code loop all children and assign the master reference. Then, it check is the unique identifier has been set. This will indicate if we insert or we need to update. The first case insert the object at the database context, the second case will attach the object if this one is not attached yet and will set the new values. We could have for both case update non scalar property for all children. This can be done by simply processing the same way we just did for the master but at the child level.
+foreach (var MyModelDetail in formModel.MyModelDetails) { 
+  MyModelDetail.MyModel = fromDatabase; 
+  if (MyModelDetail.ID == 0) { 
+    Database.MyModelDetails.Add(MyModelDetail); 
+  } else { 
+    if (!Database.Set<MyModelDetail>().Local.Any(e => e.ID == MyModelDetail.ID)) { 
+      Database.MyModelDetails.Attach(MyModelDetail); 
+    } 
+    var fromDatabaseMyModelDetail = Database.MyModelDetails.Single(x => x.ID == MyModelDetail.ID); 
+    Database.Entry(fromDatabaseMyModelDetail).CurrentValues.SetValues(MyModelDetail); 
+    Database.Entry(fromDatabaseMyModelDetail).State = EntityState.Modified; 
+  } 
+}
+``` 
+
+This code loop all children and assign the master reference. Then, it check is the unique identifier has been set. This will indicate if we insert or we need to update. The first case insert the object at the database context, the second case will attach the object if this one is not attached yet and will set the new values. We could have for both case update non scalar property for all children. This can be done by simply processing the same way we just did for the master but at the child level.
 
 Last thing we need to do, and not to forget, is to remove children that is not any more required to be attached to the master. This can be done with linq to get all children that has not been submitted by the user.
 
 
 ```csharp
- if (fromDatabase.MyModelDetails != null) { foreach (var MyModelDetailToRemove in fromDatabase.MyModelDetails.Where(x => !formModel.MyModelDetails.Any(u=>u.ID==x.ID)).ToList()) { Database.MyModelDetails.Remove(MyModelDetailToRemove); } } 
+if (fromDatabase.MyModelDetails != null) { 
+  foreach (var MyModelDetailToRemove in fromDatabase.MyModelDetails.Where(x => !formModel.MyModelDetails.Any(u=>u.ID==x.ID)).ToList()) { 
+    Database.MyModelDetails.Remove(MyModelDetailToRemove); 
+  } 
+}
 ```
 
-This code simply create a list of children (MyModelDetail) that is not any more present in the list submitted of the user. It checks with the database. The use of ToList() is required because we remove children which are in the list that we are looping.
+This code simply create a list of children (MyModelDetail) that is not any more present in the list submitted of the user. It checks with the database. The use of `ToList()` is required because we remove children which are in the list that we are looping.

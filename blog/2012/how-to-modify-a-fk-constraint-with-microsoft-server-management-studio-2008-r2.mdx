@@ -17,12 +17,10 @@ What's happening it that the tool is trying to use SP_RENAME with DBO as the sch
 
 To be able to change the foreign key constrain name, you need to do it manually with the SP_RENAME function.
 
-The syntax is 'YourSchema.YourFKNameToChange' followed by only the FK you want. Here is an example:
+The syntax is `YourSchema.YourFKNameToChange` followed by only the FK you want. Here is an example:
 
 
 ```sql
  sp_rename 'YourSchema.YourFKNameToChange', 'YourNewFKName', 'OBJECT' 
 ```
 
-
-That's it!

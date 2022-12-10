@@ -50,20 +50,32 @@ How to use this money class? The best way is to check the unit tests.
 
 
 ```csharp
- [TestMethod] public void GivenAnInteger_WhenIntegerIsAKeyOfACurrency_ThenReturnConcreteCurrency() { // Arrange var idOfCanada = CurrencyType.Canada.Id; var expected = CurrencyType.Canada;
+[TestMethod] 
+public void GivenAnInteger_WhenIntegerIsAKeyOfACurrency_ThenReturnConcreteCurrency() { 
+  // Arrange 
+  var idOfCanada = CurrencyType.Canada.Id; var expected = CurrencyType.Canada;
 
-// Act var found = CurrencyType.GetCurrencyFromId(idOfCanada);
+  // Act 
+  var found = CurrencyType.GetCurrencyFromId(idOfCanada);
 
-//Assert Assert.IsInstanceOfType(found,typeof(CanadianCurrency)); Assert.AreEqual(expected.Id,found.Id); } 
+  //Assert 
+  Assert.IsInstanceOfType(found,typeof(CanadianCurrency)); 
+  Assert.AreEqual(expected.Id,found.Id); 
+} 
 ```
 
 This is required because when we will load from Entity Framework, we will only get the integer. But, in the business logic the code will use the property. This is why the property of CurrencyTypeId is tightly bound with Currency with the reflection code. In the case that the Id is not legit (does not exist), an exception is thrown. This should never occur but we should still test the case.
 
 
 ```csharp
- [TestMethod] public void GivenAnInteger_WhenIntegerIsNotAnExistingKeyOfACurrency_ThenThrowException() { // Arrange const int idNonExisting = -1;
+[TestMethod] 
+public void GivenAnInteger_WhenIntegerIsNotAnExistingKeyOfACurrency_ThenThrowException() { 
+  // Arrange 
+  const int idNonExisting = -1;
 
-// Act & Assert TestExtensions.Thrown(() => CurrencyType.GetCurrencyFromId(idNonExisting)); } 
+  // Act & Assert 
+  TestExtensions.Thrown(() => CurrencyType.GetCurrencyFromId(idNonExisting)); 
+} 
 ```
 
 ![](images/UnitTestPassed-400x38.png)

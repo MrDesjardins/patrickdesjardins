@@ -27,7 +27,6 @@ The case of next is similar. I found that while it is possible to use a similar 
 
 
 ```javascript
-
 let nextMock = nextPayloadTypeSpy(MY_ACTION_CONSTANT_HERE);
 middleware.myFunctionInMiddleware(nextMock.mock, api, payload);
 expect(nextMock.getPayload()[0]).toBe(payload);

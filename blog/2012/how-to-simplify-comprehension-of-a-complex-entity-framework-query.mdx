@@ -7,11 +7,14 @@ categories:
 
 You may run into the case of where the Linq to Entity query is long and complex.
 
-If you are using a layer of abstraction to access your database (DAL "Data Access Layer) that return IQueryable you may be surprise that you can divide your query into multiple IQueryable and to merge all Linq to Entity back into a single IQueryable.
+If you are using a layer of abstraction to access your database (DAL "Data Access Layer) that return `IQueryable  you may be surprise that you can divide your query into multiple IQueryable and to merge all Linq to Entity back into a single IQueryable.
 
 The first step is to create your method into your DAL. 
+
 ```csharp
- public IQueryable<MyModel> GetMyModel() { //Linq to Entity is returned here } 
+public IQueryable<MyModel> GetMyModel() { 
+  //Linq to Entity is returned here 
+} 
 ```
 
 The second step is to create query in logical group. Let say you desire to have all objects of your MyModel that is over 100$ and another condition is that you want also all those over 20$ if they have a discount.
@@ -22,7 +25,11 @@ This can be done by using multiple IQueryable.
 
 
 ```csharp
- public IQueryable<MyModel> GetMyModel() { var query1 = //Linq to Entity with condition for > 100$ var query2 = //Linq to Entity with condition for > 20$ && Discount > 0$ //return query1 + query 2 } 
+ public IQueryable<MyModel> GetMyModel() { 
+  var query1 = //Linq to Entity with condition for > 100$ 
+  var query2 = //Linq to Entity with condition for > 20$ && Discount > 0$ 
+  //return query1 + query 2 
+} 
 ```
 
 The last step is to merge query 1 and query 2. You can do it in two differents way with Linq. The first one is to use the Union keyword and the second is with Concat.
@@ -31,14 +38,20 @@ The difference between the two is that union will merge only when not already pr
 
 
 ```csharp
- var set1 = new int[] { 1, 2, 3 }; var set2 = new int[] { 3, 4, 5 };
+var set1 = new int[] { 1, 2, 3 }; 
+var set2 = new int[] { 3, 4, 5 };
 
-var result= set1.AsQueryable().Concat(set2.AsQueryable()); // count == 6 var result2 = set1.AsQueryable().Union(set2.AsQueryable()); // count == 5 
+var result= set1.AsQueryable().Concat(set2.AsQueryable()); // count == 6 
+var result2 = set1.AsQueryable().Union(set2.AsQueryable()); // count == 5 
 ```
 
 Our example could look with union like this: 
 ```csharp
- public IQueryable<MyModel> GetMyModel() { var query1 = //Linq to Entity with condition for > 100$ var query2 = //Linq to Entity with condition for > 20$ && Discount > 0$ return query1.union(query2); //Both condition } 
+ public IQueryable<MyModel> GetMyModel() { 
+  var query1 = //Linq to Entity with condition for > 100$ 
+  var query2 = //Linq to Entity with condition for > 20$ && Discount > 0$ 
+  return query1.union(query2); //Both condition 
+} 
 ```
 
-Since we are using IQueryable, none of the query are executed until their execution. That mean that that Sql Server will receive a single query (with multiple sub query).
+Since we are using `IQueryable`, none of the query are executed until their execution. That mean that that Sql Server will receive a single query (with multiple sub query).

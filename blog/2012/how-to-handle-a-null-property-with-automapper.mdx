@@ -12,7 +12,7 @@ In this article, I'll show you how to handle a null property. This case occur if
 
 
 ```csharp
- public class UserSource { public Address Address{get;set;} }
+public class UserSource { public Address Address{get;set;} }
 
 public class UserDestination { public string Address{get;set;} } 
 ```
@@ -27,6 +27,7 @@ First, the mapping require to have the indication of your action.
 This indicate to map Address to Address (default behavior) but has the optional with NullSubstitute which let you specify an object to be used for the mapping if the source object is null. In the previous example, a string has been used but a default object could have been used without problem.
 
 Here is how to call the mapper. The mapping is done without any other option than normal mapping. 
+
 ```csharp
  var model = AutoMapper.Mapper.Map<UserSource, UserDestination>(user); var models = AutoMapper.Mapper.Map<IEnumerable<UserSource>, IEnumerable<UserDestination>>(users); 
 ```

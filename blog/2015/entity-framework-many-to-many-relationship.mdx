@@ -24,11 +24,16 @@ For example, the previous code we were having an Entity called _Contest_ that tr
 ```
 
 The AssociationConfiguration class is a class I created that simply an helper that create the table name with the type of the entity. 
+
 ```csharp
  public abstract class AssociationConfiguration<T> : EntityTypeConfiguration<T> where T : class { protected AssociationConfiguration(string schemaName) { ToTable(typeof(T).Name, schemaName); } } 
-``` From here, it's very simple to save any new associations. You just need to instantiate the class, _ContestApplicationUser_ and you just fill up the two properties for the foreign keys. On the other way around, when you load the entities with the collection you will include the collection and the other side.
+``` 
+
+From here, it's very simple to save any new associations. You just need to instantiate the class, _ContestApplicationUser_ and you just fill up the two properties for the foreign keys. On the other way around, when you load the entities with the collection you will include the collection and the other side.
 
 
 ```csharp
  .Include(d => d.Users) .Include(d => d.Users.Select(f=>f.User)) 
-``` No more hassle when saving and still the full ledge entity when loading. One caveat of this solution is that you cannot insert new association before having both of the entity already inserted.
+``` 
+
+No more hassle when saving and still the full ledge entity when loading. One caveat of this solution is that you cannot insert new association before having both of the entity already inserted.

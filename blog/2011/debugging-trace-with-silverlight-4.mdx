@@ -6,9 +6,10 @@ categories:
   - "visual-studio"
 ---
 
-Sometime it can be useful to get some tracing line when debugging. For quick trace, I usually use System.Diagnostics.Debug.WriteLine method. This is still working with Silverlight. Also, the System.Diagnostics.Debugger.Log method can also log into the Output windows (Under Debug) of Visual Studio.
+Sometime it can be useful to get some tracing line when debugging. For quick trace, I usually use `System.Diagnostics.Debug.WriteLine method`. This is still working with Silverlight. Also, the System.Diagnostics.Debugger.Log method can also log into the Output windows (Under Debug) of Visual Studio.
 
 
 ```csharp
- System.Diagnostics.Debug.WriteLine("~~~~~ WriteLine ~~~~~"); System.Diagnostics.Debugger.Log(0, null, "########### Log ##########\\n"); 
+ System.Diagnostics.Debug.WriteLine("~~~~~ WriteLine ~~~~~"); 
+ System.Diagnostics.Debugger.Log(0, null, "########### Log ##########\\n"); 
 ```

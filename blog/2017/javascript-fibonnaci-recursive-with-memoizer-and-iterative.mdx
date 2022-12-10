@@ -5,7 +5,7 @@ categories:
   - "javascript"
 ---
 
-Fibonnaci numbers are a sequence of number that keep adding from previous result. It's a common problem that can be resolve with few lines of code by using recursivity. The formula is F(x) = F(n-1) + F(n-1). The following code is a basic Fibonnaci implemented with a recursive loop.
+Fibonnaci numbers are a sequence of number that keep adding from previous result. It's a common problem that can be resolve with few lines of code by using recursivity. The formula is `F(x) = F(n-1) + F(n-1)`. The following code is a basic Fibonnaci implemented with a recursive loop.
 
 ```typescript
 function fib(x) {
@@ -42,7 +42,7 @@ var fibMemoize = (function () {
 console.log("10:" + fibMemoize(10));
 ```
 
-It's also possible to implement an iterative version of Fibonnaci. We do not need to keep an array since we won't compute more than once every possibility (we do not have a branch of n-1 and n-2). In that case, what we do is always keeping the n-2 and n-1 result in a variable and keep swapping the value while iterating to the number desired.
+It's also possible to implement an iterative version of Fibonnaci. We do not need to keep an array since we won't compute more than once every possibility (we do not have a branch of `n-1` and `n-2`). In that case, what we do is always keeping the `n-2` and `n-1` result in a variable and keep swapping the value while iterating to the number desired.
 
 ```typescript
 function fibIterative(x) {

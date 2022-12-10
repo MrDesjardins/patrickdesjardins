@@ -5,7 +5,7 @@ categories:
   - "javascript"
 ---
 
-Previously we say the linear search which is having an asymptotic upper bound of O(n). This time, we increase the speed with a binary sort of O(log(n)). The speed is increased at the cost of having the requirement of initial array to be sorted.
+Previously we say the linear search which is having an asymptotic upper bound of `O(n)`. This time, we increase the speed with a binary sort of `O(log(n))`. The speed is increased at the cost of having the requirement of initial array to be sorted.
 
 ```typescript
 var arrayToSearch = [2, 6, 8, 12, 43, 78, 99, 134, 144, 156, 199, 256, 500];
@@ -36,7 +36,7 @@ function binarySearch(arrayToSearch, valueToSearch) {
 
 The idea is so split the array in 2, then look in which half the value may be. If the value is lower than the middle value, we divide reject the upper half. We keep doing it until we found the value or that the gap between the lower and upper bound doesn't exist.
 
-In the case of finding 256, the lower bound start with the first index (value 2) and the length-1 (value 500). The middle is index 6 (value 99). Since we are searching for 256 the value above 99, hence we reject all values on the left (index 0 to index 6 inclusively). To do so, we move the start to index 6+1 (value 134) and keep the end bound to length-1 (500). And we iterate.
+In the case of finding 256, the lower bound start with the first index (value 2) and the `length-1` (value 500). The middle is index 6 (value 99). Since we are searching for 256 the value above 99, hence we reject all values on the left (index 0 to index 6 inclusively). To do so, we move the start to index `6+1` (value 134) and keep the end bound to `length-1` (500). And we iterate.
 
 The first algorithm is using a while to loop through, but as we just described, we are doing over and over the same thing, just with a reduction of the array. It means that it's like asking for different array the same logic. This means that we can transform the iterative approach into a recursive approach.
 

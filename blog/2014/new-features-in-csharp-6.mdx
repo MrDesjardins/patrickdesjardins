@@ -5,7 +5,7 @@ categories:
   - "c-sharp"
 ---
 
-Soon, Microsoft is releasing the new version of C#. Here are some of the most interesting feature that the version 6.0 provides. **Auto property** Auto-Properties can have only getter instead of having setter and getter. Before C# 6.0, you had to have a private setter. Now, you can have only the getter by ommiting the set keyword into the curly bracket. 
+Soon, Microsoft is releasing the new version of C#. Here are some of the most interesting feature that the version 6.0 provides. `Auto property` Auto-Properties can have only getter instead of having setter and getter. Before C\# 6.0, you had to have a private setter. Now, you can have only the getter by ommiting the set keyword into the curly bracket. 
 
 ```csharp
  public int {get;} 
@@ -17,25 +17,31 @@ That say, it is also convenient that you can now have a initial value to the pro
  public int {get;} = 5; 
 ``` 
 
-Static method does not need to specify the class where it belongs. For example, with C# 5, you have to specify the _Math_ method using the Absolute method, _Abs_. It does not mean that you have to use that shortcut. However, it can be useful to reduce the amount of repetition in your code if you are using intensively static methods. 
+Static method does not need to specify the class where it belongs. For example, with C\# 5, you have to specify the _Math_ method using the Absolute method, _Abs_. It does not mean that you have to use that shortcut. However, it can be useful to reduce the amount of repetition in your code if you are using intensively static methods. 
 
 ```csharp
- Math.Abs(-1); //Old way, that is still valid Abs(-1); //New way 
+ Math.Abs(-1); //Old way, that is still valid 
+ 
+ Abs(-1); //New way 
 ``` 
 
-**String.Format** String.Format has a new format with string **interpolation**. This mean that instead of relying on index to define placeholder, that you can use something more meaning full. For example, if you have a variable that you want to insert into a string, instead of specifying the index 0, you can simply use the backslash with the curly brace with the variable. 
+`String.Format` String.Format has a new format with string `interpolation`. This mean that instead of relying on index to define placeholder, that you can use something more meaning full. For example, if you have a variable that you want to insert into a string, instead of specifying the index 0, you can simply use the backslash with the curly brace with the variable. 
 
 ```csharp
- return String.Format("This is my name '{0}'", name); //Old way, that is still valid return "This is my name '\\{name}'"; //New way 
+ return String.Format("This is my name '{0}'", name); //Old way, that is still valid 
+ 
+ return "This is my name '\\{name}'"; //New way 
 ``` 
 
-**Methods** Methods can return lambda. This is quite interesting for small method. 
+`Methods` Methods can return lambda. This is quite interesting for small method. 
 
 ```csharp
- public string ReturnStringMethod() { return "A string"; } //Can be rewritten by : public string ReturnStringMethod() => "A string"; 
+ public string ReturnStringMethod() { return "A string"; } 
+ //Can be rewritten by : 
+ public string ReturnStringMethod() => "A string"; 
 ``` 
 
-You can also now use the **nameof** method to have a string that represent the variable name. This is very interesting because it reduces the problem while refactoring. The string that is present into the exception can now be dynamically link to the variable name which Visual Studio fully support during refactoring. 
+You can also now use the `nameof` method to have a string that represent the variable name. This is very interesting because it reduces the problem while refactoring. The string that is present into the exception can now be dynamically link to the variable name which Visual Studio fully support during refactoring. 
 
 
 ```csharp
@@ -52,12 +58,13 @@ public void YourMethod(Object yourArgument) {
 } 
 ```
 
-**Index initializer** If you object define the square bracket operator you can now use the default initializer to set values. 
+`Index initializer` If you object define the square bracket operator you can now use the default initializer to set values. 
+
 ```csharp
  new YourObjectWithIndex{["var1"] = 1, ["var2"] = 2}; 
 ``` 
 
-**Null conditional operators** A new operator is born to check if something is null. It is the **?.**. It verify if the variable before the operator is null. If yes, nothing after is executed. If it is not null, than it continue to execute what is on the right. 
+`Null conditional operators` A new operator is born to check if something is null. It is the `?.`. It verify if the variable before the operator is null. If yes, nothing after is executed. If it is not null, than it continue to execute what is on the right. 
 
 ```csharp
  //Before 

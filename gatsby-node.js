@@ -48,6 +48,9 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
             frontmatter {
               date(formatString: "YYYY-MM-DD")
             }
+            internal {
+              contentFilePath
+            }
           }
         }
       }
@@ -64,6 +67,7 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
   const totalPageCount = Math.ceil(posts.length / LIMIT_BLOG_COUNT);
   const currentDate = new Date();
   const formattedCurrentDate = currentDate.toISOString().split("T")[0];
+  const postTemplate = path.resolve(`./src/templates/BlogArticle.tsx`)
   posts.forEach(({ node }, index) => {
     //const nodeDate = new Date(node.frontmatter.date);
 
@@ -73,7 +77,7 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
     // Curly to dynamicaly change with a field: https://www.gatsbyjs.com/docs/reference/routing/creating-routes/#using-the-file-system-route-api
     createPage({
       path: node.fields.slug /*defined in `onCreateNode`*/,
-      component: path.resolve(`./src/templates/BlogArticle.tsx`),
+      component: `${postTemplate}?__contentFilePath=${node.internal.contentFilePath}`,
       context: { id: node.id, totalPages: totalPageCount },
     });
 
@@ -139,3 +143,19 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
     },
   });
 };
+
+// https://www.gatsbyjs.com/docs/debugging-html-builds/#fixing-third-party-modules
+exports.onCreateWebpackConfig = ({ stage, loaders, actions }) => {
+  if (stage === "build-html" || stage === "develop-html") {
+    actions.setWebpackConfig({
+      module: {
+        rules: [
+          {
+            test: /bad-module/,
+            use: loaders.null(),
+          },
+        ],
+      },
+    })
+  }
+}

@@ -40,18 +40,18 @@ The second solution is to add the attribute POST, GET, PUT, DELETE. This will te
 
 From here, you could call them by specifying in the Http Request the type of request you sent (Get or Post) and the MVC's routing system will know which one to choose.
 
-### Wait a minute
+# Wait a minute
 
 Alright, there's a catch and it's if you return from those methods Json cause you cannot return Json from a Get request by default. This is for security purpose. In fact, someone could do the attack [Json HiJacking](http://haacked.com/archive/2009/06/25/json-hijacking.aspx) and harm you only if:
 
 - You return data into an array. This can be solved by returning into an object that may contain array.
 - Return sensitive information. This can be solved by using SSL.
 - Using Get with Json. This can be solved by using Post or having multiple name instead of having the same action with two types of Http call type.
-- The browser support "__defineSetter__" which is where the vulnerability is executed. this one, you have no control.
+- The browser support `__defineSetter__` which is where the vulnerability is executed. this one, you have no control.
 
 So, it's not a big deal if you know what you are doing. In most case, you can allow Json to return data from Get if you handle what your action return. This mean, you should know what object you return and not returning an array directly.
 
-To allow Json to use Get to return data, simply add as a second parameter **JsonRequestBehavior.AllowGet**. This will remove all possible errors.
+To allow Json to use Get to return data, simply add as a second parameter `JsonRequestBehavior.AllowGet`. This will remove all possible errors.
 
 
 ```csharp

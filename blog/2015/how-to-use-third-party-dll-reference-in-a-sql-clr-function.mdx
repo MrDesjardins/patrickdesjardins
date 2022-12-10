@@ -5,7 +5,7 @@ categories:
   - "sql"
 ---
 
-In a previous article, I was using a SQL CLR function written in C# to be executed by SQL server during a migration of account. The reason was to use the hashing code from Asp.Net Identity that is used by Entity Framework and Asp.Net. In that article, instead of using a copy of the code of the real implementation, we are going to use the real Asp.Net Identity dll. Our C# Dll will just be a proxy to the third party.
+In a previous article, I was using a SQL CLR function written in C\# to be executed by SQL server during a migration of account. The reason was to use the hashing code from Asp.Net Identity that is used by Entity Framework and Asp.Net. In that article, instead of using a copy of the code of the real implementation, we are going to use the real Asp.Net Identity dll. Our C\# Dll will just be a proxy to the third party.
 
 
 ```csharp

@@ -16,7 +16,8 @@ The first one is to explicitly mark the cookie has secure.
 
 
 ```csharp
- var cookie = new HttpCookie("MyCookieName", "MyValue"); cookie.Secure = true; Response.Cookies.Add(cookie); 
+var cookie = new HttpCookie("MyCookieName", "MyValue"); 
+cookie.Secure = true; Response.Cookies.Add(cookie); 
 ```
 
 The advantage is that not even if the page is accessed with http that the cookie will still works. But, it has the cost to add more code.

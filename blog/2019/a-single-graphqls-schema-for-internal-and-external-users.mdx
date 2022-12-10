@@ -7,25 +7,25 @@ categories:
 
 Imagine the scenario that you have a GraphQL schema that is consumed only by engineers of your organization. However, some engineers work on external facing applications while some other works on internal applications. The difference is subtle, but some information must remain confidential. While it might be more restrictive than most GraphQL that are fully public, there is the benefit that the schema is private and we can leverage that detail.
 
-## Internal vs External
+# Internal vs External
 
 In the scenario described, the GraphQL server is deployed into an Amazon VPC -- an [Amazon Virtual Private Cloud](https://aws.amazon.com/vpc/). The environment is secured and the authorization is granted to only a limited to specific security groups.
 
 ![](images/GraphQLServers-Page-11.png)
 
-Internal vs External Environment
+# Internal vs External Environment
 
 The challenge is not to limit the schema definition into an internal and external, but to have the external users not able to craft a request to access unexpected information. Because the GraphQL server is behind the VPC, it is not directly accessible by the user. The external application can communicate to the GraphQL server and every front-ends request to fetch data are proxied by the web server application. The proxy is important. It means that the browser of external users is not directly connected to the GraphQL server. Instead, the browser performs an AJAX call to the respective web server and this one, on the behalf of the user will conduct the GraphQL query. The proxy is conducted with the [ProxyPass](https://httpd.apache.org/docs/2.4/mod/mod_proxy.html) instruction of Apache.
 
 Internal applications do not have many constraints but keeping the same pattern of proxying is a good habit. It simplifies CORS because the browser performs HTTP requests to the same server, and only underneath it communicate to other servers. It also simplifies the security by having a central point of communication (the web server) to communicate with backend secured services.
 
-## GraphQL Single Schema
+# GraphQL Single Schema
 
 An obvious solution is to have two schemas: one internal and one external. The solution is the only choice if you need to expose the GraphQL schema externally without exposing the definition of internal fields and entities. However, because I had the constraint of not exposing GraphQL outside, I could simplify the maintainability by having a single schema. The problem with many schemas is that it does not scale very well. First, when adding a field that is good externally, you need to add it twice. Then, when it is time to modify or remove, you need to keep in synchronization the different schemas. Any little boilerplate cause the engineering experience to be a burden but also is prone to errors.
 
 In an ideal world, a single schema exists and we flag the field or entity to be only available internally. That world can exist with the power of GraphQL directive.
 
-## The GraphQL Directive Idea
+# The GraphQL Directive Idea
 
 GraphQL allows enhancing the graph's schema with annotation. Let's start with the end result which should talk more than any explanation.
 
@@ -47,7 +47,7 @@ type MyTypeA @internalData {
 
 The idea is to have a single schema that had an indication that the field is added into a request will have some consequence. Because it is a single graph, the field appears in the interactive Graphql Playground and is a valid field to request; even externally. However, when invoked, GraphQL at runtime will be able to read the directive and perform a logic. In our case, the logic will be to verify the source of the request and figure out if the request is internal or not. In the case of an internal request, the data will be part of the response. If the source is external, an exception will occur and the field will be undefined.
 
-## How to build a GraphQL Directive?
+# How to build a GraphQL Directive?
 
 The directive is two parts: one is in the GraphQL language (design time) and one is the logic to perform at runtime.
 
@@ -135,16 +135,16 @@ A little detail, it is possible to inject a description from the directive that 
 
 Example of how it looks from the GraphQL Interactive Playground. The engineer who build the query knows that it is an internal field as well as under which application the response will return a value
 
-## Conclusion
+# Conclusion
 
 The more I work with different organizations, code bases, and technologies, the more I lean toward simplicity. There is so many changes, so many ways to get very deep into subjects and so little time. Getting into complex solution often cause the maintainability a nightmare or make some people very dependent. The solution of a directive in GraphQL took less than 150 lines of code and can scale toward the entire graph of objects without having a dependency on a system to manage many schemas. The security of the information is preserved, the engineers that consume the graph are aware when building the query (description) and while executing the query (error), and the engineers building the graph can add the tag to the fields or types which take a few seconds without having to worry about the detail of the implementation.
 
-## My Other GrapHL Blog Posts
+# My Other GraphQL Blog Posts
 
-- [Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)[Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)
-- [Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)[Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)[Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)[Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)[Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)[Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)[Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)[Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)[Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)[Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)[Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)
-- [Apollo Server and Secured Playground](apollo-server-and-secured-playground)[Apollo Server and Secured Playground](apollo-server-and-secured-playground)[Apollo Server and Secured Playground](apollo-server-and-secured-playground)[Apollo Server and Secured Playground](apollo-server-and-secured-playground)[Apollo Server and Secured Playground](apollo-server-and-secured-playground)[Apollo Server and Secured Playground](apollo-server-and-secured-playground)[Apollo Server and Secured Playground](apollo-server-and-secured-playground)[Apollo Server and Secured Playground](apollo-server-and-secured-playground)[Apollo Server and Secured Playground](apollo-server-and-secured-playground)[Apollo Server and Secured Playground](apollo-server-and-secured-playground)
-- [GraphQL Context](graphql-context)[GraphQL Context](graphql-context)[GraphQL Context](graphql-context)[GraphQL Context](graphql-context)[GraphQL Context](graphql-context)[GraphQL Context](graphql-context)[GraphQL Context](graphql-context)[GraphQL Context](graphql-context)[GraphQL Context](graphql-context)
+- [Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)
+- [Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)
+- [Apollo Server and Secured Playground](apollo-server-and-secured-playground)
+- [GraphQL Context](graphql-context)
 - [GraphQL Query with Argument](graphql-query-with-argument)
 - [Apollo GraphQL Resolvers and Data Source separation](apollo-graphql-resolvers-and-data-source-separation)
 - [How to setup a TypeScript, NodeJS, Express Apollo Server to easy debugging with VsCode](how-to-setup-a-typescript-nodejs-express-apollo-server-to-easy-debugging-with-vscode)

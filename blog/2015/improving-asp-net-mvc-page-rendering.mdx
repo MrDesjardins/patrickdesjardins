@@ -7,9 +7,13 @@ categories:
 
 Asp.Net MVC view engine is not very efficient. Usually, the database is the bottle neck, but with Asp.Net, the view engine can be the one to slow down your system. This is especially true if you are using a lot of partial views, templates and service code. This is a little bit ironic because good patterns suggest to divide. Nevertheless, we can improve it by trying to reduce some of the tax that the system is producing.
 
-First of all, building in release instead of debug will help, but this will not be a game changer. This is something that stun me for several reasons. Mostly because if you search on Internet, this is the big optimization to do, but also because the compilation in release does not optimize the rendering properly. Here are three screenshot taken of [Glimpse](http://getglimpse.com). All benchmark results are from the same page that we will optimize during this article. The first one is the webpage in debug, without caching of any database calls. ![](images/EntityFrameworkConnectionTime-1024x161.png)
+First of all, building in release instead of debug will help, but this will not be a game changer. This is something that stun me for several reasons. Mostly because if you search on Internet, this is the big optimization to do, but also because the compilation in release does not optimize the rendering properly. Here are three screenshot taken of [Glimpse](http://getglimpse.com). All benchmark results are from the same page that we will optimize during this article. The first one is the webpage in debug, without caching of any database calls. 
 
-The second one benchmark has the web application not reaching the database at all -- it use Redis to cache all the data queries. ![](images/RedisPerformance-1024x155.png)
+![](images/EntityFrameworkConnectionTime-1024x161.png)
+
+The second one benchmark has the web application not reaching the database at all -- it use Redis to cache all the data queries. 
+
+![](images/RedisPerformance-1024x155.png)
 
 Redis cache is powerful and give us an advantage of 10% in the scenario under test. The performance gains can be even more with a database with more values. This is why, it is worth it. However, you can still see that it takes 3 seconds to load the page -- this is not acceptable.
 
@@ -21,8 +25,12 @@ With the help of Glimpse, I were able to see that the Razor view engine was prod
 
 After removing most of the Display Templates, the performance increased. The time dropped from 2.27 seconds to 551ms (debug)/ 509ms (release). In the remaining time, most of it is still in the construction of Html by the Razor Engine. Instead of having 108 views, only 8 was used. This is clearly the consequence of reducing the use of display template. Unfortunately, the performance gain come with the cost of having a code that is less reusable. This new benchmark got the html of the template copy-pasted in some area of the .cshtml. The next step is to transfer this reusable code inside Html Helper. Also, even if we have better performance, I am still far from what I can do with PHP. This is something that is still bothering me. I am benchmarking an application that is a written of a PHP application. The backend performance (logic + database) is about the same, but the rendering is a lot slower. On the 509ms, 358ms is on the creation of the view. In the PHP application, less than 50ms was in the creation of the html -- still 6 times slower.
 
-Build in Debug with reduction of Display Template: ![](images/RemoveDisplayForTemplate-1024x159.png)
+Build in Debug with reduction of Display Template: 
 
-Build in Releasewith reduction of Display Template: ![](images/ReleaseWithoutDisplayFor-1024x161.png)
+![](images/RemoveDisplayForTemplate-1024x159.png)
+
+Build in Releasewith reduction of Display Template: 
+
+![](images/ReleaseWithoutDisplayFor-1024x161.png)
 
 .Net is moving away, slowly, to have the browser renders the Html with JavaScript Framework instead of the on the server. They embrace the use of WebApi and advocates the use of client side framework like Angular. This is a decision that I respect, but I am still convicted that since the inception of Razor in 2010 that Microsoft could have improved the server side rendering with Razor.

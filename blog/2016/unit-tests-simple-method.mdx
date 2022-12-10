@@ -12,17 +12,21 @@ tags:
 Unit tests are something that everyone agree to do, but not a lot write correctly. I found more and more code that has unit tests for the "happy path" and more common scenario while ignoring all other possible cases. Let's take the following small method.
 
 ```typescript
-public smallSimpleOneLineMethod (abc: string): boolean { return this.zzz && (this.zzz === abc); } 
+public smallSimpleOneLineMethod (abc: string): boolean { 
+  return this.zzz && (this.zzz === abc); 
+} 
 ``` 
 
 
 This method is broken because we specify to return a boolean but it can return null. This is not possible in C#, but in TypeScript since it is converted to JavaScript it is.
 
-This is where Unit Test come to the rescue. We expect that method to return **true** when _abc_ and _zzz_ is different; **false** when the same. If _zzz_ is **null**, we expect to return **false**. Simple, no need unit test… The problem is that _this.zzz_ if **null** will remain **null** in the first part of the **&&** condition, not **false**. It means that we do : null && (true|false). What does that mean? It means that all the time, if _zzz_ is null that that method return **null**, not **false** or **true**.
+This is where Unit Test come to the rescue. We expect that method to return `true` when `abc` and `zzz` is different; `false` when the same. If `zzz` is `null`, we expect to return `false`. Simple, no need unit test… The problem is that `this.zzz` if `null` will remain `null` in the first part of the `&&` condition, not `false`. It means that we do : null && (true|false). What does that mean? It means that all the time, if `zzz` is null that that method return `null`, not `false` or `true`.
 
-This method needs to be refactored to : ```typescript
-public simpleMethod (abc: string): boolean { return !!this.zzz && (this.zzz === abc); } 
+This method needs to be refactored to : 
+
+```typescript
+public simpleMethod (abc: string): boolean {
+   return !!this.zzz && (this.zzz === abc); 
+} 
 ``` 
-
-
-To sum up that post, unit test every conditions, even simple one. It’s not because it works today that it won’t fail tomorrow. Tests all possible routes that your code allows. The _simpleMethod_ has now 4 unit tests that test null from the parameter, from the this variable and with and without the same string variable.
+To sum up that post, unit test every conditions, even simple one. It’s not because it works today that it won’t fail tomorrow. Tests all possible routes that your code allows. The `simpleMethod` has now 4 unit tests that test null from the parameter, from the this variable and with and without the same string variable.

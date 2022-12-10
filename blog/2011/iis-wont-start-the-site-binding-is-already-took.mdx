@@ -11,10 +11,12 @@ IIS service start well, but all website sent an 404 error. This behaviour is str
 
 To know which process use the port, a DOS console need to be open and the use of netstat.exe is required.
 
-> netstat -a -n -p tcp -b
+```sh
+netstat -a -n -p tcp -b
+```
 
 This will list the IP/PORT and under this information the name of the process.
 
-In my case, Skype was running on 127.0.0.1:80. I had to close Skype, start the Default Web Site and then restart Skype and all was back to the normal.
+In my case, Skype was running on `127.0.0.1:80`. I had to close Skype, start the Default Web Site and then restart Skype and all was back to the normal.
 
 To conclude, I have not idea why Skype.exe hook up the port 80 but for sure, if you want to use IIS or Apache with the port 80 while Skype is running, you have to start it after your web server.

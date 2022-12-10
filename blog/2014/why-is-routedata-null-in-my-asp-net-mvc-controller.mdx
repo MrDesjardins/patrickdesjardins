@@ -19,4 +19,6 @@ The problem is that the routing may have not been yet analyzed by the controller
 
 ```csharp
  public class BaseController : Controller { public BaseController() { } protected override void OnActionExecuting(ActionExecutingContext filterContext) { base.OnActionExecuting(filterContext); var routeData = base.RouteData; } } 
-``` After calling the base.OnActionExecution(...) you can call the RouteData.
+``` 
+
+After calling the base.OnActionExecution(...) you can call the RouteData.

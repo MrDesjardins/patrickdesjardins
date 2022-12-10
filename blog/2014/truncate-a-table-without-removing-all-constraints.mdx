@@ -5,7 +5,7 @@ categories:
   - "sql"
 ---
 
-**Truncated** a table as the advantage to remove every data without logging or locking every rows. This is a huge advantage over the **Delete** statement. This mean that truncated table cannot be restored, neither you can have a where clause into the SQL statement. Truncate also has the ability to reset the seed to its initial value. **On delete** triggers are also not fired and all foreign keys constraint must be removed or disabled.
+`Truncated` a table as the advantage to remove every data without logging or locking every rows. This is a huge advantage over the `Delete` statement. This mean that truncated table cannot be restored, neither you can have a where clause into the SQL statement. Truncate also has the ability to reset the seed to its initial value. `On delete` triggers are also not fired and all foreign keys constraint must be removed or disabled.
 
 Instead of removing all constraints, it is possible to tell SQL Server to not check foreign key.
 

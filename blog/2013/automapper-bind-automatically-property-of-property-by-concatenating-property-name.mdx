@@ -9,15 +9,38 @@ This title has a lot of properties, I know. Today, I'll show you with a simple u
 
 
 ```csharp
- [TestClass] public class UnitTest1 { public class ClassA { public ClassA() { this.PropertyA = new ClassAB(); }
+[TestClass] 
+public class UnitTest1 { 
+  public class ClassA { 
+    public ClassA() { 
+      this.PropertyA = new ClassAB(); 
+    }
 
-public ClassAB PropertyA { get; set; } }
+  public ClassAB PropertyA { get; set; } }
 
-public class ClassAB { public int Id { get; set; } public string Suffixe { get; set; } public string NotTheSame { get; set; } }
+  public class ClassAB { 
+    public int Id { get; set; } 
+    public string Suffixe { get; set; } 
+    public string NotTheSame { get; set; }
+  }
 
-public class ClassB { public int PropertyAId { get; set; } public string PropertyASuffixe { get; set; } public string NotReallyTheSame { get; set; } }
+  public class ClassB { 
+    public int PropertyAId { get; set; } 
+    public string PropertyASuffixe { get; set; } 
+    public string NotReallyTheSame { get; set; } 
+  }
 
-[TestMethod] public void TestMethod1() { var c = new ClassA(); c.PropertyA.Id = 123; Mapper.CreateMap<ClassA, ClassB>(); var mapped = Mapper.Map<ClassA, ClassB>(c); Assert.AreEqual(c.PropertyA.Id,mapped.PropertyAId); Assert.AreEqual(c.PropertyA.Suffixe,mapped.PropertyASuffixe); Assert.IsNull(mapped.NotReallyTheSame); } } 
+  [TestMethod] 
+  public void TestMethod1() { 
+    var c = new ClassA(); 
+    c.PropertyA.Id = 123; 
+    Mapper.CreateMap<ClassA, ClassB>(); 
+    var mapped = Mapper.Map<ClassA, ClassB>(c); 
+    Assert.AreEqual(c.PropertyA.Id,mapped.PropertyAId); 
+    Assert.AreEqual(c.PropertyA.Suffixe,mapped.PropertyASuffixe); 
+    Assert.IsNull(mapped.NotReallyTheSame); 
+  } 
+} 
 ```
 
 ![](images/AutoMapperSuccess-400x68.png)

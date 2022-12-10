@@ -8,11 +8,13 @@ categories:
 Asp.Net MVC 4.5 introduced Bundling resource for styles and for scripts. Its role is to minimize the size of your resource by aggregating files in 1 and reducing the size by compressing the string. In Asp.Net 5, it's gone. Asp.Net team with the newest version took out some features that can be handled by non-Microsoft solutions. However, the Asp.Net MVC 4.5 bundling is still present in many websites. One problem that can occur is that your styles render but not your scripts. This problem is the result of the hidden rule which is that your CSS bundle name cannot be the same name of your script. If you created a style bundle with the name of your page, you cannot have the same one for your script. It's better to prefix it with your intention.
 
 This is an example that will render only CSS and not JavaScript. 
+
 ```csharp
  @Styles.Render("~/bundles/mywebsite") @Scripts.Render("~/bundles/mywebsite") 
 ```
 
 The solution is to have unique name. 
+
 ```csharp
  @Styles.Render("~/bundles/css/mywebsite") @Scripts.Render("~/bundles/javascript/mywebsite") 
 ```

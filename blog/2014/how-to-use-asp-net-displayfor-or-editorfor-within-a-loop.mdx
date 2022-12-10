@@ -5,7 +5,7 @@ categories:
   - "asp-mvc"
 ---
 
-You can use the Html Helper to use the template system of Asp.Net MVC. You can have @Html.DisplayFor and @Html.EditorFor. The first one is to display the information into a read only control and the latter is the control that allow to modify the value. Both takes as parameter a Lambda expression of the view Model. Without going into too much detail about where DisplayFor or the EditorFor take their file, just remember that it searches for a folder **EditorTemplates** or **DisplayTemplates** in the directory where the view use one of these helpers first and then it goes check for Views>Shared>DisplayTemplates or EditorTemplates.
+You can use the Html Helper to use the template system of Asp.Net MVC. You can have `@Html.DisplayFor` and `@Html.EditorFor`. The first one is to display the information into a read only control and the latter is the control that allow to modify the value. Both takes as parameter a Lambda expression of the view Model. Without going into too much detail about where DisplayFor or the EditorFor take their file, just remember that it searches for a folder `EditorTemplates` or `DisplayTemplates` in the directory where the view use one of these helpers first and then it goes check for Views>Shared>DisplayTemplates or EditorTemplates.
 
 ![](images/DisplayForLoop-400x125.png)
 

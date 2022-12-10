@@ -5,7 +5,7 @@ categories:
   - "entity-framework"
 ---
 
-Once in a while, I forgot that weakness of Entity Framework that make me change the design of my database. Entity Framework (well for the 6 first version at least) cannot save an entity that has a **complex type** to null.
+Once in a while, I forgot that weakness of Entity Framework that make me change the design of my database. Entity Framework (well for the 6 first version at least) cannot save an entity that has a `complex type` to null.
 
 Let's get in the context that you have a class named Order, and this one have a Price property. The Price property is of type Money which is a complex type. You cannot set your Price property to null without having Entity Framework crash during the commit phase.
 
@@ -17,7 +17,7 @@ In the complex class we change the value to be nullable now.
 
 
 ```csharp
- private decimal? value;
+private decimal? value;
 
 public decimal? Value { get { return value; } set { this.value = value; } } 
 ```
@@ -27,7 +27,9 @@ This is the first change that will let the database to save null value not to th
 
 ```csharp
  public bool IsNull { get { return !this.Value.HasValue; } set { if (value) { this.Value = null; } else { this.Value = default(decimal); } } } 
-``` As you can see, the IsNull property does not contain a value but is calculated on the fly. We also will not store this value in the database. This mean that we need to ignore this property for Entity Framework.
+``` 
+
+As you can see, the IsNull property does not contain a value but is calculated on the fly. We also will not store this value in the database. This mean that we need to ignore this property for Entity Framework.
 
 
 ```csharp

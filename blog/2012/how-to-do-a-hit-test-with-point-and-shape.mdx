@@ -5,22 +5,28 @@ categories:
   - "silverlight"
 ---
 
-In some situation, you may need to know if the mouse has hit a specific polygon drawn in a canvas. This can be easily done with Silverlight using the **VisualTreeHelper**.
+In some situation, you may need to know if the mouse has hit a specific polygon drawn in a canvas. This can be easily done with Silverlight using the `VisualTreeHelper`.
 
 First of all, you need to have a listener to the mouse even.
 
 
 ```csharp
- void myCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e) { e.Handled = true; Point currentMousePosition = e.GetPosition(this.myCanvas); var underMouseControls = GetControlFromCoordonate(currentMousePosition); } 
+void myCanvas_MouseRightButtonDown(object sender, MouseButtonEventArgs e) { 
+  e.Handled = true; 
+  Point currentMousePosition = e.GetPosition(this.myCanvas); 
+  var underMouseControls = GetControlFromCoordonate(currentMousePosition); 
+} 
 ```
 
-The second step is to create the method _**GetControlFromCoordonate**_ to return a list of Control that has been clicked.
+The second step is to create the method `GetControlFromCoordonate` to return a list of Control that has been clicked.
 
 
 ```csharp
- public IEnumerable<Control> GetControlFromCoordonate (Point coordonate) { return VisualTreeHelper.FindElementsInHostCoordinates(coordonate, this.myCanvas).OfType<Control>(); } 
+public IEnumerable<Control> GetControlFromCoordonate (Point coordonate) { 
+  return VisualTreeHelper.FindElementsInHostCoordinates(coordonate, this.myCanvas).OfType<Control>(); 
+} 
 ```
 
 This will return an enumeration of all UIElement which be cast to have only Control. You can even filter more if you search specific control.
 
-So, the **VisualTreeHelper** may not have a HitTest method but with the **FindElementsInHostCoordinates**, you can filter the result to have the same result.
+So, the `VisualTreeHelper` may not have a HitTest method but with the `FindElementsInHostCoordinates`, you can filter the result to have the same result.

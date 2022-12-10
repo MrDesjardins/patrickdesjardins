@@ -12,7 +12,7 @@ First of all, like any person, I have some bias. I’ve been working in TypeScri
 
 Concerning my conclusions, here they are; they are both very similar. TypeScript is a transpiler, hence does more. Flow needs Babel to be able to accomplish what TypeScript is Patrick Desjardins 132 doing. Concerning the type checking, they have different mentalities, but are still very similar except for the encapsulation and for the null/undefined validation. TypeScript has 10x the support for third parties, with a vast definition files ecosystem that is not the case for Flow. Now that you have my elevator speech conclusion of TypeScript vs Flow, here are the details.
 
-## Historical Background
+# Historical Background
 
 Flow exists since 18 November 2014. TypeScript exists in public since 1 October 2012, but its inception started 2 years before as an internal product (2010). This information doesn’t give us much other than TypeScript went through more active days of finding bugs, and that Flow may have leverage on the pros and cons of the former. The amount of time between the two is still relatively small, which makes both of them still young.
 
@@ -28,7 +28,7 @@ I’ll provide more examples of what it really means in the next two articles. F
 
 The idea of which one is better is subjective and I won’t go a lot deeper. As a former C# developer, I like the idea of a sound language. As a long-time JavaScript developer and previous PHP developer, I like to have more freedom and can get around how JavaScript handles some behaviors. TypeScript is in the middle, Flow is more on one side. At the end, both help developers in some way to be more protected than vanilla JavaScript. To me, they both win in that category and it wasn’t a criterion that had a significant enough impact to lean me one way or the other.
 
-## Definition Files
+# Definition Files
 
 TypeScript, being the precursor of a superset of JavaScript, brought the notion of the definition file. Definition file allows having typed libraries written in JavaScript. Flow has the same concept, but in a different format, which makes them incompatible, and they never did a conversion to leverage the TypeScript collection. TypeScript started using 2 different ways to store the definition file and ended up storing them with NPM instead of relying on a custom tool. Facebook decided to go with a custom tool.
 
@@ -40,7 +40,7 @@ At the end, if you are choosing TypeScript you will have all your definition fil
 
 This had a big impact for me and the team. Being able to use a well-known tool like NPM to reach thousands of types gives us an edge to jump on third parties where we do not know by heart all signatures or potential members. It is something that we thought was a significant decider in our final decision. Again, all depends on your needs.
 
-## Open Source
+# Open Source
 
 Both projects are open source and hosted on Github. They differ in terms of the license, which is in Flow BSD-3, and in TypeScript is Apache2. I am not a license expert, but from what I know, both are fine. Patrick Desjardins 134 The main difference is the language used. While being open source is great, being able to understand the code is what makes open source greater.
 
@@ -59,7 +59,7 @@ Let's bring some metrics around both open source project.
 
 That’s great, but what can we get from these numbers? I am not an expert on open source projects, but I can only see that there is more activity around TypeScript. The number of contributors and releases are in favor of Flow. That said, the number of contributors is significant only if they are all active. The number of releases is also subjective since TypeScript cadence is every two months, Flow looks to be faster. Does that mean it’s better or not?This is subjective since the balance between stability and new features is always at play. TypeScript has more forks and more starts than Flow. Again, what it really means is that people are more interested, hence follow the project more and maybe get the code. Does it mean TypeScript is better? I don’t think so. The metric that I was the most interested in is the number of pull requests. It’s a good indicator that features and bug fixes are coming in. Both Facebook and Microsoft have employees contributing to the code, but it’s still relevant. TypeScript has more than 10 times the number of features/fixes coming in than Flow.  So, on the open source aspect, TypeScript is one step ahead because of the language used to build it.
 
-## What about the future?
+# What about the future?
 
 The future is hard to know. Microsoft is investing in TypeScript, Facebook is investing in Flow. What I like about TypeScript is that they have an open roadmap [6] available to consult. You can see what they have done and what they are planning to work on. Microsoft also has milestones [7] available in their GitHub account. Flow’s roadmap was not found at the time of this investigation, and no official delivery milestones [8] are available on GitHub. Microsoft has been developing languages since the beginning of the company with a good track record of having long support (10 years after active development). Even Silverlight got a life support by Microsoft up to 2021 [18]!
 
@@ -106,7 +106,7 @@ The future cannot be guaranteed, but TypeScript is written in TypeScript. Visual
 
 For the moment, concerning the future of TypeScript or Flow, it seems to me that Microsoft has a clearer vision and background of being enterprise solid with their languages.
 
-## Developers
+# Developers
 
 In the same way as about language, here is a slight note about who is leading TypeScript. It’s managed by Anders Hejlsberg[9], creator of Turbo Pascal, Delphi, C# and now TypeScript. He graduated in the 80s, received many awards in his career and he is the person who committed the most on Github.
 
@@ -114,7 +114,7 @@ Flow commits are led by Marshall Roch [11] by twice the next biggest contributor
 
 While this might not be a game changer, it’s also a point for TypeScript. The experience behind the lead of this project is a positive for TypeScript. Flow has the advantage to have fresh eyes on new technologies, hence still not bad. At the end, both projects are not driven by a single man, but by a group of people, and are simply influenced by the spirit that leaders project.
 
-## Integrations
+# Integrations
 
 Visual Studio Code is the prefered language for TypeScript, but they offer a variety of plugin for many IDE. TypeScript and Flow has the same kind of architecture that let external program to communicate with the "local server" to get analyzed for type check. Here is the list of supported IDE for TypeScript [11]:
 
@@ -148,7 +148,7 @@ Both languages have a suggestion when importing custom type which simplifies the
 
 Again, this might not be a big deal, but if you love one IDE that is not on the list of either Flow or TypeScript, it can become one. Being used to having TypeScript jumping to help me right when I type is also something I was missing with Flow in VsCode. TypeScript covers more IDE, but both are pretty similar in terms of the most popular ones in web development these days. If I had to declare a winner, I would say TypeScript, but with a marginal gain since it supports more IDE. It wasn’t a decisive point for me or the team since the IDE we use were covered.
 
-## Support
+# Support
 
 What about when you have a problem and you need an answer? This will happen and it’s interesting to see what both are offering. Most of the developers will use StackOverflow to write a question to get an answer or will search the Internet and stumble at StackOverflow. If we look at StackOverflow we can see that Flow has 783 questions and TypeScript has 34,613 questions. TypeScript is more active, but we have to put in perspective that people are asking questions about TypeScript the type checker, as well as TypeScript the transpiler. It would be fairer to say that Babel + Flow count would be more comparable. I’ll come back about TypeScript being more than just a type checker in an instant.
 
@@ -158,7 +158,7 @@ The official documentation is detailed in both official websites. Very clear, wi
 
 At the end, TypeScript has a slight advantage. It might be because I was hitting lots of garbage while trying to search “flow” + my keywords but even with “Facebook flow” or “flow js” it wasn’t getting better. I barely found any small projects or websites with good examples with Flow. I found more with TypeScript. However, in both cases, JavaScript’s examples are way higher than the two type checkers we are evaluating.
 
-## Beyond Type Checking
+# Beyond Type Checking
 
 During my evaluation of TypeScript vs Flow, rapidly I had to admit that a major difference between the two is that one is doing more than the other. TypeScript is not just a type checker, it’s a transpiler. Flow is a type checker, that’s it.
 
@@ -254,7 +254,7 @@ It has more boilerplate. TypeScript offers stage 2 and up feature from EcmaScrip
 
 It's also interesting to note that BabelJs may support features that Flow doesn't. This doesn't occur with TypeScript since they are in symbios. For example, Flow doesn't support decorator [16], but BabelJs and TypeScript does.
 
-### Conclusion
+# Conclusion
 
 This is part one of three where we put on the table some differences between TypeScript and Flow. If you are reading this article because you are hesitating between the two, stay tuned for the remaining which will be a high and low-level comparison of each of the type checkers. If you are here because you are looking to know if you want typed language vs non-typed language for web development, I would suggest that you consult other sources of data. If you are in some discussions at work about JavaScript vs TypeScript or Flow, I would suggest first deciding between typed or not before jumping on the subject of TypeScript vs Flow. At the end, the goal is not to be a fanboy (fangirl) but to have the best tool that will help you and your team to be productive.
 
@@ -266,24 +266,24 @@ In this article, I illustrated the main difference of TypeScript being more than
 - [TypeScript vs Flow (Part 2 of 3) – High Level Coding](./typescript-vs-flow-part-2-of-3-high-level-coding)
 - [TypeScript vs Flow (Part 3 of 3) – Syntax Difference](./typescript-vs-flow-part-3-of-3-syntax-difference)
 
-## References
+# References
 
-[1] https://discuss.reactjs.org/t/if-typescript-is-so-great-how-come-all-notable-reactjs-projects-use-babel/4887  
-[2] https://www.typescriptlang.org/docs/handbook/type-compatibility.html  
-[3] https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types  
-[4] https://github.com/flowtype/flow-typed/tree/master/definitions/npm  
-[5] https://github.com/DefinitelyTyped/DefinitelyTyped/labels/Definition%3ARequest  
-[6] https://github.com/Microsoft/TypeScript/wiki/Roadmap  
-[7] https://github.com/Microsoft/TypeScript/milestones  
-[8] https://github.com/facebook/flow/milestones  
-[9] https://en.wikipedia.org/wiki/Anders_Hejlsberg  
-[10] https://www.linkedin.com/in/mroch/  
-[11] https://github.com/Microsoft/TypeScript/wiki/TypeScript-Editor-Support  
-[12] https://flow.org/en/docs/editors/  
-[13] https://flow.org/en/docs/editors/vscode/  
-[14] https://nuclid1e.io/  
-[15] http://kangax.github.io/compat-table/es2016plus/  
-[16] https://github.com/facebook/flow/issues/3405  
-[17] https://github.com/Microsoft/TypeScript/wiki/TypeScript-Design-Goals  
-[18] https://support.microsoft.com/en-us/lifecycle/search?alpha=silver  
-[19] https://eng.lyft.com/typescript-at-lyft-64f0702346ea
+\[1\] https://discuss.reactjs.org/t/if-typescript-is-so-great-how-come-all-notable-reactjs-projects-use-babel/4887  
+\[2\] https://www.typescriptlang.org/docs/handbook/type-compatibility.html  
+\[3\] https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types  
+\[4\] https://github.com/flowtype/flow-typed/tree/master/definitions/npm  
+\[5\] https://github.com/DefinitelyTyped/DefinitelyTyped/labels/Definition%3ARequest  
+\[6\] https://github.com/Microsoft/TypeScript/wiki/Roadmap  
+\[7\] https://github.com/Microsoft/TypeScript/milestones  
+\[8\] https://github.com/facebook/flow/milestones  
+\[9\] https://en.wikipedia.org/wiki/Anders_Hejlsberg  
+\[10\] https://www.linkedin.com/in/mroch/  
+\[11\] https://github.com/Microsoft/TypeScript/wiki/TypeScript-Editor-Support  
+\[12\] https://flow.org/en/docs/editors/  
+\[13\] https://flow.org/en/docs/editors/vscode/  
+\[14\] https://nuclid1e.io/  
+\[15\] http://kangax.github.io/compat-table/es2016plus/  
+\[16\] https://github.com/facebook/flow/issues/3405  
+\[17\] https://github.com/Microsoft/TypeScript/wiki/TypeScript-Design-Goals  
+\[18\] https://support.microsoft.com/en-us/lifecycle/search?alpha=silver  
+\[19\] https://eng.lyft.com/typescript-at-lyft-64f0702346ea

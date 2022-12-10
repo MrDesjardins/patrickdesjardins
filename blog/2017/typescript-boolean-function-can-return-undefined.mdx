@@ -43,7 +43,7 @@ There is two ways to solve that issue. The first one is the proper way, but long
 ```typescript
 function test4(myObject:any): boolean { return myObject !== undefined && myObject.prop !== undefined && myObject.prop.isOkay; } alert(test4()); 
 ``` 
- This is the most explicit and clear way to have exactly the result expected. It returns true or it returns false; it cannot return `undefined`.
+This is the most explicit and clear way to have exactly the result expected. It returns true or it returns false; it cannot return `undefined`.
 
 A more succinct way to write this validation is to use the double bang (`!!`). 
 
@@ -53,6 +53,7 @@ function test5(myObject:any): boolean {
 } 
 alert(test5()); 
 ``` 
- This latest will also evaluate for `null` as well as `undefined` and also `true/false`.
+
+This latest will also evaluate for `null` as well as `undefined` and also `true/false`.
 
 At the end, you should always avoid to simply rely that an undefined value will return `false` in a chain of condition. JavaScript return the last value that is not true in the chain, which we saw that can be undefined. TypeScript is not smart enough to catch this possibility and will let the function returning `undefined` instead of a boolean.

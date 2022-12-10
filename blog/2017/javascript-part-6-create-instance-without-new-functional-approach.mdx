@@ -5,9 +5,9 @@ categories:
   - "javascript"
 ---
 
-We saw in a previous article how to create a new object with "new", and also without "new". Both of them were using the prototype chain for inheritance. Here is a way to avoid using the prototype chain and be able to use object literal with function only to create instance.
+We saw in a previous article how to create a new object with `new`, and also without `new`. Both of them were using the prototype chain for inheritance. Here is a way to avoid using the prototype chain and be able to use object literal with function only to create instance.
 
-Let's start without any inheritance with a first object that we will create from "myFactory" function. This one take parameters like a normal constructor. It could be a single string like in this example, or a more complex object. What is important is that factory create a new literal object which is private until we return this one. Within this factory, every "var" will be private, hence having a good advantage against the classical approach where every variable attache to "this" are public. On this functional approach, we hook all public method to the returned value, in that case the container.
+Let's start without any inheritance with a first object that we will create from `myFactory` function. This one take parameters like a normal constructor. It could be a single string like in this example, or a more complex object. What is important is that factory create a new literal object which is private until we return this one. Within this factory, every `var` will be private, hence having a good advantage against the classical approach where every variable attache to `this` are public. On this functional approach, we hook all public method to the returned value, in that case the container.
 
 ```typescript
 var myFactory = function (p1) {

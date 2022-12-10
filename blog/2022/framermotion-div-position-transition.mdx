@@ -14,24 +14,14 @@ The challenge is to handle the back and forth between the two React component. A
 # Basic Animation
 Let start with a foundation with basic code. The first snippet of code is mostly what you can have with Framer Motion using the `motion.div` inside two React components.
 
-<iframe src="https://codesandbox.io/embed/framer-motion-transition-div-part-1-zxn7pi?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-     style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
-     title="Framer Motion: Transition Div Part 1"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>
+<CodeSandbox codeSandboxId="framer-motion-transition-div-part-1-zxn7pi" />
 
 The application consists of a top and bottom panel. The top host one of our two components and the bottom has a single button that toggle between the two components. The toggle mount and unmount each component.
 
 # Initial, animated and exit
 A next step is to remove setting the position and dimension with styles but to rely solely on Framer Motion. To do so, let's refactor our code to have all the position inside an object. It will simplify the repetition into a central place. Then, let's inject all the position into our two boxes. That way, both know each other boundary. The code set the `initial` which is the position when mounted. For `Box1` component, we set the initial to be the other box: `Box2`. That way, when we mount the first box we start at box two position and dimension. We do the opposite for box two. The `animate` is the final position. For `Box1` we use the `boxInfo.box1` and for `Box2` the final position that is inside `boxInfo.box2`. The `exit` is the transition when unmount is called which is the same as the `initial`.
 
-<iframe src="https://codesandbox.io/embed/framer-motion-transition-div-part-2-p4cp2h?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-     style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
-     title="Framer Motion: Transition Div Part 2"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>
+<CodeSandbox codeSandboxId="framer-motion-transition-div-part-2-p4cp2h" />
 
 # Scaling
 The problem with the actual code is that we have Box 1 and Box 2 that are swapping. However, it does not scale well if we have 10 boxes which has two states meaning 20 configurations.
@@ -113,14 +103,10 @@ and the mounting and unmounting
 ```
 The animation works as expected between the `Box1` and `Box2`. Indeed, for now, both React component are almost the same expect the background color. However, let's imagine that they are two distinct components with more than just some visual change. 
 
-<iframe src="https://codesandbox.io/embed/framer-motion-transition-div-part-3-83wsne?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-     style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
-     title="Framer Motion: Transition Div Part 3"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>
+<CodeSandbox codeSandboxId="framer-motion-transition-div-part-3-83wsne" />
 
 Still, something is off. First, the initial/animate/exit is repetitive regardless of the unique feature of each box. The next step will be to extract the commonality between the two.
+
 ![](./images/framermotion-reverted-code.png)
 
 The wrapper is called `BoxWrapper` and has the role to handle the position and dimension of the actual React component.
@@ -263,12 +249,9 @@ export const BoxWrapper = (props: PropsWithChildren<BoxWrapperProps>) => {
   );
 };
 ```
-<iframe src="https://codesandbox.io/embed/framer-motion-transition-div-part-5-po75hj?fontsize=14&hidenavigation=1&theme=dark&view=preview"
-     style="width:100%; height:500px; border:0; border-radius: 4px; overflow:hidden;"
-     title="Framer Motion: Transition Div Part 5"
-     allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
-     sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-   ></iframe>
+
+<CodeSandbox codeSandboxId="framer-motion-transition-div-part-5-po75hj" />
+
 
 # Conclusion
 

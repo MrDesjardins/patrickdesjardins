@@ -5,12 +5,11 @@ categories:
   - "asp-mvc"
 ---
 
-If you are using for example the popular **[Required]** attribute you may stumble into the situation that you do not want to setup the name of the resource and the name of the file every time. A quick way to fix that is to use your own Required attribute that inherit from the default Mvc one.
+If you are using for example the popular `[Required]` attribute you may stumble into the situation that you do not want to setup the name of the resource and the name of the file every time. A quick way to fix that is to use your own Required attribute that inherit from the default Mvc one.
 
 ![](images/RequireFileSetup.png)
 
 I create this attribute inside the namespace that has cross layer relationship. This way, I can use it inside my Model assembly, my ViewModel assembly. This is also where I setup the resource file. The attribute is very simple. It takes the display name to replace use this one inside the require message. Then, it loads the resource, do the string format to put the display name into the message.
-
 
 ```csharp
  public class RequiredAttribute : System.ComponentModel.DataAnnotations.RequiredAttribute { private string displayNameOfThePropertyRequired;
@@ -20,7 +19,10 @@ public RequiredAttribute() { ErrorMessageResourceName = this.GetType().Name; }
 protected override ValidationResult IsValid(object value, ValidationContext validationContext) { displayNameOfThePropertyRequired = validationContext.DisplayName; return base.IsValid(value, validationContext); }
 
 public override string FormatErrorMessage(string name) { var msg = DataAnnotations.RequiredAttribute; return string.Format(msg, displayNameOfThePropertyRequired); } } 
-``` I have not hardcoded the name of the resource, just the resource file. This way, we are able to setup every DataAnnotation attributes inside the same resource file. The name of the resource if the name of the attribute. It means that inside the resource file, we will see an entry "RequiredAttribute". The use of this attribute is straight-forward, just use the Required attribute with the namespace by having the namespace before the attribute name or by having this one in the using statement. 
+``` 
+
+I have not hardcoded the name of the resource, just the resource file. This way, we are able to setup every DataAnnotation attributes inside the same resource file. The name of the resource if the name of the attribute. It means that inside the resource file, we will see an entry "RequiredAttribute". The use of this attribute is straight-forward, just use the Required attribute with the namespace by having the namespace before the attribute name or by having this one in the using statement. 
+
 ```csharp
  [CrossLayer.Attributes.Required] [Display(ResourceType = typeof(ModelPropertyDisplayName), Name = "StockSymbol")] public Symbol StockSymbol { get; set; } 
 ```

@@ -11,7 +11,7 @@ Before anything, let's demystify some concepts. To have any website link to a do
 
 ![](images/DomainDnsWebSite-1024x88.png)
 
-Domain : This is a name you buy like "facebook.com" or "google.com". This one can be configured in many ways. It can be just a redirection to an existing website, or it can be link a **Nameserver** .
+Domain : This is a name you buy like "facebook.com" or "google.com". This one can be configured in many ways. It can be just a redirection to an existing website, or it can be link a `Nameserver` .
 
 Nameservers : fundamental part of the Domain Name System (DNS). The nameserver is the one in charge of mapping the domain to an IP of a server.
 
@@ -23,7 +23,9 @@ The first step is to setup the domain to the nameserver. You have multiple optio
 
 ![](images/CustomDNSNameserver.png)
 
-The advanced DNS, should remain with the value Standard Nameserver. ![](images/PersonalDnsServer-1024x166.png)
+The advanced DNS, should remain with the value Standard Nameserver. 
+
+![](images/PersonalDnsServer-1024x166.png)
 
 The values you see are from Azure DNS zone. This is one way to do it. You can use a custom nameserver directly at Namecheap, but at this moment, is more expensive than using Azure.
 
@@ -33,7 +35,9 @@ So, we need to create inside the Azure Portal a DNS Zone. This is at this moment
 
 You will see two entries with "@". This is fine and normal. You will need to add few more. First, you need to add 3 entries (maybe less but ... ) to verify that you are the owner of the nameserver. You need to create 3 CNAME type.
 
-1- "awverify" to awverify.XXXXX.azurewebsites.net 2- "wwww" to XXXXX.azurewebsites.net 3- "awverify.www" to awverify.XXXXX.azurewebsites.net
+1. "awverify" to awverify.XXXXX.azurewebsites.net 
+2. "wwww" to XXXXX.azurewebsites.net 
+3. "awverify.www" to awverify.XXXXX.azurewebsites.net
 
 Replace the XXXXX by your website on Azure. This is required because the next step is to go to your website and attach the domain. This step will verify the domain that you will enter by doing a call. Since you configured the domain to point to the nameserver, on Azure, it will try to do a awverify/wwww call. Since you are the owner, and have configured these new entries, the server will return that everything is okay. The forth entry that need to be setup is the XXXXX.com to the website. This is done by add a "@" entry to the website IP which is available on the website blade, under the blade that you add your domain. So, let's go on App Service Blade, select your website, in the settings' blade select "Custom domains and SSL". This is located under the Routing category.
 

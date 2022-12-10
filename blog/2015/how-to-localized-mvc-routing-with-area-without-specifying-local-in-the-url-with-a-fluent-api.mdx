@@ -1,9 +1,9 @@
 ---
 title: "How to Localized MVC Routing with Area Without Specifying Culture Short Name in the Url"
 date: "2015-12-21"
-categories: 
+categories:
   - "asp-mvc"
-tags: 
+tags:
   - "csharp"
   - "css3"
   - "dotnet"
@@ -15,22 +15,94 @@ tags:
 
 In a previous post, I wrote how to enhance the standard [Asp.Net MVC Routing to have localized URL with controller and action](./asp-net-mvc-localized-url-without-having-to-specify-the-language-in-it). This solution had some flaws that this article will cover. First of all, it was not working with area. Second, you were not able to use all functionalities like constraints and default values and third, it was a lot of configuration by having to use a lot of lists.
 
-This article illustrates an easier way to define your routing configuration by adding a Fluent API but also by giving you all standard routing capabilities. This solution will let you configure every route possibles : values, defaults values, constraints, etc and will enhance the standard MVC routing by figuring out which language to display all your resources by setting the culture for you.
+This article illustrates an easier way to define your routing configuration by adding a Fluent API but also by giving you all standard routing capabilities. This solution will let you configure every route possibles: values, defaults values, constraints, etc and will enhance the standard MVC routing by figuring out which language to display all your resources by setting the culture for you.
 
 Before going any further, here is an example of what the system let you use without Fluent API.
 
-
 ```csharp
- var controllerRoutes = new List<ControllerSectionLocalized>{ new ControllerSectionLocalized("Home" , new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN, "Home") ,new LocalizedSection(LocalizedSection.FR, "Demarrer") } ,new List<ActionSectionLocalized>{ new ActionSectionLocalized("Index" , new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN, "Index") ,new LocalizedSection(LocalizedSection.FR, "Index") } , new { id = ""} , null , "{controller}/{action}/{id}" )
-
-}) , new ControllerSectionLocalized("Account" , new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN, "Account") ,new LocalizedSection(LocalizedSection.FR, "Compte") } ,new List<ActionSectionLocalized>{ new ActionSectionLocalized("Profile" , new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN, "Profile") ,new LocalizedSection(LocalizedSection.FR, "Profile") } , new {username = UrlParameter.Optional } , null , "{action}/{username}" ) , new ActionSectionLocalized("DisplayBadges" , new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN, "Badges") ,new LocalizedSection(LocalizedSection.FR, "Medailles") } , null , null , "{action}" ) , new ActionSectionLocalized("Privilege" , new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN, "Privilege-benefits") ,new LocalizedSection(LocalizedSection.FR, "benefice-des-privileges") } , null , null , "{action}" ) , new ActionSectionLocalized("PrivilegeBuyConfirm" , new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN, "Privilege-buy-confirm") ,new LocalizedSection(LocalizedSection.FR, "confirmation-achat-privilege") } , null , null , "{action}" ) , new ActionSectionLocalized("Login" , new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN, "Login") ,new LocalizedSection(LocalizedSection.FR, "Identification") } , null , null , "{controller}/{action}" ) , new ActionSectionLocalized("ReSendingCreationEmail" , new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN, "SendValidationMail") ,new LocalizedSection(LocalizedSection.FR, "EnvoieCourrielDeValidation") } , null , null , "{controller}/{action}/{emailAddress}/now"/* We need to be able to have more than just action translated but also text token for e.g. NOW*/ ) , new ActionSectionLocalized("ActivateAccount" , new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN, "ActivateAccount") ,new LocalizedSection(LocalizedSection.FR, "activer-compte") } , null , null , "{controller}/{action}/{emailAddress}/now"/* We need to be able to have more than just action translated but also text token for e.g. NOW*/ ) } ) }; 
+ var controllerRoutes = new List<ControllerSectionLocalized>{
+  new ControllerSectionLocalized("Home",
+  new List<LocalizedSection>{
+    new LocalizedSection(LocalizedSection.EN, "Home")
+    ,new LocalizedSection(LocalizedSection.FR, "Demarrer")
+  }
+  ,new List<ActionSectionLocalized>{
+    new ActionSectionLocalized("Index"
+    , new List<LocalizedSection>{
+      new LocalizedSection(LocalizedSection.EN, "Index")
+      , new LocalizedSection(LocalizedSection.FR, "Index")
+    }
+    , new { id = ""} , null , "{controller}/{action}/{id}" )
+  }),
+  new ControllerSectionLocalized("Account" ,
+  new List<LocalizedSection>{
+    new LocalizedSection(LocalizedSection.EN, "Account")
+    ,new LocalizedSection(LocalizedSection.FR, "Compte")
+  }
+    ,new List<ActionSectionLocalized>{
+      new ActionSectionLocalized("Profile"
+      , new List<LocalizedSection>{
+        new LocalizedSection(LocalizedSection.EN, "Profile")
+        ,new LocalizedSection(LocalizedSection.FR, "Profile")
+      }
+      , new {username = UrlParameter.Optional } , null , "{action}/{username}" )
+  , new ActionSectionLocalized("DisplayBadges"
+    , new List<LocalizedSection>{
+      new LocalizedSection(LocalizedSection.EN, "Badges")
+      ,new LocalizedSection(LocalizedSection.FR, "Medailles")
+    } , null , null , "{action}" )
+  , new ActionSectionLocalized("Privilege"
+  , new List<LocalizedSection>{
+    new LocalizedSection(LocalizedSection.EN, "Privilege-benefits")
+    ,new LocalizedSection(LocalizedSection.FR, "benefice-des-privileges")
+    } , null , null , "{action}" )
+    , new ActionSectionLocalized("PrivilegeBuyConfirm"
+      , new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN, "Privilege-buy-confirm")
+      ,new LocalizedSection(LocalizedSection.FR, "confirmation-achat-privilege") } , null , null , "{action}" )
+    , new ActionSectionLocalized("Login"
+      , new List<LocalizedSection>{
+        new LocalizedSection(LocalizedSection.EN, "Login") ,new LocalizedSection(LocalizedSection.FR, "Identification")
+      } , null , null , "{controller}/{action}" ) , new ActionSectionLocalized("ReSendingCreationEmail" , new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN, "SendValidationMail")
+      ,new LocalizedSection(LocalizedSection.FR, "EnvoieCourrielDeValidation") } , null , null , "{controller}/{action}/{emailAddress}/now"
+    /* We need to be able to have more than just action translated but also text token for e.g. NOW*/ )
+    , new ActionSectionLocalized("ActivateAccount"
+    , new List<LocalizedSection>{ new LocalizedSection(LocalizedSection.EN, "ActivateAccount")
+      ,new LocalizedSection(LocalizedSection.FR, "activer-compte") } , null , null , "{controller}/{action}/{emailAddress}/now"
+    /* We need to be able to have more than just action translated but also text token for e.g. NOW*/ ) } )
+};
 ```
 
 And with the Fluent Routing API:
 
-
 ```csharp
- var controllerRoutes = FluentLocalizedRoute.BuildRoute() .ForBilingualController("Home", "Home", "Demarrer") .WithBilingualAction("Index", "Index", "Index") .WithDefaultValues(new { id = "" }) .UseDefaulUrl() .ForBilingualController("Account", "Account", "Compte") .WithBilingualAction("Profile", "Profile", "Profile") .WithDefaultValues(new { username = UrlParameter.Optional }) .WithUrl("{action}/{username}") .And().WithBilingualAction("DisplayBadges", "Badges", "Medailles") .WithUrl("{action}") .And().WithBilingualAction("Privilege", "Privilege-benefits", "benefice-des-privileges") .WithUrl("{action}") .And().WithBilingualAction("PrivilegeBuyConfirm", "Privilege-buy-confirm", "confirmation-achat-privilege") .WithUrl("{action}") .And().WithBilingualAction("Login", "Login", "Identification") .WithUrl("{controller}/{action}") .And().WithBilingualAction("ReSendingCreationEmail", "SendValidationMail", "EnvoieCourrielDeValidation") .WithUrl("{controller}/{action}/{emailAddress}/now") .And().WithBilingualAction("ActivateAccount", "ActivateAccount", "activer-compte") .WithUrl("{controller}/{action}/{emailAddress}/now") .ToList() ; 
+ var controllerRoutes = FluentLocalizedRoute.BuildRoute()
+  .ForBilingualController("Home", "Home", "Demarrer")
+    .WithBilingualAction("Index", "Index", "Index")
+    .WithDefaultValues(new { id = "" })
+    .UseDefaulUrl()
+  .ForBilingualController("Account", "Account", "Compte")
+    .WithBilingualAction("Profile", "Profile", "Profile")
+    .WithDefaultValues(new { username = UrlParameter.Optional })
+    .WithUrl("{action}/{username}")
+    .And()
+      .WithBilingualAction("DisplayBadges", "Badges", "Medailles")
+      .WithUrl("{action}")
+    .And()
+      .WithBilingualAction("Privilege", "Privilege-benefits", "benefice-des-privileges")
+      .WithUrl("{action}")
+    .And()
+      .WithBilingualAction("PrivilegeBuyConfirm", "Privilege-buy-confirm", "confirmation-achat-privilege")
+      .WithUrl("{action}")
+    .And()
+      .WithBilingualAction("Login", "Login", "Identification")
+      .WithUrl("{controller}/{action}")
+    .And()
+      .WithBilingualAction("ReSendingCreationEmail", "SendValidationMail", "EnvoieCourrielDeValidation")
+      .WithUrl("{controller}/{action}/{emailAddress}/now")
+    .And()
+      .WithBilingualAction("ActivateAccount", "ActivateAccount", "activer-compte")
+      .WithUrl("{controller}/{action}/{emailAddress}/now")
+  .ToList() ;
 ```
 
 As you can see, it's way more concise. Of course, the method used in the API focus on 2 languages but underneath you can have unlimited localization -- it's just more convenient for a lot of people to have a bilingual application, thus these helper methods. So what does this localized code will give you:
@@ -47,99 +119,324 @@ Let's start without having the Fluent API because the Fluent API it's just somet
 
 The first class that we need is the one that will hold the localized string.
 
-
 ```csharp
- public class LocalizedSection { public static CultureInfo EN = CultureInfo.GetCultureInfo("en-US"); public static CultureInfo FR = CultureInfo.GetCultureInfo("fr-FR"); public CultureInfo CultureInfo { get; set; } public string TranslatedValue { get; set; } public LocalizedSection(CultureInfo culture, string translatedValue) { CultureInfo = culture; TranslatedValue = translatedValue; } } 
+public class LocalizedSection {
+  public static CultureInfo EN = CultureInfo.GetCultureInfo("en-US");
+  public static CultureInfo FR = CultureInfo.GetCultureInfo("fr-FR");
+  public CultureInfo CultureInfo { get; set; }
+  public string TranslatedValue { get; set; }
+  public LocalizedSection(CultureInfo culture, string translatedValue) {
+    CultureInfo = culture; TranslatedValue = translatedValue;
+  }
+}
 ```
 
 This _LocalizedSection_ class is pretty simple by having a single constructor that take a culture and a string that is localized. Some static properties are there because I am developing an English-French system and wanted to have the culture that I will use defined once. Even if everything explained in this article is about a bilingual system in English and French, the system is already in shape to let you use other languages than these two but also more than two. Once you have that class, you need to defines the structure of how we will keep all localized sections for the system. The structure is the same as Asp.Net MVC routing which is area, controller and action. We will build everything to support Area-Controller-Action and Controller-Action. To do so, we need three classes.
 
-
 ```csharp
- public class AreaSectionLocalized { public string AreaName { get; set; } public List<LocalizedSection> Translation { get; set; } public List<ControllerSectionLocalized> ControllerTranslations { get; set; }
+ public class AreaSectionLocalized {
+  public string AreaName { get; set; }
+  public List<LocalizedSection> Translation { get; set; }
+   public List<ControllerSectionLocalized> ControllerTranslations { get; set; }
 
-public AreaSectionLocalized(string areaName, List<LocalizedSection> translation, List<ControllerSectionLocalized> controllersList) { this.AreaName = areaName; this.Translation = translation; this.ControllerTranslations = controllersList; } } public class ControllerSectionLocalized { public string ControllerName { get; set; } public List<LocalizedSection> Translation { get; set; } public List<ActionSectionLocalized> ActionTranslations { get; set; }
+  public AreaSectionLocalized(string areaName, List<LocalizedSection> translation, List<ControllerSectionLocalized> controllersList) {
+    this.AreaName = areaName; this.Translation = translation;
+    this.ControllerTranslations = controllersList; }
+  }
 
-public ControllerSectionLocalized(string controllerName, List<LocalizedSection> translation, List<ActionSectionLocalized> actionsList) { this.ControllerName = controllerName; this.Translation = translation; this.ActionTranslations = actionsList; } } public class ActionSectionLocalized { public string ActionName { get; set; } public List<LocalizedSection> Translation { get; set; }
+    public class ControllerSectionLocalized {
+      public string ControllerName { get; set; }
+      public List<LocalizedSection> Translation { get; set; }
+      public List<ActionSectionLocalized> ActionTranslations { get; set; }
 
-public object Values { get; set; } public object Constraints { get; set; } public string Url { get; set; } public ActionSectionLocalized(string actionName, List<LocalizedSection> translation, object values = null, object constraints = null, string url = "") { this.ActionName = actionName; this.Translation = translation; this.Values = values; this.Constraints = constraints; this.Url = url; } public Dictionary<string,List<LocalizedSection>> Tokens { get; set; } } 
+  public ControllerSectionLocalized(string controllerName, List<LocalizedSection> translation, List<ActionSectionLocalized> actionsList) {
+    this.ControllerName = controllerName;
+    this.Translation = translation;
+    this.ActionTranslations = actionsList;
+  }
+}
+
+public class ActionSectionLocalized {
+  public string ActionName { get; set; }
+  public List<LocalizedSection> Translation { get; set; }
+
+  public object Values { get; set; }
+  public object Constraints { get; set; }
+  public string Url { get; set; }
+  public ActionSectionLocalized(string actionName, List<LocalizedSection> translation, object values = null, object constraints = null, string url = "") {
+    this.ActionName = actionName;
+    this.Translation = translation;
+    this.Values = values;
+    this.Constraints = constraints;
+    this.Url = url;
+  }
+  public Dictionary<string,List<LocalizedSection>> Tokens { get; set; }
+}
 ```
 
-The _AreaSectionLocalized_ class is the one that contain the real area's name under the property named **AreaName**. This one will be used to map when you request from Mvc Html Helper a route with the real name but also when you specify in the url a localized string from the _Translation_ property. This list, _Translation_ , is where you store the collection of localized area name for this area. For example, if you have an area in your code called "Order" than you can have the area to be displayed in the url has "customer-area" and "commande-du-client". Since it's a list, you can have unlimited translation -- each of them are linked to a **CultureInfo**. The last important property of that class is the collection of controller. As you can see, we are building a three of routing. At the root will be a collection of area, with _AreaSectionLocalized_. Each of area will have a list of controller, which will have a list of action. That is why the _ControllerSectionLocalized_ look alike the area class. The action class, _ActionSectionLocalized_ is the class among the three that contains more information. It has also the same principle of having the action name which is the one that the controller class define and use in Asp.Net MVC Url Helper with a list of localized string but also multiple properties. Values, constraints, Url are all information used to build the URL in the standard Asp.Net MVC routing system. Here is a standard route :
-
+The _AreaSectionLocalized_ class is the one that contain the real area's name under the property named `AreaName`. This one will be used to map when you request from Mvc Html Helper a route with the real name but also when you specify in the url a localized string from the _Translation_ property. This list, _Translation_ , is where you store the collection of localized area name for this area. For example, if you have an area in your code called "Order" than you can have the area to be displayed in the url has "customer-area" and "commande-du-client". Since it's a list, you can have unlimited translation -- each of them are linked to a `CultureInfo`. The last important property of that class is the collection of controller. As you can see, we are building a three of routing. At the root will be a collection of area, with _AreaSectionLocalized_. Each of area will have a list of controller, which will have a list of action. That is why the _ControllerSectionLocalized_ look alike the area class. The action class, _ActionSectionLocalized_ is the class among the three that contains more information. It has also the same principle of having the action name which is the one that the controller class define and use in Asp.Net MVC Url Helper with a list of localized string but also multiple properties. Values, constraints, Url are all information used to build the URL in the standard Asp.Net MVC routing system. Here is a standard route:
 
 ```csharp
- routes.MapRoute(Constants.Areas.CONTEST + "_contest_detail" , Constants.Areas.CONTEST + "/{" + Constants.RoutePortionName.ACTIVE_CURRENT_CONTEST_ID + "}/Detail" , new RouteValueDictionary { { Constants.RoutePortionName.ACTION, "Detail" }, { Constants.RoutePortionName.CONTROLLER, "UserContest" }} , new RouteValueDictionary {{ Constants.RoutePortionName.ACTIVE_CURRENT_CONTEST_ID,@"\\d+"} }); 
+ routes.MapRoute(Constants.Areas.CONTEST + "_contest_detail" , Constants.Areas.CONTEST + "/{" + Constants.RoutePortionName.ACTIVE_CURRENT_CONTEST_ID + "}/Detail"
+ , new RouteValueDictionary { { Constants.RoutePortionName.ACTION, "Detail" }
+ , { Constants.RoutePortionName.CONTROLLER, "UserContest" }}
+ , new RouteValueDictionary {{ Constants.RoutePortionName.ACTIVE_CURRENT_CONTEST_ID,@"\\d+"} });
 ```
 
-The second line is the URL, the third line is the value and the forth line is the constraint. We also do the same in the _ActionSectionLocalized_ class. One custom new principle is the Tokens list. This is a dictionary of string that we will replace with a localized string. Item of the list represent a token, every value contains a list of localized text to replace in the URL. That mean that you can create an URL that look like this : "/{area}/{controller}/{action}/always/{page}/{pagenumber} where the area, controller and action will be replaced with the according value as the standard Asp.Net MVC routing is normally doing, the same is true about the hard-coded "always" that will remains the same whatever the language and the {pagenumber} if defined in the URL will be used as a routing variable. The difference is that if we detect that {page} is not used as a routing value that we will lookup in the token list to see if it could be replaced with a localized value. We will see it in more detail later.
+The second line is the URL, the third line is the value and the forth line is the constraint. We also do the same in the _ActionSectionLocalized_ class. One custom new principle is the Tokens list. This is a dictionary of string that we will replace with a localized string. Item of the list represent a token, every value contains a list of localized text to replace in the URL. That mean that you can create an URL that look like this : `/{area}/{controller}/{action}/always/{page}/{pagenumber}` where the area, controller and action will be replaced with the according value as the standard Asp.Net MVC routing is normally doing, the same is true about the hard-coded "always" that will remains the same whatever the language and the `{pagenumber}` if defined in the URL will be used as a routing variable. The difference is that if we detect that `{page}` is not used as a routing value that we will lookup in the token list to see if it could be replaced with a localized value. We will see it in more detail later.
 
 The next one is one of the code class of the system, it's the new route class. This localized route class, named accordingly to its goal _LocalizedClass_, inherit from the Asp.Net MVC's Route class. This way, it's possible to continue to use the same routing system without having to re-invent the wheel.
 
-
 ```csharp
- public class LocalizedRoute : Route { public CultureInfo Culture { get; private set; } public ActionSectionLocalized ActionTranslation { get; private set; } public ControllerSectionLocalized ControllerTranslation { get; private set; } public AreaSectionLocalized AreaSectionLocalized { get; private set; }
+ public class LocalizedRoute : Route {
+  public CultureInfo Culture { get; private set; }
+  public ActionSectionLocalized ActionTranslation { get; private set; }
+  public ControllerSectionLocalized ControllerTranslation { get; private set; }
+  public AreaSectionLocalized AreaSectionLocalized { get; private set; }
 
-public LocalizedRoute(AreaSectionLocalized areaSectionLocalized, ControllerSectionLocalized controllerTranslation, ActionSectionLocalized actionTranslation, string url , RouteValueDictionary defaults, RouteValueDictionary constraints, CultureInfo culture) : this(areaSectionLocalized, controllerTranslation, actionTranslation, url, defaults, constraints, null, new MvcRouteHandler(), culture) {
+  public LocalizedRoute(AreaSectionLocalized areaSectionLocalized, ControllerSectionLocalized controllerTranslation, ActionSectionLocalized actionTranslation, string url , RouteValueDictionary defaults, RouteValueDictionary constraints, CultureInfo culture)
+  : this(areaSectionLocalized, controllerTranslation, actionTranslation, url, defaults, constraints, null, new MvcRouteHandler(), culture) {
 
+  }
+
+  public LocalizedRoute(AreaSectionLocalized areaSectionLocalized, ControllerSectionLocalized controllerTranslation, ActionSectionLocalized actionTranslation, string url , RouteValueDictionary defaults, RouteValueDictionary constraints, RouteValueDictionary dataTokens, IRouteHandler routeHandler, CultureInfo culture)
+  : base(url, defaults, constraints, dataTokens, routeHandler) {
+    this.AreaSectionLocalized = areaSectionLocalized;
+
+  if (controllerTranslation == null) {
+    throw new ArgumentNullException("controllerTranslation");
+  }
+  this.ControllerTranslation = controllerTranslation;
+  if (actionTranslation == null) {
+    throw new ArgumentNullException("actionTranslation");
+  }
+  this.ActionTranslation = actionTranslation;
+
+  if (url == null) { throw new ArgumentNullException("url"); }
+
+  if (culture == null) { throw new ArgumentNullException("culture"); }
+
+  this.Culture = culture;
+
+  if (dataTokens == null) {
+    base.DataTokens = new RouteValueDictionary();
+  }
+
+  if (base.Defaults != null && base.Defaults.Keys.Contains(Constants.AREA)) {
+    if (base.DataTokens == null) {
+      base.DataTokens = new RouteValueDictionary();
+    }
+    base.DataTokens.Add(Constants.AREA, base.Defaults[Constants.AREA].ToString());
+  }
 }
 
-public LocalizedRoute(AreaSectionLocalized areaSectionLocalized, ControllerSectionLocalized controllerTranslation, ActionSectionLocalized actionTranslation, string url , RouteValueDictionary defaults, RouteValueDictionary constraints, RouteValueDictionary dataTokens, IRouteHandler routeHandler, CultureInfo culture) : base(url, defaults, constraints, dataTokens, routeHandler) { this.AreaSectionLocalized = areaSectionLocalized;
+/// <summary>
+/// Set the thread culture with the route culture
+/// </summary>
+/// <param name="httpContext"></param>
+/// <returns></returns>
+public override RouteData GetRouteData(HttpContextBase httpContext) {
+  var returnRouteData = base.GetRouteData(httpContext);
+  if (returnRouteData != null) {
+    System.Threading.Thread.CurrentThread.CurrentCulture = this.Culture;
+    System.Threading.Thread.CurrentThread.CurrentUICulture = this.Culture;
+  }
+  return returnRouteData;
+}
 
-if (controllerTranslation == null) { throw new ArgumentNullException("controllerTranslation"); } this.ControllerTranslation = controllerTranslation; if (actionTranslation == null) { throw new ArgumentNullException("actionTranslation"); } this.ActionTranslation = actionTranslation;
+protected override bool ProcessConstraint(HttpContextBase httpContext, object constraint, string parameterName, RouteValueDictionary values, RouteDirection routeDirection) {
+  return base.ProcessConstraint(httpContext, constraint, parameterName, values, routeDirection);
+}
 
-if (url == null) { throw new ArgumentNullException("url"); }
+public override VirtualPathData GetVirtualPath(RequestContext requestContext, RouteValueDictionary values) {
+  var currentThreadCulture = System.Threading.Thread.CurrentThread.CurrentUICulture; //First step is to avoid route in the wrong culture
+  if (this.Culture.Name != currentThreadCulture.Name) { return null; }
 
-if (culture == null) { throw new ArgumentNullException("culture"); } this.Culture = culture;
+  //Second, set the right Area/Controller/Action to have MVC generating the URL with the localized string
+  bool replaceRoutingValues = true;
+  LocalizedSection areaTranslated = null;
+  LocalizedSection controllerTranslated = null;
+  LocalizedSection actionTranslated = null;
+  if (this.AreaSectionLocalized != null && values[Constants.AREA] !=null) //If added in the RouteValue, it will be just there later during GetVirtualPath (merge from MVC's route creation code)
+  {
+    var valueToken = values[Constants.AREA];
+    areaTranslated = this.AreaSectionLocalized.Translation.FirstOrDefault(d => d.CultureInfo.Name == currentThreadCulture.Name);
+    replaceRoutingValues = (areaTranslated != null && areaTranslated.TranslatedValue == valueToken);
+  }
 
-if (dataTokens == null) { base.DataTokens = new RouteValueDictionary(); }
+  if (replaceRoutingValues && this.ControllerTranslation != null) {
+    var valueToken = values[Constants.CONTROLLER];
+    controllerTranslated = this.ControllerTranslation.Translation.FirstOrDefault(d => d.CultureInfo.Name == currentThreadCulture.Name);
+    replaceRoutingValues &= (controllerTranslated != null && controllerTranslated.TranslatedValue == valueToken);
+  }
 
-if (base.Defaults != null && base.Defaults.Keys.Contains(Constants.AREA)) { if (base.DataTokens == null) { base.DataTokens = new RouteValueDictionary(); } base.DataTokens.Add(Constants.AREA, base.Defaults[Constants.AREA].ToString()); } }
+  if (replaceRoutingValues && this.ActionTranslation != null) {
+    var valueToken = values[Constants.ACTION]; actionTranslated = this.ActionTranslation.Translation.FirstOrDefault(d => d.CultureInfo.Name == currentThreadCulture.Name); replaceRoutingValues &= (actionTranslated != null && actionTranslated.TranslatedValue == valueToken);
+  }
 
-/// <summary> /// Set the thread culture with the route culture /// </summary> /// <param name="httpContext"></param> /// <returns></returns> public override RouteData GetRouteData(HttpContextBase httpContext) { var returnRouteData = base.GetRouteData(httpContext); if (returnRouteData != null) { System.Threading.Thread.CurrentThread.CurrentCulture = this.Culture; System.Threading.Thread.CurrentThread.CurrentUICulture = this.Culture; } return returnRouteData; } protected override bool ProcessConstraint(HttpContextBase httpContext, object constraint, string parameterName, RouteValueDictionary values, RouteDirection routeDirection) { return base.ProcessConstraint(httpContext, constraint, parameterName, values, routeDirection); }
+  //We need to find a translation that fit at least Controller and Action
+  //if (!replaceRoutingValues)
+  //{
+  // return null;
+  //}
 
-public override VirtualPathData GetVirtualPath(RequestContext requestContext, RouteValueDictionary values) { var currentThreadCulture = System.Threading.Thread.CurrentThread.CurrentUICulture; //First step is to avoid route in the wrong culture if (this.Culture.Name != currentThreadCulture.Name) { return null; }
+  //Switch text token to the right language
+  if (this.ActionTranslation != null) {
+    base.Url = ReplaceTokens(base.Url, this.ActionTranslation.Tokens);
+  }
 
-//Second, set the right Area/Controller/Action to have MVC generating the URL with the localized string bool replaceRoutingValues = true; LocalizedSection areaTranslated = null; LocalizedSection controllerTranslated = null; LocalizedSection actionTranslated = null; if (this.AreaSectionLocalized != null && values[Constants.AREA] !=null) //If added in the RouteValue, it will be just there later during GetVirtualPath (merge from MVC's route creation code) { var valueToken = values[Constants.AREA]; areaTranslated = this.AreaSectionLocalized.Translation.FirstOrDefault(d => d.CultureInfo.Name == currentThreadCulture.Name); replaceRoutingValues = (areaTranslated != null && areaTranslated.TranslatedValue == valueToken); }
+  // Check with the new values if the system can get an URL with the values in the culture desired
+  var vitualPathData = this.GetVirtualPathForLocalizedRoute(requestContext, values); //vitualPathData.DataTokens
 
-if (replaceRoutingValues && this.ControllerTranslation != null) { var valueToken = values[Constants.CONTROLLER]; controllerTranslated = this.ControllerTranslation.Translation.FirstOrDefault(d => d.CultureInfo.Name == currentThreadCulture.Name); replaceRoutingValues &= (controllerTranslated != null && controllerTranslated.TranslatedValue == valueToken); }
+  // Asp.Net MVC found a URL, time to enhance the URL with localization replacement
+  if (vitualPathData != null) {
+    //This is to replace {action}, {controller} and {area} with the localized version
+    vitualPathData.VirtualPath = LocalizedSection.ReplaceSection(this.Url, areaTranslated, controllerTranslated, actionTranslated);
 
-if (replaceRoutingValues && this.ActionTranslation != null) { var valueToken = values[Constants.ACTION]; actionTranslated = this.ActionTranslation.Translation.FirstOrDefault(d => d.CultureInfo.Name == currentThreadCulture.Name); replaceRoutingValues &= (actionTranslated != null && actionTranslated.TranslatedValue == valueToken); }
+    //Enhance url with replace or append route value dictionary
+    vitualPathData.VirtualPath = AdjustVirtualPathWithRoutes(vitualPathData.VirtualPath, values);
 
-//We need to find a translation that fit at least Controller and Action //if (!replaceRoutingValues) //{ // return null; //}
+    //Default value if not defined in the route value
+    vitualPathData.VirtualPath = AdjustVirtualPathWithActionTranslationDefaultValues(vitualPathData.VirtualPath, values); vitualPathData.VirtualPath = vitualPathData.VirtualPath.TrimEnd('/');
+  }
 
-//Switch text token to the right language if (this.ActionTranslation != null) { base.Url = ReplaceTokens(base.Url, this.ActionTranslation.Tokens); }
+  return vitualPathData;
+}
 
-// Check with the new values if the system can get an URL with the values in the culture desired var vitualPathData = this.GetVirtualPathForLocalizedRoute(requestContext, values); //vitualPathData.DataTokens // Asp.Net MVC found a URL, time to enhance the URL with localization replacement if (vitualPathData != null) { //This is to replace {action}, {controller} and {area} with the localized version vitualPathData.VirtualPath = LocalizedSection.ReplaceSection(this.Url, areaTranslated, controllerTranslated, actionTranslated); //Enhance url with replace or append route value dictionary vitualPathData.VirtualPath = AdjustVirtualPathWithRoutes(vitualPathData.VirtualPath, values); //Default value if not defined in the route value vitualPathData.VirtualPath = AdjustVirtualPathWithActionTranslationDefaultValues(vitualPathData.VirtualPath, values); vitualPathData.VirtualPath = vitualPathData.VirtualPath.TrimEnd('/'); } return vitualPathData; }
+/// <summary>
+/// Adjust virtual path with action translation default value not in the route. This is because we can define default and the
+/// value of default is only used when not more specific from the route.
+///
+/// Route has precedence on Default Value (this.ActionTranslation.Values)
+/// </summary>
+/// <param name="currentVirtualPath"></param>
+/// <param name="values"></param>
+/// <returns></returns>
+public string AdjustVirtualPathWithActionTranslationDefaultValues(string currentVirtualPath, RouteValueDictionary values) {
+  if (string.IsNullOrEmpty(currentVirtualPath) || values == null) { return currentVirtualPath; }
+  string finalVirtualPath = currentVirtualPath; //This is for the case that optional parameter in the action are not defined in the URL
+  if (this.ActionTranslation != null) {
+    var rc = new RouteValueDictionary(this.ActionTranslation.Values); // If defined {word} is not in the URL, then we use the value from the actionTranslated
 
-/// <summary> /// Adjust virtual path with action translation default value not in the route. This is because we can define default and the /// value of default is only used when not more specific from the route. /// /// Route has precedence on Default Value (this.ActionTranslation.Values) /// </summary> /// <param name="currentVirtualPath"></param> /// <param name="values"></param> /// <returns></returns> public string AdjustVirtualPathWithActionTranslationDefaultValues(string currentVirtualPath, RouteValueDictionary values) { if (string.IsNullOrEmpty(currentVirtualPath) || values == null) { return currentVirtualPath; } string finalVirtualPath = currentVirtualPath; //This is for the case that optional parameter in the action are not defined in the URL if (this.ActionTranslation != null) { var rc = new RouteValueDictionary(this.ActionTranslation.Values); // If defined {word} is not in the URL, then we use the value from the actionTranslated foreach (var key in rc.Keys.Where(q => !values.ContainsKey(q))) { string toReplace = "{" + key + "}"; finalVirtualPath = finalVirtualPath.Replace(toReplace, System.Net.WebUtility.UrlEncode(rc[key].ToString())); } } return finalVirtualPath; }
+    foreach (var key in rc.Keys.Where(q => !values.ContainsKey(q))) {
+      string toReplace = "{" + key + "}";
+      finalVirtualPath = finalVirtualPath.Replace(toReplace, System.Net.WebUtility.UrlEncode(rc[key].ToString()));
+    }
+  }
+  return finalVirtualPath;
+}
 
-/// <summary> /// Get all routes information that are not Area-Controller-Action and change the value from the URL. /// If not in the URL, add the data in query string /// </summary> /// <param name="currentVirtualPath"></param> /// <param name="values"></param> /// <returns></returns> public string AdjustVirtualPathWithRoutes(string currentVirtualPath, RouteValueDictionary values) { string finalVirtualPath = currentVirtualPath; if (values != null) { foreach (var key in values.Keys.Where(k => k != Constants.AREA && k != Constants.CONTROLLER && k != Constants.ACTION)) { string toReplace = "{" + key + "}"; if (values[key] != null) { string replaceWith = System.Net.WebUtility.UrlEncode(values[key].ToString()); if (currentVirtualPath.Contains(toReplace)) { finalVirtualPath = finalVirtualPath.Replace(toReplace, replaceWith); } else { finalVirtualPath = AddKeyValueToUrlAsQueryString(finalVirtualPath, toReplace, replaceWith); } } } }
+/// <summary>
+/// Get all routes information that are not Area-Controller-Action and change the value from the URL.
+/// If not in the URL, add the data in query string
+/// </summary>
+/// <param name="currentVirtualPath"></param>
+/// <param name="values"></param>
+/// <returns></returns>
+public string AdjustVirtualPathWithRoutes(string currentVirtualPath, RouteValueDictionary values) {
+  string finalVirtualPath = currentVirtualPath;
+  if (values != null) {
+    foreach (var key in values.Keys.Where(k => k != Constants.AREA && k != Constants.CONTROLLER && k != Constants.ACTION)) {
+      string toReplace = "{" + key + "}"; if (values[key] != null) {
+        string replaceWith = System.Net.WebUtility.UrlEncode(values[key].ToString());
+        if (currentVirtualPath.Contains(toReplace)) {
+          finalVirtualPath = finalVirtualPath.Replace(toReplace, replaceWith);
+         } else {
+          finalVirtualPath = AddKeyValueToUrlAsQueryString(finalVirtualPath, toReplace, replaceWith);
+        }
+      }
+    }
+  }
 
-return finalVirtualPath; }
+  return finalVirtualPath;
+}
 
-public string ReplaceTokens(string url, Dictionary<string, List<LocalizedSection>> tokens) { if (tokens!= null) { foreach (var key in tokens.Keys) { var tokenInCurrentCulture = tokens[key].FirstOrDefault(f => f.CultureInfo.Name == this.Culture.Name); if (tokenInCurrentCulture != null) { string toReplace = "{" + key + "}"; return url.Replace(toReplace, System.Net.WebUtility.UrlEncode(tokenInCurrentCulture.TranslatedValue)); } } } return url; }
+public string ReplaceTokens(string url, Dictionary<string, List<LocalizedSection>> tokens) {
+  if (tokens!= null) {
+    foreach (var key in tokens.Keys) {
+      var tokenInCurrentCulture = tokens[key].FirstOrDefault(f => f.CultureInfo.Name == this.Culture.Name);
+      if (tokenInCurrentCulture != null) {
+        string toReplace = "{" + key + "}";
+      return url.Replace(toReplace, System.Net.WebUtility.UrlEncode(tokenInCurrentCulture.TranslatedValue));
+      }
+    }
+  }
+  return url;
+}
 
-public string AddKeyValueToUrlAsQueryString(string url, string key, string value) { if (!string.IsNullOrEmpty(key) && url!=null) { key = key.Replace("{", "").Replace("}", ""); if (url.Contains("?")) { return url + "&" + key + "=" + value; } else { return url + "?" + key + "=" + value; } } return url; }
+public string AddKeyValueToUrlAsQueryString(string url, string key, string value) {
+  if (!string.IsNullOrEmpty(key) && url!=null) {
+    key = key.Replace("{", "").Replace("}", "");
+    if (url.Contains("?")) {
+      return url + "&" + key + "=" + value;
+    } else {
+      return url + "?" + key + "=" + value;
+    }
+  }
+  return url;
+}
 
-public virtual VirtualPathData GetVirtualPathForLocalizedRoute(RequestContext requestContext, RouteValueDictionary values) { return base.GetVirtualPath(requestContext, values); } } 
+public virtual VirtualPathData GetVirtualPathForLocalizedRoute(RequestContext requestContext, RouteValueDictionary values) {
+  return base.GetVirtualPath(requestContext, values);
+  }
+}
 ```
 
 I will not describe everything since I added comment directly inside the code but the gist of the class is to manipulate the URL and routing by overriding _GetVirtualPath_ to be sure to convert the localized route section requested into the original Area-Controller-Action name, to use the default code to get url that would be generated by ASP.Net MVC and then enhance this one by localizing this one with Area-Controller-Action. You can see the _GetVirtualPath_ as the entry point that is called for every route defined when you use any ASP.Net MVC mechanism to get an URL. The framework loops all the route by calling _GetVirtualPath_ and if one return not NULL, it takes this one.
 
 This class also override _GetRouteData_ which is used when the user enter an URL in a browser. That time, since we are still using the default route mechanism and that we store the route with the standard Area-Controller-Action + Constraint that we have almost nothing to do. We only set the current thread Culture from the culture defined by the route.
 
-The last remaining piece to be able to have everything work is to create an helper to add localized route to the ASP.Net MVC's **RouteCollection**. I decided to create a static method that take the route and a list of **AreaSectionLocalized** or **ControllerSectionLocalized**.
-
+The last remaining piece to be able to have everything work is to create an helper to add localized route to the ASP.Net MVC's `RouteCollection`. I decided to create a static method that take the route and a list of `AreaSectionLocalized` or `ControllerSectionLocalized`.
 
 ```csharp
  public static class RouteCollectionExtension {
 
-public static void AddRoutes(this RouteCollection routes, List<AreaSectionLocalized> areaRoutes) { foreach (var area in areaRoutes) { routes.AddRoutes(area.ControllerTranslations, area); } }
+public static void AddRoutes(this RouteCollection routes, List<AreaSectionLocalized> areaRoutes) {
+  foreach (var area in areaRoutes) {
+    routes.AddRoutes(area.ControllerTranslations, area);
+  }
+}
 
-public static void AddRoutes(this RouteCollection routes, List<ControllerSectionLocalized> controllerRoutes, AreaSectionLocalized areaSectionLocalized = null) { foreach (var controller in controllerRoutes) { foreach (var controllerTranslation in controller.Translation) { foreach (var action in controller.ActionTranslations) { var urlAction = action.Url;
+public static void AddRoutes(this RouteCollection routes, List<ControllerSectionLocalized> controllerRoutes, AreaSectionLocalized areaSectionLocalized = null) {
+  foreach (var controller in controllerRoutes) {
+    foreach (var controllerTranslation in controller.Translation) {
+      foreach (var action in controller.ActionTranslations) {
+         var urlAction = action.Url;
 
-foreach (var actionTranslation in action.Translation) { if (controllerTranslation.CultureInfo == actionTranslation.CultureInfo) { RouteValueDictionary values = null; if (action.Values is RouteValueDictionary) { values = action.Values as RouteValueDictionary; } else { values = new RouteValueDictionary(action.Values); } LocalizedSection areaTranslation = null; if (areaSectionLocalized != null && areaSectionLocalized.Translation.Any(d => d.CultureInfo.Name == controllerTranslation.CultureInfo.Name)) { values[Constants.AREA] = areaSectionLocalized.AreaName; areaTranslation = areaSectionLocalized.Translation.FirstOrDefault(d => d.CultureInfo.Name == controllerTranslation.CultureInfo.Name); } values[Constants.CONTROLLER] = controller.ControllerName; values[Constants.ACTION] = action.ActionName; RouteValueDictionary constraints = null; if (action.Constraints is RouteValueDictionary) { constraints = action.Constraints as RouteValueDictionary; } else { constraints = new RouteValueDictionary(action.Constraints); } var newUrl = LocalizedSection.ReplaceSection(urlAction, areaTranslation, controllerTranslation, actionTranslation); routes.Add(new LocalizedRoute( areaSectionLocalized , controller , action , newUrl , values , constraints , actionTranslation.CultureInfo ) ); } } } } } } } 
+        foreach (var actionTranslation in action.Translation) {
+          if (controllerTranslation.CultureInfo == actionTranslation.CultureInfo) {
+            RouteValueDictionary values = null;
+            if (action.Values is RouteValueDictionary) {
+              values = action.Values as RouteValueDictionary;
+            } else {
+              values = new RouteValueDictionary(action.Values);
+            }
+
+            LocalizedSection areaTranslation = null;
+            if (areaSectionLocalized != null && areaSectionLocalized.Translation.Any(d => d.CultureInfo.Name == controllerTranslation.CultureInfo.Name)) {
+              values[Constants.AREA] = areaSectionLocalized.AreaName;
+              areaTranslation = areaSectionLocalized.Translation.FirstOrDefault(d => d.CultureInfo.Name == controllerTranslation.CultureInfo.Name);
+            }
+
+            values[Constants.CONTROLLER] = controller.ControllerName;
+            values[Constants.ACTION] = action.ActionName;
+            RouteValueDictionary constraints = null;
+
+            if (action.Constraints is RouteValueDictionary) {
+              constraints = action.Constraints as RouteValueDictionary;
+            } else {
+              constraints = new RouteValueDictionary(action.Constraints);
+            }
+
+            var newUrl = LocalizedSection.ReplaceSection(urlAction, areaTranslation, controllerTranslation, actionTranslation);
+            routes.Add(new LocalizedRoute( areaSectionLocalized , controller , action , newUrl , values , constraints , actionTranslation.CultureInfo ) );
+            }
+          }
+        }
+      }
+    }
+  }
+}
 ```
 
 The code is adding a route by looping through all areas, all controllers, all actions and for each language add the route. I will create a second article to describe to Fluent interface that help to have a more concise way to write the routing and also that gives Microsoft Intellisence support. So far, in this article, we have seen how to enhance the existing Asp.Net MVC routing system by having localized route. The code handles the thread culture, thus by changing the URL you have all your pages in the right local too. Finally, we saw that

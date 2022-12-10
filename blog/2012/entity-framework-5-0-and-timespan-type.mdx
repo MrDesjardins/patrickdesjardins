@@ -13,11 +13,15 @@ I thought that Entity Framework 5 was able with SQL Server 2008 R2 to map Timesp
 
 
 ```csharp
- public Int64 TimeBetweenExercicesTicks{ get; set; }
+public Int64 TimeBetweenExercicesTicks{ get; set; }
 
-[NotMapped] public TimeSpan TimeBetweenExercices { get { return TimeSpan.FromTicks(TimeBetweenExercicesTicks); } set { TimeBetweenExercicesTicks= value.Ticks; } } 
+[NotMapped] 
+public TimeSpan TimeBetweenExercices { 
+  get { return TimeSpan.FromTicks(TimeBetweenExercicesTicks); } 
+  set { TimeBetweenExercicesTicks= value.Ticks; } 
+} 
 ```
 
-First, you should want to still use in your code the TimeSpan type because it's convenient to manipulate time. But, on the other side Entity Framework doesn't map the type. Fortunately, we can map the ticks and simply ignore the property with the TimeSpan type.
+First, you should want to still use in your code the TimeSpan type because it's convenient to manipulate time. But, on the other side Entity Framework doesn't map the type. Fortunately, we can map the ticks and simply ignore the property with the `TimeSpan` type.
 
-The example above show you this scenario where an entity required to have the time between two exercices. In fact, the TimeBetweenExercices is not mapped to the database but the underlying property TimeBetweenExercicesTicks. Since an **Int64** can be mapped and that we do not loss any precision by converting ticks to/from timespan, that we can use this time.
+The example above shows you this scenario where an entity required to have the time between two exercices. In fact, the `TimeBetweenExercices` is not mapped to the database but the underlying property TimeBetweenExercicesTicks. Since an `Int64` can be mapped and that we do not loss any precision by converting ticks to/from timespan, that we can use this time.

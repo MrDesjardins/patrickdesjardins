@@ -7,13 +7,16 @@ categories:
 
 Before going any further, this is supposed by Chrome 56+ and not many browser yet. The actual Chrome stable version is 56, hence it should be used with a good fallback.
 
-Sticky position is a new CSS position that allow to have a sticky element that is not sticky all the time. This is different from fixed which place an HTML element in a place and never move. With position to sticky, you define a threshold where the element will change from relative to "fixed".
+Sticky position is a new CSS position that allow to have a sticky element that is not sticky all the time. This is different from `fixed` which place an HTML element in a place and never move. With position to sticky, you define a threshold where the element will change from `relative` to `fixed`.
 
 To illustrate, image a list that has a lot of element and once in a while you have title that you want to stick for the section. When scrolling, you want the title to unstick when you reach a new section. Every active section should have its own title fixed at the top. This can be achieved by JavaScript or now with Sticky. Here is a simple example of CSS that is applied to a class name "list-header" which should be used in each of section's title.
 
 
 ```css
- .list-header { position: sticky; top: 5px; } 
+ .list-header { 
+  position: sticky; 
+  top: 5px; 
+} 
 ```
 
 

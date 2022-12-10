@@ -5,7 +5,7 @@ categories:
   - "owin"
 ---
 
-Nancy module constructor is by default without parameters. However, soon you will need to have your route match to some of your logic which should be under some business logic classes. In fact, the next step after routing should be to call your controllers or or service layer classes. To be able to inject your service layer class, you need to inject this class. Nancy **Bootstrap** class come to the rescue. You only need to override a single method to be in business. Nancy comes with a default small IoC. The method to override is named **ConfigureRequestContainer**.
+Nancy module constructor is by default without parameters. However, soon you will need to have your route match to some of your logic which should be under some business logic classes. In fact, the next step after routing should be to call your controllers or or service layer classes. To be able to inject your service layer class, you need to inject this class. Nancy `Bootstrap` class come to the rescue. You only need to override a single method to be in business. Nancy comes with a default small IoC. The method to override is named `ConfigureRequestContainer`.
 
 
 ```csharp

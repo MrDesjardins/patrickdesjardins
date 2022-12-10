@@ -6,21 +6,27 @@ categories:
   - "c-sharp"
 ---
 
-Earlier, I showed [how to transfer attribute form model class to view model class with AutoMapper and Asp.Net MVC](./how-to-automap-asp-net-attribute-from-model-to-viewmodel). This work fine but what if the view model class has a custom property that manipulate even further the data and that you would like to display on screen a display attribute from another property of the model class? The solution we had in the previous post transferred the display attribute from the model to the view model’s property by using AutoMapper to map the DisplayAttribute with the corresponding From and To property. But how can we extends this logic to be able to pass this attribute to another property of the view model class? This is what we will resolve in this article. The following image illustratre the desired result. We want the property B from the view model to use the p roperty A display attribute that come from the model property A. ![](images/ModelToViewModel.png)
+Earlier, I showed [how to transfer attribute form model class to view model class with AutoMapper and Asp.Net MVC](./how-to-automap-asp-net-attribute-from-model-to-viewmodel). This work fine but what if the view model class has a custom property that manipulate even further the data and that you would like to display on screen a display attribute from another property of the model class? The solution we had in the previous post transferred the display attribute from the model to the view model’s property by using AutoMapper to map the DisplayAttribute with the corresponding From and To property. But how can we extends this logic to be able to pass this attribute to another property of the view model class? This is what we will resolve in this article. The following image illustratre the desired result. We want the property B from the view model to use the p roperty A display attribute that come from the model property A. 
+
+![](images/ModelToViewModel.png)
 
 The first part, is already been done in the AutoMap code from the previous article. This is the code that map the attribute from the model to view model. The next step is to specify in the view model that we need to transfer from one property’s attribute to the other property. This require to create a new attribute where we can specify from which property we want to get the attributes.
 
 
 ```csharp
  public class CopyAttributesFrom : Attribute { public string PropertyName { get; set; } } 
-``` Then, we need to use it in the view model class. This class is limited to one property: the name of the property to take attributes. The mapping is than 1-1, nothing fancy. Let’s see an example. The following code is having two property. The first one get from the model some attributes and the second one want to get the attribute from the first property (which also has once mapped the ones from the model).
+``` 
+
+Then, we need to use it in the view model class. This class is limited to one property: the name of the property to take attributes. The mapping is than 1-1, nothing fancy. Let’s see an example. The following code is having two property. The first one get from the model some attributes and the second one want to get the attribute from the first property (which also has once mapped the ones from the model).
 
 
 ```csharp
  public TimeSpan? MinimumHoldingTime { get; set; }
 
 [CopyAttributesFrom(PropertyName = "MinimumHoldingTime")] public int? MinimumHoldingTimeMinutes { get { return this.MinimumHoldingTime.HasValue ? Convert.ToInt32(this.MinimumHoldingTime.Value.TotalMinutes) : (int?)null; } } 
-``` Why don’t we map directly into AutoMapper the logic? Because the code we are using to transfer attributes from the model to viewmodel works with **DestinationProperty** and not an expression. Having logic in the **ForMember** method of AutoMapper uses an expression. This force us to map the value and in a second step to have the property desired with the data manipulated.
+``` 
+
+Why don’t we map directly into AutoMapper the logic? Because the code we are using to transfer attributes from the model to viewmodel works with **DestinationProperty** and not an expression. Having logic in the **ForMember** method of AutoMapper uses an expression. This force us to map the value and in a second step to have the property desired with the data manipulated.
 
 In the code to map with AutoMapper model attributes to view model, we had a custom **DataAnnotationsModelMetadataProvider**. This one need to be adjusted to add attributes from our custom a _CopyAttributesFrom_ attribute.
 

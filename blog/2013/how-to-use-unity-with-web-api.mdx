@@ -19,7 +19,7 @@ UnityConfiguration.Initialize(); MapperConfiguration.Initialize(UnityConfigurati
 
 The first thing to do is to modify the Application_Start of your WebApi project. You need to execute the configuration of all your interface with Unity. In the example above, this is done by calling UnityConfiguration.Initialize() which Resolve every interface to a concrete class.
 
-The second thing to do is to set to the **GlobalConfiguration** a **DependencyResolver** to a IocContainer that we will create to use Unity container.
+The second thing to do is to set to the `GlobalConfiguration` a `DependencyResolver` to a IocContainer that we will create to use Unity container.
 
 
 ```csharp

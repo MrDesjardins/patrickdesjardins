@@ -7,7 +7,7 @@ categories:
 
 > HTTP Error 401.0 - Unauthorized You do not have permission to view this directory or page.
 
-When an unauthorized action is trigged, the HttpUnauthorizedResult result called. It produces a 401 error. By default, a 401 error can be handled only by IIS and not directly like a 404 error with Asp. This would be easy if we could set a 401 error page in the web.config, but it's not the case.
+When an unauthorized action is trigged, the `HttpUnauthorizedResult` result called. It produces a 401 error. By default, a 401 error can be handled only by IIS and not directly like a 404 error with Asp. This would be easy if we could set a 401 error page in the web.config, but it's not the case.
 
 ![](images/http401error-400x243.png)
 
@@ -105,7 +105,6 @@ public class AuthorizeWith401Support : AuthorizeAttribute {
 ```
 
 Now, you need to use it as you would use the AuthorizeAttribute. It's the same behavior because the `AuthorizeWith401Support` inherit from `AuthorizeAttribute`. However, you have the additionnal `ActionName`, `Area` and `Controller` property that let you specify the error action. Of course, if nothing is specifie, the action `NoAccess401` will be used.
-
 
 ```csharp
 [AuthorizeWith401Support(Roles = "admin")] 

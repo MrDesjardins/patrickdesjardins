@@ -1,7 +1,7 @@
 ---
 title: "How to shake (or vide) a html element"
 date: "2013-04-05"
-categories: 
+categories:
   - "javascript"
 ---
 
@@ -10,21 +10,48 @@ When your user does an error, it might be interesting to select the control and 
 The code in this post is not into the form of JQuery plugin but it should be. It's more indented to be educational. The first part of the code show you that you need to call the method "Vibrate" that takes the element to shake as parameter.
 
 ```typescript
-var vibrateIndex = 0; var selector; //Animate the selector with the animation function function Vibrate(item) { selector = $(item); var interval = 10; var duration = 500; vibrateIndex = setInterval(Vibe, interval); setTimeout(StopVibration, duration); } 
-``` 
+var vibrateIndex = 0;
+var selector; //Animate the selector with the animation function
+function Vibrate(item) {
+  selector = $(item);
+  var interval = 10;
+  var duration = 500;
+  vibrateIndex = setInterval(Vibe, interval);
+  setTimeout(StopVibration, duration);
+}
+```
 
+The second part is doing the animation of shaking the control. In fact, we are randomly moving the left and top position of the control and setting this one relative. This is important. Otherwise, the control won't move. It also set the border to red.
 
-The second part is doing the animation of shaking the control. In fact, we are randomly moving the left and top position of the control and setting this one relative. This is important. Otherwise, the control won't move. It also set the border to red. ```typescript
-//Animation function Vibe() { var shake = 3; $(selector).stop(true, false) .css({ position: 'relative', left: Math.round(Math.random() * shake) + 'px', top: Math.round(Math.random() * shake) +'px', borderColor: 'red' }); }; 
-``` 
-
+```typescript
+//Animation
+function Vibe() {
+  var shake = 3;
+  $(selector)
+    .stop(true, false)
+    .css({
+      position: "relative",
+      left: Math.round(Math.random() * shake) + "px",
+      top: Math.round(Math.random() * shake) + "px",
+      borderColor: "red",
+    });
+}
+```
 
 The last part is executed when the animation is over. This is called by the setTimout method previously set with a duration.
 
 ```typescript
-//Remove all CSS applied to the selector function StopVibration() { clearInterval(vibrateIndex); $(selector).stop(true, false) .css({ position: 'static', left: '0px', top: '0px', borderColor: ''}); }; 
-``` 
-
+//Remove all CSS applied to the selector
+function StopVibration() {
+  clearInterval(vibrateIndex);
+  $(selector).stop(true, false).css({
+    position: "static",
+    left: "0px",
+    top: "0px",
+    borderColor: "",
+  });
+}
+```
 
 This could be improved by having everything inside a JQuery plugin which would be cleaner. The problem with the code above is that we use global variable to remember to control that is implicated into the animation and the interval reference is also global.
 
@@ -32,45 +59,55 @@ You can see a working example [here](http://jsfiddle.net/kEVd3/).
 
 ## Plugin
 
-Here is the JQuery Plugin version : [http://jsfiddle.net/kEVd3/3/](http://jsfiddle.net/kEVd3/3/)
+Here is the JQuery Plugin version: [http://jsfiddle.net/kEVd3/3/](http://jsfiddle.net/kEVd3/3/)
 
 ```typescript
-(function($){ 
-  $.fn.vibrate = function(options) { 
-    options = $.extend({}, $.fn.vibrate.defaultOptions, options); 
-    var control = $(this); 
-    var vibrateIndex = 0; 
-    var selector; vibrateIndex = setInterval(vibe, options.interval); 
-    setTimeout(stopVibration, options.duration); 
-    function vibe() { 
-      var shake = 3; 
-      $(control).stop(true, false)
-      .css({ position: 'relative', left: Math.round(Math.random() * shake) + 'px', top: Math.round(Math.random() * shake) +'px', borderColor: 'red' }); };
+(function ($) {
+  $.fn.vibrate = function (options) {
+    options = $.extend({}, $.fn.vibrate.defaultOptions, options);
+    var control = $(this);
+    var vibrateIndex = 0;
+    var selector;
+    vibrateIndex = setInterval(vibe, options.interval);
+    setTimeout(stopVibration, options.duration);
+    function vibe() {
+      var shake = 3;
+      $(control)
+        .stop(true, false)
+        .css({
+          position: "relative",
+          left: Math.round(Math.random() * shake) + "px",
+          top: Math.round(Math.random() * shake) + "px",
+          borderColor: "red",
+        });
+    }
 
-  function stopVibration() { 
-    clearInterval(vibrateIndex); 
-    $(control).stop(true, false)
-      .css({ position: 'static', left: '0px', top: '0px', borderColor: ''}); }; 
+    function stopVibration() {
+      clearInterval(vibrateIndex);
+      $(control)
+        .stop(true, false)
+        .css({ position: "static", left: "0px", top: "0px", borderColor: "" });
+    }
 
-    return this; 
-  } 
+    return this;
+  };
 
-  $.fn.vibrate.defaultOptions = { interval : 10 , duration : 500 } 
+  $.fn.vibrate.defaultOptions = { interval: 10, duration: 500 };
 })(jQuery);
-``` 
+```
 
-Here is an example of how to use it : 
+Here is an example of how to use it :
+
 ```typescript
-$('#btnShake').click(function(){ 
-  $('input[type=text]').vibrate(); 
-}); 
-``` 
+$("#btnShake").click(function () {
+  $("input[type=text]").vibrate();
+});
+```
 
 You can also specify option like the duration:
 
 ```typescript
-$('input[type=text]').vibrate({duration:3000}); 
-``` 
-
+$("input[type=text]").vibrate({ duration: 3000 });
+```
 
 I'll do a post concerning how to create a JQuery plugin soon to explain in detail how and why the plugin has been created this way. For the moment, you can refer to this [Microsoft's tutorial](http://msdn.microsoft.com/en-us/magazine/ff608209.aspx) which is very fine.

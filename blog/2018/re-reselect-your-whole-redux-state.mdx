@@ -9,7 +9,7 @@ Re-Reselect is a library that uses Reselect. Both have the capability to memoize
 
 ![](images/reselect-and-re-reselect.png)
 
-Reselect versus Re-Reselect
+# Reselect versus Re-Reselect
 
 I am using Re-Reselect at Netflix in the Partner Portal application for denormalizing many entities. For example, I have selector for each of our organization we serve and each of them have sites around the world. Each site has appliances as well. When I am receiving information from the backend, depending of the endpoint, I need to invalidate more than one cache. So far, Re-Select is working well. However, I have custom logic to denormalize to handle cases that are beyond that blog post. These one require to access specific Redux store directly to compute information with different functions. It means that during the invalidation of the cache, and while a new value to be memoized I need to have an access to the Redux's state and pass this one to functions.
 

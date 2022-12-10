@@ -14,7 +14,9 @@ First of all, you need to create a new class that will inherit from **IRouteHand
 
 
 ```csharp
- public class ImageHandler : IRouteHandler { public IHttpHandler GetHttpHandler(RequestContext requestContext) { } } 
+public class ImageHandler : IRouteHandler { 
+  public IHttpHandler GetHttpHandler(RequestContext requestContext) { } 
+} 
 ```
 
 Once created, you need to specify the website that this routing handler exist. This is done with global.asax.cs You need to add the route into the Application_Start().
@@ -30,21 +32,46 @@ Let's go back to the Http handler. Now we need to verify that the uniqueIdentifi
 
 
 ```csharp
- public class ImageHandler : IRouteHandler { public IHttpHandler GetHttpHandler(RequestContext requestContext) { var routeValues = requestContext.RouteData.Values; if(routeValues.ContainsKey("UniqueIdentifier")) { } else { return null; } } } 
+public class ImageHandler : IRouteHandler { 
+  public IHttpHandler GetHttpHandler(RequestContext requestContext) { 
+    var routeValues = requestContext.RouteData.Values; 
+    if(routeValues.ContainsKey("UniqueIdentifier")) { } 
+    else { 
+      return null; 
+    } 
+  } 
+} 
 ```
 
 No we need to get the image and to send it back to the user. This is done by opening the file one the server in a stream and to write it back to the response stream which will go the the client via http.
 
 
 ```csharp
- public class ImageHandler : IRouteHandler { public IHttpHandler GetHttpHandler(RequestContext requestContext) { var routeValues = requestContext.RouteData.Values; if(routeValues.ContainsKey("UniqueIdentifier")) { //Do something with the parameter (UniqueIdentifier) to get the image on the server string serverPathToImageToOutput = //What ever you want like database call or file server algo; //Start a new Response requestContext.HttpContext.Response.Clear(); //Response type will be the same as the one requested requestContext.HttpContext.Response.ContentType = GetContentType(requestContext.HttpContext.Request.Url.ToString()); //We buffer the data to send back until it's done requestContext.HttpContext.Response.BufferOutput = true; Image image = Image.FromStream(new FileStream(serverPathToImageToOutput, FileMode.Open)); image.Save(requestContext.HttpContext.Response.OutputStream, ImageFormat.Png); requestContext.HttpContext.Response.End(); } else { return null; } } } 
+ public class ImageHandler : IRouteHandler { 
+  public IHttpHandler GetHttpHandler(RequestContext requestContext) { 
+    var routeValues = requestContext.RouteData.Values; 
+    if(routeValues.ContainsKey("UniqueIdentifier")) { 
+      //Do something with the parameter (UniqueIdentifier) to get the image on the server 
+      string serverPathToImageToOutput = //What ever you want like database call or file server algo; 
+      //Start a new Response 
+      requestContext.HttpContext.Response.Clear(); //Response type will be the same as the one requested 
+      requestContext.HttpContext.Response.ContentType = GetContentType(requestContext.HttpContext.Request.Url.ToString()); //We buffer the data to send back until it's done 
+      requestContext.HttpContext.Response.BufferOutput = true; 
+      Image image = Image.FromStream(new FileStream(serverPathToImageToOutput, FileMode.Open)); 
+      image.Save(requestContext.HttpContext.Response.OutputStream, ImageFormat.Png); 
+      requestContext.HttpContext.Response.End(); 
+    } else { 
+      return null;
+    } 
+  } 
+} 
 ```
 
 As you may notice, nothing is yet written for security purpose. In fact, it's quite simple. What we need to do is to check from where the request as been sent. Since we are the only one who should use the http handler, we can authorize only server request by checking the referer variable.
 
 
 ```csharp
- request.ServerVariables["HTTP_REFERER"] 
+request.ServerVariables["HTTP_REFERER"] 
 ```
 
 This can be added at the beginning of the GetHttpHandler method and return a static image that say "Image is not authorized".

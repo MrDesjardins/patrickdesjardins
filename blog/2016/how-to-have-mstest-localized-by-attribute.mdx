@@ -7,7 +7,7 @@ categories:
 
 Working with multiple languages requires to test in multiple languages too. A simple use case is if you have custom Asp.Net routing that you might want to test where an English route goes and the same for a French one. This goes beyond just text, but also how to handle numbers and datetime. The traditional way to do unit test in multiple localisations is to set the current thread at the beginning of the test, do the logic, assert and set the thread back to the original value.
 
-The problem is that in all your code you need to set the thread manually. It would be better to have an attribute on the top of the test method and have this one handling the thread culture. Unfortunately, MSTest "TestMethod" attributes is sealed which mean you cannot inherit of this one. The work around is to create a custom attribute. However, this come with the challenge to hook into MsTest pipeline to have MsTest reads the attribute and act accordingly. This is what we will discuss in this article, how to use **ContextAttribute**, **IMessageSink**, **IContributeObjectSink** and so on.
+The problem is that in all your code you need to set the thread manually. It would be better to have an attribute on the top of the test method and have this one handling the thread culture. Unfortunately, MSTest "TestMethod" attributes is sealed which mean you cannot inherit of this one. The work around is to create a custom attribute. However, this come with the challenge to hook into MsTest pipeline to have MsTest reads the attribute and act accordingly. This is what we will discuss in this article, how to use `ContextAttribute`, `IMessageSink`, `IContributeObjectSink` and so on.
 
 First, let's create a standard attribute that we will use on top of our test that need localization. We will use this one in combination of the TestMethod. The use will looks like this:
 
@@ -16,14 +16,14 @@ First, let's create a standard attribute that we will use on top of our test tha
  [TestMethod] [LocalizedTest(LocalizedSection.EN_NAME)] public void MyTest() { //... Your test } 
 ```
 
-The attribute has a parameter which is the **Culture Name** that we want to have the thread. The culture name is "en-us" for USA English or "fr-ca" Canadian French.
+The attribute has a parameter which is the `Culture Name` that we want to have the thread. The culture name is "en-us" for USA English or "fr-ca" Canadian French.
 
 
 ```csharp
  public class LocalizedTestAttribute:Attribute { public string CultureName {get; set;} public LocalizedTestAttribute(string cultureName) { this.CultureName = cultureName; } } 
 ```
 
-A second attribute is required to be at the top of the class tested. This is the way to notify the Microsoft test framework that we want to hook inside the pipeline of tasks that the testing framework is going while executing tests. This attribute inherit from **ContextAttribute**, from **System.Runtime.Remoting.Contexts** namespace. The role of that class is to define a collection of possible hooks. In that case, we have only one hook that we call **LocalizedTestMessage**. Those hooks are called "messages". I am using a helper named TestProperty which handle generic code for every message. This generic class is inspired by the [MsTestExtension](http://mstestextensions.codeplex.com/SourceControl/latest#Trunk/Source/MSTestExtensions/TestAspect.cs) source code.
+A second attribute is required to be at the top of the class tested. This is the way to notify the Microsoft test framework that we want to hook inside the pipeline of tasks that the testing framework is going while executing tests. This attribute inherit from `ContextAttribute`, from `System.Runtime.Remoting.Contexts` namespace. The role of that class is to define a collection of possible hooks. In that case, we have only one hook that we call `LocalizedTestMessage`. Those hooks are called "messages". I am using a helper named TestProperty which handle generic code for every message. This generic class is inspired by the [MsTestExtension](http://mstestextensions.codeplex.com/SourceControl/latest#Trunk/Source/MSTestExtensions/TestAspect.cs) source code.
 
 
 ```csharp
@@ -31,7 +31,10 @@ A second attribute is required to be at the top of the class tested. This is the
 
 }
 
-public override void GetPropertiesForNewContext(IConstructionCallMessage msg) { if (msg == null) throw new ArgumentNullException("msg"); msg.ContextProperties.Add(new TestProperty<LocalizedTestMessage>()); //We add 1 new message into the test pipeline } }
+public override void GetPropertiesForNewContext(IConstructionCallMessage msg) {
+   if (msg == null) throw new ArgumentNullException("msg"); 
+  msg.ContextProperties.Add(new TestProperty<LocalizedTestMessage>()); //We add 1 new message into the test pipeline 
+} }
 
 public class TestProperty<T> : IContextProperty, IContributeObjectSink where T : IMessageSink, ITestMessage, new() {
 
@@ -48,7 +51,7 @@ public string Name { [SecurityPermission(SecurityAction.LinkDemand, Flags = Secu
 public interface ITestMessage { void AddMessageSink(IMessageSink messageSink); } 
 ```
 
-Finally, we need to have our LocalizedTest message hook (message) defined. This class defines what is done before and after the execution of the test. This class is able to access the tested method to check if **LocalizedTest** attribute is defined on the class. If yes, it proceeds, otherwise it executes the method without changing anything. When the attribute is present, it backup the current thread culture, get the culture name from the attribute and set it to the test thread. It executes the test, and set back the original thread.
+Finally, we need to have our LocalizedTest message hook (message) defined. This class defines what is done before and after the execution of the test. This class is able to access the tested method to check if `LocalizedTest` attribute is defined on the class. If yes, it proceeds, otherwise it executes the method without changing anything. When the attribute is present, it backup the current thread culture, get the culture name from the attribute and set it to the test thread. It executes the test, and set back the original thread.
 
 
 ```csharp
@@ -56,11 +59,14 @@ Finally, we need to have our LocalizedTest message hook (message) defined. This 
 
 [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)] public IMessage SyncProcessMessage(IMessage msg) { if (msg == null) throw new ArgumentNullException("msg"); CultureInfo currentCultureInfo = null; CultureInfo currentUICultureInfo = null;
 
-//Before test get value to set back after test LocalizedTestAttribute localizationAttribute = base.GetAttribute(msg); if (localizationAttribute != null) { currentCultureInfo = System.Threading.Thread.CurrentThread.CurrentCulture; currentUICultureInfo = System.Threading.Thread.CurrentThread.CurrentUICulture; System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(localizationAttribute.CultureName); System.Threading.Thread.CurrentThread.CurrentUICulture = System.Threading.Thread.CurrentThread.CurrentCulture; }
+//Before test get value to set back after test 
+LocalizedTestAttribute localizationAttribute = base.GetAttribute(msg); if (localizationAttribute != null) { currentCultureInfo = System.Threading.Thread.CurrentThread.CurrentCulture; currentUICultureInfo = System.Threading.Thread.CurrentThread.CurrentUICulture; System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(localizationAttribute.CultureName); System.Threading.Thread.CurrentThread.CurrentUICulture = System.Threading.Thread.CurrentThread.CurrentCulture; }
 
-//Execute test IMessage returnMessage = nextSink.SyncProcessMessage(msg);
+//Execute test 
+IMessage returnMessage = nextSink.SyncProcessMessage(msg);
 
-//After test set back value if (localizationAttribute != null && currentCultureInfo!= null && currentUICultureInfo!=null) { System.Threading.Thread.CurrentThread.CurrentCulture = currentCultureInfo; System.Threading.Thread.CurrentThread.CurrentUICulture = currentUICultureInfo; } return returnMessage; }
+//After test set back value 
+if (localizationAttribute != null && currentCultureInfo!= null && currentUICultureInfo!=null) { System.Threading.Thread.CurrentThread.CurrentCulture = currentCultureInfo; System.Threading.Thread.CurrentThread.CurrentUICulture = currentUICultureInfo; } return returnMessage; }
 
 [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.Infrastructure)] public IMessageCtrl AsyncProcessMessage(IMessage msg, IMessageSink replySink) { throw new InvalidOperationException(); }
 

@@ -10,7 +10,9 @@ You can set in your Asp.Net web.config file a domain for all your cookie. This i
 
 
 ```xml
- <system.web> <httpCookies domain=".domain.com"/> </system.web> 
+<system.web> 
+  <httpCookies domain=".domain.com"/> 
+</system.web> 
 ```
 
 
@@ -24,7 +26,7 @@ So what does it do behind the scene? It simply set the domain property of the co
  cookie.Domain = ".domain.com"; 
 ```
 
-Instead you set it once in the web.config. This is the constructor of HttpCookie. As you can see, it calls SetDefaultsFromConfig().
+Instead you set it once in the web.config. This is the constructor of `HttpCookie`. As you can see, it calls `SetDefaultsFromConfig()`.
 
 ```csharp
 public HttpCookie(String name, String value) {
@@ -34,6 +36,7 @@ public HttpCookie(String name, String value) {
 ```
 
 This method goes into the web.config to get the domain. 
+
 ```csharp
 private void SetDefaultsFromConfig() { 
   HttpCookiesSection config = RuntimeConfig.GetConfig().HttpCookies;
@@ -44,13 +47,17 @@ private void SetDefaultsFromConfig() {
 } 
 ```
 
-The variable_domain is changed by the configuration file value.
+The `variable_domain` is changed by the configuration file value.
 
 This variable is also setted by the domain property.
 
 
 ```csharp
- public String Domain { 
+public String Domain { 
    get { return_domain;} 
-   set {_domain = value;_changed = true; } } 
+   set {
+    _domain = value;
+    _changed = true; 
+  } 
+} 
 ```

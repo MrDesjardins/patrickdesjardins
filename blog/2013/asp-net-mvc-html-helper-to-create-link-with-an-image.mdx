@@ -22,20 +22,27 @@ What we want to do it almost the same but adding an image.
 
 
 ```csharp
- public MvcHtmlString ActionImage(this HtmlHelper htmlHelper, string controller, string action, object routeValues, string imagePath, string alternateText = "", object htmlAttributes = null) {
+public MvcHtmlString ActionImage(this HtmlHelper htmlHelper, string controller, string action, object routeValues, string imagePath, string alternateText = "", object htmlAttributes = null) {
+  var anchorBuilder = new TagBuilder("a"); 
+  var url = new UrlHelper(HtmlHelper.ViewContext.RequestContext);
 
-var anchorBuilder = new TagBuilder("a"); var url = new UrlHelper(HtmlHelper.ViewContext.RequestContext);
+  anchorBuilder.MergeAttribute("href",url.Action(action,controller,routeValues)); 
+  var imgBuilder = new TagBuilder("img"); 
+  imgBuilder.MergeAttribute("src", url.Content(imagePath)); 
+  imgBuilder.MergeAttribute("alt", alternateText);
 
-anchorBuilder.MergeAttribute("href",url.Action(action,controller,routeValues)); var imgBuilder = new TagBuilder("img"); imgBuilder.MergeAttribute("src", url.Content(imagePath)); imgBuilder.MergeAttribute("alt", alternateText);
+  var attributes = (IDictionary<string, object>) HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes); 
+  imgBuilder.MergeAttributes(attributes); 
+  string imgHtml = imgBuilder.ToString(TagRenderMode.SelfClosing);
 
-var attributes = (IDictionary<string, object>) HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes); imgBuilder.MergeAttributes(attributes); string imgHtml = imgBuilder.ToString(TagRenderMode.SelfClosing);
-
-anchorBuilder.InnerHtml = imgHtml; return MvcHtmlString.Create(anchorBuilder.ToString()); } 
+  anchorBuilder.InnerHtml = imgHtml; 
+  return MvcHtmlString.Create(anchorBuilder.ToString()); 
+} 
 ```
 
 The first parameter let you extend the HtmlHelper. This will let you use your new method with the @Html keyword. The 4 next parameters is the required parameters. THe first one is the controller, then the action, the route value and the image path. Finally, we can specify if desired an alternated text and additional html attributes.
 
-The first part will create the link. It uses the **RequestContext** and the **UrlHelper** to create the link. In fact, it will build from the controller, the action and the route values an url well formed from the routing schema of your Asp.Net MVC website.
+The first part will create the link. It uses the `RequestContext` and the `UrlHelper`to create the link. In fact, it will build from the controller, the action and the route values an url well formed from the routing schema of your Asp.Net MVC website.
 
 The last part build the image and add it into the link. Finally, we merge the attribute we passed to the image. We could also do the same to have html attribute for the link.
 

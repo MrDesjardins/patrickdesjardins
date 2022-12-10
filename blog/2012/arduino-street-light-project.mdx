@@ -7,9 +7,9 @@ categories:
 
 I am done with my personal project that was to built a system of light to tell my wife when to stop the car inside the home's garage. The idea was to use Arduino microcontroller with a sensor to evaluate the distance of the car inside the garage. To make it look more "urban", I had the idea to use something that looks like a street light, with a red, yellow and green light.
 
-<iframe width="640" height="360" src="http://www.youtube.com/embed/O3TtWqblM9I" frameborder="0" allowfullscreen></iframe>
+<YouTube youTubeId="O3TtWqblM9I" />
 
-## Schema
+# Schema
 
 The electronic part consist of an Arduino Diecimila that I already had (I think it has cost me around 35$ in the past). This will be used to have the logic that are to open the light, to evaluate the distance and to have some logic of "sleep" because we do not want the system to be always open. Also, I added the possibility to configure on the fly the machine with 2 buttons that will record in the permanent memory the distance for the yellow and red light.
 
@@ -25,7 +25,7 @@ Then, you need the input sensor for the distance. I have used the Ultrasonic Mod
 
 Finally, I bought 1 60 watts red, yellow and green build for about 5$. The rest of the stock are wires (14 gaugs for 110 volts, and 22 gaugs for 5 volts) I had for around 5$. I bought 3 switchs (1 power switch and 2 pushbuttons) for about 3$. Finally, since I wanted 1 wire to be connectec to the 110 volts of my house, I bought an electric extension for 2$ and cut the end to use it as main electricity source. I needed also to have something to convert 110 volts to 9 volts for Arduino. I bought on Ebay a power supply for 5$. So, this cost me around 65$ to build + the wood/paint/nail that I already have. I guess you can get this project done under 80$ without a problem.
 
-## Code
+# Code
 
 I share to you the code. This code might not be optimized perfectly but work fine. I has many feature like
 
@@ -294,6 +294,6 @@ As you can see, the space between the back of the light and the wood is about 1 
 
 Concerning the build part (left side of the last picture), it's okay. I put a plexiglass that I sandblasted with a black cardboard to make the letters from a stencil.
 
-## Conclusion
+# Conclusion
 
 Arduino make it simple with under 300 lines of code I were able to make work a ultrasonic sensor with 3 lights. My main goal was to fulfill the requirement of having a system to know where to stop the car in the garage and I think it's a success. Also, as a personal goal, I always wanted to control physical stuff that were running on 110 volts and it was also a success. Now, time for another project!

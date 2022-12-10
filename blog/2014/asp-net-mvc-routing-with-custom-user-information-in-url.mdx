@@ -7,13 +7,17 @@ categories:
 
 Having clean URL is something very important. It is easier for the user to understand the navigability. It is easier to bookmark or to directly go into a page from the URL. It is also interesting to pass information directly into the URL instead of accumulating data in a session or into the database. For example, let say that your user can do action into a specify group or team, instead of letting your user clicking the group and set this one in the session you can use the URL. Why? Because the session will die and that you will have to redirect the user to a specify URL to allow him to select the group again and it is not interesting in the point of view of URL that will be missing the information.
 
-This is wrong urls: ``` 
- http://yourwebsite/Contest/Orders/New http://yourwebsite/Contest/Orders/Edit http://yourwebsite/Contest/Transactions/List 
+This is wrong urls: 
+
+``` 
+http://yourwebsite/Contest/Orders/New http://yourwebsite/Contest/Orders/Edit http://yourwebsite/Contest/Transactions/List 
 ``` 
 
-This is a good urls: ``` 
- http://yourwebsite/Contest/1/Orders/New http://yourwebsite/Contest/1/Orders/100/Edit http://yourwebsite/Contest/1/Transactions/List 
-```  The second group of URLs are better because it is clear that we are creating Order for the Contest number 1. It is also clear that we are editing the orders #100 of the contest number 1. Finally, it is clear and easy to share the Transaction list for contest number 1 too.
+This is a good urls: 
+``` 
+http://yourwebsite/Contest/1/Orders/New http://yourwebsite/Contest/1/Orders/100/Edit http://yourwebsite/Contest/1/Transactions/List 
+```  
+The second group of URLs are better because it is clear that we are creating Order for the Contest number 1. It is also clear that we are editing the orders #100 of the contest number 1. Finally, it is clear and easy to share the Transaction list for contest number 1 too.
 
 How to handle informative URL in Asp.Net MVC? With routing! It is also very simple to define those URL for a specific area. In the case that we have seen so far, everything is in the Contest area. To define those URLs, we have to open the ContestAreaRegistration.cs. Asp.Net MVC when creating an Area generate in the Are folder a Registration file.
 
@@ -31,7 +35,9 @@ This is the whole class, what interest us is the AddContestRelatedRoute method. 
 
 ```csharp
  private static void AddContestRelatedRoute(AreaRegistrationContext context) { var defaultValue = new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>("action", "Index") , new KeyValuePair<string, object>(Constants.RoutePortionName.ACTIVE_CURRENT_CONTEST_ID, UrlParameter.Optional) , new KeyValuePair<string, object>("id", UrlParameter.Optional) }; var constraints = new List<KeyValuePair<string, object>> { new KeyValuePair<string, object>(Constants.RoutePortionName.ACTIVE_CURRENT_CONTEST_ID, @"\\d+") }; dynamic defaultValueObject = ListPropertiesToAnonymousObject.Convert(defaultValue); dynamic constraintsObject = ListPropertiesToAnonymousObject.Convert(constraints); context.MapRoute(Constants.Areas.CONTEST + "_contest_activated", Constants.Areas.CONTEST + "/{" + Constants.RoutePortionName.ACTIVE_CURRENT_CONTEST_ID + "}/{controller}/{action}/{id}", defaultValueObject, constraintsObject); } 
-``` The first line specify the default action, the default route contest id and the id. We can add constraints, like in this example that we add that we want a number for the current contest. The choice of having a List and KeyValuePair is to use constant for the name of routing section. This allow to reuse the constant to get from the URL in the controller.
+``` 
+
+The first line specify the default action, the default route contest id and the id. We can add constraints, like in this example that we add that we want a number for the current contest. The choice of having a List and KeyValuePair is to use constant for the name of routing section. This allow to reuse the constant to get from the URL in the controller.
 
 
 ```csharp
@@ -54,6 +60,6 @@ The last line of the method uses the two anonymous created from the List of KeyV
 
 This is where the URL pattern is defined. The first part is the Area, followed by the ID of the contest. The constant is used to match the default values and the constraints in the second part. The third part is the controller name, the forth part is the action and the optional id.
 
-You can add as many mapping you want for your route. It is also possible to set them globally in the **RouteConfig.cs** file located in the **App_Start** folder.
+You can add as many mapping you want for your route. It is also possible to set them globally in the `RouteConfig.cs` file located in the `App_Start` folder.
 
 Finally, pretty URL in Asp.Net MVC is very straight forward and does not require a lot of knowledge of URL Rewrite like it would have require with PHP and Apache for example. It comes by default and extending them is a breeze.

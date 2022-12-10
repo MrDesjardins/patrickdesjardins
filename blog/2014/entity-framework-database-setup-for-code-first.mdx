@@ -52,7 +52,7 @@ The result is not very interesting because it creates something without the help
 
 If you setup a connection string with a name, for example you could use "DefaultConnection", this one will be used if set in the context.
 
-The **app.config** is where the connection string can be defined.
+The `app.config` is where the connection string can be defined.
 
 
 ```xml
@@ -67,11 +67,13 @@ public class YourContext : DbContext { public YourContext(): base("DefaultConnec
 public DbSet<Person> Persons { get; set; } public DbSet<House> Houses { get; set; } } 
 ```
 
-This generate the database with the name specified in the **Catalog** from the connection string. You could also specify directly the connection string into the base() but this will be a show stopper if you are building application that must change the server and database depending of the environment (dev, test, prod).
+This generate the database with the name specified in the `Catalog` from the connection string. You could also specify directly the connection string into the base() but this will be a show stopper if you are building application that must change the server and database depending of the environment (dev, test, prod).
 
 ![](images/SqlManagerEntityFrameworkDatabaseName2.png)
 
-Entity Framework takes care of everything for you. Tables are created from your entity defined in your context. It also takes care of all primary keys and foreign keys for you. ![](images/DatabaseTables.png)
+Entity Framework takes care of everything for you. Tables are created from your entity defined in your context. It also takes care of all primary keys and foreign keys for you. 
+
+![](images/DatabaseTables.png)
 
 So far, we have see that Entity Framework can generate the database from minimalist code. Only a context need to be defined. Of course, setting a connection string and associate the connection string name with the context give you more control to which server and database to connect Entity Framework.
 

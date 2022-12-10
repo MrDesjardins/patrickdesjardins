@@ -13,13 +13,13 @@ This application generate two files. The first file is a .cs file that contains 
 
 To generate those files, you can simply call the ScvUtil application with the path of the webservice (the WSDL path). This is an URL.
 
-``` 
+```sh
  svcutil.exe http://localhost:1234/MyService.svc?wsdl 
 ``` 
 
-The problem is that doing it with only a single parameter will output those file to your C:\\windows\\system32\\ which is not clean and can cause security problem. However, it's possible to tell where to output those two files but adding 2 parameters to the svcutil.exe tools.
+The problem is that doing it with only a single parameter will output those file to your `C:\\windows\\system32\\` which is not clean and can cause security problem. However, it's possible to tell where to output those two files but adding 2 parameters to the svcutil.exe tools.
 
-``` 
+```sh
  svcutil.exe http://localhost:1234/MyService.svc?wsdl /out:"c:\\myPath\\proxy.cs" /config:"c:\\myPath\\config.config" 
 ``` 
 

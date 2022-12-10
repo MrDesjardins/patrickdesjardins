@@ -8,22 +8,22 @@ categories:
   - "c-sharp"
 ---
 
-This is the first post of a series that aim to create a Web application the enterprise way. What does it means? It means that I won't display snippet of code, I won't code everything in the controller and I will not use a Model-View-Controller but integrate the notion of **ViewModel**. It will limit the use of **ViewBag** to transfer information to the view and let us transform the information to a display perspective without having to alter the model or to have code into the view.
+This is the first post of a series that aim to create a Web application the enterprise way. What does it means? It means that I won't display snippet of code, I won't code everything in the controller and I will not use a Model-View-Controller but integrate the notion of `ViewModel`. It will limit the use of `ViewBag` to transfer information to the view and let us transform the information to a display perspective without having to alter the model or to have code into the view.
 
-Building an application for enterprise mean that we will use mapper to associate information from the model to the view model instead of doing stuff manually, we will use **Dependency Injection** for most of our class (login, persistence...) and we will abstract most of the code to be able to grow the application.
+Building an application for enterprise mean that we will use mapper to associate information from the model to the view model instead of doing stuff manually, we will use `Dependency Injection` for most of our class (login, persistence...) and we will abstract most of the code to be able to grow the application.
 
 Before starting, let check the overall architecture at the highest level.
 
 ![](images/architecture-400x258.png)
 
-As you can see, the Javascript is separated from the view and this is because we will use an **[Unobtrusive Javascript](http://en.wikipedia.org/wiki/Unobtrusive_JavaScript)** approach. This mean that we will separate the action from the client side from the static view from the client side. The code will be cleaner and the separation of concern (from a client side perspective) is respected. Instead of adding an action from the view we will attach the action from the controller to the view. This is quite logical!
+As you can see, the Javascript is separated from the view and this is because we will use an [Unobtrusive Javascript](http://en.wikipedia.org/wiki/Unobtrusive_JavaScript) approach. This mean that we will separate the action from the client side from the static view from the client side. The code will be cleaner and the separation of concern (from a client side perspective) is respected. Instead of adding an action from the view we will attach the action from the controller to the view. This is quite logical!
 
-We will also have **CSS inside style sheet** instead of using inline style or in file style. This is also interesting from a maintainability perspective because you can reuse the CSS. It's also good for performance because it reduces the Html file to be loaded by the client and let the browser cache the CSS file.
+We will also have `CSS inside style sheet` instead of using inline style or in file style. This is also interesting from a maintainability perspective because you can reuse the CSS. It's also good for performance because it reduces the Html file to be loaded by the client and let the browser cache the CSS file.
 
-Concerning the view, we will use **Razor** that will be pushed by the controller from many ways. We will use View, PartialView, Json result that will contain partial view and Section.
+Concerning the view, we will use `Razor` that will be pushed by the controller from many ways. We will use View, PartialView, Json result that will contain partial view and Section.
 
 As you can see, the controller doesn't call the repository, neither call the model to transform them into view model. A service layer is there between. The reason is that we want the controller to handle the HttpRequest and HttpResponse, that's it. All the logic concerning the business logic, the mapping of data and the persistence of this data is handled by the service. The service layer is responsible of task that the Web side, the API side or any other technology could use. It's not glued to the web with this approach and many concept will be reused.
 
 Finally, we will use a repository layer instead of calling directly the ORM inside the controller. Not only it let you have cohesive class but it let you have central point in your application to debug persistence easier, it's also a better way to change ORM later on if required. Finally, it's a good idea because you may want to have caching system between controllers and database (or any other mechanism). Adding this layer will simplify the whole developement process from the elaboration phase to the maintenance phase.
 
-Stay tuned in the next weeks to see the development of a project following this architecture. **Asp.Net MVC4**, **Entity Framework 5**, **AutoMapper**, **JQuery** , [**Microsoft Enterprise library 5.0**](http://msdn.microsoft.com/en-us/library/ff632023.aspx) for Logging & **Unity**, Microsoft Membership, [**LinqKit**](http://www.albahari.com/nutshell/linqkit.aspx) and many more will be there.
+Stay tuned in the next weeks to see the development of a project following this architecture. `Asp.Net MVC4`, `Entity Framework 5`, `AutoMapper`, `JQuery` , [Microsoft Enterprise library 5.0](http://msdn.microsoft.com/en-us/library/ff632023.aspx) for Logging & `Unity`, Microsoft Membership, [LinqKit](http://www.albahari.com/nutshell/linqkit.aspx) and many more will be there.

@@ -5,20 +5,27 @@ categories:
   - "entity-framework"
 ---
 
-It's possible when using Poco object with Entity Framework to use **[DataAnnotation](http://msdn.microsoft.com/en-us/library/system.componentmodel.dataannotations.columnattribute(v=VS.103).aspx)** or to use the Fluent API.
+It's possible when using Poco object with Entity Framework to use [DataAnnotation](http://msdn.microsoft.com/en-us/library/system.componentmodel.dataannotations.columnattribute(v=VS.103).aspx) or to use the Fluent API.
 
-The DataAnnotation require to add a reference to "[System.Component.Model.DataAnnotations](http://msdn.microsoft.com/en-us/library/system.componentmodel.dataannotations.columnattribute(v=VS.103).aspx)"
+The DataAnnotation require to add a reference to [System.Component.Model.DataAnnotations](http://msdn.microsoft.com/en-us/library/system.componentmodel.dataannotations.columnattribute(v=VS.103).aspx)
 
 
 ```csharp
- using System.ComponentModel.DataAnnotations; 
+using System.ComponentModel.DataAnnotations; 
 ```
 
 This is pretty easy but as the disadvantage to corrupt your Poco object with database indicator (columns name).
 
 
 ```csharp
- public class MyObject { public int ID { get; set; } [Column("Code_SuperWeirdTableColumnName")] public string Code{ get; set; } [Column("Name_EN_USA")] public string Name { get; set; } } 
+public class MyObject { public int ID { get; set; } 
+
+  [Column("Code_SuperWeirdTableColumnName")] 
+  public string Code{ get; set; } 
+
+  [Column("Name_EN_USA")] 
+  public string Name { get; set; } 
+} 
 ```
 
-As you can see in the example above, the property Code is linked to Code_SuperWeirdTableColumnName which let you have a proper name inside your model object and still use another name into the table. It's the same for the Name of the MyObject class. It will be linked to Name_EN_USA.
+As you can see in the example above, the property Code is linked to `Code_SuperWeirdTableColumnName` which let you have a proper name inside your model object and still use another name into the table. It's the same for the Name of the MyObject class. It will be linked to `Name_EN_USA`.

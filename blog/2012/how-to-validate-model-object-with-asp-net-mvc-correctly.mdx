@@ -5,7 +5,7 @@ categories:
   - "asp-mvc"
 ---
 
-They are a lot of way to validate model object in object oriented world. Most of the time, we see that we can check the information inside the Setter (which in C# is the SET of a property). This is interesting and personally my favorite way to do it. The main reason is that you never have any model object in a dirty state which could fail on future use. My second reason is that it's easier to control what goes in the model. Everything that goes into the object has to pass through setters and this way, everything is clean inside the model.
+They are a lot of way to validate model object in object oriented world. Most of the time, we see that we can check the information inside the Setter (which in C\# is the SET of a property). This is interesting and personally my favorite way to do it. The main reason is that you never have any model object in a dirty state which could fail on future use. My second reason is that it's easier to control what goes in the model. Everything that goes into the object has to pass through setters and this way, everything is clean inside the model.
 
 In my last two years of development, I had to do development with Silverlight few times and also had the use Asp.Net MVC which pushed me to use a different approach. Instead of using setter to validate input, I had to use a custom function to do it. Not that Silverlight force you to validate outside the setter, in fact, it's still easier in my opinion with the MVVM pattern to use setter to handle exception and business rules from setter. In fact, the modification was that most of those project were already started this way, and second is that sometime, you need to validate stuff that has interdependency. Let say that you have a "Car" class which need to have special rule concerning the Color depending of the Type of this one. This mean that you need to set every time the Type before the Color. Also, with ORM that load your object directly, you may come in some situation where this one, doesn't load your object in the right order for properties which will raise error.
 
@@ -31,7 +31,7 @@ In the same time, Asp.Net MVC encourage a lot to not validate directly with the 
 } 
 ```
 
-The code above, demonstrate the edition of a "Car" class. Two things appears in the first line. The **IsValid** function will return true if nothing has been added to the ModelState and will return false if Model Binding error occur OR if you have business logic error. That's right, Asp.Net MVC will call your object business logic validation IF you use a single specific interface called "**IValidatableObject**". This interface let you inherit from a method called **Validate**. Inside this method you need to validate your business logic. Every times an error is found, you need to add it to a collection to return it at the end of this method. This let you add many error if desired. Here is the example of the Car model object.
+The code above, demonstrate the edition of a "Car" class. Two things appears in the first line. The `IsValid` function will return true if nothing has been added to the ModelState and will return false if Model Binding error occur OR if you have business logic error. That's right, Asp.Net MVC will call your object business logic validation IF you use a single specific interface called "`IValidatableObject`". This interface let you inherit from a method called `Validate`. Inside this method you need to validate your business logic. Every times an error is found, you need to add it to a collection to return it at the end of this method. This let you add many error if desired. Here is the example of the Car model object.
 
 
 ```csharp
@@ -55,7 +55,7 @@ public class Car: IValidatableObject {
 } 
 ```
 
-As you can see, we have 3 errors that are added to the return collection with the yield statement. We could have declared a variable of IEnumerable but for the sake of the simplicity we can use yield. This collection of error is generic. The type is **ValidationResult**. The class ValidationResult let you add a message that will be go next to the control that has the erroneous property which is specified in the second parameter. This mean that you could set instead of "Color is mandatory" simply a star symbol and a second generic error message without specifying the property like the example below.
+As you can see, we have 3 errors that are added to the return collection with the yield statement. We could have declared a variable of IEnumerable but for the sake of the simplicity we can use yield. This collection of error is generic. The type is `ValidationResult`. The class ValidationResult let you add a message that will be go next to the control that has the erroneous property which is specified in the second parameter. This mean that you could set instead of "Color is mandatory" simply a star symbol and a second generic error message without specifying the property like the example below.
 
 ```csharp
 public class Car: IValidatableObject { 
@@ -99,7 +99,7 @@ So, from here you have validation from the Model Binding and from the Model clas
 } 
 ```
 
-Some scenario remain like what about partial view or **Ajax** call. For partial view, no problem, everything will be stored in the ModelView which contain a dictionary of all error during the life cycle of the request to the server. The Ajax situation is not really more complex because the Ajax call will call the action method which will store all error in the ModelState. The action method will return a JsonResult for most of the time which contain, for most of the time, a partial view in a string that will be injected into a Html div. For the case that you want to get back only a positive message if it's a success and all errors when it fails you can always return the collection of errors. Here is the way to retrieve a collection of String that contains all messages of the ModelState.
+Some scenario remain like what about partial view or `Ajax` call. For partial view, no problem, everything will be stored in the ModelView which contain a dictionary of all error during the life cycle of the request to the server. The Ajax situation is not really more complex because the Ajax call will call the action method which will store all error in the ModelState. The action method will return a JsonResult for most of the time which contain, for most of the time, a partial view in a string that will be injected into a Html div. For the case that you want to get back only a positive message if it's a success and all errors when it fails you can always return the collection of errors. Here is the way to retrieve a collection of String that contains all messages of the ModelState.
 
 
 ```csharp

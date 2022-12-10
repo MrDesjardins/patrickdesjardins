@@ -1,19 +1,6 @@
 import * as React from "react";
 import { Link, useStaticQuery, graphql } from "gatsby";
-import {
-  container,
-  heading,
-  navLinks,
-  navLinkItem,
-  navLinkText,
-  siteTitle,
-  blogTopPicture,
-  paginationBar,
-  currentLink,
-  paginationLinks,
-  paginationTitle,
-  main,
-} from "./layout.module.css";
+import * as styles from "./layout.module.css";
 import { StaticImage } from "gatsby-plugin-image";
 import { URL_PER_YEAR, URL_BY_PAGE } from "../../constants";
 export interface LayoutProps {
@@ -23,7 +10,7 @@ export interface LayoutProps {
   currentPage?: string;
   totalPages: number;
 }
-export const Layout = (props: LayoutProps): JSX.Element => {
+const Layout = (props: LayoutProps) => {
   const pageTitle = props.pageTitle;
   const children = props.children;
 
@@ -36,41 +23,43 @@ export const Layout = (props: LayoutProps): JSX.Element => {
       }
     }
   `);
-  const years = [];
+  const years: number[] = [];
   const currentYear = new Date().getFullYear();
   for (let i = currentYear; i >= 2011; i--) {
     years.push(i);
   }
-  const pages = [];
+  const pages: number[] = [];
   for (let i = 1; i <= props.totalPages; i++) {
     pages.push(i);
   }
 
   return (
-    <div className={container}>
+    <div className={styles.container}>
       <title>
         {pageTitle} | {data.site.siteMetadata.title}
       </title>
-      <header className={siteTitle}>{data.site.siteMetadata.title}</header>
+      <header className={styles.siteTitle}>
+        {data.site.siteMetadata.title}
+      </header>
       <nav>
-        <ul className={navLinks}>
-          <li className={navLinkItem}>
-            <Link className={navLinkText} to="/">
+        <ul className={styles.navLinks}>
+          <li className={styles.navLinkItem}>
+            <Link className={styles.navLinkText} to="/">
               Main Page
             </Link>
-            <Link className={navLinkText} to="/blog">
+            <Link className={styles.navLinkText} to="/blog">
               Blog
             </Link>
             {years.map((y) => {
-              let classN: string = navLinkText;
+              let classN: string = styles.navLinkText;
               if (y === Number(props.currentPageYear)) {
-                classN += " " + currentLink;
+                classN += " " + styles.currentLink;
               }
               return (
                 <Link
                   key={y}
                   className={classN}
-                  to={URL_PER_YEAR.replace("{year}", y)}
+                  to={URL_PER_YEAR.replace("{year}", y.toString())}
                 >
                   {y}
                 </Link>
@@ -81,30 +70,30 @@ export const Layout = (props: LayoutProps): JSX.Element => {
       </nav>
       <div>
         <StaticImage
-          className={blogTopPicture}
+          className={styles.blogTopPicture}
           alt="Patrick Desjardins picture from a conference"
           src="../images/backgrounds/patrickdesjardins_conference_bw.jpeg"
         />
       </div>
-      <main className={main}>
-        <h1 className={heading}>{pageTitle}</h1>
+      <main className={styles.main}>
+        <h1 className={styles.heading}>{pageTitle}</h1>
         {children}
       </main>
-      <div className={paginationBar}>
-        <div className={paginationTitle}>
+      <div className={styles.paginationBar}>
+        <div className={styles.paginationTitle}>
           Chronological Blog Articles by Page
         </div>
-        <div className={paginationLinks}>
+        <div className={styles.paginationLinks}>
           {pages.map((page) => {
             let classLink = "";
-            if (page === props.currentPage) {
-              classLink = currentLink;
+            if (page === Number(props.currentPage)) {
+              classLink = styles.currentLink;
             }
             return (
               <Link
                 key={page}
                 className={classLink}
-                to={URL_BY_PAGE.replace("{page}", page)}
+                to={URL_BY_PAGE.replace("{page}", page.toString())}
               >
                 {page}
               </Link>
@@ -115,3 +104,5 @@ export const Layout = (props: LayoutProps): JSX.Element => {
     </div>
   );
 };
+
+export default Layout;
