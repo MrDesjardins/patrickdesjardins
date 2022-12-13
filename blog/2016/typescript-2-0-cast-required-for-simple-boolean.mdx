@@ -88,10 +88,9 @@ Overall, this change is weird. Why would you take the time to define a type to b
 ```typescript
 enum MyEnum { Choice1, Choice2, Choice3 } 
 ``` 
-
- This translate into Choice1 being 0, Choice2 1 and Choice3 = 2. The problem is that 0 is false in JavaScript. The first check is to be sure we do not pass `null` or `undefined`. Since MyEnum.Choice1 is 0, which is false, it will never goes into the if of the following code. 
+ This translate into Choice1 being 0, Choice2 1 and Choice3 = 2. The problem is that 0 is false in JavaScript. The first check is to be sure we do not pass null or undefined. Since MyEnum.Choice1 is 0, which is false, it will never goes into the if of the following code. 
  
-```typescript
+ ```typescript
 function isChoice1(yourChoice: MyEnum) { 
   if (yourChoice) {
      return yourChoice === MyEnum.Choice1; 
@@ -99,6 +98,7 @@ function isChoice1(yourChoice: MyEnum) {
   return false; 
 } 
 ``` 
+
 
 This code won't compile because the triple equal is not about being `yourChoice` being a `MyEnum` but `yourChoice` being of type `Choice2 | Choice3`.
 

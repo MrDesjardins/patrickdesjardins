@@ -479,10 +479,17 @@ Before doing anything you must do your BootStrap into a division that has the �
 ```  
 LocalizedString Control The first control for the contest entity is the name. This one is for the LocalizedString complex type. Since we want to have this control in a single line, we start with a division that has the “row” class. We will not use form-group class directly because we have something particular with this control. We have a label that is for the control and then 2 labels and inputs.
 
+```html  
+<div class="panel panel-default"> <div class="panel-heading">General Information</div> <div class="panel-body"> <!-- HERE YOUR CODE --> </div> </div> 
+```  
+
+LocalizedString Control The first control for the contest entity is the name. This one is for the LocalizedString complex type. Since we want to have this control in a single line, we start with a division that has the “row” class. We will not use form-group class directly because we have something particular with this control. We have a label that is for the control and then 2 labels and inputs.
+
 
 ```
 html  <div class="row"> <div class="col-xs-12 col-sm-2"> <label class="control-label" for="Name">Name</label> </div> <div class="col-xs-12 col-sm-10"> <div class="form-group"> <label class="control-label col-sm-2">English:</label> <div class="col-sm-10"> <input class="form-control text-box single-line" id="Name_English" name="Name.English" type="text" value=""> </div> </div> <div class="form-group"> <label class="control-label col-sm-2">Francais:</label> <div class="col-sm-10"> <input class="form-control text-box single-line" id="Name_French" name="Name.French" type="text" value=""> </div> </div> </div> </div> 
 ```  
+
 At first, I started with the col-xs-12 without doing anything for bigger resolution (sm). I wanted to have the name label that takes the whole line. The same for the labels for all languages and inputs. This is why col-xs-12 is used. It takes the whole 12 columns that a grid has. This is not the same behavior for the small resolution and higher. In that case, we want to take only 2 columns for the main label and then the rest of the 10 columns for the label-input. What is important is to have columns into row every times.
 
 From there, if everything is rendered correctly, than you can create a Html Helper that will help you to create this kind of behavior with property with dual-label and another one for a single label-input type.
