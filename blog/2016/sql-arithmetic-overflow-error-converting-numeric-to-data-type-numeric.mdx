@@ -5,9 +5,9 @@ categories:
   - "sql"
 ---
 
-When you are using straight ADO.Net with SQL you may come when using an operation that produce an overflow. This is often hard to debug if you are inside an update statement which update several fields. You may think than using **cast** or **convert** to the type of the destination field solve the problem, but it is not actually valid.
+When you are using straight ADO.Net with SQL you may come when using an operation that produce an overflow. This is often hard to debug if you are inside an update statement which update several fields. You may think than using `cast` or `convert` to the type of the destination field solve the problem, but it is not actually valid.
 
-Here is two examples that show that even if you **convert** or **cast** it won't be enough.
+Here is two examples that show that even if you `convert` or `cast` it won't be enough.
 
 
 ```sql
@@ -37,7 +37,7 @@ SELECT cast(Quantity * @fromValue/@toValue as int) as newQuantity FROM [Trading]
 ```
 
 
-However, adding a **where** clause eliminates edge cases to be proceeded. The trick is to handle result of 0 and result above the limit.
+However, adding a `where` clause eliminates edge cases to be proceeded. The trick is to handle result of 0 and result above the limit.
 
 
 ```sql

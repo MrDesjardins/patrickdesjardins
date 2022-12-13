@@ -6,7 +6,7 @@ categories:
   - "sql"
 ---
 
-**Connection Pooling** is handled by the **Connection Manager** to reuse available connection instead of creating a new one. This is performance wise because the system won't create and kill connection every time a database is require. This is also very true for web application that not only a same user may call multiple time the database per page but also go in multiple page and this is done by many users. To activate Pooling, add in the collection string "Pooling=True;", that's it.
+**Connection Pooling** is handled by the **Connection Manager** to reuse available connection instead of creating a new one. This is performance wise because the system won't create and kill connection every time a database is require. This is also very true for web application that not only a same user may call multiple time the database per page but also go in multiple page and this is done by many users. To activate Pooling, add in the collection string `Pooling=True;`, that's it.
 
 To use connection pooling suffices to change the connection string. From there you can select the size of the pool and many other options.
 

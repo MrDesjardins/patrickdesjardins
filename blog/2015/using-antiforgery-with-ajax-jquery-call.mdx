@@ -11,22 +11,32 @@ First, you still need to add the antiforgery token at the top of your controller
 
 
 ```csharp
- [HttpPost] [ValidateAntiForgeryToken] public ActionResult SymbolChangeList(SymbolToRenameAddViewModel symbolToSave) { //... } 
+[HttpPost] 
+[ValidateAntiForgeryToken] 
+public ActionResult SymbolChangeList(SymbolToRenameAddViewModel symbolToSave) { 
+  //... 
+} 
 ```
 
 The helper is also required. You have different option. First, you can re-use an existing antiforgery html helper if your page already have a form that is currently use this mechanism. For example, the login/logout form at the top of your site is using this by default. However, I prefer to create one for the Ajax call. It allows me to create an unique html's container to have an easy access to it in JavaScript.
 
 
-```html  <div id="anti-forgery-token"> @Html.AntiForgeryToken() </div> 
+```html  
+<div id="anti-forgery-token"> @Html.AntiForgeryToken() </div> 
 ``` 
 
 From there, you just need to add the value of the hidden field inside your post arguments.
 
 ```typescript
-$.ajax({ url: "/yourpage/here", type: 'POST', data: { idSymbolRename: id, /*Others variables to send */,__RequestVerificationToken: $('#anti-forgery-token [name=__RequestVerificationToken]').val() }, cache: true, dataType: 'json', success: function (json) { // Success code here }, error: function (xmlHttpRequest, textStatus, errorThrown) { // Error code here } }); 
+$.ajax({ url: "/yourpage/here", type: 'POST', data: { idSymbolRename: id, /*Others variables to send */,__RequestVerificationToken: $('#anti-forgery-token [name=__RequestVerificationToken]').val() }, cache: true, dataType: 'json', success: function (json) { 
+  // Success code here 
+  }, 
+  error: function (xmlHttpRequest, textStatus, errorThrown) { 
+    // Error code here
+     } 
+}); 
 ``` 
 
-
-As you see, we need to specify a value for the **__RequestVerificationToken** value and we get this one from the generated hidden field from the Html Helper.
+As you see, we need to specify a value for the `__RequestVerificationToken` value and we get this one from the generated hidden field from the Html Helper.
 
 This code does not require a lot of modification from any Ajax call done with JQuery. The only detail that change is that you need to add the request verification token into the data sent to the server and you are up to go with a protected Post method.

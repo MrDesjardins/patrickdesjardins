@@ -18,18 +18,21 @@ The first step to improve IIS performance is to remove the time out. This can be
 The auto start functionality is something that allow you to do an action when IIS start your application pool. For example, you could load in your caching system information from your database. You can also do some code that verify the availability of external webservice, etc. This require some manual editing of file on the server where reside your IIS. The file that needs to be edited is named **applicationHost.config** and it is located in the system folder : c:\\windows\\system32\\inetsrv\\config\\.
 
 The first section that you need to edit is the one that has your application pool name. You must ensure that you have **autoStart = true** and the **startmode** to **alwaysrunning**. 
+
 ```xml
  <add name="YourAppPoolName" autoStart="true" startMode="AlwaysRunning" managedRuntimeVersion="v4.0"> <processModel identityType="SpecificUser" userName="DefaultAppUserName" idleTimeout="00:00:00" /> </add> 
 ```
 
 
 In the same file, the second section to find is the application path. You can find this section by searching your application name. You must have **serviceAutoStartEnabled=true** and to set a **serviceAutoStartProvider** to an unique name that we will define soon. 
+
 ```xml
  <application path="/YourApplicationPath" applicationPool="YourAppPoolName" serviceAutoStartEnabled="true" serviceAutoStartProvider="YourProvider" > <virtualDirectory path="/" physicalPath="C:\\inetpub\\wwwroot\\YourApplicationPath" /> </application> 
 ```
 
 
 The provider name we just set needs to be defined. This can be done by adding a new section (if this one is not yet there) in the applicationHost.config file (same file that we are currently modifing the XML) under the section **serviceAutoStartProviders**. 
+
 ```xml
  <serviceAutoStartProviders> <add name="YourProvider" type="YourProvider, Full.NameSpace.To.YourProvider, version=1.0.0.0, Culture=neutral" /> </serviceAutoStartProviders> 
 ```

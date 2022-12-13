@@ -9,7 +9,7 @@ You can define templates in the **DisplayTemplates** and **EditorTemplates**. If
 
 > The model item passed into the dictionary is of type 'System.Int32', but this dictionary requires a model item of type 'System.String'
 
-This error occurs if you name the template int.cshtml or integer.cshtml. Even if you have defined the _@model int_ or _@model int?_.
+This error occurs if you name the template int.cshtml or integer.cshtml. Even if you have defined the `@model int` or `@model int?`.
 
 The solution is to name the file **Int32.cshtml**. CLR type name are used and not C# alias.
 

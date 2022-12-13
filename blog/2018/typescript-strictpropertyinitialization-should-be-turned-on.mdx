@@ -50,4 +50,4 @@ class C {
 ``` 
  The second example initialize the field "m3" but not in every code path. TypeScript detects that the field might not be initialized, hence doesn't compile.
 
-An important detail is the flag enters in action when TypeScript configures the **strickNullChecks** to true. Otherwise, TypeScript accepts undefined without mentioning optional. The combination of strict flags, **strickNullChecks** and **strictPropertyInitialization** works hand in hand to reduce potential undesired undefined value for field doesn't mention the possibility of undefined.
+An important detail is the flag enters in action when TypeScript configures the `strickNullChecks` to true. Otherwise, TypeScript accepts undefined without mentioning optional. The combination of strict flags, `strickNullChecks` and `strictPropertyInitialization` works hand in hand to reduce potential undesired undefined value for field doesn't mention the possibility of undefined.

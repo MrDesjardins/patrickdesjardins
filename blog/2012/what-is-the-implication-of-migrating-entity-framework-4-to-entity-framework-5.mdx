@@ -5,7 +5,7 @@ categories:
   - "entity-framework"
 ---
 
-I had to take care about updating Entity Framework from version 4.3 to version 5. Even if the Framework has been released about 2 weeks ago and this might looks rapid, it's not that much. It's not because it has been in RC since few months and in beta for even more time. Some time, instead of fighting against feature like keeping adding classes to support enumeration or to do some gymnastic with C# to turn around bugs it's just a better idea to upgrade.
+I had to take care about updating Entity Framework from version 4.3 to version 5. Even if the Framework has been released about 2 weeks ago and this might looks rapid, it's not that much. It's not because it has been in RC since few months and in beta for even more time. Some time, instead of fighting against feature like keeping adding classes to support enumeration or to do some gymnastic with C\# to turn around bugs it's just a better idea to upgrade.
 
 First of all, we use NutGet to get the package but we do not use the default mechanism. Once downloaded, we take the dll and we move them into a specify DLL directory. You may not have to do this, but sometime politic force you do to it so the first step was to copy the DLL.
 
@@ -13,12 +13,14 @@ However, unlike Entity Framework version 4.0 to 4.1 or to 4.3... Entity Framewor
 
 Once the DLL changed, and the validation that the project is well referenced to this new dll. I hit the compile button and see many errors that has been fixed rapidly.
 
-## Namespace changes
+# Namespace changes
 
 The first think you have to know is if you use data annotation, the namespace has changed. 
+
 ```csharp
  using System.ComponentModel.DataAnnotations; 
 ``` 
+
 became: 
 
 ```csharp
@@ -27,7 +29,7 @@ became:
 
 So you have to change some of your classes to use the new Schema. This was required for us because we use data annotation (not a lot but still over hundred places).
 
-## NotMappedAttribute is not NotMapped
+# NotMappedAttribute is not NotMapped
 
 I don't know why but the application I am working one use sometime NotMapped and sometime NotMappedAttribute. Well, with Entity Framework 5.0, NotMappedAttribute doesn't work. It's now only NotMapped.
 

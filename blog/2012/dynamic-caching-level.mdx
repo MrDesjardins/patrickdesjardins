@@ -13,9 +13,14 @@ The second way is to check into the complete list of dynamic code that has been 
 
 The last step is so build the method call and to update the list of methods. The pseudo code of the logic is like that:
 
-
 ```csharp
- if (lastMethod = currentOneInvoked) { Invoke(currentOneInvoked); } else if(listMethod.Find(currentOneInvoked)) { Invoke(currentOneInvoked); } else { UpdateAndInvoke(currentOneInvoked, arg0, ...); } 
+if (lastMethod = currentOneInvoked) { 
+  Invoke(currentOneInvoked); 
+} else if(listMethod.Find(currentOneInvoked)) { 
+  Invoke(currentOneInvoked); 
+} else { 
+  UpdateAndInvoke(currentOneInvoked, arg0, ...); 
+} 
 ```
 
 So, dynamic method is slower but is optimized to be as must fast as possible.

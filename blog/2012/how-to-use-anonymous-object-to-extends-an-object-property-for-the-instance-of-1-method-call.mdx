@@ -11,11 +11,29 @@ We could have done something pretty much nicer like looping through all objects 
 
 
 ```csharp
- MyMethod(myObject, new {MyNewPersonalMethodName1 = myObject.SubObject.Id1, MyNewPersonalMethodName2 = myObject.SubObject.Id2}); //or MyMethod(myObject, myOtherObjectToUseProperties); 
-``` This is a representation of how it was done. The MyMethod was overloaded to accept a second parameter. This one will be used to receive an anonymous object. This way, it's easy to have a name <-> value relationship and it gives us the possibility to pass a complete real object if desired or simply pass an anonymous object as parameter.
-
+ MyMethod(myObject, new {
+  MyNewPersonalMethodName1 = myObject.SubObject.Id1, 
+  MyNewPersonalMethodName2 = myObject.SubObject.Id2
+  }); 
+ //or MyMethod(myObject, myOtherObjectToUseProperties); 
 ``` 
- public void MyMethod(object myObject, object extendedProperties) { //You can do something with all properties of myObject and its value here //Here you can do something with the extended properties if (extendedProperties != null) { var typeInfo = extendedProperties.GetType(); var propertyInfo = typeInfo.GetProperties(); foreach (PropertyInfo p in propertyInfo) { var nameToUpdate = p.Name; var valueToUpdate = (object)p.GetValue(extendedProperties, null); //Do somethind with nameToUpdate and valueToUpdate } } } 
+
+This is a representation of how it was done. The MyMethod was overloaded to accept a second parameter. This one will be used to receive an anonymous object. This way, it's easy to have a name-value relationship. It gives us the possibility to pass a complete real object if desired or simply pass an anonymous object as parameter.
+
+```csharp
+ public void MyMethod(object myObject, object extendedProperties) { 
+  //You can do something with all properties of myObject and its value here 
+  //Here you can do something with the extended properties 
+  if (extendedProperties != null) { 
+    var typeInfo = extendedProperties.GetType(); 
+    var propertyInfo = typeInfo.GetProperties(); 
+    foreach (PropertyInfo p in propertyInfo) { 
+      var nameToUpdate = p.Name; 
+      var valueToUpdate = (object)p.GetValue(extendedProperties, null); 
+      //Do something with nameToUpdate and valueToUpdate 
+    } 
+  } 
+} 
 ``` 
 
 The next step is to use reflection to be able to get all properties' names and values. It's after that easy to be able to get the name to build a SQL query or a JSON object from object.

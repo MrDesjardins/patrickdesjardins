@@ -5,24 +5,26 @@ categories:
   - "sql"
 ---
 
-AdventureWorks is a free database used . You can find it for free at [CodePlex.com](http://msftdbprodsamples.codeplex.com/ "AdventureWorks Website"). The installation is well documented on MSDN website but can cause you some problems in few steps that I will try to smooth for you. First of all, before anything, be sure that you have the latest version of SQL Server. At this moment the lastest version is SQL Server 2008 R2. This can be found at [Microsoft](http://www.microsoft.com/sqlserver/en/us/editions/express.aspx "SQL Server Express 2008 R2 Download page"). If you don't, you may receive this message:
+AdventureWorks is a free database used . You can find it for free at [CodePlex.com](http://msftdbprodsamples.codeplex.com/). The installation is well documented on MSDN website but can cause you some problems in few steps that I will try to smooth for you. First of all, before anything, be sure that you have the latest version of SQL Server. At this moment the lastest version is SQL Server 2008 R2. This can be found at [Microsoft](http://www.microsoft.com/sqlserver/en/us/editions/express.aspx). If you don't, you may receive this message:
 
 > The database cannot be opened because it is version 661. This server supports version 612 and earlier. A downgrade path is not supported.
 
-Once the latest version of Microsoft SQL Server installed (this can be the Express Edition), you can install the AdventureWorks Setup executable file. This will install files located at : C:\\Program Files\\Microsoft SQL Server\\MSSQL10_50.MSSQLSERVER\\MSSQL\\DATA
+Once the latest version of Microsoft SQL Server installed (this can be the Express Edition), you can install the AdventureWorks Setup executable file. This will install files located at : `C:\\Program Files\\Microsoft SQL Server\\MSSQL10_50.MSSQLSERVER\\MSSQL\\DATA` 
 
 From there, the next step is to attach the database to your SQL Server. This is where the server could not be able to open the database because of version. If you still continue to have this error, the second solution can be to download older version of AdventureWorks.
 
 ![](images/sqlserver2008AdventureWorksDatabaseInstall-400x326.png)
 
-From there, steps at [MSDN](http://msdn.microsoft.com/en-us/library/aa992075(v=vs.80).aspx "MSDN's steps to install AdventureWorks Database") is what need to follow. When attaching the database you may receive this error message:
+From there, steps at [MSDN](http://msdn.microsoft.com/en-us/library/aa992075(v=vs.80).aspx) is what need to follow. When attaching the database you may receive this error message:
 
 > Unable to open the physical file "C:\\sql\\adventureworks\\AdventureWorks_Data.mdf". Operating system error 5: "5(error not found)". (.Net SqlClient Data Provider)
 
-This error occur when the sp_attach_db is executed or when the attach is done via the Microsoft Sql Management Studio.
+This error occur when the `sp_attach_db` is executed or when the attach is done via the Microsoft Sql Management Studio.
 
+```sh
 SQLCMD -S (local)\\sqlexpress -E
 exec sp_attach_db @dbname=N'AdventureWorks', @filename1=N'C:\\sql\\adventureworks\\AdventureWorks_Data.mdf', @filename2=N'C:\\sql\\adventureworks\\AdventureWorks_log.ldf'
 GO
+```
 
 To solve this issue you need to add to the directory the _Network Service_ user with Read and Write access. Also, do not forget to start the command prompt or the Microsoft Sql Management Studio as Administrator.

@@ -22,11 +22,15 @@ public class YourClass {
 ```
 
 This is a working example. From there you can use the YourClass class and set attributes. 
+
 ```csharp
- var myClass = new YourClass(); myClass.Id = 1; myClass.Attributes.IsBoolean = true; myClass.Attributes.MyName = "Patrick Desjardins"; 
+var myClass = new YourClass(); 
+myClass.Id = 1; 
+myClass.Attributes.IsBoolean = true; 
+myClass.Attributes.MyName = "Patrick Desjardins"; 
 ```
 
-You cannot define the Attributes property directly to the type of ExpandoObject. If you do, you will get an exception.
+You cannot define the Attributes property directly to the type of `ExpandoObject`. If you do, you will get an exception.
 
 > 'IsBoolean' and no extension method 'IsBoolean' accepting a first argument of type 'System.Dynamic.ExpandoObject' could be found (are you missing a using directive or an assembly reference?)
 

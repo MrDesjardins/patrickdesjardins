@@ -10,18 +10,31 @@ Having to update an object from an edit action is pretty standard. In fact, it's
 
 
 ```csharp
- [AcceptVerbs(HttpVerbs.Post)] public ActionResult Edit(FormCollection form) { // Get movie to update var id = Int32.Parse(form["id"]); var movieToUpdate =_db.MovieSet.First(m => m.Id == id);
+[AcceptVerbs(HttpVerbs.Post)] public ActionResult Edit(FormCollection form) { 
+  // Get movie to update 
+  var id = Int32.Parse(form["id"]); 
+  var movieToUpdate =_db.MovieSet.First(m => m.Id == id);
 
-// Deserialize (Include white list!) TryUpdateModel(movieToUpdate, new string[] { "Title", "Director" }, form.ToValueProvider());
+// Deserialize (Include white list!) 
+TryUpdateModel(movieToUpdate, new string[] { "Title", "Director" }, form.ToValueProvider());
 
-// If valid, save movie to database if (ModelState.IsValid) {_db.SaveChanges(); //... } 
+// If valid, save movie to database 
+if (ModelState.IsValid) {
+  _db.SaveChanges(); 
+  //... 
+} 
 ```
 
 Or, you could use the ability of auto binding each http parameters:
 
 
 ```csharp
- [HttpPost] public ActionResult Edit(Course course) { if (ModelState.IsValid) { db.Entry(course).State = EntityState.Modified; db.SaveChanges(); //... } 
+[HttpPost] 
+public ActionResult Edit(Course course) { 
+  if (ModelState.IsValid) { 
+    b.Entry(course).State = EntityState.Modified; db.SaveChanges(); 
+    //... 
+} 
 ```
 
 However, the problem remain that these two examples are only good for object with scalar properties. This mean that it works fine until you have object that reference other object. In real life, you have a lot of change that you will handle complex object that contain reference to many to many others objects or to optional object or to 1 to 1 object.
@@ -30,11 +43,19 @@ To be able to handle those scenario, you need to handle scalar data and referenc
 
 
 ```csharp
- public void Update(MyObject obj) { //Update all but not relationship (scalar properties are updated) var fromDatabase = Database.Customers.Where(p=>p.Id==customer.ID); Database.Entry(fromDatabase).CurrentValues.SetValues(obj);
+public void Update(MyObject obj) { 
+  //Update all but not relationship (scalar properties are updated) 
+  var fromDatabase = Database.Customers.Where(p=>p.Id==customer.ID); 
+  Database.Entry(fromDatabase).CurrentValues.SetValues(obj);
 
-//Update reference if (obj.OtherObject!= null) { Database.OtherObjects.Attach(obj.OtherObject); } fromDatabase.OtherObject = obj.OtherObject;
+  //Update reference 
+  if (obj.OtherObject!= null) { 
+    Database.OtherObjects.Attach(obj.OtherObject); 
+  } 
+  fromDatabase.OtherObject = obj.OtherObject;
 
-return Database.SaveChanges(); } 
+  return Database.SaveChanges(); 
+} 
 ```
 
 This check if the reference is null from the form. If yes, it mean that we need to save NULL to be able to have NULL in the foreign key of the database. If not, you need to attach to the Database Context the object (even if this one is not fully loaded, we just need the primary key to be available).

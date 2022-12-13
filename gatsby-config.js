@@ -6,6 +6,7 @@ module.exports = {
     title: "Patrick Desjardins Blog",
   },
   plugins: [
+    "gatsby-plugin-mdx-embed",
     {
       resolve: `gatsby-plugin-typescript`,
       options: {

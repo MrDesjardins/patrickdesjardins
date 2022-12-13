@@ -12,9 +12,9 @@ Did you know that you can know the original value written by the server to the c
 var originalName = document.getElementById("txtUserName").defaultValue;
 ```
 
-Yes, the Dom contain for every Html element of type **HTMLInputElement** and **HTMLTextAreaElement** the possibility to access the original value. This is interesting to know if a form has dirty inputs. It's also interesting because it removes the need to hide values into hidden fields or to hide into a Javascript object all original values.
+Yes, the Dom contain for every Html element of type `HTMLInputElement` and `HTMLTextAreaElement` the possibility to access the original value. This is interesting to know if a form has dirty inputs. It's also interesting because it removes the need to hide values into hidden fields or to hide into a Javascript object all original values.
 
-From the ECMAScript's specification we can see that it's a property that return a string. It's also possible to know if the value was originally checked in the case of a checkbox with **defaultChecked**.
+From the ECMAScript's specification we can see that it's a property that return a string. It's also possible to know if the value was originally checked in the case of a checkbox with `defaultChecked`.
 
 From here it's easy to know if a Html form is dirty (has something changed). We just need to loop through all inputs and compare.
 
@@ -61,4 +61,5 @@ function TestDirty(){
 
 You can have the above code functional [here](http://jsfiddle.net/r8PH4/20/). The only case that doesn't seem to work is the select box which the value is undefined. If someone has the code to fix it, feel free to post it.
 
-[ECMAScript specification about defaultValue](http://www.w3.org/TR/REC-DOM-Level-1/ecma-script-language-binding.html) [DefaultValue W3C reference](http://www.w3schools.com/jsref/prop_text_defaultvalue.asp)
+- [ECMAScript specification about defaultValue](http://www.w3.org/TR/REC-DOM-Level-1/ecma-script-language-binding.html) 
+- [DefaultValue W3C reference](http://www.w3schools.com/jsref/prop_text_defaultvalue.asp)

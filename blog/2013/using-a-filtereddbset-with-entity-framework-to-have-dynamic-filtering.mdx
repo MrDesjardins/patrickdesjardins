@@ -5,19 +5,21 @@ categories:
   - "entity-framework"
 ---
 
-If you are using an application that require to have your user to own data and not let other to see or edit it, you need to specify to each of your entity a user id to whom the entity belong. All my entities that belong to a user inherit from **IUserOwnable**. This interface force the entity to have a UserId.
+If you are using an application that require to have your user to own data and not let other to see or edit it, you need to specify to each of your entity a user id to whom the entity belong. All my entities that belong to a user inherit from `IUserOwnable`. This interface force the entity to have a UserId.
 
 
 ```csharp
  public interface IUserOwnable { int UserId { get; set; } } 
-``` From here, when I want to get the list of entity of my user I just need to specify in the where clause the logged user id and Entity Framework get me all entities that belong to this one. The following example show you how to get all workout from the logged user.
+``` 
+
+From here, when I want to get the list of entity of my user I just need to specify in the where clause the logged user id and Entity Framework get me all entities that belong to this one. The following example show you how to get all workout from the logged user.
 
 
 ```csharp
  public override IQueryable<Workout> GetAll() { return DatabaseContext.Set<Workout>().Where(e=>e.UserId == logguedUserId); } 
 ```
 
-The problem is that you need to set the UserId every time. This can lead to a problem of security if a developer forget to add the condition. It also a pain to repeat this code everywhere. This is why a better way to do it is to have a **FilteredDbSet** which will automatically add this condition. Here is the FilteredDbSet class.
+The problem is that you need to set the UserId every time. This can lead to a problem of security if a developer forget to add the condition. It also a pain to repeat this code everywhere. This is why a better way to do it is to have a `FilteredDbSet` which will automatically add this condition. Here is the FilteredDbSet class.
 
 
 ```csharp
@@ -76,4 +78,6 @@ Of course, the DatabaseContext is your class that inherit from DbContext. The Se
 
 ```csharp
  public IDbSet<TEntity> SetOwnable<TEntity>() where TEntity : class, IUserOwnable { return new FilteredDbSet<TEntity>(this, entity => entity.UserId == CurrentUser.UserId, entity => entity.UserId = CurrentUser.UserId); } 
-``` As you can see, we create a **FilteredDbSet** and assign the user Id with the CurrentUser which is the logged user.
+``` 
+
+As you can see, we create a `FilteredDbSet` and assign the user Id with the CurrentUser which is the logged user.

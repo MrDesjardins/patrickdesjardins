@@ -13,9 +13,17 @@ If we have one set with the letter A and B, and a set with C, D, E than the resu
 
 
 ```csharp
- var x = new string[] { "A", "B" }; var y = new string[] { "C", "D", "E" }; var cross = from x1 in x from y1 in y select new {x1,y1}; foreach (var output in cross) { Console.WriteLine(string.Format("{0} - {1}",output.x1, output.y1)); } Console.Read(); 
+var x = new string[] { "A", "B" }; 
+var y = new string[] { "C", "D", "E" }; 
+var cross = from x1 in x from y1 in y select new {x1,y1}; 
+foreach (var output in cross) { 
+  Console.WriteLine(string.Format("{0} - {1}",output.x1, output.y1)); 
+} 
+Console.Read(); 
 ```
 
-This console application output: ![](images/crossjoin.png)
+This console application output: 
+
+![](images/crossjoin.png)
 
 To conclude, cross join are pretty straight forward with Linq. This example was done with Linq to Object but can be also be done with Linq to Sql query.

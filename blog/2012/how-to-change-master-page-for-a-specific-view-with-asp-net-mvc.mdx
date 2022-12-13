@@ -11,21 +11,36 @@ The first way is the simplest and can be good enough for few pages that need a s
 
 
 ```csharp
- public ActionResult Index() { return View("Index", "MasterPageCustom"); } 
+public ActionResult Index() { 
+  return View("Index", "MasterPageCustom"); 
+} 
 ```
 
 You could also use the View object and setting the master page name with a setter.
 
 
 ```csharp
- public ActionResult SomeOtherPage() { var view = View("Index"); view.MasterName = "MasterPageCustom"; return view; } 
+public ActionResult SomeOtherPage() { 
+  var view = View("Index"); 
+  view.MasterName = "MasterPageCustom"; 
+  return view; 
+} 
 ```
 
 Generally, if you have a bigger website, you would prefer to handle master page at a higher level like the controller. This can be done by using the OnActionExecuted. Right after the action is executed, the controller can change the master page of the returned view.
 
 
 ```csharp
- protected override void OnActionExecuted(ActionExecutedContext filterContext) { var action = filterContext.Result as ViewResult; //Verify that nothing has been previously set. This give the possibility to //still be able to set the master page at a more atomic position (action). if (action != null && String.IsNullOrEmpty(action.MasterName)) { action.MasterName = "MasterPageCustom"; } //Default stuff base.OnActionExecuted(filterContext); } 
+protected override void OnActionExecuted(ActionExecutedContext filterContext) { 
+  var action = filterContext.Result as ViewResult; 
+  //Verify that nothing has been previously set. This give the possibility to 
+  //still be able to set the master page at a more atomic position (action). 
+  if (action != null && String.IsNullOrEmpty(action.MasterName)) { 
+    action.MasterName = "MasterPageCustom"; 
+  } 
+  
+  //Default stuff 
+  base.OnActionExecuted(filterContext); } 
 ```
 
 The later solution is the best one in the case that you have multiple action methods that use the same master page. It also give the flexibility to change it for specific action. The first solution should be used if the master page is used for few actions only.

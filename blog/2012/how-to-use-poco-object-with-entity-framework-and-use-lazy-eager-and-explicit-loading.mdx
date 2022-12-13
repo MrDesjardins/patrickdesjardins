@@ -9,7 +9,7 @@ When using Poco Object you have less stuff automatically done by Entity Framewor
 
 You can still use Entity Framework with complex object and this, by using many different loading like lazy loading, eager loading and explicit loading.
 
-## Eager Loading with Poco
+# Eager Loading with Poco
 
 Eager Loading with Entity Framework and Poco mean that the object will be loaded with 1 query but you need to specify which related object you want to load. 
 This is pretty much the most "performant" way to do it if you know that you will use most of the data object.
@@ -28,7 +28,7 @@ foreach (var x in XYZs) {
 
 This will produce only one query to the database that will contain a JOIN between the table of `XYZ` and `XYZInsideObject`.
 
-## Explicit loading with Poco
+# Explicit loading with Poco
 
 Explicit means that you want to load on demand the information of related object. This mean that you load the information only if desired and you need to specify when to load it explicitly.
 

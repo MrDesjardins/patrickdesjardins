@@ -24,6 +24,7 @@ The Html Helper is very simple.
 ```
 
 To make it works, you have to have it inside a Razor statement like this: 
+
 ```csharp
  @{ var x = Html.Test<ContestListItemViewModel>(); @Html.Raw(x); } 
 ```
@@ -35,4 +36,4 @@ The problem is it is not very clean. However, it is possible to fix this with a 
  @(Html.Test<ContestListItemViewModel>()) 
 ```
 
-How come? Well, Razor become confused if it has to render the result with Html or with C# variable because of the ContestListItemViewModel that is interpreted as Html. Adding parentheses help Razor to generate the Html output and remove the confusion, which remove the error.
+How come? Well, Razor become confused if it has to render the result with Html or with C\# variable because of the ContestListItemViewModel that is interpreted as Html. Adding parentheses help Razor to generate the Html output and remove the confusion, which remove the error.

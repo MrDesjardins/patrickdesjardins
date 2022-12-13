@@ -5,7 +5,7 @@ categories:
   - "c-sharp"
 ---
 
-This article demonstrates how to create a simple Circuit Breaker in C#. It’s under 180 lines of code. Before going into detail, let’s take one paragraph to explain the circuit breaker pattern.
+This article demonstrates how to create a simple Circuit Breaker in C\#. It’s under 180 lines of code. Before going into detail, let’s take one paragraph to explain the circuit breaker pattern.
 
 Circuit Breaker pattern is named from house circuit breaker — something fail, it opens the circuit, thus does not do any damage. With code, the circuit breaker pattern is useful when we access a resource that can slow down the system. For example, you have a website that connect different services on different servers, and one server goes down. You do not want subsequent calls to that server to call all the time that server. Mostly because it will slow down the whole website by having to timeout before being able to continue the code. This is a simple example, but this can be applied to other scenarios. The principle remains the same: execute some code, if it works nothing change; if it fails than we put the system into a close state. The open state allows to skip trying to execute the failed code and do something else until the circuit goes into an alternate state where it tries again to see if it can close the circuit again.
 
@@ -55,7 +55,7 @@ The last state is the closed state. This is the first state you start the circui
 public override void ActUponException(Exception e) { base.ActUponException(e); if (circuitBreaker.IsThresholdReached()) { circuitBreaker.MoveToOpenState(); } } } 
 ```
 
-The biggest piece of code is inside the main class : the **CircuitBreaker**. This class contains the threshold for failure, the time to wait when the circuit is open and also all the locking mechanism.
+The biggest piece of code is inside the main class : the `CircuitBreaker`. This class contains the threshold for failure, the time to wait when the circuit is open and also all the locking mechanism.
 
 
 ```csharp
@@ -100,14 +100,15 @@ public void Close() { lock (monitor) { MoveToClosedState(); } }
 public void Open() { lock (monitor) { MoveToOpenState(); } } } 
 ```
 
-This is easier to use than you may think. You mostly just need to use **AttemptCall**. You need to instantiate the circuit breaker. This must be a singleton since we want to keep the count of failure and the time when the circuit is open.
+This is easier to use than you may think. You mostly just need to use `AttemptCall`. You need to instantiate the circuit breaker. This must be a singleton since we want to keep the count of failure and the time when the circuit is open.
 
 
 ```csharp
  private static readonly CircuitBreaker circuitBreaker = new CircuitBreaker(3, TimeSpan.FromMinutes(15)); 
 ```
 
-Then, we need to call the circuit breaker for the code that is susceptible to thrown an exception, to fail. 
+Then, we need to call the circuit breaker for the code that is susceptible to thrown an exception, to fail.
+
 ```csharp
  myCircuitBreaker.AttemptCall(()=>{yourCode();}).IsClosed?"AllFine":"Something wrong"; 
 ```
@@ -118,4 +119,4 @@ To conclude, this pattern is really easy to implement, easy to use and can help 
 
 Check out the video [Webucator](https://www.webucator.com/microsoft-training/csharp.cfm) made on my article: 
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/BEznxN6MJIk" frameborder="0" allowfullscreen></iframe>
+<YouTube youTubeId="BEznxN6MJIk" />

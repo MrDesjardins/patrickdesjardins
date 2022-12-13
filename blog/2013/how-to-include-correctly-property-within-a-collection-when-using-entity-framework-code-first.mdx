@@ -5,7 +5,7 @@ categories:
   - "entity-framework"
 ---
 
-I have several [example](./asnotracking-to-force-your-data-context-to-get-everything-from-the-database) in this website that include with a string the property when it's a property inside a collection of my main entity. Here is one example:
+I have several [examples](./asnotracking-to-force-your-data-context-to-get-everything-from-the-database) in this website that include with a string the property when it's a property inside a collection of my main entity. Here is one example:
 
 
 ```csharp
@@ -18,7 +18,7 @@ I have several [example](./asnotracking-to-force-your-data-context-to-get-everyt
 ``` 
 At least, this example use the property for the Sessions. But why I wrote with a string for the two others includes? Because Sessions is a collection which doesn't let me link to one of its property. Instead, it links me to a list of property of the collection. This is quite logic if we think about it. However, I remain with the problem of using string which will lead in the maintenance phase to some possible problem when refactoring. Renaming a property won't change the string. This is why it would be better to specify the property of the collection.
 
-This can be done by using the Linq method "**Select**". 
+This can be done by using the Linq method "`Select`". 
 
 ```csharp
  return DatabaseContext

@@ -5,14 +5,16 @@ categories:
   - "git"
 ---
 
-If you started doing some code modification but you realize that you should have done these modifications in a branch instead of directly into the branch you did the modification, you can move all files into a new branch. The command is checkout with the parameter **-b** which create the branch if this one does not exist.
+If you started doing some code modification but you realize that you should have done these modifications in a branch instead of directly into the branch you did the modification, you can move all files into a new branch. The command is checkout with the parameter `-b` which create the branch if this one does not exist.
 
+```sh 
+git checkout -b NewBranch git add . 
 ``` 
- git checkout -b NewBranch git add . 
-``` 
 
-The git **add .** simply add all uncommited file into the staged area.
+The git `add .` simply add all uncommited file into the staged area.
 
-Other possibility exist like using **git stash** to move uncommited code into a temporary place and unstash into another branch. ``` 
- git stash git checkout NewBranch git stash apply 
+Other possibility exist like using `git stash` to move uncommited code into a temporary place and unstash into another branch. 
+
+``` sh
+git stash git checkout NewBranch git stash apply 
 ``` 

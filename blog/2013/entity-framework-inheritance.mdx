@@ -9,7 +9,7 @@ Business logic can have model classes that inherit an other class. The data of t
 
 Three strategies are available : TPH, TPT and TPC inheritance.
 
-## Table per hierarchy (TPH) Inheritance Mapping Strategy
+# Table per hierarchy (TPH) Inheritance Mapping Strategy
 
 This is the simplest strategy. It takes all properties of the base class and all properties of the inherited class and merge them into a single table. This mean if 10 classes inherit a single class, all properties of these 10 classes plus the one of the inheritance one will be merged in 1 table.
 
@@ -17,14 +17,16 @@ For example you have 3 classes. Two sub-classes that inherit a single base class
 
 
 ```csharp
- public class Book { public string ISBN { get; set; } public int PageCount { get; set; } }
+public class Book { public string ISBN { get; set; } public int PageCount { get; set; } }
 
 public class Magazine : Book { public string MagazineProperty { get; set; } }
 
 public class Encyclopedia:Book { public string EncyclopediaProperty { get; set; } } 
 ```
 
-The class diagram of these 3 classes is the following: ![](images/ClassDiagram-400x318.png)
+The class diagram of these 3 classes is the following: 
+
+![](images/ClassDiagram-400x318.png)
 
 This will result to a single table with all property nullable for those who are from subclass.
 
@@ -32,28 +34,43 @@ To create a short test, simply add these three classes to a .Net project. Then, 
 
 
 ```csharp
- public class TestContext:DbContext { public TestContext() : base("TestContext") {
+public class TestContext:DbContext { 
+  public TestContext() : base("TestContext") {
+  } 
+  public DbSet<Magazine> Magazines { get; set; } 
+  public DbSet<Encyclopedia> Encyclopedia { get; set; }
 
-} public DbSet<Magazine> Magazines { get; set; } public DbSet<Encyclopedia> Encyclopedia { get; set; }
-
-protected override void OnModelCreating(DbModelBuilder modelBuilder) { modelBuilder.Conventions.Remove<PluralizingTableNameConvention>(); modelBuilder.Entity<Book>().HasKey(d => d.ISBN);
-
-} } 
+  protected override void OnModelCreating(DbModelBuilder modelBuilder) { 
+    modelBuilder.Conventions.Remove<PluralizingTableNameConvention>(); 
+    modelBuilder.Entity<Book>().HasKey(d => d.ISBN);
+  } 
+} 
 ```
 
-Do no forget to add Entity Framework with Nuget and setup the web.config with a good connection string. To get entity framework you can do a search inside Nuget manager or in the package console. ``` 
+Do no forget to add Entity Framework with Nuget and setup the web.config with a good connection string. To get entity framework you can do a search inside Nuget manager or in the package console. 
+
+``` 
  Menu Project>Manage NuGet Packages Select the Online tab Select the EntityFramework package Click Install 
-```  or ``` 
+```  
+
+or 
+
+``` 
  PM> install-package entityframework 
-```  The configuration file should have a config section (which are added from Nuget) and the connection string to be setup to the Sql instance you have and the database you want to use. 
+```  
+The configuration file should have a config section (which are added from Nuget) and the connection string to be setup to the Sql instance you have and the database you want to use. 
+
 ```xml
  <configuration> <configSections> <section name="entityFramework" type="System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false" /> </configSections> <connectionStrings> <add name="TestContext" connectionString="Data Source=PATRICK-I7\\SQLEXPRESS;Initial Catalog=TestContextDatabase;Integrated Security=SSPI;" providerName="System.Data.SqlClient"/> </connectionStrings> ... 
 ```
- This is the most basic setup possible, we simply set the primary key to the base class. We do not set anything for sub-classes . Then, we need to let Entity Framework create the database. For that, just instanciate the dbcontext and do something to the query. We could also generate the database with the migration tool but for simplicity, let's just add a new Encyclopedia in the main method.
+This is the most basic setup possible, we simply set the primary key to the base class. We do not set anything for sub-classes . Then, we need to let Entity Framework create the database. For that, just instanciate the dbcontext and do something to the query. We could also generate the database with the migration tool but for simplicity, let's just add a new Encyclopedia in the main method.
 
 
 ```csharp
- using (var context = new DataAccessLayer.TestContext()) { context.Encyclopedia.Add(new Models.Encyclopedia { ISBN = "123" }); context.SaveChanges(); } 
+using (var context = new DataAccessLayer.TestContext()) { 
+  context.Encyclopedia.Add(new Models.Encyclopedia { ISBN = "123" }); 
+  context.SaveChanges(); 
+} 
 ```
 
 Here is how the table looks:
@@ -66,7 +83,7 @@ In fact, the table has an additional value which is a discriminator. This column
 
 This mapping strategy is good for performance and simplicity. It's also the default used by Entity Framework.
 
-## Table per type (TPT) Inheritance Mapping Strategy
+# Table per type (TPT) Inheritance Mapping Strategy
 
 All types are mapped to its own table. This produce a normalized database, while TPH doesn't. For the same example as above, with TPH, the database would have 3 tables.
 
@@ -75,17 +92,27 @@ All types are mapped to its own table. This produce a normalized database, while
 Entity Framework performs more inner join to be able to know which table to use for subclass when information are gathered from the database. This result to be less performing than the previous approach. Nevertheless, tables are more clean because they doesn't have a huge amount of nullable of property.
 
 To configure table per type (TPT) it requires to set the table for the subclass. 
+
 ```csharp
- public class TestContext : DbContext { public TestContext() : base("TestContext") { }
+public class TestContext : DbContext { 
+  public TestContext() : base("TestContext") { }
 
-public DbSet<Book> Book { get; set; } public DbSet<Magazine> Magazines { get; set; } public DbSet<Encyclopedia> Encyclopedia { get; set; }
+  public DbSet<Book> Book { get; set; } 
+  public DbSet<Magazine> Magazines { get; set; } 
+  public DbSet<Encyclopedia> Encyclopedia { get; set; }
 
-protected override void OnModelCreating(DbModelBuilder modelBuilder) { modelBuilder.Conventions.Remove<PluralizingTableNameConvention>(); modelBuilder.Entity<Magazine>().ToTable("Magazine"); modelBuilder.Entity<Encyclopedia>().ToTable("Encyclopedia"); modelBuilder.Entity<Book>().ToTable("Book").HasKey(d => d.ISBN); } } 
+  protected override void OnModelCreating(DbModelBuilder modelBuilder) { 
+    modelBuilder.Conventions.Remove<PluralizingTableNameConvention>(); 
+    modelBuilder.Entity<Magazine>().ToTable("Magazine"); 
+    modelBuilder.Entity<Encyclopedia>().ToTable("Encyclopedia"); 
+    modelBuilder.Entity<Book>().ToTable("Book").HasKey(d => d.ISBN); 
+  } 
+} 
 ```
 
 If we delete the database and run again the code, the database is created with two tables.
 
-## Table per concrete type (TPC) Inheritance Mapping Strategy
+# Table per concrete type (TPC) Inheritance Mapping Strategy
 
 Tablet per concrete type, also know as TPC, create a single class per subclass. Every properties of the inherited class are set into each of the subclass table. This lead to have duplicated structure. If you have 2 classes that inherit one class, the inherited field will be in inside the two tables.
 
@@ -97,13 +124,27 @@ The configuration is more complex.
 
 
 ```csharp
- public class TestContext:DbContext { public TestContext() : base("TestContext") {
+public class TestContext:DbContext { 
+  public TestContext() : base("TestContext") {
+  } 
 
-} public DbSet<Magazine> Magazines { get; set; } public DbSet<Encyclopedia> Encyclopedia { get; set; }
+  public DbSet<Magazine> Magazines { get; set; } 
+  public DbSet<Encyclopedia> Encyclopedia { get; set; }
 
-protected override void OnModelCreating(DbModelBuilder modelBuilder) { modelBuilder.Conventions.Remove<PluralizingTableNameConvention>(); modelBuilder.Entity<Magazine>().Map(m => { m.MapInheritedProperties(); m.ToTable("Magazine"); });
+  protected override void OnModelCreating(DbModelBuilder modelBuilder) { 
+    modelBuilder.Conventions.Remove<PluralizingTableNameConvention>(); 
+    modelBuilder.Entity<Magazine>().Map(m => { m.MapInheritedProperties(); m.ToTable("Magazine"); 
+    });
 
-modelBuilder.Entity<Encyclopedia>().Map(m => { m.MapInheritedProperties(); m.ToTable("Encyclopedia"); }); modelBuilder.Entity<Magazine>().HasKey(d => d.ISBN); modelBuilder.Entity<Encyclopedia>().HasKey(d => d.ISBN); } } 
+    modelBuilder.Entity<Encyclopedia>().Map(m => { 
+      m.MapInheritedProperties(); 
+      m.ToTable("Encyclopedia"); 
+    });
+    
+    modelBuilder.Entity<Magazine>().HasKey(d => d.ISBN); 
+    modelBuilder.Entity<Encyclopedia>().HasKey(d => d.ISBN); 
+  } 
+} 
 ```
 
 The code generated in SQL is complex. It has sub query with union to know from which table to take its data. This result to have bad performance for heavy inheritance model. TPC is good for deep inheritance, TPH is good for small entity with not a lot of property and TPT is good for small inheritance level with many properties. Personally, I lean for TPT most of the time. Having a normalize database is important in most enterprise and performance is not that bad if the inheritance is only one level.

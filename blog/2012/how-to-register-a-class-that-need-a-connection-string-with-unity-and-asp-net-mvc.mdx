@@ -19,22 +19,37 @@ First of all, you need to get both library, the Unity and Unity MVC3 (which work
 Then, you need to configure the dependency to your container. This need to be done in the application start of the application which is inside Global.ascx.cs.
 
 ```csharp
-protected void Application_Start() { AreaRegistration.RegisterAllAreas();
+protected void Application_Start() { 
+  AreaRegistration.RegisterAllAreas();
 
-WebApiConfig.Register(GlobalConfiguration.Configuration); FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters); RouteConfig.RegisterRoutes(RouteTable.Routes); BundleConfig.RegisterBundles(BundleTable.Bundles); AuthConfig.RegisterAuth();
+  WebApiConfig.Register(GlobalConfiguration.Configuration); 
+  FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters); 
+  RouteConfig.RegisterRoutes(RouteTable.Routes); 
+  BundleConfig.RegisterBundles(BundleTable.Bundles); 
+  AuthConfig.RegisterAuth();
 
-var connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString; UnityConfiguration.Initialize(connectionString); } 
+  var connectionString = System.Configuration.ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString; 
+  UnityConfiguration.Initialize(connectionString); 
+} 
 ```
 
-The line 13 initialize Unity. This class is a custom one that take the connection string that will be injected for the database. If we go inside the UnityConfiguration class we will see that all my interface are mapped to concrete type.
+The line 13 initialize Unity. This class is a custom one that take the connection string that will be injected for the database. If we go inside the `UnityConfiguration` class we will see that all my interface are mapped to concrete type.
 
 
 ```csharp
-public static class UnityConfiguration { public static void Initialize(string connectionString) { IUnityContainer container = new UnityContainer() .RegisterType<IDatabaseContext, DatabaseContext>(new InjectionConstructor(connectionString)) .RegisterType<IRepositoryFactory, RepositoryFactory>() .RegisterType<IWorkoutService, WorkoutService>() .RegisterType<IWorkoutRepository, WorkoutRepository>();
+public static class UnityConfiguration { 
+  public static void Initialize(string connectionString) { 
+    IUnityContainer container = new UnityContainer() 
+    .RegisterType<IDatabaseContext, DatabaseContext>(new InjectionConstructor(connectionString)) 
+    .RegisterType<IRepositoryFactory, RepositoryFactory>() 
+    .RegisterType<IWorkoutService, WorkoutService>() 
+    .RegisterType<IWorkoutRepository, WorkoutRepository>();
 
-DependencyResolver.SetResolver(new UnityDependencyResolver(container)); } } 
+    DependencyResolver.SetResolver(new UnityDependencyResolver(container)); 
+  } 
+} 
 ```
 
-You can notice that the DatabaseContext has a parameter. To pass the connection string to my DatabaseContext I used the **InjectionConstructor** object and pass the connection string. The latest version stable version of Unity, version 2.1, doesn't require you to write anything more to have all you controller injected. In fact, I have a IWorkoutController and you do not see it inside this configuration.
+You can notice that the DatabaseContext has a parameter. To pass the connection string to my DatabaseContext I used the **InjectionConstructor** object and pass the connection string. The latest version stable version of Unity, version 2.1, doesn't require you to write anything more to have all you controller injected. In fact, I have a `IWorkoutController` and you do not see it inside this configuration.
 
-The last step is to register the resolver to be used for the http request of each user. This is done by using the DependencyResolver.SetResolver method.
+The last step is to register the resolver to be used for the http request of each user. This is done by using the `DependencyResolver.SetResolver` method.

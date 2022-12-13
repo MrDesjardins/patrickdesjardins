@@ -8,14 +8,27 @@ categories:
 Using a bitwise number in an enum is the way to have a single variable with many potential values. A canonical example is to have a status that can be in several states at the same time. I recently create a generic interface in TypeScript to wrap an entity (any business logic type) to add additional data like the status.
 
 ```typescript
-enum Status { Unknown = 0, New = 1 << 0, Dirty = 1 << 1, InError = 1 << 2, Processing = 1 << 3, PersistedEntity = 1 << 4 } 
+enum Status { 
+  Unknown = 0, 
+  New = 1 << 0, 
+  Dirty = 1 << 1, 
+  InError = 1 << 2, 
+  Processing = 1 << 3, 
+  PersistedEntity = 1 << 4 
+} 
 ``` 
 
 
-The similar enum can use a direct number that represents all power of 2 (2^0, 2^1, 2^2, 2^3, 2^4). The importance is to have a number that in binary occupy one spot (0, 10, 100, 1000, 10000).
+The similar enum can use a direct number that represents all power of 2 `(2^0, 2^1, 2^2, 2^3, 2^4)`. The importance is to have a number that in binary occupy one spot (0, 10, 100, 1000, 10000).
 
 ```typescript
-enum Status { Unknown = 0, New = 1, Dirty = 2, InError = 4, Processing = 8, PersistedEntity = 16 } 
+enum Status { 
+  Unknown = 0, 
+  New = 1, 
+  Dirty = 2, 
+  InError = 4, 
+  Processing = 8, 
+  PersistedEntity = 16 } 
 ``` 
 
 
@@ -26,22 +39,31 @@ let value: Status = Status.New; console.log("Only new", value); value = Status.N
 ``` 
 
 
-A value can hold more than a single value. In the case that we want to persist the existing value intact and you need to use the sign **|=**. To remove a particular status you need to use **&= ~**. Using these operators will swap the value at the right position in its binary format without affecting the remaining parts of the number.
+A value can hold more than a single value. In the case that we want to persist the existing value intact and you need to use the sign `|=`. To remove a particular status you need to use `&= ~`. Using these operators will swap the value at the right position in its binary format without affecting the remaining parts of the number.
 
 ```typescript
-value |= Status.Processing; console.log("New and processing", value); console.log("Is it new?", value === Status.New); // Not the right way console.log("Is it new?", Status.New === (value & Status.New)); // Right way console.log("Is it processing?", Status.Processing === (value & Status.Processing)); value &= ~Status.Processing; 
+value |= Status.Processing; console.log("New and processing", value); 
+console.log("Is it new?", value === Status.New); // Not the right way 
+console.log("Is it new?", Status.New === (value & Status.New)); // Right way 
+console.log("Is it processing?", Status.Processing === (value & Status.Processing)); 
+value &= ~Status.Processing; 
 ``` 
 
 
 Finally, to check if the variable is of a particular status you must use the triple equal with the ampersand to the value you want to check against. This is often the mistake I see. People are using the triple equal or are using the ampersand without comparing it back to the desired value. The simple form of comparison is a mistake. The ampersand returns a number, not a boolean. The comparison needs to be against the value that we want to check.
 
 ```typescript
-console.log("Is it new?", Status.New === (value & Status.New)); console.log("Is it processing?", Status.Processing === (value & Status.Processing)); 
+console.log("Is it new?", Status.New === (value & Status.New)); 
+console.log("Is it processing?", Status.Processing === (value & Status.Processing)); 
 ``` 
 
 
-The output of the code all the previous code gives: ``` 
- Only new 1 New and processing 9 Is it new? false Is it new? true Is it processing? true Is it new? true Is it processing? false 
+The output of the code all the previous code gives: 
+
+``` 
+ Only new 1 New and processing 9 Is it new? false 
+ Is it new? true Is it processing? true Is it new? true 
+ Is it processing? false 
 ``` 
 
 Using bitwise number is harder to grasp at first glance and open code to error more easily even with TypeScript. It is recommended to use bitwise wisely and not to abuse it.

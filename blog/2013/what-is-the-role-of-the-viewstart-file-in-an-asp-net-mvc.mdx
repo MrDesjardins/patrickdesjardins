@@ -7,9 +7,9 @@ categories:
 
 Since version 3.0 of the Asp.Net MVC framework, you can use the ViewStart file inside the View folder. You can use it inside your area (inside the views of your area) and also have multiple ViewStart file within the View folder if your views contain sub directory.
 
-The ViewStart files are read from the root of the view folder to the more deep folder of the view called. So, if you are using an area which have several folder for different view, you can have a ViewStart inside the "Views" folder and one inside the "Views/Folder1". Asp.Net MVC will read the ViewStart from the "Views" folder and then the one inside "Views/Folder1".
+The ViewStart files are read from the root of the view folder to the more deep folder of the view called. So, if you are using an area which have several folder for different view, you can have a ViewStart inside the "Views" folder and one inside the `Views/Folder1`. Asp.Net MVC will read the ViewStart from the "Views" folder and then the one inside "Views/Folder1".
 
-An other characteristic of the ViewStart is that this one is called "_ViewStart.cshtml". It must start with an underscore and use the .cshtml extension.
+An other characteristic of the ViewStart is that this one is called `_ViewStart.cshtml`. It must start with an underscore and use the .cshtml extension.
 
 The role is to avoid to repeat some code that must be the same between views. For example, the layout for the view (the master page). Instead of defining the the top of each view what layout to use, you can simply define a layout at the root of your views folder a file_ViewStart.cshtml and put :
 

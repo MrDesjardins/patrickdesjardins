@@ -14,15 +14,16 @@ I assume your Redux's state contains only normalized data. Normalized data means
 
 In the Netflix Partner Portal, the first version of the Redux state was dividing the entity per domain. For example, one reducer for Organization, one for Site, one for Cache, etc. Sub-Reducers were available for each area. For instance, under Cache, you can find the Reducer Interfaces, BgpSessions, etc. The separation makes sense conceptually. However, it falls short when within these reducers you start mixing data coming from data API and data from the user.
 
-![Initial Reducer Structure: By domain and sub-domain](images/ReducersSeparation.png)
-
+![](images/ReducersSeparation.png)
+Initial Reducer Structure: By domain and sub-domain
 
 
 The problem with mixing data from the API and from the user is that the user may type, change a configuration, set a temporary information and the data from the API does not change. The lack of separation causes issues in term of performance. A user change should never make an already formed object to be recomputed and build again: they have not changed. The reason is that the tree of objects changes if one of its node is changing. Let's see the consequence with a small example. An organization contains a list of site which contains a list of appliances which contains many children and so on. If we set the property "activeAppliance" in one of the sub-reducer of an appliance, it will have a chain of effect. First of all, the object that holds the "activeAppliance" will get a new reference (because of immutability), then the sub-reducer will get a new reference and its parents. But, it does not stop there. All memoized data ofReSelect or Re-reselect are flushed. The reason is Re-select selector are logically linked to specific are of the Reducer trees and check if something has changed. If nothing has changed, it returns a pre-computed denormalized instance. However, if not present or if the memoized selector has changed (which is the case with this example in many ways) it will invalidate the cache an perform a denormalization.
 
 Dividing the data from the source of truth, the API, from the one that the user is using while editing cause all the memoize data to remain intact. If a user is changing the active appliance, there is no need to invalidate a whole organization with all its sites and appliances. Thus, the separation allows avoiding computer data that barely change. In that example, the "activeAppliance" moves from "Appliance" sub-reducer to the "AppliancesNotPersisted" reducer. The change the reference on the "AppliancesNotPersisted" state and invalidate a limited amount of selector compared to the ones on the business logics entities.
 
-![Not persisted data are separated from the main domain reducer](images/ReducersSeparation-Page-2.png)
+![](images/ReducersSeparation-Page-2.png)
+Not persisted data are separated from the main domain reducer
 
 While this might sound simplistic - and it is - this little change had a big impact. Refactoring code that already exists is not an easy task. However, the Netflix Partner Portal is made with TypeScript and has thousands of unit tests. Most changes were done within a day without disrupting the quality of the application.
 

@@ -8,7 +8,7 @@ categories:
 
 This is part three of three of TypeScript vs Flow. We previously saw the fundamental differences between TypeScript and Flow, then we saw some high-level differences in terms of features. Now, we will see at a much lower level the differences at the syntax.
 
-## Declaration
+# Declaration
 
 TypeScript and Flow are exactly the same.
 
@@ -18,7 +18,7 @@ let
 var
 ```
 
-## Primitive
+# Primitive
 
 Again, no difference.
 
@@ -31,7 +31,7 @@ Undefined
 Void
 ```
 
-## Array
+# Array
 
 And again, no difference.
 
@@ -40,7 +40,7 @@ And again, no difference.
 Array<T>
 ```
 
-## Enum
+# Enum
 
 TypeScript is shorted:
 
@@ -87,7 +87,7 @@ export class LocaleManager {
 }
 ```
 
-## Maybe Argument
+# Maybe Argument
 
 Watch out the question mark in the few next examples. Flow distinguishes null and undefined between optional and maybe.
 
@@ -103,7 +103,7 @@ Flow:
 { propertyName: ?string } //Allow null & undefined 
 
 ```
-## Optional Property
+# Optional Property
 
 TypeScript:
 
@@ -117,7 +117,7 @@ Flow:
 { propertyName?: string } //Allow undefined 
 
 ```
-## Optional Argument
+# Optional Argument
 
 TypeScript:
 
@@ -131,7 +131,7 @@ Flow:
 ( propertyName?: string ) //Allow undefined 
 
 ```
-## Literal value as type
+# Literal value as type
 
 In both cases, same syntax. For example, the code below only accepts the value of two. The difference is that TypeScript allows us to pass null or undefined. Flow doesn’t. To have Flow accept null you need to use the maybe concept which is to put a question mark right before the two.
 
@@ -143,7 +143,7 @@ function funct(value: ?2) { }
 function funct(value?: 2) { }
 
 ```
-## Union type
+# Union type
 
 Union type are supported by both and have the same syntax. Indeed, TypeScript allows to pass null and undefined while Flow doesn't.
 
@@ -153,7 +153,7 @@ function funct(arg1: "a" | "b" | "c") { }
 function funct(arg1?: "a" | "b" | "c" | null) { }
 
 ```
-## Union primitive type
+# Union primitive type
 
 Union with primitive work the same. TypeScript is consistent by letting null and undefined as well.
 ```typescript
@@ -164,7 +164,7 @@ function funct(arg1?: number | ?string) { }
 function funct(arg1?: number | string | null) { }
 
 ```
-## Mixed keyword
+# Mixed keyword
 
 Mixed doesn’t exist with TypeScript, so here is how it’s written in Flow. In TypeScript, you would use `any` or an empty definition with the curly brace: {}. The difference is that with `any` or curly brackets you can redefine the variable with any type once initialized. With Flow and the use of mixed, it’s any type until it’s defined. Once defined, the type is set for the life of the variable. Nice addition to the language, it’s a “dynamic any”.
 
@@ -172,7 +172,7 @@ Mixed doesn’t exist with TypeScript, so here is how it’s written in Flow. In
 function funct(arg1: mixed) { }
 
 ```
-## Any type
+# Any type
 
 Same syntax.
 
@@ -180,7 +180,7 @@ Same syntax.
 function funct(arg1: any) { }
 ```
 
-## Define return type
+# Define return type
 
 Returning value is with the semi-colon followed by the type. If nothing, return void.
 
@@ -188,7 +188,7 @@ Returning value is with the semi-colon followed by the type. If nothing, return 
 function funct(): string { }
 ```
 
-## Function type
+# Function type
 
 The signature of a method is exactly the same. It uses the JavaScript keyword “function” with parentheses that contain the name followed by the type. After the semicolon, the type is returned.
 
@@ -196,7 +196,7 @@ The signature of a method is exactly the same. It uses the JavaScript keyword �
 function funct(p1: string, p2?: boolean): void { }
 ```
 
-## Function w/o type
+# Function w/o type
 
 Function returns void by default in both.
 
@@ -204,7 +204,7 @@ Function returns void by default in both.
 function funct(p1, p2) { } 
 ```
 
-## Function fat arrow
+# Function fat arrow
 
 Fat arrow is a copy and paste between the two.
 
@@ -212,7 +212,7 @@ Fat arrow is a copy and paste between the two.
 let funct = (p1, p2) => { }
 ```
 
-## Function with callback
+# Function with callback
 
 Callback arguments are written the same way in TypeScript or Flow.
 
@@ -220,7 +220,7 @@ Callback arguments are written the same way in TypeScript or Flow.
 function funct(cb: (e: string | null, v: string | number) => void) { }
 ```
 
-## Funct with rest
+# Funct with rest
 
 Both support the long and short version.
 
@@ -229,7 +229,7 @@ function funct(...args: Array<number>) {}
 function funct2(...args: number[]) {}
 ```
 
-## Type Alias
+# Type Alias
 
 Aliases are written the same way in both case.
 
@@ -240,7 +240,7 @@ type MyType = { value: boolean };
 var obj2: MyType;
 
 ```
-## Type Alias with Generic
+# Type Alias with Generic
 
 Generic doesn't change anything. TypeScript and Flow stays the same.
 
@@ -253,7 +253,7 @@ var x: MyObject<number, string, boolean> = { property: 1, method: (string) => { 
 true;}}
 
 ```
-## Subtype
+# Subtype
 
 Defining your own type is the same in Flow or TypeScript.
 
@@ -261,7 +261,7 @@ Defining your own type is the same in Flow or TypeScript.
 type TypeLetters = "A" | "B" | "C";
 ```
 
-## Object as map
+# Object as map
 
 The first part is the same. You can use a string between square bracket to access in read or write a member of an object.
 
@@ -281,7 +281,7 @@ o[“bar”] = 2; //This will work in Flow, but not in TypeScript
   
 This is interesting since Flow is looser in this regard, and TypeScript is looser in term of the null/undefined. The justification of TypeScript to be strict is its structural typing.
 
-## Array
+# Array
 
 Pretty similar except the case of allowing Null. Here are all the similar scenarios.
 
@@ -300,7 +300,7 @@ var s: number[] = [1, 2, null];
 var s: (?number)[] = [1, 2, null];
 ```
 
-## Tuple
+# Tuple
 
 Same syntax for tuple.
 
@@ -308,14 +308,14 @@ Same syntax for tuple.
 var tuple: [number, boolean, string] = [1, true, "three"];
 ```
 
-## Key interpolation
+# Key interpolation
 
 ```typescript
 var obj1: { foo: boolean } = { foo: true };
 obj1["foo"] = false;
 ```
 
-## Opaque Type
+# Opaque Type
 
 With Flow you can define a type detail to be only available to a module. Here is an example. It can be used by an external module by importing it. However, the other file that imports won’t be able to assign it as Number, only as “MyType”. This feature can be interesting for people to enforce the use of their type. This is not available for TypeScript.
 
@@ -323,7 +323,7 @@ With Flow you can define a type detail to be only available to a module. Here is
 opaque type MyType = number;
 ```
 
-## Interface and Implementation
+# Interface and Implementation
 
 Implementing an interface is the same in Flow or TypeScript.
 
@@ -336,7 +336,7 @@ class Foo implements Serializable {
 }
 ```
 
-## Interface as map
+# Interface as map
 
 Both share the same syntax.
 
@@ -348,7 +348,7 @@ var x: MyInterface;
 x.key = 3;
 ```
 
-## Interface and object
+# Interface and object
 
 Both are the same for the first part.
 
@@ -371,7 +371,7 @@ x.foo = "foo";
 x.bar = 1;
 
 ```
-## Covariance property (readonly)
+# Covariance property (readonly)
 
 The syntax is a little bit different. TypeScript is using a longer approach, similar to C# with the keyword "readonly". Flow is using the plus symbol.
 
@@ -393,7 +393,7 @@ var x: MyInterface = { foo: "bar" };
 x.foo = "123"; // Blocked!
 
 ```
-## Contravariance
+# Contravariance
 
 TypeScript needs to have the type to be defined to all possible value. In the following example, the field is of type number. However, in the code, it can be a number or a string. TypeScript blocks the code to compile since there is a possibility of being a string, so it says that it must be a number or a string.
 
@@ -413,7 +413,7 @@ var value2: Contravariant = { writeOnly: numberOrString }; // Works!
 ```
 Again, this is a small syntax difference. At the end, isn't just simpler to just mark the type to "string | number" in both case?
 
-## Generic Class
+# Generic Class
 
 Exact same syntax.
 
@@ -427,7 +427,7 @@ class Item<T> {
 let item1: Item<number> = new Item(42);
 
 ```
-## Generic Interface
+# Generic Interface
 
 As we saw earlier, TypeScript allows to declare a type and not instantiated completely or completely. Flow must declare and instantiate.
 
@@ -450,7 +450,7 @@ var x: MyInterface<string, number, boolean>; // Notice that we only declare.
 x.foo = "123";
 
 ```
-## Generic Type
+# Generic Type
 
 Both allows to have generic type in the same syntax.
 
@@ -460,7 +460,7 @@ type Item<T> = {
 };
 ```
 
-## Generic Function
+# Generic Function
 
 Generic function share the same syntax between Flow and TypeScript.
 
@@ -468,7 +468,7 @@ Generic function share the same syntax between Flow and TypeScript.
 function funct1<T>(p1: T, p2 = "Smith") { }
 
 ```
-## Default parameter value
+# Default parameter value
 
 Default parameter use the equal sign followed by the value in both cases.
 
@@ -476,7 +476,7 @@ Default parameter use the equal sign followed by the value in both cases.
 function funct1(p1: string, p2 = "Smith") { }
 ```
 
-## Generic Type with default type and value
+# Generic Type with default type and value
 
 TypeScript uses the keyword extends to have a generic type from a particular type. Default value is the same.
 
@@ -494,7 +494,7 @@ type Item<T: number = 1> = {
 };
 ```
 
-## Cast
+# Cast
 
 Cast is different. Require having parentheses and a semi colon in Flow. TypeScript uses "as" like in C#. Flow is a little bit more verbose and can become harder to see in a situation within the inner function with many parentheses and curly braces.
 

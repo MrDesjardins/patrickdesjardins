@@ -13,13 +13,15 @@ The DbContext has for every sets a local storage. This is a temporary place wher
 
 ![](images/DbContextDbSetLocal.png)
 
-The **Finds** method use the Local to get for the primary key the entity before querying the database. However, method like Single and Where does not. But, it is possible to explicitly do a query against the Local. If we do a test, we see that using SingleOrDefault twice call the database twice. If we query the local with SingleOrDefault, no query is done to the database.
+The `Finds` method use the Local to get for the primary key the entity before querying the database. However, method like Single and Where does not. But, it is possible to explicitly do a query against the Local. If we do a test, we see that using SingleOrDefault twice call the database twice. If we query the local with SingleOrDefault, no query is done to the database.
 
 ```csharp
 private static void QueryLocal() { using (var context = new YourContext()) { Console.WriteLine(context.Persons.Local.Count); //0 var newPerson = new Person { Id = 500, Name = "New Person", BirthDate = new DateTime(2000, 1, 2) }; context.Persons.Add(newPerson); Console.WriteLine(context.Persons.Local.Count); //1 var person = context.Persons.SingleOrDefault(d => d.Id == 1); //Query the database Console.WriteLine(context.Persons.Local.Count); //2 var person2 = context.Persons.SingleOrDefault(d => d.Id == 1); //Query the database again Console.WriteLine(context.Persons.Local.Count); //2 var person3 = context.Persons.Local.SingleOrDefault(d => d.Id == 1); //Does not query the database Console.WriteLine(context.Persons.Local.Count); //2 } } 
-``` ![](images/LocalQueryDatabase-400x102.png)
+``` 
 
-Querying with a where clause load information into the Local storage but does not load everything. If you want to load all entities into your local you can use **explicit loading**.
+![](images/LocalQueryDatabase-400x102.png)
+
+Querying with a where clause load information into the Local storage but does not load everything. If you want to load all entities into your local you can use `explicit loading`.
 
 
 ```csharp
@@ -34,7 +36,7 @@ The explicit loading do a single query that load everything from the database. T
 ```
 
 
-In a future article, we will see that it is possible to load with explicit loading (.Load) not everything from the database. The goal here is to show that the **DbSet.Local** is filled up. It is also important to notice that if you call twice Load, it will load from the database everything. If you have one conclusion to remember from this article is that you have to be aware of which operations goes all the time to the database and which ones can are optimized by using the Local cache.
+In a future article, we will see that it is possible to load with explicit loading (.Load) not everything from the database. The goal here is to show that the `DbSet.Local` is filled up. It is also important to notice that if you call twice Load, it will load from the database everything. If you have one conclusion to remember from this article is that you have to be aware of which operations goes all the time to the database and which ones can are optimized by using the Local cache.
 
 
 ```csharp

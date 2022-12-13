@@ -11,7 +11,7 @@ Once the Console project is created, add a new item to the project.
 
 ![](images/newEntityFrameworkDataModel-400x276.png)
 
-From there, the second wizard step will be to select what the model will contain. We can start from a blank model or from a database. Because we want to see some functionality of the Visual Designer, let select to load the Entity Model from an existing database. For this example, I will select the [Microsoft's AdventureWorks 2008R2 SR1 database](http://msftdbprodsamples.codeplex.com "AdventureWorks Database Sql Code to create tables").
+From there, the second wizard step will be to select what the model will contain. We can start from a blank model or from a database. Because we want to see some functionality of the Visual Designer, let select to load the Entity Model from an existing database. For this example, I will select the [Microsoft's AdventureWorks 2008R2 SR1 database](http://msftdbprodsamples.codeplex.com).
 
 ![](images/efmodelcontentwizard-400x356.png)
 
@@ -19,7 +19,7 @@ For the purpose of this exercise, when the Wizard will ask you which table you d
 
 ![](images/entityframeworkVisualDesigner-400x296.png)
 
-When the Visual Designer is open, it's important to have the Properties windows (View>Properties Window / F4).
+When the Visual Designer is open, it's important to have the Properties windows (`View>Properties Window / F4`).
 
 ## Entity Properties
 
@@ -27,20 +27,28 @@ Lets see available properties of an Entity. To see them, click on an Entity from
 
 ![](images/entityProperties-400x155.png)
 
-The two most important properties are the Name and the Entity Set Name. The name represent the Entity single unit. It's usually the table name. For the Department, the name is Department. So data that come from this Entity will be "Departement". If a list of department is required it will be an IEnumerable<**Department**\>. The Entity Set Name is the identified inside the Object Context to retrieve department. A metaphor could be with a bag of item. The bag name is the Entity Set Name and items inside that bag are the Name. So, if I want to have the 10 department with an unique identifier under 10, I will need to go in the bag called "DepartmentList" to get a collection of "Department". By the way, the DepartmentList name is a modification of mine. Initially, the Entity Set Name was the same as the name : department.
+The two most important properties are the Name and the Entity Set Name. The name represent the Entity single unit. It's usually the table name. For the Department, the name is Department. So data that come from this Entity will be `Departement`. If a list of department is required it will be an `IEnumerable<Department\>`. The Entity Set Name is the identified inside the Object Context to retrieve department. A metaphor could be with a bag of item. The bag name is the Entity Set Name and items inside that bag are the Name. So, if I want to have the 10 department with an unique identifier under 10, I will need to go in the bag called "DepartmentList" to get a collection of "Department". By the way, the DepartmentList name is a modification of mine. Initially, the Entity Set Name was the same as the name : department.
 
 ![](images/departementList-400x176.png)
 
-The second line that has a variable named listOfDepartment is in fact a IQueryable collection where the T is Department (the Name of the Entity).
+The second line that has a variable named `listOfDepartment` is in fact a `IQueryable` collection where the `T` is `Department` (the Name of the Entity).
 
 ```csharp
-var db = new AdventureWorks_DataEntities(); var listOfDepartment = db.DepartmentList.Where(dept => dept.DepartmentID <= 10); foreach (var d in listOfDepartment) { Console.WriteLine(string.Format("{0}:{1}",d.DepartmentID,d.Name)); } 
+var db = new AdventureWorks_DataEntities(); 
+var listOfDepartment = db.DepartmentList.Where(dept => dept.DepartmentID <= 10); 
+foreach (var d in listOfDepartment) { 
+  Console.WriteLine(string.Format("{0}:{1}",d.DepartmentID,d.Name)); 
+} 
 ```
 
 The line #2 could have been:
 
 ```csharp
-var db = new AdventureWorks_DataEntities(); IQueryable listOfDepartement = db.DepartmentList.Where(dept => dept.DepartmentID <= 10); foreach (var d in listOfDepartement) { Console.WriteLine(string.Format("{0}:{1}",d.DepartmentID,d.Name)); } 
+var db = new AdventureWorks_DataEntities(); 
+IQueryable listOfDepartement = db.DepartmentList.Where(dept => dept.DepartmentID <= 10); 
+foreach (var d in listOfDepartement) { 
+  Console.WriteLine(string.Format("{0}:{1}",d.DepartmentID,d.Name));
+} 
 ```
 
 ## Entity Attributes Properties
@@ -59,4 +67,4 @@ The last kind of attribute that an entity can have is Complexe Property. Complex
 
 Association attribute contain the multiplicity of each endpoint, it contains also if cascade delete is required and so on.
 
-This is for a small wrap-up of the Visual Designer of Entity Framework 4.0 :)
+This is for a small wrap-up of the Visual Designer of Entity Framework 4.0.

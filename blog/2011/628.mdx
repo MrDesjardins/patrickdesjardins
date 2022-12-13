@@ -13,32 +13,32 @@ In Silverlight, you can still use Resource File. They are available in the New I
 
 ![](images/Snap-2011-12-13-at-10.41.32-400x238.png)
 
-In my project I added two resources file : MyRes1.resx and MyRes1.fr.resx. This way, I can have English and French words translated.
+In my project. I added two resources file: MyRes1.resx and MyRes1.fr.resx. This way, I can have English and French words translated.
 
-The next logical step is to handle the language selection. In my case, the language came from the Asp.Net page. It was passed as a parameter. In App.xaml.cs, in the Application_Startup() event, I added a call to _SetCultureInformation()_ which I have defined like this:
+The next logical step is to handle the language selection. In my case, the language came from the Asp.Net page. It was passed as a parameter. In `App.xaml.cs`, in the `Application_Startup()` event, I added a call to `SetCultureInformation()` which I have defined like this:
 
 
 ```csharp
-
- private void SetCultureInformation(StartupEventArgs e) { 
-   var languageInfo = new CultureInfo("en"); 
+private void SetCultureInformation(StartupEventArgs e) { 
+  var languageInfo = new CultureInfo("en"); 
   if (e.InitParams.ContainsKey("language")) { 
     if (e.InitParams["language"] == "fr") { 
       languageInfo = new CultureInfo("fr"); 
     } 
   } 
   Thread.CurrentThread.CurrentCulture = languageInfo; 
-  Thread.CurrentThread.CurrentUICulture = languageInfo; } 
+  Thread.CurrentThread.CurrentUICulture = languageInfo; 
+} 
 ```
 
 I were ready to execute to test but I had the problem that Silverlight didn't want to switch to French.
 
 After few hours, I realized that Silverlight's project can have specific variable to be set to be able to tell Silverlight which language is supported.
 
-To do, open your Silverlight project with Notepad and search for "SupportedCultures"
+To do, open your Silverlight project with Notepad and search for `SupportedCultures`.
 
 ![](images/Snap-2011-12-13-at-10.47.35-400x113.png)
 
-You need to set all language you want, but no need to add the default one. In my case, I added only the French one, so "fr".
+You need to set all language you want, but no need to add the default one. In my case, I added only the French one, so `fr`.
 
 After that, everything worked.

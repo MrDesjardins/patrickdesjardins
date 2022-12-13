@@ -21,7 +21,13 @@ From there, the saving process start. The controller should call the service lay
 
 
 ```csharp
- public int Update(Workout entity) { using (var scope = new TransactionScope()) { // Remove // Insert scope.Complete(); } } 
+public int Update(Workout entity) { 
+  using (var scope = new TransactionScope()) { 
+    // Remove 
+    // Insert 
+    scope.Complete();
+  } 
+} 
 ```
 
 This is how to code should be. A transaction that is before and after remove instruction and insert intruction.
@@ -49,7 +55,7 @@ In our case, the code looks like this :
 
 Has you can see, few things are added. First, the DatabaseContext is using a _USING_ with RemoveValidation method. This is a custom method that remove temporary all validations by Entity Framework. The code call ValidateOnSaveEnabled and set it to false and put it back to true once the scope of the using is over. This is ain't a requirement for you, but I let it there for the reason that you may have to do it. The justification is quite simple. When you are saving from partial data that contain only the primary key (Id) and you attach these one you may have some error that some required field aren't provided. If you tell Entity Framework not to check the validation, you won't have this trouble.
 
-Second, you see that we call RemoveWorkoutSessionExercisesNotUsedAnymore(...) followed by SetupWorkoutForRepository(...). The Remove function do a query to the database to get the list of existing entities and compare with the one provided by the form (from the web page). All entities that were there and that is not anymore are removed.
+Second, you see that we call `RemoveWorkoutSessionExercisesNotUsedAnymore(...)` followed by `SetupWorkoutForRepository(...)`. The Remove function do a query to the database to get the list of existing entities and compare with the one provided by the form (from the web page). All entities that were there and that is not anymore are removed.
 
 
 ```csharp
@@ -65,7 +71,7 @@ private void RemoveWorkoutSessionExercisesNotUsedAnymore(Workout entity) {
 } 
 ```
 
-The code is good for new and modified Workout entity. In the case of a new entity, the list of workout session exercise from the database will be empty and nothing will be removed. In the case of a modified Workout that contains workout session exercise, those are removed if they are not found in the list of Id that the user uses. At the end, we call SaveChange() which commit the delete statement to the Sql Server. Of course, since we are in a transaction, nothing will be really committed yet.
+The code is good for new and modified Workout entity. In the case of a new entity, the list of workout session exercise from the database will be empty and nothing will be removed. In the case of a modified Workout that contains workout session exercise, those are removed if they are not found in the list of Id that the user uses. At the end, we call `SaveChange()` which commit the delete statement to the Sql Server. Of course, since we are in a transaction, nothing will be really committed yet.
 
 Third, the SetupWorkoutForRepository is called. This method is the heart of the work for modifying an entity with multiple children objects. Once the setup is done, the database is saved and the transaction is completed. At this final moment, every delete and insert are commited to the Sql Server Database.
 
@@ -132,6 +138,7 @@ The second one is then the exercise has already been used. So, it has already be
 At the end, we do the same for the workout session exercise. Why do we do exercise first and then we do exercise session? Because attaching or adding the exercise session would result to attach their sub property which is not what we want because we want to control if we attach or not the entity. We want to control what is attached and added and this is why we need to attach stuff from the bottom to up.
 
 Also, you may want to save some property and not everything. In that case you can select the property and indicate if this one has changed or not. 
+
 ```csharp
  DatabaseContext.Entry(dbEntry).Property(d => d.Name).IsModified = false; 
 ``` 

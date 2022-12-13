@@ -6,7 +6,7 @@ categories:
   - "webservices"
 ---
 
-If you are using **Web Api** of .Net 4.5 framework and want to have the same behavior of Asp.Net MVC which let you have global authorization set to every http request, than you need to configure your website differently.
+If you are using `Web Api` of .Net 4.5 framework and want to have the same behavior of Asp.Net MVC which let you have global authorization set to every http request, than you need to configure your website differently.
 
 In Asp.Net you would add a new filter to the FilterConfig file.
 
@@ -27,4 +27,4 @@ public static void Register(HttpConfiguration config) {
 } 
 ```
 
-From here, every method of all your controllers will require authorization. If you want to remove this required authorization for specific web method, you need to add the attribute **[AllowAnonymous]**. You can have additional information directly at [Microsoft](http://www.asp.net/web-api/overview/security/authentication-and-authorization-in-aspnet-web-api).
+From here, every method of all your controllers will require authorization. If you want to remove this required authorization for specific web method, you need to add the attribute `[AllowAnonymous]`. You can have additional information directly at [Microsoft](http://www.asp.net/web-api/overview/security/authentication-and-authorization-in-aspnet-web-api).

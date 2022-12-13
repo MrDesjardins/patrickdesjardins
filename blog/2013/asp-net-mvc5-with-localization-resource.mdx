@@ -11,18 +11,23 @@ Localization works by setting the current thread Culture and Culture UI with a C
 
 
 ```csharp
- var culture1 = new System.Globalization.CultureInfo("fr"); var culture2 = new System.Globalization.CultureInfo("fr-CA"); 
+var culture1 = new System.Globalization.CultureInfo("fr"); 
+var culture2 = new System.Globalization.CultureInfo("fr-CA"); 
 ```
 
 In the example above, culture1 specify the language, French, but doesn't specify the region which can be a problem for number and date. This is why it's always better to be region specific instead of using neutral culture. With experience, you will see that your customer won't want the European format for currency if they live in North America (euro is not Canadian dollar!).
 
 In a MVC application, the language is often set in the user session or cookie. It's then loaded back when one of your controller is called. Normally, all your controllers should inherit from a base controller. This is the perfect place to set the thread culture back from the session or cookie.
 
-You can set the thread inside the **OnActionExecuting**.
+You can set the thread inside the `OnActionExecuting`.
 
 
 ```csharp
- protected override void OnActionExecuting(ActionExecutingContext filterContext) { Thread.CurrentThread.CurrentUICulture = new CultureInfo(CurrentUser.Language); Thread.CurrentThread.CurrentCulture = new CultureInfo(CurrentUser.Language); //... } 
+protected override void OnActionExecuting(ActionExecutingContext filterContext) { 
+  Thread.CurrentThread.CurrentUICulture = new CultureInfo(CurrentUser.Language); 
+  Thread.CurrentThread.CurrentCulture = new CultureInfo(CurrentUser.Language); 
+  //... 
+} 
 ```
 
 If you want to use by default if the session is not set the language set in the browser, it's possible. This language is set in the preference of the browser. Here is two screenshots that explain how to adjust the language for Chrome and for Internet Explorer.
@@ -32,6 +37,7 @@ If you want to use by default if the session is not set the language set in the 
 ![](images/acceptedLanguageIE-400x379.png)
 
 This set the Accept-Language in the http header. The server receive this information, and you can read it from the Http Request header. 
+
 ```csharp
  cultureName = Request.UserLanguages != null && Request.UserLanguages.Length > 0 ? Request.UserLanguages.First(); 
 ```
@@ -46,7 +52,19 @@ If the language is not available inside your resource file, it falls back the th
 If you do not want to type the namespace every time you can set a using at the top of the file and for views you can also specify in the web.config the namespace to be added by default. Often, this is added into the web.config of the Views folder and not the whole application since in the majority of time, you have resources for each Views folder. If you wan to add the namespace into the default ones, add your namespace under razor configuration.
 
 ```xml
-<configuration> <system.web.webPages.razor> <host factoryType="System.Web.Mvc.MvcWebRazorHostFactory, System.Web.Mvc, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" /> <pages pageBaseType="System.Web.Mvc.WebViewPage"> <namespaces> <add namespace="System.Web.Mvc" /> <add namespace="System.Web.Mvc.Ajax" /> <add namespace="System.Web.Mvc.Html" /> <add namespace="System.Web.Optimization"/> <add namespace="System.Web.Routing" /> <add namespace="YourNamespaceHere" /> </namespaces> </pages> </system.web.webPages.razor> 
+<configuration> <system.web.webPages.razor> 
+  <host factoryType="System.Web.Mvc.MvcWebRazorHostFactory, System.Web.Mvc, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35" /> 
+  <pages pageBaseType="System.Web.Mvc.WebViewPage"> 
+    <namespaces> 
+      <add namespace="System.Web.Mvc" /> 
+      <add namespace="System.Web.Mvc.Ajax" /> 
+      <add namespace="System.Web.Mvc.Html" /> 
+      <add namespace="System.Web.Optimization"/> 
+      <add namespace="System.Web.Routing" /> 
+      <add namespace="YourNamespaceHere" /> 
+    </namespaces>
+   </pages> 
+</system.web.webPages.razor> 
 ```
 
 
@@ -54,9 +72,30 @@ Finally, if you want to use the default language then the session, here is the c
 
 
 ```csharp
- protected ICurrentUser CurrentUser { get { UserSessionDTO currentUser =_sessionHandler.GetUser(); if (currentUser != null) { UserProfile userProfile =_mapperFactory.UserSessionDTO.GetModel(currentUser); return userProfile; } else { ICurrentUser currentUserFromProvider =_userProvider.Account; UserProfile fullUserProfile =_serviceFactory.Account.GetByUserName(currentUserFromProvider.UserName); if (fullUserProfile == null)//Case of a non identified user { fullUserProfile = new UserProfile(); fullUserProfile.Language = Request.UserLanguages != null && Request.UserLanguages.Length > 0 ? Request.UserLanguages.First():"en-US"; } return fullUserProfile; } } }
+protected ICurrentUser CurrentUser { 
+  get { 
+    UserSessionDTO currentUser =_sessionHandler.GetUser(); 
+    if (currentUser != null) { 
+      UserProfile userProfile =_mapperFactory.UserSessionDTO.GetModel(currentUser); return userProfile; 
+    } else { 
+      ICurrentUser currentUserFromProvider =_userProvider.Account; 
+      UserProfile fullUserProfile =_serviceFactory.Account.GetByUserName(currentUserFromProvider.UserName);
+      if (fullUserProfile == null)//Case of a non identified user
+      { 
+        fullUserProfile = new UserProfile(); 
+        fullUserProfile.Language = Request.UserLanguages != null && Request.UserLanguages.Length > 0 ? Request.UserLanguages.First():"en-US"; 
+      } 
+      return fullUserProfile; 
+    } 
+ }
+}
 
-protected override void OnActionExecuting(ActionExecutingContext filterContext) { Thread.CurrentThread.CurrentUICulture = new CultureInfo(CurrentUser.Language); Thread.CurrentThread.CurrentCulture = new CultureInfo(CurrentUser.Language); base.OnActionExecuting(filterContext); //.... } 
+protected override void OnActionExecuting(ActionExecutingContext filterContext) { 
+  Thread.CurrentThread.CurrentUICulture = new CultureInfo(CurrentUser.Language); 
+  Thread.CurrentThread.CurrentCulture = new CultureInfo(CurrentUser.Language);
+   base.OnActionExecuting(filterContext); 
+   //.... 
+} 
 ```
 
 The code above is a little bit more than necessary. It has in the base controller something that check if the user is already logged in the session. If yes, it returns the object fully loaded. If not, which is the case for a new user that come on your website, it uses the temporary user from the user and verify it has a User Profile which should be null. This create a temporary User Profile and set the language which is in fact the culture (I should rename this property). From the Controller.Request which is of type System.Web.HttpRequestBase, you can read the UserLanguage and take the first one defined. If none is set, I choose English from United States Of America.

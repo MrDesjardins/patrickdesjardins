@@ -10,7 +10,7 @@ There are a lot of different ways to have a system built around React and Redux.
 
 ![](images/ReactReduxLifeCycle.png)
 
-### UI Components
+# UI Components
 
 The premise of having a simple code starts with having simple UI elements. Simplicity follows the React philosophy of having small and simple components. It makes code reading easier for developers who need to change it, makes writing unit tests faster, as well as reduces the side-effects that occur when modifying a piece of code. Most of the components won’t have a state at all. By most, I mean more than 95%.
 
@@ -22,19 +22,19 @@ The second type of component is the container component. These components are th
 
 React-Redux is the main library used to glue React components to Redux, and it is perfect to use for container components, but having too many of such components breaks the React hierarchical flow. That’s right; if every component hooks to the store, any change to the store will notify every component instead of just a few select ones that can then distribute the changes down. The flow is more predictable if it goes top to bottom than every component getting notified. That being said, a balance is required as well. Otherwise, too many components will have a huge properties list or have a very high-level property which makes them access too many values, thus confusing developers what they should access.
 
-### Loading Page
+# Loading Page
 
 Everything starts when a page is loaded. React-Router is a key third-party library at this point. Based on the URL that is active, it loads the right component. A pattern we see frequently is to have the _ComponentDidMount_ method call Ajax to load data and then dispatch an action to have the data stored in Redux’s store. Saving a value in Redux fires an event that the data in the store has changed which then notifies all the components that are listening to the store. The chain of reaction is fine, but I’d rather not have a component start the process of the data fetching. The first reason is that a component should be very dumb. The mounting of a component which only performs display and dispatches operations does not necessarily mean that we want to fetch the data. A change in the route, on the other hand, triggers the need for new data. Therefore, in this architecture, the loading of data is driven by a custom middleware that looks at the route change and executes the proper calls that will fill up the Reducer.
 
-### Business Logic
+##Business Logic
 
 Business logics are the core of your system, especially when it is more than just a CRUD application where we take data from the server and throw it on the screen. In this architecture, all domains have their custom middleware. A logic may request data from an API, manipulate it, ask for more data and when ready, store the data in Redux Reducer. The ideal position for business logic is in the middleware since they have not only had access to the actual store (_getState_) but also to the API call. It can be asynchronous with the help of Redux-Thunk and fit well in architecture with pre and post middleware that we will see soon.
 
-### Normalization and Store
+# Normalization and Store
 
 Data comes in many formats, and sometimes some entities are part of many data branches. Normalizing the data means avoiding any duplication of data inside the store even if the data is used in many branches. Normalizing should always be done before sending the data to the Store. The reason for having a middleware to normalize the data and then send it to Reducers makes sense. Avoiding duplication is key to a stable system where the store is a source of truth.
 
-### Pre and Post Middleware
+# Pre and Post Middleware
 
 Every time an action is dispatched, the lifecycle flow of information goes from React component to middlewares to reducers to the store which then notifies the React component. The pre and post middleware are middlewares located before and after the domain middleware.
 
@@ -54,6 +54,6 @@ Jumping to post-middleware, the most obvious one is the middleware that normaliz
 
 The last post-middleware can be a telemetry one where you may want to capture some actions for telemetry purposes. See this middleware as a logging middleware that avoids cluttering domain middleware.
 
-### Conclusion
+# Conclusion
 
 This architecture is not fancy, making it shine by being easy to read and to change. If you have a new page to build, you only need to create your dummy React component, a middleware for the page if it’s not from an existing domain and adjust the normalization and reducer (if new entities are required).

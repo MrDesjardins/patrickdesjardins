@@ -5,11 +5,11 @@ categories:
   - "iis"
 ---
 
-If you go to the administrator panel, you may not see IIS anywhere. To make sure, go to Control Panel\\All Control Panel Items\\Administrative Tools\\
+If you go to the administrator panel, you may not see IIS anywhere. To make sure, go to `Control Panel\\All Control Panel Items\\Administrative Tools\\`
 
 ![](images/iisCongifurationPanel-400x67.png)
 
-If you have IIS, you will see an icon with the text "Internet Information Services (IIS) Manager". If not, you will have to install it, which is already part of Windows 7, it's just not enabled. To install it, go to Control Panel\\All Control Panel Items\\ and select Programs and Features. In the left side bar, you will see a link called "Turn Windows features on or off". Select this open.
+If you have IIS, you will see an icon with the text "Internet Information Services (IIS) Manager". If not, you will have to install it, which is already part of Windows 7, it's just not enabled. To install it, go to `Control Panel\\All Control Panel Items\\` and select Programs and Features. In the left side bar, you will see a link called "Turn Windows features on or off". Select this open.
 
 ![](images/turningOnFeatureWindows-400x102.png)
 
@@ -29,13 +29,15 @@ Now, if you try to run your website, you should be able to see it. If you get th
 
 > IIS - this configuration section cannot be used at this path
 
-It means that you haven't select every options in the image above when installing IIS. The good new is that it's not too late. You need to go back into the Windows Features and select the Application Development Features. If you get the error message : HTTP Error 500.19 - Internal Server Error - The requested page cannot be accessed because the related configuration data for the page is invalid. This mean that IIS doesn't have access to the folder. This mean that you need to change the Identity of the application pool as instructed before.
+It means that you haven't select every options in the image above when installing IIS. The good new is that it's not too late. You need to go back into the Windows Features and select the Application Development Features. If you get the error 
+ 
+> message : HTTP Error 500.19 - Internal Server Error - The requested page cannot be accessed because the related configuration data for the page is invalid. This mean that IIS doesn't have access to the folder. This mean that you need to change the Identity of the application pool as instructed before.
 
 An other point of failure may be that IIS is not running with all the new installed configuration. You can know this if you get the message :
 
 > Handler “ExtensionlessUrlHandler-Integrated-4.0” has a bad module “ManagedPipelineHandler” in its module list
 
-To have IIS uses all new modules, open a Console as an administrator and execute the following line: c:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\aspnet_regiis.exe -i
+To have IIS uses all new modules, open a Console as an administrator and execute the following line: `c:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319\\aspnet_regiis.exe -i`
 
 ![](images/aspnetiisreg-400x100.png)
 
@@ -43,9 +45,9 @@ The last problem that may arrive is that you see your website but without Javasc
 
 ![](images/websiteCssJsErrorAuthorization-400x214.png)
 
-To fix this, two things must be set. First, you have the have the Static Content to be installed. This has to be checked when installing IIS. If not, you can go in Control Panel\\All Control Panel Items\\ and select Programs and Features. In the left side bar, you will see a link called "Turn Windows features on or off" and under Commont Http function of IIS you will see the option.
+To fix this, two things must be set. First, you have the have the Static Content to be installed. This has to be checked when installing IIS. If not, you can go in `Control Panel\\All Control Panel Items\\` and select Programs and Features. In the left side bar, you will see a link called "Turn Windows features on or off" and under Commont Http function of IIS you will see the option.
 
-Second, you need to execute not only the application pool under your credential but also the set the authentification of the website under yours. To do it, select Basic Settings > Connect as... > Specific user.
+Second, you need to execute not only the application pool under your credential but also the set the authentification of the website under yours. To do it, select `Basic Settings > Connect as... > Specific user`.
 
 ![](images/connectas-400x226.png)
 

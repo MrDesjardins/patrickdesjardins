@@ -5,10 +5,32 @@ categories:
   - "general"
 ---
 
-The keyword _sealed_ is used in class definition to prevent being derived from. When it's apply to methods, it mean that the method cannot be overrided.
+The keyword `sealed` is used in class definition to prevent being derived from. When it's apply to methods, it means that the method cannot be overrided.
 
-Well, in fact, method can only be overrided when the virtual keyword is used so why _sealed_ is required? It's required when a class derive from a class that had a virtual method. This one will override and an overrided method can be also overrided. To prevent that, the override method can use the _sealed_ keyword.
+Well, in fact, method can only be overrided when the `virtual` keyword is used so why  `sealed` is required? 
+It's required when a class derive from a class that had a virtual method. This one will override and an overrided method can be also overrided. To prevent that, the override method can use the `sealed` keyword.
 
 ```csharp
-class A { public virtual void F() { Console.WriteLine("A.F"); } public virtual void G() { Console.WriteLine("A.G"); } } class B: A { sealed override public void F() { Console.WriteLine("B.F"); } override public void G() { Console.WriteLine("B.G"); } } class C: B { override public void G() { Console.WriteLine("C.G"); } } 
+class A { 
+  public virtual void F() { 
+    Console.WriteLine("A.F"); 
+  } 
+  public virtual void G() { 
+    Console.WriteLine("A.G"); 
+  } 
+} 
+
+class B: A { 
+  sealed override public void F() { 
+    Console.WriteLine("B.F"); 
+  } 
+  override public void G() { 
+    Console.WriteLine("B.G"); 
+  } 
+} 
+class C: B { 
+  override public void G() { 
+    Console.WriteLine("C.G");
+  } 
+} 
 ```

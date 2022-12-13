@@ -1,6 +1,6 @@
 ---
 title: "Entity Framework Uniqueness of Complex Object reference"
-date: "2016-11-29"
+date: "2016-01-29"
 categories: 
   - "entity-framework"
 ---
@@ -10,9 +10,15 @@ Working with Entity Framework and Complex object can be challenging. For example
 > The entity of type 'xxx' references the same complex object of type 'zzz' more than once. Complex objects cannot be referenced multiple times by the same entity.
 
 This can happen really easily. Imagine this scenario where you have an entity that has two properties of a complex type "Money". 
+
 ```csharp
- public class House{ public Money CurrentPrice{get;set;} public Money BoughtPrice{get;set;} } 
-``` If you just buy the house, the current price and bought price will be the same. You may just set the same Money instance to both properties. However, it will fail. It fails not because they have the same inner value (let's say the same decimal) but fails because both properties are linked to the same complex object.
+ public class House{ 
+  public Money CurrentPrice{get;set;} 
+  public Money BoughtPrice{get;set;} 
+} 
+``` 
+
+If you just buy the house, the current price and bought price will be the same. You may just set the same Money instance to both properties. However, it will fail. It fails not because they have the same inner value (let's say the same decimal) but fails because both properties are linked to the same complex object.
 
 The quick fix is to clone the price before saving the entity. By cloning each properties, they will be of the same complex type, but both objects will have be from a different object. Since complex type is simple by nature, like cannot reference other entities, the cloning is usually very simple if not just using the basic **MemberwiseClone**.
 

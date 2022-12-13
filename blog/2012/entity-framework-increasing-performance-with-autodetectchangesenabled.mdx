@@ -5,11 +5,15 @@ categories:
   - "entity-framework"
 ---
 
-If you need to insert a lot of data into the framework with Microsoft Entity Framework you may want to set the AutoDetectChangesEnabled to false. This will improve performance because the DetectChanges won't execute the detection of changes in the objec.
+If you need to insert a lot of data into the framework with Microsoft Entity Framework you may want to set the `AutoDetectChangesEnabled` to false. This will improve performance because the DetectChanges won't execute the detection of changes in the objec.
 
 
 ```csharp
- public virtual void DetectChanges(bool force = false) { if (this.AutoDetectChangesEnabled || force) { this.ObjectContext.DetectChanges (); } } 
+ public virtual void DetectChanges(bool force = false) { 
+  if (this.AutoDetectChangesEnabled || force) { 
+    this.ObjectContext.DetectChanges (); 
+  } 
+} 
 ```
 
 To disable the auto detect changes you need to set the context to false. the AutoDetectChanges is inside the Configuration property. 

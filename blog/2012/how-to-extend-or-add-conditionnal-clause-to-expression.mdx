@@ -13,17 +13,24 @@ The idea is to Invoke both expression with the same model object.
 
 
 ```csharp
- Expression<Func<Customer, bool>> filter1 = customer => customer.FirstName == "Test"; Expression<Func<Customer, bool>> filter2 = customer => customer.LastName == "Test"; Expression<Func<Customer, bool>> filter3 = customer => filter1 .Invoke(customer) || filter2.Invoke(customer); 
+ Expression<Func<Customer, bool>> filter1 = customer => customer.FirstName == "Test"; 
+ Expression<Func<Customer, bool>> filter2 = customer => customer.LastName == "Test"; 
+ Expression<Func<Customer, bool>> filter3 = customer => filter1 .Invoke(customer) || filter2.Invoke(customer); 
 ```
 
-The last step is to use AsExpendable() and to you Expand to the last filter (filter3). 
+The last step is to use `AsExpendable()` and to you Expand to the last filter (filter3). 
+
 ```csharp
- IEnumerable<Customer> customers = CustomerRepository.GetAll().AsExpandable().Where(filter3.Expand()).OrderBy(c => c.Id); 
+ IEnumerable<Customer> customers = CustomerRepository
+ .GetAll()
+ .AsExpandable()
+ .Where(filter3.Expand())
+ .OrderBy(c => c.Id); 
 ```
 
-The AsExpendable() method simple create a wrapper around the IQueryable to create a ExpendableQuery. From here, the provider will change with the concrete provider ExpendableQueryProvider which inherit from IQueryProvider. This one will call the .Expand() of the expression.
+The `AsExpendable()` method simple create a wrapper around the `IQueryable` to create a `ExpendableQuery`. From here, the provider will change with the concrete provider `ExpendableQueryProvider` which inherit from `IQueryProvider`. This one will call the `.Expand()` of the expression.
 
-If you go check the source code of the method ExpendableQuery we can see the wrapping.
+If you check the source code of the method `ExpendableQuery` we can see the wrapping.
 
 ```csharp
 public static IQueryable<T> AsExpandable<T>(this IQueryable<T> query) { 
@@ -34,14 +41,16 @@ public static IQueryable<T> AsExpandable<T>(this IQueryable<T> query) {
 } 
 ```
 
-The expand look like this : 
+The expand looks like this: 
+
 ```csharp
 public static Expression<TDelegate> Expand<TDelegate>(this Expression<TDelegate> expr) { 
    return (Expression<TDelegate>) new ExpressionExpander().Visit((Expression) expr); 
 } 
 ``` 
-It call the Visit method of the ExpressionExpander from the Expression.
 
-In short, what you have to remember it the use of LinqKit.dll make you life really easier when you manipulate dynamic expression.
+It calls the `Visit` method of the `ExpressionExpander` from the `Expression`.
 
-So you have appended two Linq To Entity expression http://stackoverflow.com/questions/1266742/append-to-an-expression-linq-c
+In short, what you have to remember to use LinqKit.dll. It makes your life easier when you manipulate dynamic expression.
+
+So, you have appended two Linq To Entity expressions: http://stackoverflow.com/questions/1266742/append-to-an-expression-linq-c

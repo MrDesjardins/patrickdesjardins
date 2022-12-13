@@ -10,9 +10,20 @@ categories:
 If you want to have a menu that will change what is selected depending of where you are on the screen, this can be done. First, you need to define your menu. Second, you need to have anchor inside your webpage. This is done by setting id to some element of your page. The example below has set id to 3 links. We could have set the id to H1 tag also.
 
 
-```html  <ul id="top-menu"> <li class="active"> <a href="#">Home</a> </li> <li> <a href="#header1">Header 1</a> </li> <li> <a href="#header2">Header 2</a> </li> <li> <a href="#header3">Header 3</a> </li> </ul>
+```html 
+<ul id="top-menu"> 
+  <li class="active"> <a href="#">Home</a> </li> 
+  <li> <a href="#header1">Header 1</a> </li> 
+  <li> <a href="#header2">Header 2</a> </li> 
+  <li> <a href="#header3">Header 3</a> </li> 
+</ul>
 
-<a id="header1">This is my header 1</a> <p>Text here ...</p> <a id="header2">This is my header 2</a> <p>Text here ...</p> <a id="header3">This is my header 3</a> <p>Text here ...</p> ​
+<a id="header1">This is my header 1</a> 
+<p>Text here ...</p> 
+<a id="header2">This is my header 2</a> 
+<p>Text here ...</p> 
+<a id="header3">This is my header 3</a> 
+<p>Text here ...</p> ​
 ``` 
 
 The next step is to write some Javascript code that will use the scroll position to know what is the active anchor. The Javascript will also verify if a link is clicked.

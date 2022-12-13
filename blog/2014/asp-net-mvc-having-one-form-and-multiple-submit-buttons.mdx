@@ -12,7 +12,12 @@ First of all, you do as usual in your Razor by create your form and adding insid
 Second, you add inside the form your two buttons. However, you set a value for your buttons and name that must be the same for all your buttons. Having your button with the same name will trigger the browser to send the one that is active. If you are pressing the first button, the value of this first button is sent.
 
 
-```html  <input type="submit" name="action" value="Save" /> <input type="submit" name="action" value="Save and Continue" /> <!-- OR --> <button type="submit" name="action" value="save">Save</button> <button type="submit" name="action" value="saveAndContinue">Save and Continue</button> 
+```html  
+<input type="submit" name="action" value="Save" /> 
+<input type="submit" name="action" value="Save and Continue" />
+<!-- OR --> 
+<button type="submit" name="action" value="save">Save</button>
+<button type="submit" name="action" value="saveAndContinue">Save and Continue</button> 
 ``` 
 
 Using button over input has the advantage to let you set value that does not change of the localized string that is displayed on the screen.
@@ -21,7 +26,10 @@ The third step is on the server side. The controller's action must read the valu
 
 
 ```csharp
- public ActionResult Register(string action, YourViewModel viewModel) { if (button == "save") { } //... } 
+public ActionResult Register(string action, YourViewModel viewModel) { 
+  if (button == "save") { } 
+  //... 
+} 
 ```
 
 This can be improved by using a constant between the Controller and the View. This way, you do not have string that are different if someone change the name of the button.

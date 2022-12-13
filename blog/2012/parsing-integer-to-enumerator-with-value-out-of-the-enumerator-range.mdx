@@ -20,7 +20,9 @@ class Program {
 } 
 ```
 
-This will work if the value, in our example 1, is in the MyEnumType. It will also work if we use an integer over 2. ![](images/enumOutOfRange-400x212.png)
+This will work if the value, in our example 1, is in the MyEnumType. It will also work if we use an integer over 2. 
+
+![](images/enumOutOfRange-400x212.png)
 
 Since the .Net Framework 4, we can use the Parse and TryParse on enumerator. The TryParse let you parse the name of the enumerator or the value. This mean, you can parse "KeyA" and it will retrieve the enum for the value 1 or you can parse 1 and it will retrieve the enum for the value 1.
 
@@ -36,7 +38,7 @@ What about the TryParse? Samething! It will return TRUE even if the value is out
 
 ![](images/enumTryParse-400x185.png)
 
-This can be problematic if you doesn't have the control over the value. For example, the value is passed from Ajax call from the client side to your server as an Integer. You want to convert this one into an enumerator to continue to proceed as usual on the server. The way to ensure that the value is legit is to use **Enum.IsDefined**.
+This can be problematic if you doesn't have the control over the value. For example, the value is passed from Ajax call from the client side to your server as an Integer. You want to convert this one into an enumerator to continue to proceed as usual on the server. The way to ensure that the value is legit is to use `Enum.IsDefined`.
 
 ![](images/enumDefined-400x237.png)
 

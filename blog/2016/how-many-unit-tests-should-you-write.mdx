@@ -25,50 +25,111 @@ Here is a simple code. How many test should be created?
 
 
 ```csharp
- public class SimpleCode { public string Value { get; set; }
+public class SimpleCode { public string Value { get; set; }
 
-public SimpleCode Merge(SimpleCode parameter) { var mergedObject = new SimpleCode(); if (parameter.Value != null || this.Value != null) { mergedObject.Value = parameter.Value ?? this.Value; } return mergedObject; } } 
+public SimpleCode Merge(SimpleCode parameter) { 
+  var mergedObject = new SimpleCode(); 
+  if (parameter.Value != null || this.Value != null) { 
+    mergedObject.Value = parameter.Value ?? this.Value; 
+  } 
+  return mergedObject;
+  } 
+} 
 ```
 
 Most people might see two or three tests, but the answer is six.
 
 
 ```csharp
- [TestMethod] public void GivenSimpleCode_WhenMainInstanceValueNull_AndParameterValueNull_ThenValueNull() { // Arrange var mainInstance = new SimpleCode() {Value= null}; var simpleCodeParameter = new SimpleCode() { Value = null };
+[TestMethod] 
+public void GivenSimpleCode_WhenMainInstanceValueNull_AndParameterValueNull_ThenValueNull() { 
+  // Arrange 
+  var mainInstance = new SimpleCode() {Value= null}; 
+  var simpleCodeParameter = new SimpleCode() { Value = null };
 
-// Act var result = mainInstance.Merge(simpleCodeParameter);
+// Act 
+var result = mainInstance.Merge(simpleCodeParameter);
 
-// Assert Assert.IsNull(result.Value); }
+// Assert 
+Assert.IsNull(result.Value); }
 
-[TestMethod] public void GivenSimpleCode_WhenMainInstanceValueNotNull_AndParameterValueNull_ThenMainInstanceValue() { // Arrange const string VALUE = "Test"; var mainInstance = new SimpleCode() { Value = VALUE }; var simpleCodeParameter = new SimpleCode() { Value = null };
+[TestMethod] 
+public void GivenSimpleCode_WhenMainInstanceValueNotNull_AndParameterValueNull_ThenMainInstanceValue() { 
+  // Arrange 
+  const string VALUE = "Test"; 
+  var mainInstance = new SimpleCode() { Value = VALUE }; 
+  var simpleCodeParameter = new SimpleCode() { Value = null };
 
-// Act var result = mainInstance.Merge(simpleCodeParameter);
+  // Act 
+  var result = mainInstance.Merge(simpleCodeParameter);
 
-// Assert Assert.AreEqual(VALUE, result.Value); } [TestMethod] public void GivenSimpleCode_WhenMainInstanceValueNull_AndParameterValueNotNull_ThenParameterValue() { // Arrange const string VALUE = "Test"; var mainInstance = new SimpleCode() { Value = null }; var simpleCodeParameter = new SimpleCode() { Value = VALUE };
+  // Assert 
+  Assert.AreEqual(VALUE, result.Value); 
+} 
 
-// Act var result = mainInstance.Merge(simpleCodeParameter);
+[TestMethod] 
+public void GivenSimpleCode_WhenMainInstanceValueNull_AndParameterValueNotNull_ThenParameterValue() { 
+  // Arrange 
+  const string VALUE = "Test"; 
+  var mainInstance = new SimpleCode() { Value = null }; 
+  var simpleCodeParameter = new SimpleCode() { Value = VALUE };
 
-// Assert Assert.AreEqual(VALUE, result.Value); }
+  // Act 
+  var result = mainInstance.Merge(simpleCodeParameter);
 
-[TestMethod] public void GivenSimpleCode_WhenMainInstanceValueNotNull_AndParameterValueNotNull_ThenValueParameterValue() { // Arrange const string VALUE1 = "Test1"; const string VALUE2 = "Test2"; var mainInstance = new SimpleCode() { Value = VALUE1 }; var simpleCodeParameter = new SimpleCode() { Value = VALUE2 };
+  // Assert 
+  Assert.AreEqual(VALUE, result.Value); 
+  }
 
-// Act var result = mainInstance.Merge(simpleCodeParameter);
+[TestMethod] 
+public void GivenSimpleCode_WhenMainInstanceValueNotNull_AndParameterValueNotNull_ThenValueParameterValue() { 
+  // Arrange 
+  const string VALUE1 = "Test1"; const string VALUE2 = "Test2"; 
+  var mainInstance = new SimpleCode() { Value = VALUE1 }; 
+  var simpleCodeParameter = new SimpleCode() { Value = VALUE2 };
 
-// Assert Assert.AreEqual(VALUE2, result.Value); }
+  // Act 
+  var result = mainInstance.Merge(simpleCodeParameter);
 
-[TestMethod] [ExpectedException(typeof(NullReferenceException))] public void GivenSimpleCode_WhenParameterNull_ThenException() { // Arrange var mainInstance = new SimpleCode(); SimpleCode simpleCodeParameter = null;
+  // Assert 
+  Assert.AreEqual(VALUE2, result.Value); 
+}
 
-// Act & Assert mainInstance.Merge(simpleCodeParameter); }
+[TestMethod] 
+[ExpectedException(typeof(NullReferenceException))] 
+public void GivenSimpleCode_WhenParameterNull_ThenException() { 
+  // Arrange 
+  var mainInstance = new SimpleCode(); 
+  SimpleCode simpleCodeParameter = null;
 
-[TestMethod] public void GivenSimpleCode_DefaultValue_ValueNull() { // Arrange & Act var mainInstance = new SimpleCode();
+  // Act & Assert 
+  mainInstance.Merge(simpleCodeParameter); 
+}
 
-// Assert Assert.IsNull(mainInstance.Value); } } 
+[TestMethod] 
+public void GivenSimpleCode_DefaultValue_ValueNull() {
+  // Arrange & Act 
+  var mainInstance = new SimpleCode();
+
+  // Assert 
+  Assert.IsNull(mainInstance.Value); 
+} 
 ```
 
 Often, people do not test the default value of a class. This is something everyone should do. What happen if at some point a default value change but was required to be a specific value depending of the scenario. Without this test, you are not notified that something is breaking from the expected value. In that example, the expected value is NULL. If someone change it to an empty string, this might break other scenario that rely to compare on NULL to determine some state. Another testing scenario that I see often is about passing wrong value has parameter. In that particular example, null will break and return a null reference exception. Creating the test make you realize that you should probably handle that case and have a better code, like the following one:
 
 ```csharp
-public SimpleCode Merge(SimpleCode parameter) { if (parameter == null) { throw new ArgumentNullException(nameof(parameter)); } var mergedObject = new SimpleCode(); if (parameter.Value != null || this.Value != null) { mergedObject.Value = parameter.Value ?? this.Value; } return mergedObject; } 
+public SimpleCode Merge(SimpleCode parameter) { 
+  if (parameter == null) { 
+    throw new ArgumentNullException(nameof(parameter)); 
+  } 
+  
+  var mergedObject = new SimpleCode(); 
+  if (parameter.Value != null || this.Value != null) { 
+    mergedObject.Value = parameter.Value ?? this.Value; 
+  } 
+  return mergedObject; 
+} 
 ```
 
 In that case, I just thrown an exception and will need to assert that particular exception. Why is that better than just having the null reference exception. For three reasons, first, it's clear that it shows that the null parameter is a known scenario. Second, today it's an exception, tomorrow it could be that we return a value. A change will make this particular test that expect a specific exception to become red and thus having a change in the test. The third reason is that if another exception is thrown, that I'll get an error. I expect to only have an argument null exception, not a null reference or an overflow. Any other cases will be considered a bug, not the one handled.

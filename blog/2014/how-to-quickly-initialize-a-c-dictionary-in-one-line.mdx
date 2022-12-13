@@ -8,18 +8,22 @@ categories:
 I stumble into a situation where I had to fill up a dictionary but desire not to use the .Add method. The case appears to be frequent if you are using Help Helper of Asp.Net MVC. The reason is that if you want to add html attribute by Html Helper than you have to provide a dictionary of key-value that represent the attribute name and attribute value.
 
 Here is a class that represent a simple scenario. 
+
 ```csharp
  public class ColumnHeader { public IDictionary<string, string> Attributes { get; set; } } 
 ```
 
 If you want to initialize the property, than you can use new but also to double the curly braces. 
+
 ```csharp
  var col = new ColumnHeader{Attributes = new Dictionary<string, string>{{ "attribute1","value1"}}}; 
-``` This is an example about how to add a single value into the dictionary. As you can see, we have a first curly brace to initialize the property itself and then we have the double curly brace that initialize the dictionary and the key value. If we wanted to initialize two items, we could by adding a comma after the curly brace for the key value.
+``` 
+
+This is an example about how to add a single value into the dictionary. As you can see, we have a first curly brace to initialize the property itself and then we have the double curly brace that initialize the dictionary and the key value. If we wanted to initialize two items, we could by adding a comma after the curly brace for the key value.
 
 
 ```csharp
  var col = new ColumnHeader{Attributes = new Dictionary<string, string>{{ "attribute1","value1"},{ "attribute2","value2"}}}; 
 ```
 
-Nothing more to said. Initializing a dictionary with C# without having to initialize it with the empty constructor and then adding individually every key-value is very straightforward.
+Nothing more to said. Initializing a dictionary with C\# without having to initialize it with the empty constructor and then adding individually every key-value is very straightforward.

@@ -55,7 +55,7 @@ However, you might get some error like this one :
 
 > Msg 40514, Filegroup reference and partitioning scheme' is not supported in this version of SQL Server
 
-This is because you might have in you create table statement "ON [PRIMARY]" keywork which is not supported.
+This is because you might have in you create table statement `ON [PRIMARY]` keywork which is not supported.
 
 ```sql
 CREATE TABLE [dbo].[Exercises]( [Id] [int] IDENTITY(1,1) NOT NULL, [Name_French] [nvarchar](max) NULL, [Name_English] [nvarchar](max) NULL, [Muscle_Id] [int] NULL, CONSTRAINT [PK_dbo.Exercises] PRIMARY KEY CLUSTERED ( [Id] ASC )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY] ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY] 

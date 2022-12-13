@@ -10,14 +10,12 @@ You may pass manually the information but would it be easier if the http handler
 
 This can be done with .Net Framework easily. In theory, this should not be a problem because the handler is in the server. It only needs to provide the session of the current user. To do, you need to use special interface that will allow you to reach this information.
 
-This interface is called _IReadOnlySessionState_ or _IRequiresSessionState_.
+This interface is called `IReadOnlySessionState` or `IRequiresSessionState`.
 
 Here is an example:
 
 
 ```csharp
-
-
 <% @ webhandler language="C#" class="MyClass" %>
 
 using System; using System.Web; using System.Web.SessionState;
@@ -26,9 +24,8 @@ public class MyClass: IHttpHandler, IReadOnlySessionState { public bool IsReusab
 
 public void ProcessRequest(HttpContext ctx) { ctx.Response.Write(ctx.Session["ID"]); } }
 
-
 ```
 
 This example show you how to get the ID session's variable from the HttpHandler.
 
-The second interface _IRequiresSessionState_ is the same but will let you write also in the session.
+The second interface `IRequiresSessionState` is the same but will let you write also in the session.

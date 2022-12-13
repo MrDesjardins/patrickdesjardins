@@ -5,33 +5,38 @@ categories:
   - "c-sharp"
 ---
 
-.Net works with library that you can reference in the projet and then use in any code file. The keyword **using** is the one to use inside the C# file to be able to use classes from an external library or a different namespace from the one the code belong in the file. Of course, if you do not want to use the using statement, you can when using a class from another namespace specify the name with the whole namespace path.
+.Net works with library that you can reference in the projet and then use in any code file. The keyword `using` is the one to use inside the C# file to be able to use classes from an external library or a different namespace from the one the code belong in the file. Of course, if you do not want to use the using statement, you can when using a class from another namespace specify the name with the whole namespace path.
 
 For example:
-
 
 ```csharp
  var x = new OtherLibrary.OtherNameSpace.Xyz.TheClass(); 
 ```
 
-Having the whole namespace in the code can become cumbersome. This is why the **using** statement exist. By default, the using is at the top of the file.
+Having the whole namespace in the code can become cumbersome. This is why the `using` statement exist. By default, the using is at the top of the file.
 
 ```csharp
 using System; namespace MyNameSpace {
 
-public class MyClass { //... } } 
+  public class MyClass { 
+    //... 
+  } 
+} 
 ``` 
 
 But this could also be different by having the System namespace directly inside the namespace. 
 
 ```csharp
-namespace MyNameSpace { using System; public class MyClass { //... } } 
+namespace MyNameSpace { using System; public class MyClass { 
+  //...
+   }
+} 
 ```
 
-But what is the difference? The difference is the priority of how the .Net will use external dependencies. The priority is to the **using** inside the namespace and then to the one of the file. This is why having the using inside the namespace can be more safe in a way that you can be sure that no other library can hijack a namespace and break your code. For example, you could create a class named Math, and still be in your namespace and having this one be used instead of System.Math. But, to remove this possibility, if you set _using System;_ inside your namespace than you are sure to have the real Math class to be used (or to have a conflict during compilation file if both are explicitly marked with using).
+But what is the difference? The difference is the priority of how the .Net will use external dependencies. The priority is to the `using` inside the namespace and then to the one of the file. This is why having the using inside the namespace can be more safe in a way that you can be sure that no other library can hijack a namespace and break your code. For example, you could create a class named Math, and still be in your namespace and having this one be used instead of System.Math. But, to remove this possibility, if you set _using System;_ inside your namespace than you are sure to have the real Math class to be used (or to have a conflict during compilation file if both are explicitly marked with using).
 
 A rule of thumb is to set the using inside your namespace, this way you have less chance of having a behavior that you do not expect. If you want to change the default behavior of Visual Studio when you are creating a new class or interface, you need to go to the template folder and edit the class and interface template. This folder is for Visual Studio 2013 inside Program File under the Common7 folder. Here is my path which is the default installation path of Visual Studio 2013.
 
 > C:\\Program Files (x86)\\Microsoft Visual Studio 12.0\\Common7\\IDE\\ItemTemplates\\CSharp\\Code\\1033
 
-If you are using ReSharper, you can also modify the **Code Editing** > **C#** \> **Formatting Style** > **Namespace Imports**. You can select "Add Using directive to the deepest scope" and you will have your using inside the namespace when you clean full format.
+If you are using ReSharper, you can also modify the `Code Editing > C# > Formatting Style > Namespace Imports`. You can select "Add Using directive to the deepest scope" and you will have your using inside the namespace when you clean full format.

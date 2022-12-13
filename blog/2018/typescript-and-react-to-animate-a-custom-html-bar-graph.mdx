@@ -7,7 +7,7 @@ categories:
 
 In my work at Netflix, I had to create a page to visualize when a cache (also known as an [appliance](https://openconnect.netflix.com/en/deployment-guide/)) can receive new movies. The former [Partner Portal](https://openconnect.netflix.com/en/partner-portal/) had a table with one row per cache for a specific organization. Every row had one column for every hour of the day (24 columns). The table can be very verbose depending on how structured an organization is in term of sites and appliances. I opted to an improved visualization that removed the redundancy of the unused cells and leveraged [React and animation](animating-a-react-component) to have the user following the transformation when changing options like timezone and visualization preferences. The result is that a user interfaces less clunky that displays four times more information for the same viewport.
 
-## Cache Fill Window
+# Cache Fill Window
 
 I decided to design a simplistic user interface. The top row of the section is what the user can configure for the chart. The first selector allows choosing from a limited set of timezone available from the organization' sites. The second selection is how caches are sorted. Underneath is the result. You can see the actual time with the "now" pin and the hour used that are highlighted. This is a small detail that fades away most of the hours of the day instead of having a dedicated column as in the previous design.
 

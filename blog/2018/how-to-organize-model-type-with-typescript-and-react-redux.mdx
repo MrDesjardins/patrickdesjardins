@@ -28,6 +28,7 @@ The final result is of all the interface created look like this UML diagram:
 The advantage of this modeling is the reusability for the base class (EntityA) by the normalized and denormalized. It is also clear to all developers that code in the system that these fields are coming from the backend and are "values" while the normalized contains the relationship keys. The mapping contains the logic to denormalize the object providing to React a rich model that has a good navigability in the properties of all objects but also contains fields that might be dynamically computed during the mapping. Finally, the division of model and dispatch work flawlessly with React-Connect because the connect function require to pass each type. It is also convenient because if you have a hierarchy of component you can pass only action or a set of model depending to which children React components have.
 
 Here is an example of how React-Redux's connect function takes the model and dispatch types as well as how the React component for EntityA uses the property. 
+
 ```typescript
 export default connect<EntityAModel, EntityADispatch, {}, {}, ReduxState>( (s) => entityAMapper.mapStateToProps(s), 
 (s) => entityAMapper.mapDispatchToProps(s), 

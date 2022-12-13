@@ -5,40 +5,111 @@ categories:
   - "asp-mvc"
 ---
 
-In Asp.Net MVC we use **layout** to display common structural Html structure. If you are from Asp.Net you can see this as the **Master Page**. The layout contains the header, the menu, the main content, the footer, etc. The content itself is not defined inside the layout but use a **Body** and **Section**. It can also use **Partial** to load something that will be static for every page.
+In Asp.Net MVC we use `layout` to display common structural Html structure. If you are from Asp.Net you can see this as the `Master Page`. The layout contains the header, the menu, the main content, the footer, etc. The content itself is not defined inside the layout but use a `Body` and `Section`. It can also use `Partial` to load something that will be static for every page.
 
-The body is the View that will be loaded. If you have a list of customer to display and the controller return the index view, this one will be loaded inside the layout at the RenderBody() statement.
+The body is the View that will be loaded. If you have a list of customer to display and the controller return the index view, this one will be loaded inside the layout at the `RenderBody()` statement.
 
 
 ```csharp
- //Controller public ViewResult Index() { var customers = db.Customers.ToList(); return View(customers); } 
+ //Controller 
+public ViewResult Index() { 
+  var customers = db.Customers.ToList(); 
+  return View(customers); 
+} 
 ```
 
 The layout will load the View of the Index (Index.cshtml) since no specific view is explicitly defined in the return.
 
 ```html
-<!DOCTYPE html> <html> <head> <meta charset="utf-8" /> <title>@ViewBag.Title</title> <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" /> <script src="@Url.Content("~/Scripts/jquery-1.5.1.min.js")" type="text/javascript"></script> <script src="@Url.Content("~/Scripts/modernizr-1.7.min.js")" type="text/javascript"></script> </head> <body> <div class="page"> <header> <div id="title"> <h1>My MVC Application</h1> </div> <div id="logindisplay"> @Html.Partial("_LogOnPartial") </div> <nav> <ul id="menu"> <li>@Html.ActionLink("Home", "Index", "Home")</li> <li>@Html.ActionLink("About", "About", "Home")</li> </ul> </nav> </header> <section id="main"> @RenderBody() </section> <footer> </footer> </div> </body> </html> 
+<!DOCTYPE html> 
+<html> 
+  <head> 
+    <meta charset="utf-8" /> 
+    <title>@ViewBag.Title</title>
+     <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" /> 
+     <script src="@Url.Content("~/Scripts/jquery-1.5.1.min.js")" type="text/javascript"></script> 
+     <script src="@Url.Content("~/Scripts/modernizr-1.7.min.js")" type="text/javascript"></script> 
+    </head> 
+    <body> 
+      <div class="page"> 
+        <header> 
+          <div id="title"> 
+            <h1>My MVC Application</h1> 
+          </div> 
+          <div id="logindisplay"> 
+            @Html.Partial("_LogOnPartial") 
+          </div> 
+          <nav> 
+            <ul id="menu"> 
+              <li>@Html.ActionLink("Home", "Index", "Home")</li> 
+              <li>@Html.ActionLink("About", "About", "Home")</li> 
+            </ul> 
+          </nav> 
+        </header> 
+        <section id="main"> @RenderBody() </section> 
+        <footer> </footer> 
+        </div>
+     </body> 
+</html> 
 ```  
-The line 17 show the load of a partial view, that mean that the login view is the same for every page. The code of the partial "_LogOnPartial" could have been set directly into the_Layout.cshtml but divide the main structure from details, it's a good idea to split. The line 27 show you where the view is loaded. This is done by calling the RenderBody() function.
+The line 17 show the load of a partial view, that mean that the login view is the same for every page. The code of the partial `_LogOnPartial` could have been set directly into the `_Layout.cshtml` but divides the main structure from details, it's a good idea to split. The line 27 show you where the view is loaded. This is done by calling the `RenderBody()` function.
 
-What's about section that change from each view but are always at the same location in the_Layout.cshtml? This can be done with the RenderSection("YourSectionName").
+What's about section that change from each view but are always at the same location in the `_Layout.cshtml`? This can be done with the `RenderSection("YourSectionName")`.
 
-RenderSection load a section that is defined directly inside the View. Let say you have this view for the customer list : 
+`RenderSection` loads a section that is defined directly inside the View. Let say you have this view for the customer list: 
+
 ```html  
-@model IEnumerable<EFCodeFirst.Models.Customer> <h2>Index</h2> <p> @Html.ActionLink("Create New", "Create") </p> <table> <tr> <th> FirstName </th> <th> LastName </th> <th></th> </tr>
-
-@foreach (var item in Model) { <tr> <td> @Html.DisplayFor(modelItem => item.FirstName) </td> <td> @Html.DisplayFor(modelItem => item.LastName) </td> <td> @Html.ActionLink("Edit", "Edit", new { id=item.Id }) | @Html.ActionLink("Details", "Details", new { id=item.Id }) | @Html.ActionLink("Delete", "Delete", new { id=item.Id }) </td> </tr> }
-
+@model IEnumerable<EFCodeFirst.Models.Customer> 
+  <h2>Index</h2> 
+  <p> @Html.ActionLink("Create New", "Create") 
+  </p> 
+  <table> 
+    <tr> <th> FirstName </th> <th> LastName </th> <th></th> </tr>
+    @foreach (var item in Model) { 
+      <tr> <td> @Html.DisplayFor(modelItem => item.FirstName) </td> <td> @Html.DisplayFor(modelItem => item.LastName) </td> <td> @Html.ActionLink("Edit", "Edit", new { id=item.Id }) | @Html.ActionLink("Details", "Details", new { id=item.Id }) | @Html.ActionLink("Delete", "Delete", new { id=item.Id }) </td> </tr> 
+    }
 </table> 
 ``` 
 
 If the Layout is changed for : 
 ```html
-<!DOCTYPE html> <html> <head> <meta charset="utf-8" /> <title>@ViewBag.Title</title> <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" /> <script src="@Url.Content("~/Scripts/jquery-1.5.1.min.js")" type="text/javascript"></script> <script src="@Url.Content("~/Scripts/modernizr-1.7.min.js")" type="text/javascript"></script> </head> <body> <div class="page"> <header> <div id="title"> <h1>My MVC Application</h1> </div> <div id="logindisplay"> @Html.Partial("_LogOnPartial") </div> <nav> <ul id="menu"> <li>@Html.ActionLink("Home", "Index", "Home")</li> <li>@Html.ActionLink("About", "About", "Home")</li> </ul> </nav> </header> <section id="main"> @RenderBody() </section> <footer> @if(IsSectionDefined("MySectionName")) { @RenderSection("MySectionName") } else { <p>This is the footer when the View doesn't define a MySectionName section</p> } </footer> </div> </body> </html> 
+<!DOCTYPE html> 
+  <html> 
+    <head> 
+      <meta charset="utf-8" /> 
+      <title>@ViewBag.Title</title> 
+      <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" /> 
+      <script src="@Url.Content("~/Scripts/jquery-1.5.1.min.js")" type="text/javascript"></script> 
+      <script src="@Url.Content("~/Scripts/modernizr-1.7.min.js")" type="text/javascript"></script> 
+    </head> 
+    <body>
+       <div class="page">
+         <header> 
+          <div id="title"> 
+            <h1>My MVC Application</h1> 
+          </div> 
+        <div id="logindisplay"> 
+          @Html.Partial("_LogOnPartial") 
+        </div> 
+        <nav> 
+          <ul id="menu"> 
+            <li>@Html.ActionLink("Home", "Index", "Home")</li> 
+            <li>@Html.ActionLink("About", "About", "Home")</li> 
+          </ul> 
+        </nav> 
+      </header> 
+      <section id="main"> @RenderBody() </section> 
+      <footer> @if(IsSectionDefined("MySectionName")) { @RenderSection("MySectionName") } else { <p>This is the footer when the View doesn't define a MySectionName section</p> }
+      </footer> 
+    </div> 
+  </body>
+</html> 
 ```  
-This produce to the main page (not the list of customer) : ![](images/DefaultNoSection-400x290.png)
+This produce to the main page (not the list of customer): 
 
-But if we go inside the customer list view and we define the section with the "section" keyword we will have this section loaded.
+![](images/DefaultNoSection-400x290.png)
+
+But if we go inside the customer list view and we define the section with the `section` keyword we will have this section loaded.
 
 ![](images/loadedFromSection-400x360.png)
 

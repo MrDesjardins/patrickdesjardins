@@ -7,12 +7,16 @@ categories:
 
 Imagine that you are doing a commit and you forgot to bring a file or multiples files. You can do a second commit but this would have the consequence to have two commits for something that in fact would have been in one. Git allows you to alter a past commit with the amend parameter.
 
-For example, here is a small commit of 1 file. ``` 
+For example, here is a small commit of 1 file. 
+
+```sh
  git add main.cs git commit -m "This is my first commit" 
 ``` 
 
-This is how to add a second file to this first commit. ``` 
+This is how to add a second file to this first commit. 
+
+```sh
  git add util.cs git commit --amend --no-edit 
 ``` 
 
-The **--no-edit** parameter specify that we do not want to modify the message. If you are doing a git log, you will see a single commit.
+The `--no-edit` parameter specify that we do not want to modify the message. If you are doing a git log, you will see a single commit.

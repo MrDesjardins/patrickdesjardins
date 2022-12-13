@@ -8,7 +8,7 @@ categories:
 
 Implementing value objects in your project is something that every software has to do. It may sounds like a simple task but from my experience I can tell you that it is less easier than it looks like. In fact, it is easy but developer does not really understand the difference between an enum, a entity or a value object.
 
-A value object is a class that has information that does not have a unique identifier for every usage but a unique identifier for the instance itself. A value object are reused across your application many times which remove a lot of complexity that you would have by having a unique identity for each of these instance. For example, if you have a Person class that has a relationship status. This is the perfect example for value object. You create a class for every of your status like one for "Married" and one for "Single". You could have a Married entry for each person but that would result to a lot of duplicate. You could have used a C# enum or a C# constant but this would result to a weak integrity between your classes and also in your persistence storage. The integrity is weak in the code because you would pass between methods string or enum which could be casted from integer. The string could be anything and would require a lot of validations. In the database, you save in a column a string or an integer (for the enum). In both case, you do not have any validation. This is where value object can shine. You can have a strong integrity in code but also in the database. You can also have a big performance saving by having the same object reused across the application. For example, if you have 1 million Person that are single, 1 million will be linked to the same object. You do not have redundancy.
+A value object is a class that has information that does not have a unique identifier for every usage but a unique identifier for the instance itself. A value object are reused across your application many times which remove a lot of complexity that you would have by having a unique identity for each of these instance. For example, if you have a Person class that has a relationship status. This is the perfect example for value object. You create a class for every of your status like one for "Married" and one for "Single". You could have a Married entry for each person but that would result to a lot of duplicate. You could have used a C\# enum or a C\# constant but this would result to a weak integrity between your classes and also in your persistence storage. The integrity is weak in the code because you would pass between methods string or enum which could be casted from integer. The string could be anything and would require a lot of validations. In the database, you save in a column a string or an integer (for the enum). In both case, you do not have any validation. This is where value object can shine. You can have a strong integrity in code but also in the database. You can also have a big performance saving by having the same object reused across the application. For example, if you have 1 million Person that are single, 1 million will be linked to the same object. You do not have redundancy.
 
 Before going any deeper, let's examine a second example that is from Eric Evans in his book Domain Driven Design. Imagine, a box of markers with different colors. Each marker will have a value object that define the color. Each color does not have a different id for each marker, neither have a different id for each lines drawn. You would have simply the class Marker having a reference to the value object that define the color. You also have for each Line class a reference to the value object color to know the color of the line. In both case, it would be too big in resource to save a new entity for each Markers and Lines.
 
@@ -24,9 +24,12 @@ The image above shows that we have a value object named "CurrencyType". This mea
 ```
 
 This usage is very strong because you can only assign a CurrencyType. It would be weak to have used a string for the currency like the code below. 
+
 ```csharp
  public void Money { public string CurrencyType { get; set; } public decimal Amount { get; set; } } 
-``` The problem is the same for an integer is assigned. The Money class could have used an enum but at the time of saving everything, the table would have the decimal value for the amount and an integer for the currency type. The problem is now at the database level where the integer could been altered and when loaded back in the software would cause instability. However, the value object could not be unstabilized because of the database integrity. Since every value object are reflected by a table with entries, those entries are referenced by a foreign key to the one that use the value object.
+``` 
+
+The problem is the same for an integer is assigned. The Money class could have used an enum but at the time of saving everything, the table would have the decimal value for the amount and an integer for the currency type. The problem is now at the database level where the integer could been altered and when loaded back in the software would cause instability. However, the value object could not be unstabilized because of the database integrity. Since every value object are reflected by a table with entries, those entries are referenced by a foreign key to the one that use the value object.
 
 For example, if you have an Item that has a price of type Money, you could set the CurrencyType to USD. In the database, the table Item would have a column price and a column currency type. The currency type would have a foreign key to the table currency type.
 
@@ -34,9 +37,9 @@ Every values of the value object is a class. For example, if you have a Canadian
 
 
 ```csharp
- public class CanadianCurrency:CurrencyType { public CanadianCurrency() { base.Id = 1; base.Name = "$CDN"; base.Culture = new CultureInfo(&quot;fr-CA&quot;); } }
+ public class CanadianCurrency:CurrencyType { public CanadianCurrency() { base.Id = 1; base.Name = "$CDN"; base.Culture = new CultureInfo("fr-CA"); } }
 
-public class USACurrency:CurrencyType { public USACurrency() { base.Id = 2; base.Name = "$USD"; base.Culture = new CultureInfo(&quot;en-US&quot;); } } 
+public class USACurrency:CurrencyType { public USACurrency() { base.Id = 2; base.Name = "$USD"; base.Culture = new CultureInfo("en-US"); } } 
 ```
 
 You can have anything you want in the value object. The minimum is to have a identifier that will be the primary key in the database. In the example above, it is an integer but could be a string. The important thing is to have all your implementation to inherit the same class. In that case, it is CurrencyType.
@@ -82,12 +85,16 @@ It may look like a lot of code but it is not. The first class that is not generi
 This pattern works very well with Entity Framework. 
 ```csharp
  public class CurrencyTypeConfiguration : ValueObjectConfiguration<CurrencyType> { public CurrencyTypeConfiguration() { } } 
-``` The configuration is very similar to every of your value object. The trick is all in the inherited class, ValueObjectConfiguration that take the type in its generic parameter.
+``` 
+
+The configuration is very similar to every of your value object. The trick is all in the inherited class, ValueObjectConfiguration that take the type in its generic parameter.
 
 
 ```csharp
  public abstract class ValueObjectConfiguration<T> : EntityTypeConfiguration<T> where T : ValueObject { protected ValueObjectConfiguration() { Map(a => a.MapInheritedProperties()); HasKey(p => p.Id); ToTable(typeof(T).Name, Constants.SchemaNames.ValueObject); } } 
-``` The configuration set the inheritance to MapInheritedProperties. This create a single table with all classes. This mean that all value of your value object are in a single table named by the name of the generic class name. In our example, the table created by Entity Framework is named CurrencyType and has two entries. One with ID 1 and one with ID 2.
+``` 
+
+The configuration set the inheritance to MapInheritedProperties. This create a single table with all classes. This mean that all value of your value object are in a single table named by the name of the generic class name. In our example, the table created by Entity Framework is named CurrencyType and has two entries. One with ID 1 and one with ID 2.
 
 ![](images/ValueObjectTableExample-400x71.png)
 
@@ -100,7 +107,9 @@ One more thing. This is very efficient in term of performance. If you have your 
  public class Item { public int CurrencyTypeId { get { return this.Currency.Id; } set { this.Currency = CurrencyType.GetFromId(value); } }
 
 /// <summary> /// This is ignored by EntityFramework /// </summary> public CurrencyType Currency { get; set; } } 
-``` The code above show a way to do it. You can tell Entity Framework to ignore property and use the CurrentyTypeId. This way, it load and save only the unique identifier and allows you to use the value object property in your business logic. As you can see, the setter of the currency type set the value object value from the GetFromId. The getter also does not link to a integer but to the currency value object. This guarantee us to use the simplest way to save value to entity (by having the foreign key in the class) and to have integrity in the value because it pass through GetFromId() method that thrown an exception if the value is not valid.
+``` 
+
+The code above show a way to do it. You can tell Entity Framework to ignore property and use the CurrentyTypeId. This way, it load and save only the unique identifier and allows you to use the value object property in your business logic. As you can see, the setter of the currency type set the value object value from the GetFromId. The getter also does not link to a integer but to the currency value object. This guarantee us to use the simplest way to save value to entity (by having the foreign key in the class) and to have integrity in the value because it pass through GetFromId() method that thrown an exception if the value is not valid.
 
 The last example is good in the scenario where you have an Entity Framework Complex Object. Complex Object cannot have a navigability association. But, if you have a normal entity, than the best is to have the foreign key in the database. If we also want to have the performance, this mean that we do not want to load the value object object with an Include (to avoid join). To be able to have performance and integrity the best is to have the entity use scalar property that hold the foreign key.
 
@@ -109,6 +118,7 @@ The last example is good in the scenario where you have an Entity Framework Comp
 We have discuss about few way to implements value object. Let's warp up everything in a small console application. This final version works for every situation. This mean that it works with required attribute, work by setting the property to null and having a scalar property to the value object, it also work without having to use Include statement to reduce the amount of join and finally, it can use Entity Framework when saving to avoid adding the value object but just referring to it.
 
 First of all, let's define our context. The context define the connection string and remove everything in the configuration about lazy loading, detection and proxy. It also setup 2 entities. The first one is Parent and the second one is Child. A Child will have a reference to a Parent. The Child is referencing a Parent which simulate the "value object". 
+
 ```csharp
  public class MyContext : DbContext { public MyContext() : base("MyContextConnectionString") { base.Configuration.LazyLoadingEnabled = false; base.Configuration.AutoDetectChangesEnabled = false; base.Configuration.ProxyCreationEnabled = false; }
 

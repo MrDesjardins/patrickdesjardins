@@ -13,6 +13,6 @@ Unfortunatly, if I do nothing, I am having a issue with query string being too l
 
 So far, I haven't found solution, neither [StackOverFlow](http://stackoverflow.com/questions/19601412/new-asp-net-mvc5-project-produces-an-infinite-loop-to-login-page). But, if you are using IIS, everything works. Personally, I am always using IIS, but I am still curious why the IIS express, even with a brand new project doesn't work.
 
-**EDIT**
+# EDIT
 
 I finally found that in IIS Express configuration file (located inside your document setting), I had windows authentication enabled. You need to remove this and to use anonymous authentication.

@@ -31,7 +31,8 @@ export function addInArrayIfNotPresent<T>(array: T[], item: T): T[] {
   return returnArray; 
 }
 
-// Usage: const newReferenceArrayWithItemsAdded = addInArrayIfNotPresent(existingArray, itemsToAdd); 
+// Usage: 
+const newReferenceArrayWithItemsAdded = addInArrayIfNotPresent(existingArray, itemsToAdd); 
 ``` 
 
 
@@ -47,7 +48,8 @@ export function alterImmutablyMap<T>(stateMap: GenericMap<T>, key: number | unde
     return stateMap; 
   }
 
-// Usage: const newDictionary = alterImmutablyMap(existingDictionary, key, value); 
+// Usage: 
+const newDictionary = alterImmutablyMap(existingDictionary, key, value); 
 ``` 
 
 The third function allows changing a property of an existing object in a dictionary. The function is useful if the user change a single property and you do not want to change to extract the current object and manually clone it to set the new value into a new clone of the object.
@@ -67,7 +69,8 @@ export function alterImmutablyMapMember<T, K extends keyof T>(stateMap: GenericM
   } 
   return stateMap; 
 } 
-// Usage: const newDictionary = alterImmutablyMapMember(existingDictionary, key, member, value); 
+// Usage: 
+const newDictionary = alterImmutablyMapMember(existingDictionary, key, member, value); 
 const newDictionary2 = alterImmutablyMapMember(existingDictionary, 1, "name", "Patrick"); // Change the item 1's property name to Patrick 
 ``` 
 

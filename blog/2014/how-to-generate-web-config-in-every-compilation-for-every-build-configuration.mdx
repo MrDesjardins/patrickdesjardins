@@ -18,4 +18,4 @@ This is the xml code that needs to be pasted into the .csproj at the end of the 
 ```
 
 
-The XML creates a target before build that specify an output directory which in my case is named "_TransformedWebConfigs" in the project directory. It cleans everything then it create the directory and apply the transformation for Debug and Release Dev. If you have a Test and Production than you have to have additional lines that specify the Transformation name (build name in Visual Studio) and the destination of the file. As you can see, the XML has a ItemGroup that let you reuse the path everywhere in your MsBuild command.
+The XML creates a target before build that specify an output directory which in my case is named `TransformedWebConfigs` in the project directory. It cleans everything then it create the directory and apply the transformation for Debug and Release Dev. If you have a Test and Production than you have to have additional lines that specify the Transformation name (build name in Visual Studio) and the destination of the file. As you can see, the XML has a ItemGroup that let you reuse the path everywhere in your MsBuild command.

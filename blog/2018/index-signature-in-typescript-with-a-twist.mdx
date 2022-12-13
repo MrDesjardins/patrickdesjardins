@@ -8,10 +8,12 @@ categories:
 What if I tell you that the type you specify as the key in your index signature in TypeScript is useless? This is pretty much the case today with version 2.8.3. A historical reason is behind this design and this article will cover the current quirk that you might never notice even if you are using an object with index signature for a while.
 
 Everything is more clear with an example. So here is a code that does not compile in TypeScript: 
+
 ```typescript
 let x: string = "x"; 
 x = 1; // As expected, this line doesn't compile 
 ``` 
+
  The variable is defined to be of type string. I am using a number -- it doesn't compile. At that point, anyone who uses TypeScript agrees that it makes total sense. The user explicitly defines a variable to be a primitive, not only a primitive but a string. If I want a number to be stored in this variable, I'll have to parse the number into a string which can be done in different ways like using x.toString(), using the string constructor (String(x)), or to concatenate the number with an empty string (""+x). Regardless, this is known and accepted since the inception of TypeScript.
 
 An index signature allows an object to have value accessed by an index that can be a string or a number. This is often used in JavaScript to access properties of an object. The pattern in JavaScript to create a dictionary is by using the index signature. The following code is legit in JavaScript.

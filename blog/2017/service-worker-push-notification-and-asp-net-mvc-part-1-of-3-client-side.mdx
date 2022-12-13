@@ -7,15 +7,17 @@ categories:
   - "javascript"
 ---
 
-Browsers involve very rapidly and since few years it's possible to write JavaScript that runs in the background of the browser. That means that it's possible to run code even if the user is not on the website. This is useful for many scenarios and today we will see one feature which is the **push notification**. The particular environment that we will describe is to use a service worker that wait a message from a Asp.Net Azure web job written in C# that will push a message at a particular time depending of some value to a specific user. The end result will be that the browser will popup a message box at the bottom right if the user is not on the website or if the user is on the website will display a HTML notification directly on the page.
+Browsers involve very rapidly and since few years it's possible to write JavaScript that runs in the background of the browser. That means that it's possible to run code even if the user is not on the website. This is useful for many scenarios and today we will see one feature which is the **push notification**. The particular environment that we will describe is to use a service worker that wait a message from a Asp.Net Azure web job written in C\# that will push a message at a particular time depending of some value to a specific user. The end result will be that the browser will popup a message box at the bottom right if the user is not on the website or if the user is on the website will display a HTML notification directly on the page.
 
 ![](images/NotificationChromeWebPush.png)
 
-This article is the part one of two which concentrates on the front-end, not the C# code that runs on the server. We will cover the registration of [Google Firebase](https://firebase.google.com/), the service worker's code and the JavaScript code to add on your website.
+This article is the part one of two which concentrates on the front-end, not the C\# code that runs on the server. We will cover the registration of [Google Firebase](https://firebase.google.com/), the service worker's code and the JavaScript code to add on your website.
 
 The first step if to register an account with Google Firebase. This is not very obvious since almost all example on the web (at this date) uses the raw Service Worker + Push Notification API with the legacy Google system instead of Firebase. Both are pretty compatible in term of server contracts to generate the message, however, on the client side, it's pretty different. Firebase acts as a wrapper on the native Service Worker API and Push Notification API. You can still use the API directly, and in some case, it's the only way to access advanced feature.
 
-To create a Firebase account, you need to https://console.firebase.google.com and create an account and a project. ![](images/CreateFirebaseProject-1024x736.png)
+To create a Firebase account, you need to https://console.firebase.google.com and create an account and a project. 
+
+![](images/CreateFirebaseProject-1024x736.png)
 
 Firebase is a library that is accessible via API keys and JavaScript API. You can also invoke the API through a Rest API which we will see in the second part. The first challenge is to figure out where to get the right API key because the system has many. The first step is to create the Service Worker. This is registered when the user goes into your website to run in the background of the browser. The default is to create a file called "firebase-messaging-sw.js" and to put that file at the root of your website. The location of the file is important because the service worker can only access assert that are sibling or child to the script registered.
 
@@ -54,7 +56,9 @@ self.addEventListener("notificationclick", function (event) {
 });
 ```
 
-In short, it uses 2 Firebase scripts. One for the Firebase and one for the messaging which is the wrapper around the push notification api. The configuration is tricky. The apiKey is taken from the Firebase's console, under the desired project, under the project settings gear, in the **General**tab. ![](images/WebApiKeyForFirebase-1024x572.png)
+In short, it uses 2 Firebase scripts. One for the Firebase and one for the messaging which is the wrapper around the push notification api. The configuration is tricky. The apiKey is taken from the Firebase's console, under the desired project, under the project settings gear, in the **General**tab. 
+
+![](images/WebApiKeyForFirebase-1024x572.png)
 
 The **messagingSenderId** is an id that is available tab next to the **General** tab, called **Cloud Messaging**.
 
@@ -173,7 +177,7 @@ To verify that all the previous steps are well executed, you can look in Chrome 
 
 It's important to understand that what we are doing only work under localhost or with HTTPS' website. From Chrome'S debug panel, you can unregister, or click "Update on reload" to force a reinstallation of the service worker. This can be handy when developing to be sure to always have the latest version of your service worker.
 
-The next step is to have your website listen to incoming messages. This cover the scenario when the user is on the website and that we do not want to use the browser notification. To do, we need to use some code that we already used in the service worker concerning Firebase's initialization. In my case, I added in the master page (\_layout.cshtml) a reference to Firebase script to initialize the library. It looks like that:
+The next step is to have your website listen to incoming messages. This cover the scenario when the user is on the website and that we do not want to use the browser notification. To do, we need to use some code that we already used in the service worker concerning Firebase's initialization. In my case, I added in the master page (`_layout.cshtml`) a reference to Firebase script to initialize the library. It looks like that:
 
 ```
  <script src="https://www.gstatic.com/firebasejs/3.6.2/firebase.js"></script> </script>
@@ -200,6 +204,6 @@ $(document).ready(function () {
 
 The listener is **onMessage** is fired when the user has the focus on the website. So, instead of having the service worker to handle the message, this handler is receiving the data. This give the advantage to be able to add the message directly in the webpage Dom, something that the service worker cannot do. It also has the convenience of having the notification in the field of view of the user instead of having a notification outside.
 
-At this point, you can use any HTTP tools to send a message to Firebase. You can use console.log to output the token and forge a HTTP request with your web api and sender id. I won't give detail in this post and will give how to do it in a future post about how to handle it with a webjob in C# which will send a HTTP request.
+At this point, you can use any HTTP tools to send a message to Firebase. You can use console.log to output the token and forge a HTTP request with your web api and sender id. I won't give detail in this post and will give how to do it in a future post about how to handle it with a webjob in C\# which will send a HTTP request.
 
 Service worker allows you do to a lot more than just using the push notification. This article covered the basis of how to use Google Firebase has a backbone to have your own backend infrastructure (covered in a future article) to send a message and to have your client receiving the message. Several pieces of code is needed in specific places.

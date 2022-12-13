@@ -13,7 +13,7 @@ Depending of what you want to do, you may want to group by id or by more values.
  var groupedList = nonGroupedList.GroupBy(g=> new MyCustomGroupingClass(g.UserId, g.UserFullName)); 
 ```
 
-This won't work because every MyCustomGroupingClass will be different from C# perspective. This is because Linq will compare every object and figure out that every MyCustomGroupingClass has a different object.
+This won't work because every `MyCustomGroupingClass` will be different from C\# perspective. This is because Linq will compare every object and figure out that every `MyCustomGroupingClass` has a different object.
 
 
 ```csharp
@@ -22,7 +22,7 @@ This won't work because every MyCustomGroupingClass will be different from C# pe
 
 This would work, because an integer is comparable but it doesn't solve the need to have the user name.
 
-The solution is hidden in the problem : comparing classes. We need to provide a way to compare. This can be done by providing an override to the Equals method of your grouping class.
+The solution is hidden in the problem : comparing classes. We need to provide a way to compare. This can be done by providing an override to the `Equals` method of your grouping class.
 
 
 ```csharp

@@ -17,7 +17,7 @@ This code is searching for every thing inside the parse method. For example: "Th
 
 
 ```csharp
- var regex = new Regex(PATTERN_WITH_NAME, RegexOptions.IgnoreCase);
+var regex = new Regex(PATTERN_WITH_NAME, RegexOptions.IgnoreCase);
 
 var matches = regex.Matches(stringToSearch); foreach (Match match in matches) { var url = match.Groups["parameterName"].Value; } 
 ```

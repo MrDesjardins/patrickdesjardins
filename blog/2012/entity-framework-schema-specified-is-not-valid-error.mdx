@@ -20,7 +20,8 @@ This won't work because listMyClass contain a list of MyClassName, but from the 
 
 
 ```csharp
- var arrayId = listMyClass.Select(d => d.ID).ToArray(); var fromDatabase =_dataContext.Set<MyClassName>().Where(p => arrayId.Contains(p.ID)); 
+ var arrayId = listMyClass.Select(d => d.ID).ToArray(); 
+ var fromDatabase =_dataContext.Set<MyClassName>().Where(p => arrayId.Contains(p.ID)); 
 ```
 
 That's it! Now it works because listMyClass is transformed into an array of ID which Entity Framework understand.

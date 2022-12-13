@@ -13,7 +13,9 @@ The complex entity is not a CLR type. In fact, it's a group of scalar entities. 
 
 ## How to add Complex entity?
 
-In the AdventureWorks database once the model is generated from the database you get tables, views and stored procedure. For this exercise, lets take the generated entity "Department" ![](images/DepartmentEntity.png)
+In the AdventureWorks database once the model is generated from the database you get tables, views and stored procedure. For this exercise, lets take the generated entity "Department" 
+
+![](images/DepartmentEntity.png)
 
 ![](images/AddComplexType-400x247.png)
 
@@ -26,7 +28,9 @@ Once the complex type is created, it's possible to add it as a complex property.
 From here, it's possible to access the complex property and will be even in the Intellisense.
 
 ```csharp
-var db = new AdventureWorks_DataEntities(); var aSingleDepartment = db.DepartmentList.Where(dept => dept.DepartmentID == 1).FirstOrDefault<Department>(); int theIntegerPropertyOfMyComplexPropertyOfDepartment = aSingleDepartment.MyComplexProperty.MyFirstIntProperty; 
+var db = new AdventureWorks_DataEntities(); 
+var aSingleDepartment = db.DepartmentList.Where(dept => dept.DepartmentID == 1).FirstOrDefault<Department>(); 
+int theIntegerPropertyOfMyComplexPropertyOfDepartment = aSingleDepartment.MyComplexProperty.MyFirstIntProperty; 
 ```
 
 The only thing that remain to do before compiling is a last mapping for the complex entity. This is needed because you will receive an error message if not.

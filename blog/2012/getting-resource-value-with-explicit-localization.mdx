@@ -14,14 +14,24 @@ Let say that your resource file name is "MyResource.resx". If you have set the v
 
 
 ```csharp
- public class MyResource{ public static string Res1 { get { return ResourceManager.GetString("Res1", resourceCulture); } } } 
+public class MyResource{ 
+  public static string Res1 { 
+    get { 
+    return ResourceManager.GetString("Res1", resourceCulture); 
+    } 
+  } 
+} 
 ```
 
 If you want to have access to a specific language without using the current resource culture, you need to instead calling the resource by this static property to call the resource manager directly.
 
 
 ```csharp
- //Instead of : string myString = MyResource.Res1; //You have to call : string myString = MyResource.ResourceManager.GetString("Res1", new CultureInfo("FR")); 
+ //Instead of : 
+ string myString = MyResource.Res1; 
+ 
+ //You have to call : 
+ string myString = MyResource.ResourceManager.GetString("Res1", new CultureInfo("FR")); 
 ```
 
 That's it. Of course, you have to make sure that you have the culture requested otherwise, an exception will be thrown.

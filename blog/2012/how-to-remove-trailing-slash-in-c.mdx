@@ -5,7 +5,7 @@ categories:
   - "c-sharp"
 ---
 
-I see often people using substring to remove the last character if this one is a slash in a path or url. This can if misused lead to an error because maybe the string is empty and doesn't have count()-1 over 0.
+I see often people using substring to remove the last character if this one is a slash in a path or url. This can if misused lead to an error because maybe the string is empty and doesn't have `count()-1` over 0.
 
 Also, this require to have a conditional statement to verify if the string contain at its latest position a slash.
 
@@ -15,14 +15,16 @@ Here is an example:
 
 
 ```csharp
- string fileName = "Test/"; fileName= fileName.TrimEnd(new[] { '/' }); 
+string fileName = "Test/"; 
+fileName= fileName.TrimEnd(new[] { '/' }); 
 ```
 
 With this method you can also specify multiple characters so you may want to remove all slash or backslash using the array.
 
 
 ```csharp
- string fileName = "Test\\\\"; fileName= fileName.TrimEnd(new[] { '/', '\\\\' }); 
+string fileName = "Test\\\\"; 
+fileName= fileName.TrimEnd(new[] { '/', '\\\\' }); 
 ```
 
 Do not forget that this method will trim more than only the last character but all ending characters. This mean that a string ending with two slashes will see both slashes removed. I think it's even better!
