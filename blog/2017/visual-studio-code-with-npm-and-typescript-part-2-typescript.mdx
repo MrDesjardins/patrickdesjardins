@@ -62,7 +62,7 @@ npm install typings -g typings install jquery --save --global
 
  Next step, is to change TypeScript to be aware of the definition file. This is done by adding an entry at the index.d.ts file at the root of typings. This file contains the triple slashes that was required to be added in all TypeScript file before. Not, you can have TypeScript compiler option to handle it for you, hence keeping all your files cleaner. The TypeScript configuration looks like below. Notice the files property. 
  
- ```typescript
+```typescript
 { "compilerOptions": { 
   "sourceMap": true, 
   "target": "es6", 

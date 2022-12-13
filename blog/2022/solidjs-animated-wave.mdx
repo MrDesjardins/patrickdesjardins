@@ -177,7 +177,7 @@ The first part is what is on the left side, inside the parentheses. That part de
 
  At each computation, we draw a line with `lineTo` and keep track of the last x and y coordinate, which will tell us where to start on the next loop. The `y` increases, and the `x` goes left and right.
 
- ```typescript
+```typescript
 ctx.lineTo(x - waveXOffset, y);
 lastY = y;
 lastX = x;

@@ -15,7 +15,7 @@ The filtering needs to appear everywhere we have a list of articles. In my case,
 export const query = graphql`
   query BlogsInYear($yearStart: Date!, $yearEnd: Date!, $currentDate: Date!) {
     allMdx(
-      sort: { fields: frontmatter___date, order: DESC }
+      sort: {frontmatter: {date: DESC}}
       filter: {
         frontmatter: {
           date: { gte: $yearStart, lt: $yearEnd, lte: $currentDate }
@@ -44,7 +44,7 @@ And the chronological pagingation:
 export const query = graphql`
   query TopXBlogArticles($limit: Int!, $skip: Int!, $currentDate: Date!) {
     allMdx(
-      sort: { fields: frontmatter___date, order: DESC }
+      sort: {frontmatter: {date: DESC}}
       limit: $limit
       skip: $skip
       filter: { frontmatter: { date: { lte: $currentDate } } }

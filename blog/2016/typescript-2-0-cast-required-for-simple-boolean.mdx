@@ -91,7 +91,7 @@ enum MyEnum { Choice1, Choice2, Choice3 }
 
  This translate into Choice1 being 0, Choice2 1 and Choice3 = 2. The problem is that 0 is false in JavaScript. The first check is to be sure we do not pass `null` or `undefined`. Since MyEnum.Choice1 is 0, which is false, it will never goes into the if of the following code. 
  
- ```typescript
+```typescript
 function isChoice1(yourChoice: MyEnum) { 
   if (yourChoice) {
      return yourChoice === MyEnum.Choice1; 

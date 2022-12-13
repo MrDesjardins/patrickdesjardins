@@ -234,7 +234,7 @@ module.exports = {
               query
               {
                 allMdx(
-                  sort: { order: DESC, fields: [frontmatter___date] },
+                  sort: {frontmatter: {date: DESC}}
                   filter: { frontmatter: { date: { lte: "${formattedCurrentDate}" } } }
                   limit: 50
                 ) {

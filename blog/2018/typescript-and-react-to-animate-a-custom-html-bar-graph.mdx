@@ -32,7 +32,7 @@ The graph is horizontally centered as well as being absolute. It is centered all
   right: 0; 
   margin-left: auto; 
   margin-right: auto; }
- ``` 
+``` 
 
 Most of the feat of this feature is how to get the right position for every element. The calculation is performed at the "Fillwindows.tsx" render's level where the width and height of the whole graph can be calculated with the business models. From the main component, the right final position of every element can be passed down in all children component by properties. For example, the "FillwindowsCluster.tsx" is receiving a top and a left position and also receive the height of each appliance they must render.
 

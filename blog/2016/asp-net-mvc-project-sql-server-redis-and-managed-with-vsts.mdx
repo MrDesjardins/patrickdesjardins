@@ -480,7 +480,8 @@ Before doing anything you must do your BootStrap into a division that has the �
 LocalizedString Control The first control for the contest entity is the name. This one is for the LocalizedString complex type. Since we want to have this control in a single line, we start with a division that has the “row” class. We will not use form-group class directly because we have something particular with this control. We have a label that is for the control and then 2 labels and inputs.
 
 
-```html  <div class="row"> <div class="col-xs-12 col-sm-2"> <label class="control-label" for="Name">Name</label> </div> <div class="col-xs-12 col-sm-10"> <div class="form-group"> <label class="control-label col-sm-2">English:</label> <div class="col-sm-10"> <input class="form-control text-box single-line" id="Name_English" name="Name.English" type="text" value=""> </div> </div> <div class="form-group"> <label class="control-label col-sm-2">Francais:</label> <div class="col-sm-10"> <input class="form-control text-box single-line" id="Name_French" name="Name.French" type="text" value=""> </div> </div> </div> </div> 
+```
+html  <div class="row"> <div class="col-xs-12 col-sm-2"> <label class="control-label" for="Name">Name</label> </div> <div class="col-xs-12 col-sm-10"> <div class="form-group"> <label class="control-label col-sm-2">English:</label> <div class="col-sm-10"> <input class="form-control text-box single-line" id="Name_English" name="Name.English" type="text" value=""> </div> </div> <div class="form-group"> <label class="control-label col-sm-2">Francais:</label> <div class="col-sm-10"> <input class="form-control text-box single-line" id="Name_French" name="Name.French" type="text" value=""> </div> </div> </div> </div> 
 ```  
 At first, I started with the col-xs-12 without doing anything for bigger resolution (sm). I wanted to have the name label that takes the whole line. The same for the labels for all languages and inputs. This is why col-xs-12 is used. It takes the whole 12 columns that a grid has. This is not the same behavior for the small resolution and higher. In that case, we want to take only 2 columns for the main label and then the rest of the 10 columns for the label-input. What is important is to have columns into row every times.
 
@@ -491,7 +492,8 @@ Creating Asp.Net MVC Html Helpers for BootStraper You will repeat a lot of times
 This way, the contest view can be clean and easy to change later on by modifying only a single place (the html placeholder) and affecting every pages. Here is a snippet of the contest view.
 
 
-```html  div class="panel panel-default"> <div class="panel-heading"> General Information </div> <div class="panel-body"> @Html.Custom().FormGroupWithSeveralSubProperties(model => model.Name) @Html.Custom().FormGroupFor(model => model.InitialCapital) @Html.Custom().FormGroupFor(model => model.OrderType) </div> </div> 
+```
+html  div class="panel panel-default"> <div class="panel-heading"> General Information </div> <div class="panel-body"> @Html.Custom().FormGroupWithSeveralSubProperties(model => model.Name) @Html.Custom().FormGroupFor(model => model.InitialCapital) @Html.Custom().FormGroupFor(model => model.OrderType) </div> </div> 
 ```  
 As you can see, the property Name is of type LocalizedString, and InitialCapital and OrderType are both from a single value type. We do use two different Html Helpers to generate the BootStrap layout. If in the future we change the layout, all pages that use these Html Helpers will be affected easily without having to modify several pages. It has also the advantage to have a good separation of concern where the Html Helper handle the creation of Html controls while the page has the page layout goal. Nevertheless, the big disadvantage is the the Html Helper code is a mess to understand. It is a lot easier to read html tag not inside C\# code. Here is the Html Helper Code.
 
@@ -1064,7 +1066,9 @@ The last step is to give the user access to the Database. You have give the acco
 
 ![](images/UserMapping.png)
 
-The last error that you can have is something about the creation of table. I had this error when migrating this website with the Identity framework when trying to get the user in the authentication window. ``` 
+The last error that you can have is something about the creation of table. I had this error when migrating this website with the Identity framework when trying to get the user in the authentication window. 
+
+```csharp 
  Exception information: Exception type: SqlException Exception message: CREATE TABLE permission denied in database ‘BourseVirtuelle’. at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction) at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose) 
 ``` 
 

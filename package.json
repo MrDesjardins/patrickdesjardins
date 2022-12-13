@@ -8,7 +8,7 @@
     "gatsby"
   ],
   "scripts": {
-    "develop": "NODE_OPTIONS='--openssl-legacy-provider' && gatsby develop",
+    "develop": "NODE_OPTIONS='--openssl-legacy-provider --max_old_space_size=8192' && gatsby develop",
     "debug": "node --openssl-legacy-provider --nolazy node_modules/.bin/gatsby develop --inspect-brk",
     "start": "NODE_OPTIONS='--openssl-legacy-provider' && gatsby develop",
     "build": "NODE_OPTIONS='--openssl-legacy-provider --max_old_space_size=8192' && gatsby build",

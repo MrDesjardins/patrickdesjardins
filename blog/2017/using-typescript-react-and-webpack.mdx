@@ -187,13 +187,13 @@ output: { path: path.resolve(__dirname, 'deploy'), filename: '[name]bundle.js' }
 
 The next configuration is to tell which extension Webpack should care of. For us, it's TypeScript 
 
- ```typescript
+```typescript
 resolve: { extensions: ['.ts', '.tsx', '.js', '.jsx'] }, 
 ``` 
 
  This property allows to have source map. This give the possibility to debug TypeScript in Chrome on the real individual file even if it's bundled. 
 
- ```typescript
+```typescript
 devtool: "source-map", 
 ``` 
 

@@ -31,7 +31,7 @@ constructor(props: PickerProps) {
 ``` 
  The render needs to render the Semantic React Dropdown control. This one leverages its capability of being able to have a caption label to write the actual selected value. This is great since it gives the possibility to have an active element that is not even yet mounted. The options property, which is the list of item, is set to the state which is empty at the first render. The trick is coded in the "onOpen" method which executes code when the user clicks to open the drop-down. It transfers the list into the state. Since the state change, the render is executed again and render the list with all items. The recursive render is executed only once because of the boolean guard and mounts all the items. 
  
- ```typescript
+```typescript
 <Dropdown 
   item={true} 
   value={this.props.selectedItemId.toString()} 
