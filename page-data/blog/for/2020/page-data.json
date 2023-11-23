@@ -1,5 +1,5 @@
 {
     "componentChunkName": "component---src-templates-blogs-by-year-tsx",
     "path": "/blog/for/2020",
-    "result": {"data":{"allMdx":{"nodes":[{"frontmatter":{"date":"December 28, 2020","title":"My recapitulation of 2020: another great year","categories":["general"]},"id":"992e6108-0aa5-592a-88fc-5046a9841c31","fields":{"slug":"/blog/my-recapitulation-of-2020-another-great-year"}},{"frontmatter":{"date":"May 11, 2020","title":"Working From Home Desk","categories":["general"]},"id":"fe5a990c-e408-536b-a636-90f88a9e3a15","fields":{"slug":"/blog/working-from-home-desk"}}]}},"pageContext":{"yearStart":"2020-01-01","yearEnd":"20201-01-01","year":"2020","totalPages":77,"currentDate":"2023-11-22"}},
+    "result": {"data":{"allMdx":{"nodes":[{"frontmatter":{"date":"December 28, 2020","title":"My recapitulation of 2020: another great year","categories":["general"]},"id":"992e6108-0aa5-592a-88fc-5046a9841c31","fields":{"slug":"/blog/my-recapitulation-of-2020-another-great-year"}},{"frontmatter":{"date":"May 11, 2020","title":"Working From Home Desk","categories":["general"]},"id":"fe5a990c-e408-536b-a636-90f88a9e3a15","fields":{"slug":"/blog/working-from-home-desk"}}]}},"pageContext":{"yearStart":"2020-01-01","yearEnd":"20201-01-01","year":"2020","totalPages":77,"currentDate":"2023-11-23"}},
     "staticQueryHashes": ["3159585216"]}
