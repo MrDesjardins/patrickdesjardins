@@ -1,5 +1,5 @@
 {
     "componentChunkName": "component---src-templates-blogs-by-page-tsx",
     "path": "/blog/page/77",
-    "result": {"data":{"allMdx":{"nodes":[{"frontmatter":{"date":"August 27, 2011","title":"ILSpy is an open-source .NET assembly browser and decompiler that is free","categories":["softwares","visual-studio"]},"id":"1fa90484-9d99-5331-b7ae-9c75c3cabab6","fields":{"slug":"/blog/ilspy-is-an-open-source-net-assembly-browser-and-decompiler-that-is-free"}}]}},"pageContext":{"limit":10,"skip":760,"currentPage":77,"totalPages":77,"currentDate":"2024-01-20"}},
+    "result": {"data":{"allMdx":{"nodes":[{"frontmatter":{"date":"August 27, 2011","title":"ILSpy is an open-source .NET assembly browser and decompiler that is free","categories":["softwares","visual-studio"]},"id":"1fa90484-9d99-5331-b7ae-9c75c3cabab6","fields":{"slug":"/blog/ilspy-is-an-open-source-net-assembly-browser-and-decompiler-that-is-free"}}]}},"pageContext":{"limit":10,"skip":760,"currentPage":77,"totalPages":77,"currentDate":"2024-01-21"}},
     "staticQueryHashes": ["3159585216"]}
