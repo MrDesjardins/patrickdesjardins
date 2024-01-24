@@ -1,5 +1,5 @@
 {
     "componentChunkName": "component---src-templates-blogs-by-year-tsx",
     "path": "/blog/for/2024",
-    "result": {"data":{"allMdx":{"nodes":[]}},"pageContext":{"yearStart":"2024-01-01","yearEnd":"20241-01-01","year":"2024","totalPages":77,"currentDate":"2024-01-23"}},
+    "result": {"data":{"allMdx":{"nodes":[]}},"pageContext":{"yearStart":"2024-01-01","yearEnd":"20241-01-01","year":"2024","totalPages":77,"currentDate":"2024-01-24"}},
     "staticQueryHashes": ["3159585216"]}
