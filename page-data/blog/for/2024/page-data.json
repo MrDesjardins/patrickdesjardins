@@ -1,5 +1,5 @@
 {
     "componentChunkName": "component---src-templates-blogs-by-year-tsx",
     "path": "/blog/for/2024",
-    "result": {"data":{"allMdx":{"nodes":[]}},"pageContext":{"yearStart":"2024-01-01","yearEnd":"20241-01-01","year":"2024","totalPages":77,"currentDate":"2024-01-25"}},
+    "result": {"data":{"allMdx":{"nodes":[{"frontmatter":{"date":"January 26, 2024","title":"Display Git Pull Request Status on the Steelseries APEX 7 TKL keyboard OLED","categories":["python","steelseries","github"]},"id":"7fab9644-b038-5c4f-bfc8-1242b0526bde","fields":{"slug":"/blog/git-to-steelseries-keyboard"}}]}},"pageContext":{"yearStart":"2024-01-01","yearEnd":"20241-01-01","year":"2024","totalPages":77,"currentDate":"2024-01-26"}},
     "staticQueryHashes": ["3159585216"]}
