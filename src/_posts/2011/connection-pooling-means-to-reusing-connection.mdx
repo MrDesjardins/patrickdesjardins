@@ -1,0 +1,17 @@
+---
+title: "Connection pooling means to reuse database connection"
+date: "2011-09-21"
+categories: 
+  - "ado-net"
+  - "sql"
+---
+
+**Connection Pooling** is handled by the **Connection Manager** to reuse available connection instead of creating a new one. This is performance wise because the system won't create and kill connection every time a database is require. This is also very true for web application that not only a same user may call multiple time the database per page but also go in multiple page and this is done by many users. To activate Pooling, add in the collection string `Pooling=True;`, that's it.
+
+To use connection pooling suffices to change the connection string. From there you can select the size of the pool and many other options.
+
+> Default value for the pool size is 100
+
+The way pooling works does not involve any modification or special behavior for the database. It's all code handled. All ADO.NET provider can use this mechanism.
+
+Also, pooling does not have any huge disadvantage and than should always be activated. The only moment it can be bright to turn it off is when debugging connection problem.

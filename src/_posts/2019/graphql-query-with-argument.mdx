@@ -1,0 +1,70 @@
+---
+title: "GraphQL Query with Argument"
+date: "2019-02-07"
+categories: 
+  - "graphql"
+  - "typescript"
+---
+
+A part of me wish that the flexibility of GraphQL would extend further in term of parameter to a query. The reality is that the maintainer of a GraphQL service must provide a set of acceptable inputs. The rational is that GraphQL needs to query a services or any source of data in a known way. For example, if the REST endpoint takes an ID to fetch a specific entity, it would not make sense to take for input the NAME of the entity -- the service does not support it. The explicit behaviors of GraphQL is a major difference compared to SQL (Structured Query Language). With the Graph Query Language, the requested fields inside the graph is flexible but not the inputs.
+
+In this article, we will see how to create a query that take an input that can be used by an HTTP request against a web service in REST. The first thing is to define a GraphQL type definition, inside the query object, that accept the input. The following code adds a second function in GraphQL to request a particular book by id. 
+
+```typescript
+type Query {
+    books: [Book]
+    book(bookId: Int): Book
+}
+``` 
+
+The next step is to define the resolver. For the Book, in the previous article, I was using hardcoded value in a variable. It makes the query quite simple:
+
+```typescript
+export const bookResolversMap = {
+    Query: {
+        books: (obj: null, args: {}, context: GraphQLCustomContext) => {
+            return books;
+        },
+        book: (obj: null, args: { bookId: number }, context: GraphQLCustomContext) => {
+            return books[args.bookId];
+        }
+    }
+};
+``` 
+
+Instead of accessing a variable, the resolver can perform an AJAX call. The first "A" of AJAX is for "asynchronous", hence we need to modify the function to be async. Then, it is a matter of calling the endpoint that has the values and to return it. Here is the resolver async that perform an HTTP request.
+
+```typescript
+export const bookResolversMap = {
+    Query: {
+        books: (obj: null, args: {}, context: GraphQLCustomContext) => {
+            return books;
+        },
+        book: async (source: null, args: { bookId: number }, context: GraphQLCustomResolversContext, graphQLResolveInfo: GraphQLResolveInfo) => {
+            try {
+                const axiosResponse = await axios(requestHere /*uses book id from args*/);
+                return axiosResponse;
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    }
+};
+``` 
+
+The resolver works as expected. One architectural issue is that high-cohesion between the resolver and the library Axios. Axios is a library that perform Ajax calls. It would be better to not have a strong dependency between the resolver and Axios. Mostly because in the future, the book data source might change for Redis, Sql Database or a gRPC client. The resolver sole tasks must be to take the decision about which endpoint to call and ensuring the data is cached and structures as expected and not to handle how to create the Ajax request (or SQL queries, or gRPC request). In the next article, I'll modify the resolver to be agnostic of the fetching technology.
+
+## GraphQL Interesting Articles
+
+- [Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)
+- [Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)
+- [Apollo Server and Secured Playground](apollo-server-and-secured-playground)
+- [GraphQL Context](graphql-context)
+- [GraphQL Query with Argument](graphql-query-with-argument)
+- [Apollo GraphQL Resolvers and Data Source separation](apollo-graphql-resolvers-and-data-source-separation)
+- [How to setup a TypeScript, NodeJS, Express Apollo Server to easy debugging with VsCode](how-to-setup-a-typescript-nodejs-express-apollo-server-to-easy-debugging-with-vscode)
+- [GraphQL Resolvers with Apollo](graphql-resolvers-with-apollo)
+- [Configuring Apollo Playground and API on two different URL](configuring-apollo-playground-and-api-on-two-different-url)
+- [How to automatically generate TypeScript for consumers of your GraphQL](how-to-automatically-generate-typescript-for-consumer-of-your-graphql)
+- [GraphQL and HTTP Telemetry](graphql-extension-to-collect-http-and-resolvers-telemetry)  
+- [GraphQL and TypeScript/React](how-to-consume-graphql-in-typescript-and-react)

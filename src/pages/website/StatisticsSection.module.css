@@ -1,0 +1,24 @@
+.statisticContainer {
+  max-width: 1200px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+.statisticContainerCard {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+}
+.statisticContainerCard h5,
+.statisticContainerCard h6 {
+  text-align: left;
+}
+.statisticContainerCard h5 {
+  font-size: 24px;
+  padding: 0;
+  margin: 0;
+}
+.statisticContainerCard h6 {
+  font-size: 14px;
+  padding: 0;
+  margin: 12px 0 0 0;
+}

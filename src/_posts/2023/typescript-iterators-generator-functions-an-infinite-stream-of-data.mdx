@@ -1,0 +1,252 @@
+---
+title: "TypeScript Iterators, Generator Functions and Infinite Stream of Data"
+date: "2023-04-07"
+categories:
+  - "typescript"
+  - "iterator"
+  - "iterative"
+  - "loop"
+---
+
+We discussed about [TypeScript Iterator and Iterable](/blog/understand-typeScript-iterator-and-iterable) in a recent blog article. Today, we introduce generator functions that are a step further into iterable behavior in TypeScript.
+
+# What is a TypeScript Generator Function?
+
+Similar to a normal TypeScript function, a generator returns a value. However, a generator can return many values. A generator function is a function that returns a non-deterministic amount of values until the function calls the known `return` keyword with the final value that will terminate the iterator.
+
+# What is the Goal of TypeScript Generator Functions?
+
+The goal is to provide a simpler syntax to the language by providing a mechanism for transmitting data without knowing how to navigate the data stream or data structure. The goal perfectly matches the iterable concept where we are not limited to iterating data linearly from one index to another. 
+
+# What is the Similitude with TypeScript Iterable?
+
+The main similitude is that the TypeScript Generator Functions rely on an object with a `next` function.
+
+Before elaborating on TypeScript Generator, let's define a simple example. In the [TypeScript Iterator and Iterable](/blog/understand-typeScript-iterator-and-iterable) article, the first example was to iterate on a random amount of data. 
+
+```ts
+const myIterable: Iterable<number> = {
+  [Symbol.iterator]: () => {
+    let index = 0;
+    const end = 3 + Math.random() * 7; // Max will be 10
+    const myIterator: Iterator<number> = {
+      next: () => {
+        if (index >= end) {
+          return {
+            value: null,
+            done: true,
+          };
+        } else {
+          index++;
+          return {
+            value: index - 1, // Value is [0 to 9]
+            done: index >= end,
+          };
+        }
+      },
+    };
+    return myIterator;
+  },
+};
+
+for (const c of myIterable) {
+  console.log(`Value is: ${c}`);
+}
+```
+
+Let's migrate this example with a TypeScript generator function.
+
+```ts
+function* myGenerator() {
+  let index = 0;
+  const end = 3 + Math.random() * 7; // Max will be 10
+
+  while (index < end) {
+    // Smaller here because we will return that last value with return
+    yield index;
+    index++;
+  }
+  return index;
+}
+
+for (const c of myGenerator()) {
+  console.log(`Value is: ${c}`);
+}
+```
+
+Full code in [CodeSandBox](https://codesandbox.io/p/sandbox/blog-iterator-example-3-forked-yeefmd).
+
+A few details in this generator function:
+
+1. The function has a `*` after the name. It marks the function has a generator.
+2. The function can use `yield` to return value without stopping the function
+3. There is a bug in the code above! 
+
+The bug in the function above is that the last index is never displayed by the `for of` loop. So let's change the code to clarify the bug.
+
+```ts
+// Generator Function
+function* myGenerator() {
+  let index = 0;
+  const end = 5;
+
+  while (index < end) {
+    // Smaller here because we will return that last value with a return
+    yield index;
+    index++;
+  }
+  return index;
+}
+
+console.log("Automatically");
+for (const c of myGenerator()) {
+  console.log(`Value is: ${c}`);
+}
+
+console.log("Manually");
+const g = myGenerator();
+console.log(g.next().value); // 0
+console.log(g.next().value); // 1
+console.log(g.next().value); // 2
+console.log(g.next().value); // 3
+console.log(g.next().value); // 4
+console.log(g.next().value); // 5
+console.log(g.next().value); // undefined
+```
+The first time, the code prints with the loop. The console shows:
+
+```sh
+Automatically
+Value is: 0
+Value is: 1
+Value is: 2
+Value is: 3
+Value is: 4
+```
+
+The second part shows that we manually call the `next().value`. The output shows the value `5`.
+
+```sh
+Manually
+0
+1
+2
+3
+4
+5
+```
+
+# Injection of Values inside the Generator Function
+
+In the [TypeScript Iterator and Iterable](/blog/understand-typeScript-iterator-and-iterable) previous article, we discovered that a sibling function to  `next`, named `return`, allows to inject data back into the iterator. Similarly, the generator function has a mechanism to inject value inside the iterator. However, it is with the `yield` function this time. The following code demonstrates that we can alter the previous example and provide a value to the `next`. In this modification, when the `next` has a value, it is used as the incrementor instead of incrementing of `1`. 
+
+```ts
+function* myGenerator() {
+  let index = 0;
+  const end = 8;
+
+  while (index < end) {
+    // Smaller here because we will return that last value with return
+    const increment = yield index;
+    index += increment ?? 1; // When not provided, return undefined. Using ?? change undefined to 1.
+  }
+  return index;
+}
+
+const g = myGenerator();
+console.log(g.next().value); // 0
+console.log(g.next().value); // 1
+console.log(g.next(2).value); // 3
+console.log(g.next(3).value); // 6
+console.log(g.next().value); // 7
+console.log(g.next().value); // 8
+```
+
+Because we are passing `2` instead of doing `1 + 1`, it does `1 + 2`. Thus, the value returned is `3`. Then, the `next(3)` tells the code to do `index += 3` which makes the value 3+3 to be `6`. You can see the code in [CodesandBox](https://codesandbox.io/p/sandbox/blog-typescript-generator-function-example-2-forked-od9o2w)
+
+
+# Injecting an Error Inside the Generator Function
+
+Similarly to injecting value inside the generator function, it is possible has the consumer to notify the function that something is wrong by calling the `throw` function. Again, the goal is to inject logic when something goes wrong. For example, if your server crashes you should close the connection to the source that is yielding results.
+
+Here is a simple example: if there is an exception, the index returns to zero.
+
+```ts
+function* myGenerator() {
+  let index = 0;
+  const end = 8;
+
+  while (index < end) {
+    // Smaller here because we will return that last value with a return
+    try {
+      const increment = yield index;
+      index += increment ?? 1;
+    } catch (e) {
+      index = 0;
+    }
+  }
+  return index;
+}
+
+const g = myGenerator();
+console.log(g.next().value); // 0
+console.log(g.next().value); // 1
+console.log(g.next(2).value); // 3
+console.log(g.next(3).value); // 6
+g.throw("Error here");
+console.log(g.next().value); // 1
+console.log(g.next().value); // 2
+
+```
+
+A `try` and `catch` block must surround the `yield` code inside the function generator. When the `throw` function is called, the execution of the generator function goes into the `catch`. In this example, we reset the index to zero. Full code in [CodeSandbox](https://codesandbox.io/p/sandbox/blog-typescript-generator-function-example-2-forked-tbf55u).
+
+# Completing a Generator Function
+In many scenarios, looping the iterable content will naturally end by having the generator function stop yielding and returning. However, in many other scenarios, there is no _official ending_. It loops (literally loop) forever, waiting for events to happen. As the consumer of that continuous function, we may want to _close_ the data stream. The way to do it is to call the `return` function. Calling the `return` function sets the internal iterator to `done: true`, meaning that any potential access to the iterator would result in a terminated iterator. The only way to start again would be to create a new iterator.
+
+Note that if the generator function never returns and does not have a looping mechanism that one the last `yield` the function will complete as the next time the consumer calls the `next`, it would resolve into a `done: true` with an undefined value.
+
+# Generator Function Usage
+Generator functions are rarely used. Use cases of streaming data require a use case where you have your own data structure or are building a streaming data mechanism. In both cases, most developers would consume a tool that acts rather than creating one. As a result, few frameworks leverage the mechanism like [Redux Saga](https://redux-saga.js.org/docs/basics/DeclarativeEffects). However, because most people are unfamiliar, frameworks that leverage the mechanism start one step behind as the learning curve increases from the get-go. Another reason the adoption of generator functions is not mainstream is that it was officially supported only with ECMAScript 6.
+
+Using an iterable/iterator approach or the generator function is a matter of preference. The generator function offers a syntactic shortcut to achieve the same goal. With the generator function, you avoid having to worry about `Symbol` and define up to three functions (next, throw, return) and work with the object that has the value and state of the iterator.
+
+# Performance
+A glance suggests that an infinite data stream may cause the system to fall into a stack overflow or take all the computer resources. However, generator functions are lazily evaluated. A lazily evaluated code means that the execution of the code only happens when the code is actively invoked. In the case of the generator function, the code is only executed when someone calls `next`. Indeed, if we are running inside a `for of` loop, it would result in some performance issues as the code will continually call the `yield`. However, the following code is fine if the consumer calls it at a reasonable pace.
+
+```ts
+function* myGenerator() {
+  let index = 0;
+
+  while (true) {
+    yield index;
+    index++;
+  }
+}
+```
+
+The reason is that the loop goes into an iteration only when the consumer call the `next`
+
+```ts
+const g = myGenerator();
+console.log(g.next().value); // 0
+console.log(g.next().value); // 1
+```
+
+Thus, the code is looping twice and not infinitely. Using the same generator function, we can loop for ten milliseconds and see hundreds of iteration before the generator stop yielding and wait for a future call.
+
+```ts
+const g = myGenerator();
+const t = Date.now();
+while (Date.now() - t < 10) {
+  console.log(g.next().value);
+}
+// We can also close the iteration
+console.log(g.return()); //  {value:undefined, done:true}
+console.log(g.next().value); // Undefined
+```
+
+Code in [CodeSandbox](https://codesandbox.io/p/sandbox/blog-typescript-generator-function-example-3-forked-9mvcc6)
+
+# Conclusion
+TypeScript has supported generator functions for many months, and as the standard goes up in stage are more widely available to use as they are integrated natively into browsers. Generator functions are a tool in the developer's toolbox to be aware of and can be helpful in case you are working with a stream of data or process-intensive tasks that can be broken down into sub-tasks, which the consumer can call at a wise pace. 

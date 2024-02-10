@@ -1,0 +1,146 @@
+---
+title: "Using Framer Motion to animate keyframe event on a parent following up by a children transition"
+date: "2022-10-20"
+categories:
+  - "typescript"
+  - "react"
+  - "framer"
+---
+
+In this article, we will fade in a tiny box into the viewport by using animated steps. The animation uses [Framer Motion](https://www.framer.com/motion/), which is a React library that helps perform animation using CSS transitions. 
+
+This article focus on using animation with steps, also known as key frames. The keyframes change the position and the size of the box at a specific time. On unmount, we will animate the box to leave the screen using a different set of keyframes. 
+
+The exciting part of the article is how to keep the box's content hidden until the main animation is completed. Similarly, when it is time to move the box out of sight, the box's content needs to disappear first. The reason is to avoid having the content badly rendered on screen. For example, you can imagine having a form with many inputs inside the box. When it starts at a tiny size, it will look unattractive to see a portion of the form.
+
+Here is the animation with a bug on the unmount that we will fix in this article
+
+
+# Key Frames
+ [Framer Motion](https://www.framer.com/motion/) has many ways to perform animation, and one of them is [keyframes](https://www.framer.com/docs/animation/##keyframes). Keyframing is the idea of using an array that defines the values to be used. Each index of that array is a frame. Then, you specify a specific percentage of the total duration for each index.
+
+ For example, you can set 3 values for a left coordinate using the property `x` and an array of `[50, 75, 125]`. It means that Framer now has three keyframes. The first one at index 0 mentions that the position of `x` is 50. Then, later, the second keyframe indicate the position to be 75 and finally to be 125.
+
+To set these keyframes from a sequential order into a timeline, you need to set in the transition two properties.
+
+```tsx
+transition={{
+  duration: 2
+  times: [0, 0.25, 1]
+}}
+```
+For example, if you set the transition to be 2 seconds and have a timeline of `[0, 0.25, 1]`, it means that at 0 second, the position is 50 pixels. At 500ms (2 sec * 0.25), the position is 75 pixels. And finally, at 2 seconds (2 seconds * 1.00) the `x` position is at pixel 125.
+
+<CodeSandbox codeSandboxId="framer-motion-keyframe-nxfdx3?fontsize=14" />
+
+# The Problem with Parent-Child
+
+In our scenario, having only the parent using keyframes allows moving the box from a tiny rectangle into a big one without issue. However, the content shows during the movement making the animation look odd.
+
+![](/videos/blog/FramerMotionAnimationKeyFrameBad2.mp4)
+
+Thus, hiding the children's content until the animation is almost completed is a good start. Then, on exit, hiding as fast as possible and moving out is the next move. There are many potential solutions, like using keyframes on the child, but that was causing a different issue of timing. Even synchronous mechanisms like `layout` were not performing well on unmounting.
+
+![](/videos/blog/FramerMotionAnimationKeyFrameBad.mp4)
+
+# Simplicity Triumph
+
+The solution is more straightforward than it seems. Instead of using keyframes on the child or using delay on the child, a more pragmatic solution is to set the timing of the child directly on the transition event (initial/exit). On the `animate`, we put a delay of 0.9 seconds which is 100ms faster than the parent animation, then set the opacity to 1 in 100ms. It makes the child's content appears right when the parent stops moving.
+
+```tsx
+<motion.div
+  initial={{ opacity: 0 }}
+  animate={{
+    opacity: 1,
+    transition: {
+      delay: 0.9,
+      duration: 0.1
+    }
+  }}
+  exit={{
+    opacity: 0,
+    transition: {
+      duration: 0.1
+    }
+  }}
+>
+  More content
+</motion.div>
+```
+The `exit` needs to have the opposite: a quick fade out. Hence, we have no `delay` property and a brief `duration` of 100ms that is executed immediately as the parent starts moving out.
+
+<CodeSandbox codeSandboxId="framer-motion-keyframe-part-2-e7ob6w" />
+
+# When
+
+So far, so good; ready to close the lid on this animation, but we can do better! The `variants` property of the Framer Motion element propagates animation by name to children. Meaning there is a relationship. When sharing the same name, a child can redefine a step, for example, the animation or exit with its term. That is great, but it still does not help with the timing issue. That is wrong! Using `variants` and specifying in the parent's transition a `when` close can tell Framer Motion to wait to execute the children or the parent animation. A quick modification to use variants:
+
+```tsx {3, 8}
+    <motion.div
+      className="box"
+      variants={variantParent}
+      initial="moveOff"
+      animate="moveOn"
+      exit="moveAway"
+    >
+      <motion.div variants={variantChild}>More content</motion.div>
+    </motion.div>
+```
+
+Moving the previous initial, animate, and exit specifications into objects:
+
+```tsx {19}
+const variantParent: Variants = {
+    moveOff: {
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
+      transition: {
+        duration: 0.2,
+        ease: "easeInOut"
+      }
+    },
+    moveOn: {
+      borderRadius: [boxWidth, boxWidth, boxWidth, 10, 10],
+      width: [0, 10, 10, 10, boxWidth],
+      height: [0, 10, 10, 10, boxHeight],
+      x: [0, -400, -400, -400, -400],
+      y: [0, 0, 200, 200, 200],
+      transition: {
+        when: "beforeChildren"
+      }
+    },
+    moveAway: {
+      width: 0,
+      height: 0
+    }
+  };
+
+  const variantChild: Variants = {
+    moveOff: {
+      opacity: 0,
+      transition: {
+        duration: 0.1
+      }
+    },
+    moveOn: {
+      opacity: 1,
+      transition: {
+        duration: 0.1
+      }
+    },
+    moveAway: {
+      opacity: 0,
+      transition: {
+        duration: 0.1
+      }
+    }
+```
+
+As long as both variants share the same name, the line `when: "beforeChildren"` will wait for the `variantChild` to be executed after the parent. Also, it will automatically perform the child animation first on exit. You can find the latest code in [CodeSandbox](https://codesandbox.io/s/framer-motion-keyframe-part-3-e7ob6w?file=/src/Box1.tsx:233-1078).
+
+# Conclusion
+
+Working with Framer Motion simplifies the animation overall, but it is easy to fall into the trap of an overcomplicated solution. It is not obvious how to debug has everything inject CSS animation/transition into HTML styles. Still, by staying simple, you can find a solution like the one proposed in this article.
+

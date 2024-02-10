@@ -1,0 +1,19 @@
+---
+title: "How to get your heartbeat from Ms Band into Excel"
+date: "2016-06-20"
+categories: 
+  - "general"
+---
+
+By default, Microsoft Band doesn't record your heart beat real time all day long. That would drain the Band's battery too much. So, it probes every 10 minutes during the day, 8 minutes during the night. Recently, I was doing a design presentation and I wanted to associate which part of the presentation got me more nervous. Whence, I needed to get more real time data. The quick solution is to start a custom exercise. I named mine "Meeting", and started this one few minutes before the meeting. Once the meeting done I was able to collect the average of my heart for ever minute for the entire presentation. This article gives all the step to have the data into Excel.
+
+First, you need to go to Microsoft Health Dashboard : https://dashboard.microsofthealth.com/. From there, you need to go in Activities and Exercises. You will see online a graph, which is mostly hard to read because of the zoom applied. However, this graph contains the right data. The graphic is using data from an Ajax call. If you are using the developer tool, you can see a request to : https://dashboard.microsofthealth.com/summary/workoutsdetail?date=2016-06-01&utcOffsetMinutes=-420.
+
+The response is a JSON object. The interesting part is the property "Workouts". This one is an array, open the first one, and get the data from the property "HeartRateChartData".
+
+```typescript
+[ { "AverageHeartRate": 71, "Duration": 0 }, { "AverageHeartRate": 74, "Duration": 1 }, ... ] 
+``` 
+ This give you a minute by minute average of your heart. You can use a website to convert that information into CSV. This website is doing it for free : http://konklone.io/json/. At the end, you get a CSV from every minutes of your presentation. If you are using Microsoft Skype for Business, you can record your presentation and correlate every minute that your heart peaked. Here is mine. I highlighted in blue my "average working day" range of my heart beat. The yellow highlights are the time before I start talking and the end of the presentation where on of my teammate was doing a part. 
+ 
+ ![](/images/blog/heartbeat-1024x604.png)

@@ -1,0 +1,28 @@
+---
+title: "What is the difference between MapKey vs HasForeignKey?"
+date: "2013-09-18"
+categories: 
+  - "entity-framework"
+---
+
+You can define association 1 to many and defining the relationship with both code snippet below. One is defined with a string, the other one with a property.
+
+HasRequired with association defined by string: 
+
+```csharp
+ this.HasRequired(a => a.Property1) .WithMany() .Map(a => a.MapKey("MyFK")); 
+```
+
+HasRequired with association defined by property: 
+
+```csharp
+ this.HasRequired(a => a.Property1) .WithMany() .HasForeignKey(a => a.MyFK); 
+```
+
+Both mappings will create exactly the same database schema with a non nullable foreign key.
+
+The mapping with `MapKey` is used when you don't want to have the foreign key as a property in your model context class. This is called _Independent Association_.
+
+The mapping with `HasForeignKey` when the foreign key is a property in the model. This type is called _Foreign Key Association_.
+
+You can use the one you want. Personally, I prefer to use the HasForeignKey because it's strongly mapped and if the property name is refactored that I am sure that the property will follow.

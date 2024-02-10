@@ -1,0 +1,150 @@
+---
+title: "TypeScript Guard Condition Improvements with version 4.4"
+date: "2022-01-10"
+categories:
+  - "typescript"
+---
+
+TypeScript allows variables to be of several types. For example, a function's parameter can be a number or a string. Or another example can be a variable within a function can be a union of several types.
+
+```typescript
+function transform(arg: number | string) {
+  let result = "";
+  if (typeof arg === "string") {
+    result = arg.toLowerCase();
+  } else {
+    result = arg.toString();
+  }
+  return result;
+}
+```
+
+However, if you wanted to have the condition inside a variable before version 4.4, the following code would not compile. This is because the transpiler would have given an error saying that the `arg` variable is of type `number | string` inside the `if` statement.
+
+```typescript {3}
+function transform(arg: number | string) {
+  let result = "";
+  const isString = typeof arg === "string";
+  if (isString) {
+    result = arg.toLowerCase();
+  } else {
+    result = arg.toString();
+  }
+  return result;
+}
+```
+
+However, there is a catch, the variable that is holding the boolean value must be `const`. It means that the following code does not transpile:
+
+```typescript {3}
+function transform(arg: number | string) {
+  let result = "";
+  let isString = typeof arg === "string";
+  if (isString) {
+    result = arg.toLowerCase();
+  } else {
+    result = arg.toString();
+  }
+  return result;
+}
+```
+
+Neither the following one:
+
+```typescript {2}
+const isString = true;
+function transform(arg: number | string, isString: boolean) {
+  // ...
+}
+```
+
+Or that one: 
+```typescript {2}
+const isString = true;
+function transform(arg: number | string, isString: Readonly<boolean>) {
+  // ...
+}
+```
+
+Overall, this is useful, but you still will not have a function that handles the condition for you to be reusable across your system.
+
+```typescript {3, 12-14}
+function transform(arg: number | string) {
+  let result = "";
+  const isString = isItAString(arg);
+  if (isString) {
+    result = arg.toLowerCase();
+  } else {
+    result = arg.toString();
+  }
+  return result;
+}
+
+function isItAString(arg: number | string): boolean {
+  return typeof arg === "string";
+}
+```
+
+The concept of having the type outside the direction condition also extends to discriminant type. In the following example, we have two interfaces with a common type name with a different value: `type`. We can check the `type`, and TypeScript will know depending on the value of the check is true for a `Human` or an `Animal`. Before TypeScript 4.4, it was impossible to store the value inside a variable. Now, it is possible. It means that TypeScript carries the information about the check and the information about the interface. In the example, when the condition is true, the autocomplete will specify only the property of the interface belonging to the right interface. In the first `if` the `livingSpecie` will have the `legs` and `networth` available only.
+
+```typescript {14-15}
+interface Human {
+  type: "human";
+  legs: number;
+  networth: number;
+}
+
+interface Animal {
+  type: "Animal";
+  legs: number;
+  sound: string;
+}
+
+function showUniqueInformation(livingSpecie: Human | Animal): void{
+  const isHuman = livingSpecie.type === "human";
+  if(isHuman){
+    console.log(livingSpecie.networth);
+  } else {
+    console.log(livingSpecie.sound);
+  }
+}
+```
+
+The new version of TypeScript also allows more complex cases. For example, imagine that we want to set a value of number or string depending of the type. We need to check both types. We can continue to use the variable to hold the `isHuman`, which help to reduce the repetition. Hence, we see the usefulness of the new feature.
+
+```typescript {15-17}
+interface Human {
+  type: "human";
+  legs: number;
+  networth: number;
+}
+
+interface Animal {
+  type: "Animal";
+  legs: number;
+  sound: string;
+}
+
+function saveUniqueValue(livingSpecie: Human | Animal, value: string | number): void {
+  const isHuman = livingSpecie.type === "human";
+  if (isHuman && typeof value === "number") {
+    livingSpecie.networth = value;
+  } else if (!isHuman && typeof value === "string") {
+    livingSpecie.sound = value;
+  }
+}
+```
+But we can go a step further and also have the second check-in a variable, and TypeScript will combine the two.
+
+```typescript
+function saveUniqueValue(livingSpecie: Human | Animal, value: string | number): void {
+  const isHuman = livingSpecie.type === "human";
+  const isValueHuman = typeof value === "number";
+  if (isHuman && isValueHuman) {
+    livingSpecie.networth = value;
+  } else if (!isHuman && !isValueHuman) {
+    livingSpecie.sound = value;
+  }
+}
+```
+It is still important to note that we cannot use `else` in the previous code because there is a potential case that we have an `Animal` with a `number` which would not be legit.

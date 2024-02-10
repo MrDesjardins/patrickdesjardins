@@ -1,0 +1,34 @@
+---
+title: "Comment your Code"
+date: "2017-04-27"
+categories: 
+  - "typescript"
+---
+
+I placed that article under the category TypeScript, but it's really about every language. This trend of not commenting code is still there and I am more and more curious because the more I work and preach to comment code, the more I see people commenting. That make me think that most people who think that it's fine not to comment didn't work on large system or with project with many people.
+
+While some argument are valid like that comment doesn't follow the code and that comment doesn't give value can be true; most of the time it's just because the comment is not well written. Let's be lucid, if people can write bad code, they also can write bad comment.
+
+First of all, a comment should say that the variable describe. And, the variable should describe what it holds. Let's look at a real example:
+
+```typescript
+private originalarrivaltime: string; 
+``` 
+
+
+No comment. Having a comment saying "Original arrival time" wouldn't be good too. However, right now, I can put any kind of data in this variable since it's a string. What is the format expected? When is this time should be set? Why do we need it as a string? No idea.
+
+This example is simple, and some obvious question like why and when should be answered.
+
+```typescript
+/** 
+* What: Time of when a message arrive into the mailbox 
+* When: This is set when the message is built and cannot be changed any further 
+* Why: It's a string because we get it from a ISO String format 
+*/ 
+private originalarrivaltime: string; 
+``` 
+
+That's it. Of course, it's a lot to type. However, if I give both of them to two different person, I can assure you that the second format, with the comment, is way easier to the developer to move forward. Indeed, we can argue that by reading the code we can find those answer to these questions. But, on big system, it can take many minutes, more than 1-2... sometime it's so complex that it can take half an hour just to get the whole idea.
+
+I understand that we could divide the code in smaller classes, with more cohesion and encapsulation, and instead of string using a class that will strongly type this one to avoid confusion to pass the string only in a ISO String format and reject other format. I also am with you by having proper, good written, unit tests that we could have figure that all. But, we live in the real world where time is always ticking and by experience I clearly know that even in the best company, in the best product, in the best teams, we have to ship features and not follow all the perfect path. That is why, commenting can save a lot of time. In less than 15 seconds, I was able to write this comment which will save minutes to people coming after me to work on that code. Comment is not the enemy.

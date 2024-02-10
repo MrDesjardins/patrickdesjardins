@@ -1,0 +1,127 @@
+---
+title: "How to Transfer Files Between Computers Using HDMI (Part 4: HDMI Failure)"
+date: "2023-05-26"
+categories:
+  - "rust"
+  - "hdmi"
+  - "video"
+  - "encoding"
+  - "steganography"
+---
+
+Reading the video without going by the video card and the HDMI cable was a success. However, when it was the time to send the video in these additional steps, the video received was corrupted. The failure was subtle as the footage could play and had the red frame and some colors on the top. However, the accuracy of the color was altered, making the data unreadable on extraction.
+
+# Hypothesis
+
+- Pixel color are unreliable
+- Pixel color bleeds into their neighbor
+
+
+# First Change: Each character in 1 pixel is 0 or 1.
+To create room for inaccuracy, we can have black or white pixel instead of relying on the 255 values possible for the R, G and B. The problem is the video will be a lot bigger. Each character is 8 bits, and we were able to store in 1 pixel 3 characters. Now, by using only black or white color, we can represent 0 and 1 value. It means we need 8 pixels for a single character (1 character = 1 byte = 8 bits). It is 24x less efficient.
+
+Some calculation shows that using HD resolution at 30fps we have 1920x1080x30/8 byte per second or: 7 776 000 bytes per second or 7.7 megs/second. Far from our 100 megs/second but still viable if we can extract the content without alteration. 
+
+The change will fix the first hypothesis that the color is unreliable. With the black/white approach, even if a pixel is not a totally white value with `(255,255,255)` or totally black `(0,0,0)`, we can go to the closest value. For example, if there is a pixel with `(10,13,32)` we can say that it is closer to white and thus the value represent a bit with a value of `0`.
+The first change requires adding a new option to the CLI, which would let us switch between different algo. We had the first one that I now call "RGB" and in this first change, we add a "bw" for the black and white algorithm.
+
+## Result of the modification
+
+The first change resulted, as expected in a bigger file, and the visual was more apparent: the end-of-file character is represented like any other character with 8 pixels that keep filling the frame until the end for the small test. Thus, it visually looks like lines.
+
+![](/images/blog/hdmi-file-transfer-video-frame-bw-lines.png)
+
+A new error message appears when extracting the text. Instead of the previous `mcbpc damaged`, this time it is about a market bit missing.
+
+```sh
+Running `target/debug/hdmifiletransporter -m extract -i outputs/out_from_hdmi_bw_1.avi -o outputs/text_bw_1.txt --fps 30 --height 1080 --width 1920 --size 1 -a bw`
+[mpeg4 @ 0x55aa4bc17100] 1. marker bit missing in 3. esc
+[mpeg4 @ 0x55aa4bc17100] Error at MB: 8038
+```
+
+## Hypothesis of Failure
+
+The first change might fail because of the way I am using ffmpeg. I am recording, and I am killing the process once I see on the source computer a couple of red screen. However, VLC, Windows Media Player and Clipchamp can all read the file. So it does not look to be corrupted.
+
+While investigating, I found out that the count of frame recorded was 304 (about 10 seconds of recording), but the count of _relevant frame_ which are between two red frames, were always zero. Indeed! The black and white algorithm reads the pixel and constantly moves the color to white or black, so the red color was never picked up. While it does not explain the error seen, it shows a problem to fix. An alteration on the code to proceed the pixel differently was required.
+
+# Second Change: Handling the Starting and Ending Frame
+
+As mentioned, the red frame was not handled with the black-and-white algorithm. The change was to reach each frame with the full color and return a frame information that contained the black and white data as well as a boolean flag indicating if the frame was a "red one", also known as the "starting frame". The code changed for the RGB (color) algorithm as well to ensure similarity in the flow.
+
+Once the change was made, I pulled the change in the second computer and ran the video while recording with the second one.
+
+## Hypothesis of Failure
+
+This time, the generated file couldn't be opened at all.
+
+A step back to ffmpeg:
+
+```sh
+ffmpeg -r 30 -f dshow -s 1920x1080 -vcodec mjpeg -i video="USB Video" -r 30 out.mp4
+```
+We might have an issue with the `vcodec` used. The choice was because the capture card stream data using `mjpeg` (`ffmpeg -f dshow -list_options true -i video= "USB Video"`). Maybe, we should capture in raw and then manipulate the data received and figure out which option is the best. I found out in the [ffmpeg documentation an option called stream copy](http://ffmpeg.org/ffmpeg.html#Stream-copy).
+
+Using `-codec:v copy` we tell `ffmpeg` to copy all the video frame 
+
+```sh
+ffmpeg -f vfwcap -r 30 -i video= "USB Video" -codec:v copy rawvideo.nut
+```
+
+Then, we need to use the raw format and convert it into a video format that the video player can read The input (`-i') is the raw video from the previous step. The `-codec:v` is the desired output video format. The `-crf 0` means to be lossless. The `-preset` indicates how the compression ratio occurs. Slower it goes, the less erroneous the compression. 
+
+You can get more information in the [H.264 ffmpeg documentation](https://trac.ffmpeg.org/wiki/Encode/H.264).
+
+```sh
+ffmpeg -i rawvideo.nut -codec:v libx264 -crf 0 -preset medium -pix_fmt yuv420p -movflags +faststart output.mkv
+```
+At this point, I was getting several issues. The first one was the size of the video recorded was humongous with several megs for few seconds. Then, the process of creating the data was very slow. For example, the second command to get the `mkv` took over 20 minutes for less than 10 seconds.
+
+# Third Change: Step Back
+
+At this point, I decided to use the approach of having big pixels. Since the beginning, a `size` parameter gives the option to generate many pixels for the same information. Hence, instead of using the value `1` and having the whole bit value into 1 pixel, using `20`, you can get 20x20 pixels to hold the black or white color. The reading uses an average which then can be easily distinguishable when we have two values that are far away. Now that the bits were quickly visible I noticed something off.
+
+## Hypothesis of Failure
+The hypothesis was that the drawing into the video using the black and white algorithm was quickly true: the data was not appropriately written with 1 bit off every byte, making the extraction impossible.
+
+# Fourth Change: Duplicate Red Frame
+The code was modified, and unit tests added. Finally, the command to read the pixel came back to the first one:
+
+```sh
+ffmpeg -r 30 -f dshow -s 1920x1080 -vcodec mjpeg -i video="USB Video" -r 30 out_bw_red_fix_2.mp4
+```
+
+The result was extracted using: 
+
+```sh
+cargo run -- -m extract -i outputs/out_bw_red_fix_2.mp4 -o outputs/text1.txt --fps 30 --height 1080 --width 1920 --size 1 -a bw
+```
+
+However, the file was empty. After some debugging, I discovered that the logic of finding the red frame that set the start and the end had a flaw: If the ffmpeg recorsd twice the same red frame next to each other (duplicate reading), it would have zero frames of data. This discovery also found that good frame were duplicated. While the generated video had no duplicated frame, the transmission and recording caused the frame to duplicate here and there. The fix was to ensure we ignore the data of a frame if the content is exactly the same as the previous one.
+
+To achieve this validation, a quick CRC32 can be applied to the frame's byte and ensure that no consecutive checksum is the same.
+
+# Working Solution or Not?
+
+This time we go with a size of 10 with the duplication fix applied.
+
+On the source computer:
+"`sh
+cargo run -- -m inject -i testAssets/text1.txt -o outputs/out_bw_no_dup.mp4 -o --fps 30 --height 1080 --width 1920 --size 10 -a bw
+```
+
+The video plays fullscreen and on the target computer:
+
+```sh
+cd outputs
+ffmpeg -r 30 -f dshow -s 1920x1080 -vcodec mjpeg -i video="USB Video" -r 30 out_bw_no_dup.mp4
+cargo run -- -m extract -i outputs/out_bw_no_dup.mp4 -o outputs/text1.txt --fps 30 --height 1080 --width 1920 --size 10 -a bw
+```
+
+It worked!
+
+The same test with a size of 1 pixel was also working!
+
+# Conclusion
+
+The next article will get into a more realistic use case: one big zip file. Using something outside text will reveal not only a massive flaw of one of the decisions taken at the inception of this project but will expose why only the black-and-white solution will work in the future.

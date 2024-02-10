@@ -1,0 +1,32 @@
+---
+title: "Slider Binding Miminum, Maximum and Value problem"
+date: "2011-10-11"
+categories: 
+  - "silverlight"
+---
+
+The Slider is a component that let you slide a small rectangle from one side to the other. You have to put a minimum value and a maximum value and from there, the user can select a value between these two values.
+
+![](/images/blog/slider.png)
+
+One interesting thing to do is to rely on the business logic to handle all values of this control. This can be done using Binding.
+
+
+```csharp
+ <Slider SmallChange="{Binding SmallChange, Mode=OneTime}" LargeChange="{Binding LargeChange, Mode=OneTime}" Value="{Binding MyRealValue, Mode=TwoWay}" Minimum="{Binding Minimum, Mode=OneTime}" Maximum="{Binding Maximum, Mode=OneTime}" /> 
+```
+
+The code above won't work. The syntax is well written, but it won't work. The code will compile but the slider won't be able to slide.
+
+```csharp
+<Slider SmallChange="{Binding SmallChange, Mode=OneTime}" 
+  LargeChange="{Binding LargeChange, Mode=OneTime}" 
+  Maximum="{Binding Maximum, Mode=OneTime}" 
+  Minimum="{Binding Minimum, Mode=OneTime}" 
+  Value="{Binding MyRealValue, Mode=TwoWay}" 
+/> 
+```
+
+This code works because the Maximum value is the first to be set, then the Minimum and finally the Value is binded. Doing the binding in a different order won't let you modify the values of the slider.
+
+Remember to always use maximum, minimum and then value when using the Slider. This is viable for Silverlight 3 and 4.

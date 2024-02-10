@@ -1,0 +1,61 @@
+---
+title: "TypeScript Awaited Type"
+date: "2022-01-26"
+categories:
+  - "typescript"
+---
+
+Before TypeScript version 4.5, there was a unexpected type conversion happening with `Promise`. The current code is working prior to version 4.5.
+
+```typescript {1, 2, 20}
+async function computationLogic<T>(arg: Promise<T>): Promise<T[]> {
+  return [await arg];
+}
+
+class Observer<T> {
+  private value: T | undefined;
+  public constructor(t: T | undefined = undefined) {
+    this.value = t;
+  }
+  async getValue() {
+    return this.value;
+  }
+  async compute() {
+    return computationLogic(this.getValue());
+  }
+}
+
+(async () => {
+  const p = new Observer<Promise<string>>();
+  const m = await p.compute(); //  Promise<string>[] instead of string[]
+})();
+```
+
+The code compile and but the line 20, the last highlighted line, return for the variable `m` a type of `Promise<string>[]` which is not true. Because at line 2, we are use `await` we are returning an array of `awaited` type. The awaited type of a Promise is the generic type. Thus, in that case `T` which is `string`.
+
+The next code contains the use of the new `Awaited<>` that specify to TypeScript that we are returning the type resolved.
+
+```typescript {2}
+async function computationLogic<T>(arg: Promise<T>): Promise<Awaited<T>[]> {
+  return [await arg];
+}
+
+class Observer<T> {
+  private value: T | undefined;
+  public constructor(t: T | undefined = undefined) {
+    this.value = t;
+  }
+  async getValue() {
+    return this.value;
+  }
+  async compute() {
+    return computationLogic(this.getValue());
+  }
+}
+
+(async () => {
+  const p = new Observer<Promise<string>>();
+  const m = await p.compute(); //  Promise<string>[] instead of string[]
+})();
+```
+The type of `m` is not `string[]` instead of a promise of `string[]`. As expected at runtime! While researching the new awaited feature I found very limited example or usage. All of them, as I am writing this blog post are revolving around an array of generic type. I suspect that this will be useful to have an accurate return type when using promises and arrays. For example, with `Promise.all()`

@@ -1,0 +1,39 @@
+=== Draft Started
+✍️ 2023-09-19: 
+
+=== Completed waiting
+⏲️ 2023-09-19: Learning the Linux Command Line lsof and awk by Killing a Process that Hold a Port
+
+
+=== Published
+✅ 2023-09-11: Typescript Consuming and Producing Redpanda Messages
+✅ 2023-09-05: How to Transform your Type to Have All Fields Optional Expected Selected Fields to be Required?
+✅ 2023-08-15: How to Build NodeJS with OpenSSL?
+✅ 2023-07-08: How to Transfer Files Between Computers Using HDMI (Part 7: Pagination) <---- Not well concluded
+✅ 2023-06-14: How to Transfer Files Between Computers Using HDMI (Part 6: Instruction and Black and White)
+✅ 2023-06-04: How to Transfer Files Between Computers Using HDMI (Part 5: Instruction Header)
+✅ 2023-05-26: How to Transfer Files Between Computers Using HDMI (Part 4: HDMI Failure)
+✅ 2023-05-23: How to Transfer Files Between Computers Using HDMI (Part 3: Reading Video Failure)
+✅ 2023-05-16: How to Transfer Files Between Computers Using HDMI (Part 2: Prototype Code Video Creation)
+✅ 2023-05-12: How to Transfer Files Between Computers Using HDMI (Part 1: Plan)
+✅ 2023-04-12: How to Create a Dispatch Function that is Strongly Typed with its Payload
+✅ 2023-04-07: TypeScript Iterators, Generator Functions and Infinite Stream of Data
+✅ 2023-03-24: Understand TypeScript Iterator and Iterable
+✅ 2023-03-17: How to use TypeScript Satisfies Operator Keyword 
+✅ 2023-03-09: How to set NodeJS Apollo GraphQL Subscription Context for your WebSocket functions and for your Resolvers?
+✅ 2023-03-02: Migration from Create React App CRA to ViteJS
+✅ 2023-02-24: How to Recruit An Employee in 90 minutes?
+✅ 2023-02-16: My experience migrating TypeScript libraries to Rust
+✅ 2023-02-09: How to have many GraphQL server with Apollo Client?
+✅ 2023-02-02: React Apollo Client Local State with Default Value on Fragment
+✅ 2023-01-27: React Client Side State Management with Zustand
+✅ 2023-01-20: 2023-01-20: React Context and How to Avoid repetitive re-rendering
+✅ 2023-01-12: React Context and How to Avoid repetitive re-rendering
+✅ 2023-01-02: Steganography: How to hide text in an image
+✅ 2022-12-23: Keys to success with remote work as a software engineer
+✅ 2022-12-28: Recapitulation 2022
+✅ 2022-12-15: Sharing Code Between TypeScript Repositories Using Git Submodules
+
+=== Draft Started but frozen
+🥶 2122-09-14: How to Access your Web Application on Kubernetes Azure with Ingress
+🥶 2122-10-01: How to Add HTTPS to your Kubernetes Ingress

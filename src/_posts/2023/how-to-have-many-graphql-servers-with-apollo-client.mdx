@@ -1,0 +1,119 @@
+---
+title: "How to have many GraphQL server with Apollo Client?"
+date: "2023-02-09"
+categories:
+  - "apollo"
+  - "graphql"
+  - "typescript"
+---
+
+# Introduction
+
+Apollo client and React are two popular libraries and an excellent combination for fetching GraphQL data from a server into a web application. The well-documented approach is to use the Apollo Client and then the Apollo React Context.
+
+```tsx
+const client = new ApolloClient({
+  uri: "//yourgraphqlserver_1/graphql",
+  cache: new InMemoryCache(),
+});
+
+// Snip
+
+root.render(
+  <ApolloProvider client={client}>
+    <App />
+  </ApolloProvider>
+);
+```
+
+Once you have the `ApolloProvider` in your component tree, anything inside the `App` can access the client using the React Hook `useQuery` or `useMutation` (or other hooks like useSubscription, etc). The idea is simple, effective, and works well until you need to communicate with two distinct GraphQL servers.
+
+# Many GraphQL and React Apollo Client
+
+Many solutions exist. For example, you can shift your GraphQL architecture to a Federation server. However, this is a vast undertaking and requires that the two GraphQL servers have something in common to stitch data from one graph to the other. If you have a handful of servers, it is not worth it. Even less worth it if there is no overlap or relation between the data.
+
+Unfortunately, you cannot define more than one `ApolloProvider` on the client-side library. At runtime, you will stumble to an exception. It makes sense to have all the hooks read to the client. Having several providers would need to be clearer for the hook to decide which client to connect without incrementing the complexity of each hook with some further knowledge on which client to connect. Ultimately, it does not work out of the box -- we need another solution.
+
+# How to Configure React Apollo Client to Communicate to Many GraphQL server?
+
+The solution is within the ApolloClient object. The `uri` must be dynamic. Instead of defining a hardcoded `uri`, you define a function. On each call, the function will be called.
+
+```ts
+const client = new ApolloClient({
+  ...: getGraphQLServerURI(),
+  cache: new InMemoryCache(),
+});
+```
+
+The function to determine which GraphQL server is up to you, but I found an excellent way to keep it simple: operation name. The idea is to rely on prefixes. For example, if you have two GraphQL servers, one for your CRM and one for your Orders. You can have a rule that if an operation starts with `CRM_` that it connects to the CRM GraphQL and if it begins with `ORDERS_` that it goes to the other GraphQL server.
+
+A challenge is to get the operation name to the function. I did not set the function to a specific property in the previous code snippet. The reason is that instead of using the `uri` property, we will rely on the `link` property, which is dynamic with more options to read to extract the operation name.
+
+```ts
+const client = new ApolloClient({
+  link: getGraphQLServerlink()
+  cache: new InMemoryCache(),
+});
+```
+
+Then, the function can return an `ApolloLink` instead of a string.
+
+```ts
+export function getGraphQLServerURI(): ApolloLink {
+  // Snip
+}
+```
+
+The function can use the `createHttpLink` that the Apollo library has to craft the Link.
+
+```ts
+import { ApolloLink, createHttpLink } from "@apollo/client";
+export function getGraphQLServerURI(): ApolloLink {
+  return createHttpLink({
+    // Snip
+  });
+}
+```
+
+The object you need to pass to the `createHttpLink` is the one that determines how and where to perform the HTTP request. The "how" is interesting because we will override the `fetch` method to achieve the POST request. It looks like a more significant task than it is.
+
+```ts
+import { ApolloLink, createHttpLink } from "@apollo/client";
+export function getGraphQLServerURI(): ApolloLink {
+  return createHttpLink({
+    fetch: (input: RequestInfo | URL, options?: RequestInit) => {
+      return fetch(input);
+    },
+    credentials: "same-origin",
+  });
+}
+```
+
+In the code above, we are creating the `ApolloLink` but performing no logic; we are passing through the `input` without manipulating the `uri`. However, it solves the "how". Now, let's define "where" to fetch the data among our GraphQL server. First, we need to read the request to get the body which contains several elements like the query, the variables, and the operation name.
+
+```
+import { ApolloLink, createHttpLink } from "@apollo/client";
+export function getGraphQLServerURI(): ApolloLink {
+  return createHttpLink({
+    fetch: (input: RequestInfo | URL, options?: RequestInit) => {
+      if(options === undefined){
+        return fetch(input);
+      }
+      else{
+        const {operationName} = JSON.parse(options.body) as {operationName:string};
+        const uri = operationName.startsWith("CRM_") ? "//crm_graphql.com/graphql" : "//ordersserver.net/graphql";
+        return fetch(uri, options);
+      }
+    },
+    credentials: "same-origin",
+  });
+}
+```
+
+The `fetch` function has two conditions: one if the `options` is `undefined` and one with all the options. The options are required to extract the operation name. The condition uses the `options` argument to extract the whole GraphQL POST request as a `string` into an object to get the `operationName` value. Then, a quick check and we return one or the other server.
+
+# Conclusion
+
+The Apollo Client offers a flexible way to manage your source of information. It might not be as apparent as a direct function to specify into the `ApolloClient,` but the link approach is not too much work once you know where to look. The cost is to prefix your operation. Overall, I found the approach clean. Not only does it forces us to define a meaningful name for all GraphQL queries, but it also enhances debugging with a named operation. Also, on the GraphQL server, it opens the door for better telemetry with information for each operation.
+
+On the client side, you have a collection of queries, mutations, and subscriptions that are well-named. Auto-generating your TypeScript also limits the risk of name collision (for your queries/mutations/subscriptions) between different servers.

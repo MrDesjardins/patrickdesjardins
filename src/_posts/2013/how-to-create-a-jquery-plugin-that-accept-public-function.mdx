@@ -1,0 +1,48 @@
+---
+title: "How to create a JQuery plugin that accept public function"
+date: "2013-10-18"
+categories: 
+  - "javascript"
+---
+
+If you have a web project that use JQuery framework and you have a lot of functions that has cohesive meaning in a single Javascript file, maybe you should think to create a plugin. The choice to create a JQuery pluging let you act on Html element by using JQuery. You extend JQuery. I won't write here how to create a plugin but how to add to your plugin some public functions. This is something important that may have turn you off concerning to convert all your functions into a JQuery plugin. But, in this article, I'll show you how to extend JQuery for a simple pluging and to allow to use pluging public function. Those public functions will be called commands.
+
+```typescript
+(function($) { //define the commands that can be used 
+var commands = { publicMethod1Name: innerPluginMethod1, publicMethod2Name: innerPluginMethod2 }; 
+$.fn.yourPlugin = function() { 
+  if (typeof arguments[0] === 'string') { 
+    var property = arguments[1]; 
+    var args = Array.prototype.slice.call(arguments); 
+    //Erase command name which is index 0. 
+    args.splice(0, 1); 
+    commands[arguments[0]].apply(this, args); 
+    //Execute command with the rest of argument (1...n) 
+    } else { 
+      initialize.apply(this, arguments); 
+    } 
+    return this; 
+  }; 
+  function initialize(options){
+  } 
+  function innerPluginMethod1(param1) {
+
+  } 
+  function innerPluginMethod2() {
+
+  } 
+})(jQuery); 
+``` 
+
+
+The code above can be used this way:
+
+```typescript
+$('#htmlElement').yourPlugin({option1:value1, option2:value2}); 
+$('#htmlElement').yourPlugin("innerPluginMethod1", "parameter1"); 
+``` 
+
+
+As you can see, the plugin can be called by two different ways. The first line initialize the JQuery plugin and the second line call a public function. The weak point is that you have to pass the name of the function (command) by a string. The strong point is that commands have access to all the plugin variable. They can access your option initialized by the first line in the example above or can set values which will be available to all other commands.
+
+The code is pretty simple as you can see. The first line verify that we pass a string as the first parameter. It's the case when we call the command by string. Otherwise, we pass an object which are the options of the plugin or we pass nothing. If it's a string, we take the string and get the function. This is why we have a dictionary of command name to function. Before calling the function, we remove the first parameter because it's the name of the function, we do it by calling "_slice_". The next call is "_apply_" which take the context of the "this" into the function. This give the the command all reference of the JQuery plugin. If the first parameter wasn't a string, it can be nothing or an object (for plugin option) we simply call the method initialize that let you setup option and execute the main goal of your plugin. We also call "_apply_" to give all arguments.

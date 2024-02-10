@@ -1,0 +1,237 @@
+---
+title: "Display Git Pull Request Status on the Steelseries APEX 7 TKL keyboard OLED"
+date: "2024-02-07"
+categories:
+  - "python"
+  - "steelseries"
+  - "github"
+---
+
+The [Steelseries APEX 7 TKL keyboard](https://steelseries.com/gaming-keyboards/apex-7-tkl?switch=brown) has a small OLED screen. Steelseries offers an application called [Steelseries GG Engine](https://steelseries.com/gg/engine) where you can configure LED and OLED. The application is a marketplace with several game and application integrations. The most interesting is the [Steelseries Game Sense SDK](https://github.com/SteelSeries/gamesense-sdk). The SDK contains an HTTP  JSON API. The API, using JSON messages, allows you to create your application, which can post text to the OLED. In this article, we will connect to Github for active pull requests and determine which pull requests are ready to merge and which are blocked.
+
+
+# Pre-Requisites
+The script is in Python but can be written in any language. Prototyping with Python is quick, and performing a few HTTP requests does not require too much code.
+There are few dependencies. One is `request` to perform an HTTP request to the API. The second is `schedule` as we want the code to fetch Git status at regular intervals but also send a periodic heartbeat to the application.
+
+
+```
+requests==2.31.0
+schedule==1.2.1
+```
+
+# Import, Constants and Class
+
+At first, few imports are required. The imports are mostly used to manage the HTTP requests and schedule them. Then, a few constants for status to compare from the GIT pull request API, then a few for registering the application and the event. Finally, the Git token to authenticate to GitHub. The username filters the list of pull requests to get only yours.
+
+```python
+import requests
+import json
+from string import Template
+import schedule
+import time
+import re
+
+MERGEABLE = "Mergeable"
+BLOCKED = "Blocked"
+gameName = "GITHUB"
+event = "TEXT_PR"
+GIT_TOKEN = "<Redacted>"
+USERNAME = "pdesjardins"  
+
+class Result:
+    def __init__(self, prId, prTitle, prStatus):
+        self.prId, self.prTitle, self.prStatus = prId, prTitle, prStatus
+```
+
+The class will contain results from the filtered list of PR. Creating an array of objects in this class gives a clean way to move the data to the OLED keyboard.
+
+# Fetching Github
+
+The first piece of code is fetching from the Git repository. It can be the Github.com or your corporate, private Github repository. The following code has `<redacted>`, which needs to have your details. Ideally, this would be also in constants. What is essential is returning the list of pull requests.
+```python
+def fetchGitHub():
+    url = "https://<redacted>/api/v3/repos/<redacted>/<redacted>/pulls"
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "Authorization": f"Bearer {GIT_TOKEN}",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+    r = requests.get(url, headers=headers)
+    responseJson = r.json()
+    filtered_list = [
+        {"number": e["number"], "title": e["title"], "url": e["url"]}
+        for e in responseJson
+        if e["user"]["login"] == USERNAME
+    ]
+    prs = []
+    for e in filtered_list:
+        urlTemplatePullRequest = Template(
+            "https://<redacted>/api/v3/repos/<redacted>/<redacted>/pulls/$number"
+        )
+        url = urlTemplatePullRequest.substitute(number=e["number"])
+        r = requests.get(url, headers=headers)
+        responseJson = r.json()
+        status = "True" if responseJson["mergeable"] == MERGEABLE else BLOCKED
+        cleanTitle = re.sub("\[[^]]*\]", lambda x: "", e["title"]).strip()
+        print(f'[{e["number"]}]{cleanTitle} - {status}')
+        prs.append(Result(e["number"], cleanTitle, status))
+    return prs
+```
+
+# Registering the game and events
+The way the API works is that you must register your "game," which is your application. Then, you must tell the API what event you will send. Then, you send the events and heartbeat to the API every few seconds to keep your application alive.
+
+```python
+headers = {"Content-Type": "application/json"}
+configFilePath = "/Library/Application Support/SteelSeries Engine 3/coreProps.json"
+config = json.load(open(configFilePath))
+keyboardAddressPort = config["address"]
+urlBase = f"http://{keyboardAddressPort}"
+urlUnregisterGame = f"{urlBase}/remove_game"
+urlRegisterGame = f"{urlBase}/game_metadata"
+urlBindGame = f"{urlBase}/bind_game_event"
+urlGameEvent = f"{urlBase}/game_event"
+urlHeartBeat = f"{urlBase}/game_heartbeat"
+
+### Register Game
+def registerGame():
+    r = requests.post(urlUnregisterGame, json={"game": gameName})
+    print("UnRegistering Game")
+    print(r.text)
+    payload = {
+        "game": gameName,
+        "game_display_name": gameName,
+        "developer": "Patrick",
+        "deinitialize_timer_length_ms": 60000,
+    }
+    r = requests.post(urlRegisterGame, json=payload)
+    print("Registering Game")
+    print(r.text)
+
+
+### Bind Game
+def bindGame():
+    payload = {
+        "game": gameName,
+        "event": event,
+        "icon_id": 4,
+        "value_optional": r'"true"',
+        "handlers": [
+            {
+                "device-type": "screened-128x40",
+                "zone": "one",
+                "mode": "screen",
+                "datas": [
+                    {
+                        "lines": [
+                            {"has-text": True, "context-frame-key": "line1"},
+                            {
+                                "has-text": True,
+                                "context-frame-key": "line2",
+                            },
+                        ],
+                    }
+                ],
+            }
+        ],
+    }
+    r = requests.post(urlBindGame, json=payload)
+    print("Registering Game")
+    print(r.text)
+```
+
+
+# Sending The Data
+Sending data to the keyboard uses the previous step's registered game (application) and event. This time, we are sending the information from GitHub. The OLED has two lines.
+
+```python
+counter = 0
+### Send Event
+def sendEvent(line1, line2):
+    global counter
+    payload = {
+        "game": gameName,
+        "event": event,
+        "value_optional": r'"true"',
+        "device-type": "screened-128x40",
+        "zone": "one",
+        "mode": "screen",
+        "data": {
+            "value": counter,
+            "frame": {"line1": line1, "line2": line2},
+        },
+    }
+    counter += 1
+    r = requests.post(urlGameEvent, json=payload)
+    print("Send Event Response")
+    print(r.text)
+```
+### Heart Beat
+Without a heartbeat, the application does not stay alive to receive future HTTP calls to update the screen. Thus, you must send a heartbeat.
+
+```python
+def heartbeat():
+    payload = {
+        "game": gameName,
+    }
+    r = requests.post(urlHeartBeat, json=payload)
+    print("Send Heartbeat")
+    print(r.text)
+```
+## Logic
+The code bridges the gap between the Git response and the OLED, which means that it gets a specific message. In that case, if a single pull request is made, the name is shown with the status. Otherwise, the first line is the number of PRs that can merge, and the second is the number of PRs that are blocked.
+
+```python
+def fetchAndShow():
+    prs = fetchGitHub()
+    meargable = 0
+    blocked = 0
+    for pr in prs:
+        if pr.prStatus == MERGEABLE:
+            meargable += 1
+        else:
+            blocked += 1
+    if meargable + blocked <= 1:
+        now = time.localtime()
+        current_time = time.strftime("%H:%M", now)
+        status = BLOCKED if blocked == 1 else MERGEABLE
+        sendEvent(pr.prTitle, f"Pr {status} at {current_time}")
+    else:
+        sendEvent(
+            f"Pr Mergeable: {meargable}",
+            f"Pr Blocked: {blocked}",
+        )
+```
+
+# Bringing Everything Together
+The last step is to call the methods. I amregistering, binding, and sending events. The first event never shows on the OLED. I'm sending a "loading" to ensure the real message works. Heartbeat is scheduled every five seconds, and every two minutes, the script fetch from Git and refresh the OLED.
+
+```python
+registerGame()
+bindGame()
+sendEvent("Github PR Status", "Loading...")
+fetchAndShow()
+schedule.every(5).seconds.do(heartbeat)
+schedule.every(2).minutes.do(fetchAndShow)
+while True:
+    schedule.run_pending()
+    time.sleep(10)
+```
+
+# Links
+Here are excellent links that give more insight into using the API.
+
+## Examples Code for GitHub
+https://docs.github.com/en/enterprise-server@3.11/rest/guides/using-the-rest-api-to-interact-with-your-git-database?apiVersion=2022-11-28#checking-mergeability-of-pull-requests
+
+## Examples Code for Steel Series GG
+https://github.com/badaz/steelseries-gamesense-oled-fps-counter
+https://github.com/slattery-mark/SteelSeries-CKL-App/tree/master
+https://www.reddit.com/r/steelseries/comments/ol4uuu/custom_keyboard_lighting_app_python/
+https://github.com/wolfinabox/Steelseries-OLED-Display-Mirror/blob/master
+https://github.com/anishg24/gamesense/blob/ec6435378de1711c0c88f667bc30bbb3db9832cc/gamesense/gamesense.py
+
+## Official Docs for Steel Series GG
+https://github.com/SteelSeries/gamesense-sdk/blob/master/doc/api/json-handlers-screen.md
+https://github.com/SteelSeries/gamesense-sdk/blob/master/doc/api/sending-game-events.md

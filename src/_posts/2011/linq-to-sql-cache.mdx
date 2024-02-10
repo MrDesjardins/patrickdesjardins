@@ -1,0 +1,27 @@
+---
+title: "Linq to Sql and Entity Framework cache"
+date: "2011-09-25"
+categories: 
+  - "entity-framework"
+  - "linq-to-sql"
+---
+
+Linq to Sql has a caching system that rely on the primary key of each object. Inside the data context, an identity map keep the value of the retrieved data. Every thing is handled by the data context and you have to worry about nothing. Keep in mind that if someone else change the value that the cache won't be refreshed.
+
+If you change the data on your side, the cache won't also be updated. This can be problematic in some situation. If this behavior is not what you want, you can disable the caching feature of Linq to Sql with a property of the data context.
+
+
+```csharp
+myDataContext.ObjectTrackingEnabled = false; 
+```
+
+Or, you can refresh specific object.
+
+
+```csharp
+ myDataContext.Refresh(RefreshMode.OverwriteCurrentValues, myObjectToRefresh); 
+```
+
+The reason behind this technical choice is that initially it has been developed for performance on consecutive call of the same object. The goal is not the have a real caching system.
+
+To conclude, the title mentions Entity Framework and I haven't say anything about it yet. The reason is that Entity Framework react the same way as Linq to Sql for the cache.

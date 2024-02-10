@@ -1,0 +1,35 @@
+.cardWithImageContainer {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  margin-bottom: 32px;
+}
+
+.cardWithImageContainerImage {
+  padding: 16px;
+}
+
+@media only screen and (max-width: 500px) {
+  .cardWithImageContainer {
+    max-width: --var(--size-column);
+    grid-template-columns: none;
+  }
+  .cardWithImageContainerImage {
+    display: none;
+    width: 0;
+  }
+}
+
+.cardWithImageContainer > .cardWithImageContainerText > h5,
+.cardWithImageContainer > .cardWithImageContainerText > h6 {
+  text-align: left;
+  margin: 6px 0 6px 0;
+}
+
+.cardWithImageContainer > .cardWithImageContainerText > h6 {
+  font-style: italic;
+  color: var(--text-color1);
+}
+
+.cardWithImageContainer > .cardWithImageContainerText > p {
+  font-size: 14px;
+}

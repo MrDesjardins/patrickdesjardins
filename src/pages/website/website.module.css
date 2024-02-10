@@ -1,0 +1,118 @@
+.container {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  background-color: white;
+  z-index: 1;
+  transition-property: transform;
+  transition-duration: 0.5s;
+}
+
+
+section.contactSection a {
+  text-transform: uppercase;
+  text-decoration: none;
+  font-size: 32px;
+  font-family: "Oswald";
+  letter-spacing: 1px;
+  line-height: 65px;
+  margin-bottom: 15px;
+  color: var(--header-color1);
+}
+
+section.contactSection a:hover {
+  background-color: var(--link-background1);
+}
+
+.sectionMainpage {
+  font-family: "Open Sans";
+  padding-top: 100px;
+  padding-bottom: 100px;
+}
+
+.sectionMainpage > header {
+  margin-bottom: 40px;
+  text-align: center;
+  text-transform: uppercase;
+  font-family: "Oswald";
+  color: var(--text-color3);
+  font-weight: 300;
+  margin-bottom: 0.9rem;
+  font-size: 2.1rem;
+  line-height: 2.5rem;
+}
+
+.sectionMainpage h3,
+.sectionMainpage h5 {
+  color: var(--text-color3);
+  text-align: center;
+}
+
+.sectionMainpage h3 {
+  font-size: 22px;
+}
+.sectionMainpage h5 {
+  font-size: 18px;
+}
+
+.sectionFixedWitdh {
+  display: flex;
+  flex-flow: wrap;
+  row-gap: 20px;
+  justify-content: space-around;
+  width: 80%;
+  margin: auto;
+}
+.sectionFixedWitdhContent {
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: var(--size-column);
+}
+
+@media only screen and (max-width: 500px) {
+  .sectionFixedWitdhContent {
+    flex: 1 1 100%;
+  }
+}
+
+.sectionMainpage p {
+  line-height: 1.8rem;
+  font-size: 1.1rem;
+  color: var(--text-color1);
+  text-align: justify;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.sectionVisualOne {
+  background-color: var(--background2);
+}
+.sectionVisualTwo {
+  background-color: var(--background3);
+}
+.sectionVisualOneSubHeader {
+  font-size: 1.2rem;
+  margin-bottom: 40px;
+  text-align: center;
+  color: var(--text-color1);
+}
+.sectionMainpage p.cardFixedWidthImage {
+  text-align: center;
+}
+.cardFixedWidthImageImg {
+  max-width: --var(--size-column);
+}
+
+.sectionSingleFixedWidth {
+  max-width: --var(--size-column);
+  margin: auto;
+}
+
+
+@media only screen and (max-width: 500px) {
+  .cardWithImageContainer {
+    max-width: --var(--size-column);
+    grid-template-columns: none;
+  }
+}
+

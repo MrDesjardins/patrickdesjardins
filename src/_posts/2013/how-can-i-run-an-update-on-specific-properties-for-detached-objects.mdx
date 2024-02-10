@@ -1,0 +1,38 @@
+---
+title: "How can I run an update on specific properties for detached objects?"
+date: "2013-06-19"
+categories: 
+  - "entity-framework"
+---
+
+In some scenario you will want to update a specific property but not others. This can be for security reason or for performance reason. In either case, the goal is to update only specific property of your entity. In Entity Framework, this can be done by specifying to the database context (dbcontext) the property status. Each property does have a IsModified property that can be set to true or false.
+
+```csharp
+ context.Entry(yourObject).Property(u => u.YourProperty).IsModified = true; 
+```
+
+Of course, if your object is from view, this one is not known by Entity Framework's database context and will require to attach it first.
+
+```csharp
+using (var entities = new MyDbContext()) { 
+  var entity = new YourEntity {Id = id, Name="Test"}; 
+  entities.YourEntities.Attach(entity); 
+  entities.Entry(entity).Property(e => e.Name).IsModified = true; 
+  entities.SaveChanges(); 
+} 
+```
+
+This will save YourEntity entity but only change the Name property. This is quite useful in scenario where you do not want the user to hack a web form to add properties that you doesn't want to be read by Entity Framework.
+
+By specifying which property that is modified, you tell Entity Framework to generate the SQL with only the "Set" for them. For example:
+
+```sql
+ UPDATE YourEntity SET Name = "Test" WHERE Id = 123; 
+```
+
+Finally, you may want to close the automatic validation if you are using the validation mechanism. This can be done by setting the ValidateOnSaveEnabled to false.
+
+```csharp
+ entities.Configuration.ValidateOnSaveEnabled = false; 
+```
+The reason is that since not all the object is loaded, you may have some validation on field that should be required that isn't at this time. To temporary disable the validation, use ValidateOnSaveEnabled. Of course, set it back to true once the save changes is done. You can find an example on my blog concerning the [ValidateOnSaveEnabled](./how-to-save-multiple-entities-in-inheritance-in-the-same-time-with-entity-framework-5-0).

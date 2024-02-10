@@ -1,0 +1,34 @@
+---
+title: "How to include correctly property within a collection when using Entity Framework code first"
+date: "2013-05-10"
+categories: 
+  - "entity-framework"
+---
+
+I have several [examples](./asnotracking-to-force-your-data-context-to-get-everything-from-the-database) in this website that include with a string the property when it's a property inside a collection of my main entity. Here is one example:
+
+
+```csharp
+ return DatabaseContext
+ .SetOwnable<Workout>()
+ .Include(x => x.Sessions)
+ .Include("Sessions.WorkoutSessionExercises")
+ .Include("Sessions.WorkoutSessionExercises.Exercise")
+ .Single(c => c.Id == id); 
+``` 
+At least, this example use the property for the Sessions. But why I wrote with a string for the two others includes? Because Sessions is a collection which doesn't let me link to one of its property. Instead, it links me to a list of property of the collection. This is quite logic if we think about it. However, I remain with the problem of using string which will lead in the maintenance phase to some possible problem when refactoring. Renaming a property won't change the string. This is why it would be better to specify the property of the collection.
+
+This can be done by using the Linq method "`Select`". 
+
+```csharp
+ return DatabaseContext
+ .SetOwnable<Workout>()
+ .Include(x => x.Sessions)
+ .Include(x => x.Sessions.Select(d=>d.WorkoutSessionExercises))
+ .Include(x => x.Sessions.Select(d=>d.WorkoutSessionExercises.Select(g=>g.Exercise)))
+ .Single(c => c.Id == id); 
+```
+
+As you can see, we load the collection Sessions, then we load the collection WorkoutSessionExercise which is inside every Session. Finally, we load every Exercise that is a property without being a collection.
+
+This example show you that even with multiple collection deep you can still avoid using string to specify that to include and what not.

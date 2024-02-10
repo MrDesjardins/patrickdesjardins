@@ -1,0 +1,51 @@
+---
+title: "Handling React form with Redux-Form and TypeScript"
+date: "2018-03-07"
+categories: 
+  - "react"
+  - "redux"
+---
+
+Most applications require using some form to collect user inputs. So far, I’ve avoided relying on a third-party library when using React and Redux. When we think about it, it’s not hard to send the data to the Redux store, performing some validation and rendering again to React. This loop is executed hundreds of times while the user type values, select values, or move focus out of a field. In the end, another action is sent to submit the data. However, every form of your website needs to repeat this process.
+
+Redux-Form is a library that allows handling the burden of having to repeat similar tasks for each of your forms. Redux-Form creates a reducer which is a sibling to your own reducers. This one is dynamically created at creation. The creation occurs in your React container component, during the connect (with React-Redux) phase where this time will be connected to Redux-Form that wraps your component instead of directly wrapping your component. It sounds harder than it is but the documentation is well written. However, one pitfall is that if you are using Redux-Router and push the history object with _withRouter_ at your routing level, you will have to set it again (with _withRouter_) before exporting manually. For some reason, using the _reduxForm_ functions removes the propagation of this historic property downward.
+
+The library works as advertised. It has some nice features, e.g. to know which field changed, got touched, which error to which field, as well as the possibility to reset back to the initial values. Errors are handled in two different ways, letting you choose if you want to set the validation at each input field or at the form level. In both cases, you can cross-validate values between input fields.
+
+If you are using TypeScript, you will soon realize that the type passed to the creation of the Redux-Form will probably be different from the type you pass to the component that will hold your form. The reason is that you want to have Redux-Form to handle only the writable properties. This is not an issue; the property type of your component can contain the form fields as well as other fields. In my case, when the Redux store calls the component, I found it useful to map the data into two types: one readable and one writable.
+
+```typescript
+export interface MyComponentProps extends InjectedFormProps<MyComponentWritableModel, MyComponentDispatch> {    
+  readableValues: MyComponentReadableModel;    
+  formState: MyComponentWritableModel;
+}
+```
+
+The property of the component inherits _InjectedFormProps_ which is the type used by the form. It’s generic to the type you pass in the Redux-Form method as well. Some minor details: I also inherit from a dispatch type where I can add additional actions to be invoked. I also have two properties, which are _readableValue_ and _formState_. The first one is used to display information from the Redux state to the form in a read-only fashion. It can also be used for validation of specific values that are not editable. The second property is a copy of the form state that is a strongly typed accessible data of the form. The property allows usage of the data in your component for comparison or for validation.
+
+TypeScript is great because it enforces type. Redux-Form works with TypeScript and has a definition type. However, most of its core concepts rely on strings which make it not as great. For example, to connect a field, you need to specify the name of the property you want to bind. You can go deep into the object by specifying the sub-property with a dot.
+
+```typescript
+Field name="myPropertyInsideWritableObject.CanGoDeep"
+```
+The second drawback is that every value entered in fields are pushed back by action in Redux as a string. It means that when you receive the information back and it’s time to map the state to the property to connect the information back to the user interface, you will receive an object, but not with the value specified by TypeScript. It’s worth mentioning that the initial values that are passed to Redux-Form can be from any type (number, boolean) and Redux-Form will store them like it is, with the same type. The issue is around persisting when a user changes a value. There is no mechanism to convert automatically to the desired type.
+
+```typescript
+const formInputsValues = state.form[FORM_NAME] as ReduxFormState<MyComponentWritableModel>; // The problem is that form[x] contains only data from the inputs which are string
+
+```
+Redux-Form is built around the concept that errors will be handled with promise, and failure of the promise will cause the form to fail. I’d rather not have the component tightly coupled with the logic and send my information by action and my middleware performs the action. This is unfortunate, and the cleanest way I found was to provide functions that are decoupled from the component, in their files, and attached to the form (or components). However, for a component called “Redux-Form”, I would prefer an option that would let me handle the validation in a middleware through a specific action that could be listened to and then sending another action with the validations.
+
+The validation, when handled at the form level, is also not pretty. For example, returning an empty object means no error, and returning an object with the same structure of the form, but instead of the actual value the error message, is how to pass error message. This is messy with TypeScript. Imagine you have an object with one property that is number. To set an error message, you need to use the same property name but set a string. The structure changing type brings lots of weakness in a code, and since it’s a crucial part of the system, it’s unacceptable. There is a _FormErrors_ that could be used which takes a generic type that seems to be the type of the form’s state. However, the definition doesn’t work well with sub-object.
+
+```typescript
+export type FormErrors<FormData = {}, T = void> = {    
+  [P in keyof FormData]?: ReactElement<any> | string | ErrorOther<T>;
+};
+```
+
+In my current project, we are using Semantic for inputs. The library Redux-Form works with something called _Field_. It’s well done and allows you to inject your own React stateless component. I was able to build a generic one that mixes custom properties and Redux-Form properties, allowing me to have an error in a popup next to the field, etc.
+
+Finally, I found a bug in using _CSSTransition_. The form was available twice during the fade animation (this is how _CSSTransition_ works). The issue is that when the form was completely faded out, it destroyed the Redux-Form state causing the fade-in form to have no more state. I used the property _destroyOnUnmount_ to false, and the issue got fixed. The notion of a unique identifier for each form should be there instead of sharing the same form. That being said, the name is configurable, and you can work out a unique name that changes on each mount.
+
+Overall, it’s a good library with some benefits. The main one is that it’s quick to set up. It also has many features, like state in each field (touched, error, warning, value changed, etc.). However, the weakness of the types, the fact that the validation is strongly bound to the React component (functions or promises), and that manual casting is required, make the library not awesome.

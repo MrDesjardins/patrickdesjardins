@@ -1,0 +1,62 @@
+.achievementContainerBackground {
+  background: url(/images/backgrounds/patrickdesjardinsatnetflix2.jpg)
+    no-repeat top center fixed;
+  background-size: cover;
+  width: 100%;
+  overflow: hidden;
+  color: var(--text-color2);
+  padding: 0;
+}
+
+.achivementTextZone > header {
+  font-size: 48px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+.achivementTextZone > .achievementText p {
+  color: var(--header-color1);
+  font-size: 14px;
+}
+
+.achievementOverlay {
+  background-color: rgba(0, 0, 0, 0.55);
+  width: 100%;
+  overflow: hidden;
+  min-height: 600px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.achievementGallery {
+  min-height: 300px;
+  background-color: rgba(125, 123, 144, 0.4);
+  padding: 24px;
+  margin: auto;
+  border-radius: 2px;
+  margin: 150px 200px 150px 50px;
+}
+.achivementTextZone {
+  width: 330px;
+  margin: auto;
+  margin-top: 300px;
+}
+
+@media only screen and (max-width: 500px) {
+  .achievementOverlay {
+    display: block;
+  }
+}
+
+.patentFlair,
+.amazonFlair {
+  background-color: white;
+  width: 290px;
+  border-radius: 2px;
+  padding: 2px;
+  margin: auto;
+}
+
+.mvpFlair {
+  margin: auto;
+  width: 200px;
+}

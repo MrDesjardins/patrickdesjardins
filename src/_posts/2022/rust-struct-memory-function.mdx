@@ -1,0 +1,190 @@
+---
+title: "Rust: Structure Memory when Using a Function"
+date: "2022-11-04"
+categories:
+  - "rust"
+  - "memory"
+  - "function"
+---
+
+I recently learned about the tool called `clippy` that is available if you use `cargo`. It provides lint information on your Rust code to ensure you are using good practices but also helps to use Rust idiomatic and consistent code. For example, one recommendation was to not use `.clone()` on one of my structures. The suggestion made me think. I was passing the structure into a few functions, and I wanted to ensure no function was modifying the content. 
+
+Coming from a JavaScript/TypeScript background, I am cloning and passing the clone to have immutability. However, in Rust, passing a structure in a function does not give a reference in memory to that structure. Nor that passing a structure into a function allows the function to mutate. Rust has two explicit keywords: `mut` and `&` to allow mutation and to pass by reference.
+
+Here is a short code that illustrates how a structure is preserved. But, first, let's create a structure.
+
+```rust
+#[derive(Copy, Clone)]
+struct Test {
+    x: u32
+}
+```
+Second, let's create a `main` function that will create a structure we do not want to modify.
+
+```rust
+fn main() {
+    // Create value and print its memory address
+    let t = Test {x:1};
+    println!("Original t: {:p}", &t);
+
+    // Call the mutate function
+    let new_t = mutate(t);
+
+    // Print the values
+    println!("{}",t.x);
+    println!("{}",new_t.x);
+}
+```
+
+The `main` function calls the `mutate` and returns a new instance of the struct. The expectation is that `t` remains with the value `1` and that the returned value will be `100`.
+
+```rust
+fn mutate(t_param: Test) ->Test {
+    // Create a variable that is `x` but marked that it can be mutated
+    let mut new_test = t_param;
+
+    // Print memory address
+    println!("t_param: {:p}", &t_param);
+    println!("new_test: {:p}", &new_test);
+
+    // Mutate the value from 1 to 100
+    new_test.x = 100;
+    new_test
+}
+```
+
+The `mutate` function cannot change the value of `t_param.x` without the `mut` keyword. Rust will throw a compilation error saying that the variable must be mutable. Adding `mut` to a new variable creates new variables. The memory prints below the assignment show two addresses, which means that the variable passed by the parameter (`t_param`) is not using the same memory as `new_test`.
+
+The program prints:
+
+```sh
+Original t: 0x7ffcc6ba0e94
+t_param:    0x7ffcc6ba0dc0
+new_test:   0x7ffcc6ba0dc4
+1
+100
+```
+
+# Moving Ownership
+In the `mutate` function, we moved ownership to another variable by assigning the parameter to a new variable.
+
+```rust
+let mut new_test = t_param;
+```
+
+The ownership is not transferred because of `mut`
+
+The same occurs when we assign a variable to a function by parameter. For example, moves ownership in the following code:
+
+```rust
+let new_test = t_param;
+```
+The reason is to avoid having two or more variables with a pointer to a space in memory. It avoids bugs.
+
+The consequence of moving the ownership is that the former variable cannot access anything from the object.
+
+Let's modify the former example and see:
+
+```rust
+fn main() {
+    let mut t = Test {x:1};
+    let mut new_test = t;
+    println!("t_param: {}", t.x);
+    println!("new_test: {}", new_test.x);
+    
+    t.x = 2;
+    new_test.x = 1000;
+    println!("t_param: {}", t.x);
+    println!("new_test: {}", new_test.x);
+    
+    println!("t_param: {:p}", &t);
+    println!("new_test: {:p}", &new_test);
+}
+```
+
+The output is:
+```
+t_param: 1
+new_test: 1
+t_param: 2
+new_test: 1000
+t_param: 0x7ffd03e227f0
+new_test: 0x7ffd03e227f4
+```
+We can see that the `t_param` and `new_test` can adjust the `x` without affecting each other.
+
+
+# Function Parameter
+
+What small detail that may have gone unnoticed is the trait above the struct `#[derive(Copy, Clone)]`. This is required to pass the structure in a function otherwise would create a compilation error with a `borrow of moved value` message. The `copy` trait is required because, unlike primitive types, they are copied by default. The `clone` is required because of the `copy` trait. You can quickly see what I am saying by clicking in VSCode on the `copy`, which will lead you to the source code of the trait, and you will see:
+
+```rust
+#[rustc_unsafe_specialization_marker]
+#[rustc_diagnostic_item = "Copy"]
+pub trait Copy: Clone {
+    // Empty.
+}
+```
+
+We can step back and have the code (without trait on the struct). Then, we realize the code does not comply with the `borrow of moved value`.
+
+```rust
+struct Test {
+    x: u32
+}
+
+fn main() {
+    let t = Test {x:1};
+    let new_test = t;
+    println!("t_param: {:p}", &t);
+    println!("new_test: {:p}", &new_test);
+}
+```
+Adding `#[derive(Copy, Clone)]` makes the compiler happy. Once again, the reason is that we are moving from `t` to `new_test`, which does a copy.
+
+The output is with two different addresses:
+
+```
+t_param: 0x7ffda950bdb0
+new_test: 0x7ffda950bdb4
+```
+
+# Reference a.k.a. borrowing
+
+Sometimes, you may want to pass more than one variable without making copies. For example, you are giving a reference, or in the Rust's lingo, is to borrow, which cause an alias to the source of truth. However, there are some additional rules. For example, borrowing into a mutable variable with `&mut` is only possible once per scope, a.k.a. lifetime. So, for example, you can `&mut` in a function once and do it again in another function.
+
+```rust
+#[derive(Copy, Clone)]
+struct Test {
+    x: u32
+}
+
+fn main() {
+    let mut t = Test {x:1};
+    println!("t_param: {}", t.x);
+    println!("t_param: {:p}", &t);
+    display(&mut t);
+    println!("t_param: {}", t.x);
+    println!("t_param: {:p}", &t);
+}
+
+fn display(new_test: &mut Test){
+    new_test.x = 1000;
+    println!("Function x value: {}", new_test.x);
+    println!("Function struct ref address: {:p}", new_test);
+}
+```
+In this example, the output of add the addresses is the same:
+
+```sh
+t_param: 1
+t_param: 0x7ffc5187bd64
+Function x value: 1000
+Function struct ref address: 0x7ffc5187bd64
+t_param: 1000
+t_param: 0x7ffc5187bd64
+```
+The function shows that the reference address is the same as the original struct with `0x7ffc5187bd64`. 
+
+# Conclusion
+Clippy was right! There was no need to call explicitly `.clone()` because the structure is getting cloned automatically.

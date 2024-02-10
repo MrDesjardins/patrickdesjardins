@@ -1,0 +1,47 @@
+---
+title: "How to use Unity with Web API"
+date: "2013-04-29"
+categories: 
+  - "asp-mvc"
+  - "unity"
+  - "webservices"
+---
+
+Web Api controller are instantied by Asp.Net MVC framework and by default, the parameter less constructor is called. If you want to instantiate your class with your IoC, like Microsoft Unity, you will have to customize the instantiation of those Web Api Controller. The customized instanciator is called a Dependency Resolver and can be configured in the Global.asax.
+
+```csharp
+public class WebApiApplication : System.Web.HttpApplication { protected void Application_Start() { AreaRegistration.RegisterAllAreas();
+
+WebApiConfig.Register(GlobalConfiguration.Configuration); FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters); RouteConfig.RegisterRoutes(RouteTable.Routes); BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+UnityConfiguration.Initialize(); MapperConfiguration.Initialize(UnityConfiguration.Container.Resolve<IMapperFactory>()); UnityConfiguration.Container.Resolve<IDatabaseContext>().InitializeDatabase(); GlobalConfiguration.Configuration.DependencyResolver = new IoCContainer(UnityConfiguration.Container); } } 
+```
+
+The first thing to do is to modify the Application_Start of your WebApi project. You need to execute the configuration of all your interface with Unity. In the example above, this is done by calling UnityConfiguration.Initialize() which Resolve every interface to a concrete class.
+
+The second thing to do is to set to the `GlobalConfiguration` a `DependencyResolver` to a IocContainer that we will create to use Unity container.
+
+
+```csharp
+ internal class ScopeContainer : IDependencyScope { protected readonly IUnityContainer_container;
+
+public ScopeContainer(IUnityContainer container) { if (container == null) { throw new ArgumentNullException("container"); } this._container = container; }
+
+public object GetService(Type serviceType) {
+
+if (!_container.IsRegistered(serviceType)) { if (serviceType.IsAbstract || serviceType.IsInterface) { return null; } } return_container.Resolve(serviceType); }
+
+public IEnumerable<object> GetServices(Type serviceType) { return_container.IsRegistered(serviceType) ?_container.ResolveAll(serviceType) : new List<object>(); }
+
+public void Dispose() {_container.Dispose(); } }
+
+internal class IoCContainer : ScopeContainer, IDependencyResolver { public IoCContainer(IUnityContainer container):base(container) { }
+
+public IDependencyScope BeginScope() { var child =_container.CreateChildContainer(); return new ScopeContainer(child); } } 
+```
+
+The GetService is made in a way that it doesn't require you to register every controllers with Unity but only registered type will go through Unity.
+
+From here, every Web Api controllers will be instanced by passing by the _ScopeContainer_ , which will check every parameters' type and resolve the type with Unity.
+
+The Web Api will create a new instance of Unity and dispose of it at every http request.

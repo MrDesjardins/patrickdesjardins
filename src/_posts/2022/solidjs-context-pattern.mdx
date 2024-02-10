@@ -1,0 +1,95 @@
+---
+title: "SolidJS: Context Simple Pattern"
+date: "2022-03-22"
+categories:
+  - "solidjs"
+  - "typescript"
+---
+
+I have discussed in the past two patterns that can be used with [React and Context](https://patrickdesjardins.com/blog/two-patterns-with-react-context). In this article, we will see in action the _second pattern_ described in the previous article with SolidJS. The pattern is the one described in the official documentation and the one I have been using recently.
+
+Why use this pattern? 
+  - It defines a clear contract with a TypeScript interface.
+  - You can have initialization value on the context creation
+  - It forces the context to be used only as a context.
+
+
+# TypeScript Interfaces
+There is a couple of valuable interfaces (or types) to define. The first one is the context property. The interface defines what can be done on the initialization of the context. It happens once, at the root of your application. Here is an example extracted from my latest SolidJS project. It has two 
+
+```typescript
+export interface SensorsContextProps {
+  useFakeSensors: boolean;
+  children: JSX.Element;
+}
+```
+
+In this example, there is the `useFakeSensors` which is determined at the beginning of the application. You can swap that property for the _theme_ of your website or any other initial value. The `children` allows wrapping the rest of your application. The following code shows how the `useFakeSensors` is used.
+
+```typescript {3, 12}
+const App: Component = () => {
+  return (
+    <SensorsProvider useFakeSensors={true}>
+      <div class={styles.App}>
+        <div class={styles.Container}>
+          <Routes>
+            <Route path={ROUTES.HOME} element={<Choose />} />
+            <Route path="/*all" element={<NotFound />} />
+          </Routes>
+        </div>
+      </div>
+    </SensorsProvider>
+  );
+};
+```
+
+In the example, you can see the provider. Before creating the provider, we need to define what content it will offer to wrap the underlying component.
+
+```typescript
+export interface SensorsContextModel {
+  state: SensorsContextState;
+  sensors: SensorsContextSensors;
+  actions: SensorsContextActions;
+}
+```
+In my [current project](https://github.com/MrDesjardins/gym-water-app), I have the `SensorsContextModel` interface that has three properties. One has some shared state, access to sensors information, and some actions that can be invoked by children component that will affect the `state`.
+
+# Provider
+The core of the pattern is creating a component that returns a provider. That way, we force the context code to be used only under a context situation. The example is once again extract from my project and simplified. You can see it has its store for the state and returns a `SensorsContext`. The `SensorsContext` is coming from the `createContext`. Here, React has a subtle difference where you do not have to define an empty implementation of the `SensorsContextModel`, which is convenient. Instead, we create the context and return the provider.
+
+```typescript
+export const SensorsContext = createContext<SensorsContextModel>();
+
+export function SensorsProvider(props: SensorsContextProps) {
+  const [state, setState] = createStore<SensorsContextState>({});
+  const distanceSensor = new UltraSonicSensor(props.useFakeSensors);
+  const magneticSensor = new MagneticContactSensor(props.useFakeSensors);
+
+  const value: SensorsContextModel = {
+    state: state,
+    sensors: {
+      ultraSonicSensor: distanceSensor,
+      magneticContactSensor: magneticSensor,
+    },
+    actions: {
+      listenDistanceSensor() {
+        distanceSensor.startListening();
+      },
+    },
+  };
+
+  return <SensorsContext.Provider value={value}>{props.children}</SensorsContext.Provider>;
+}
+```
+
+# Using the Context
+
+At this point, the last step is to consume the context. Exactly like React, the call to a function (or hook) is needed in the child. I have a small function to simulate a hook with the context file.
+
+```typescript
+export function useSensors(): SensorsContextModel | undefined {
+  return useContext(SensorsContext);
+}
+```
+
+That step is not mandatory. However, encapsulating the `useContext` makes the code unaware of the `SensorContext` instance. Hence, we can use the created function inside any of the children by calling `const c = useSensors()` and have access to everything inside the `SensorsContextModel`.

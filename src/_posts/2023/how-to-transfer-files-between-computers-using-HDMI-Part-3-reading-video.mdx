@@ -1,0 +1,106 @@
+---
+title: "How to Transfer Files Between Computers Using HDMI (Part 3: Reading Video)"
+date: "2023-05-23"
+categories:
+  - "rust"
+  - "hdmi"
+  - "video"
+  - "encoding"
+  - "steganography"
+---
+
+In this third part, we assume the Rust code has generated the video and the source computer, containing the file to transfer, is playing the video in loops into the HDMI display. The HDMI display is the one connected to the HDMI capture card and thus is on the second computer (target) is a web camera.
+
+# Reading the Video From the Web Camera
+The core of this post is to find a quick way to reach the feed of streaming video from the HDMI display card. When the device is connected, it starts a new camera. Next, we need a piece of software to record the stream into a video file that we will later read with our Rust code to find the beginning and end of the file and extract the content back for consumption.
+
+# Finding the Web Camera
+
+There are several commands using `ffmpeg` to get the list of web camera.
+
+```sh
+ffmpeg -sources device
+
+ffmpeg -y -f vfwcap -i list
+
+ffmpeg -list_devices true -f dshow -i dummy
+
+```
+
+The last one is the recommended for the latest version (at the moment version 6). However, the output might be not as expected.
+
+Using WSL, ffmpeg could not find the camera. There is a way to get the camera, but it requires [another tool called usbipd](https://www.youtube.com/watch?v=t_YnACEPmrM). Because the target will be a Windows in my case, I will not use usbipd but will install ffpmeg for Windows.
+
+
+```powershell
+choco install ffmpeg-full
+```
+Using Windows, the `-list_devices` has too many devices in my case because I have virtual audio, videos, and many cameras. Here is a snippet of the output.
+
+```sh
+ffmpeg -list_devices true -f dshow -i dummy
+
+libavutil      58.  2.100 / 58.  2.100
+libavcodec     60.  3.100 / 60.  3.100
+libavformat    60.  3.100 / 60.  3.100
+libavdevice    60.  1.100 / 60.  1.100
+libavfilter     9.  3.100 /  9.  3.100
+libswscale      7.  1.100 /  7.  1.100
+libswresample   4. 10.100 /  4. 10.100
+libpostproc    57.  1.100 / 57.  1.100
+[dshow @ 0000024773070100] "USB Video" (video)
+[dshow @ 0000024773070100]   Alternative name "@device_pnp_\\?\usb#vid_534d&pid_2109&mi_00#7&a5ad07a&1&0000#{65e8773d-8f56-11d0-a3b9-00a0c9223196}\global"
+[dshow @ 0000024773070100] "OBS Virtual Camera" (video)
+[dshow @ 0000024773070100]   Alternative name "@device_sw_{860BB310-5D01-11D0-BD3B-00A0C911CE86}\{A3FCE0F5-3493-419F-958A-ABA1250EC20B}"
+```
+The `USB Video` is the one from the capture card. We can connect to the camera to get the supported resolution and fps. Here is a snippet of the output. The list contained over a dozen of resolution and fps. Here are four options using the HD resolution.
+
+```sh
+ffmpeg -f dshow -list_options true -i video="USB Video"
+[dshow @ 0000022277b00100]   vcodec=mjpeg  min s=1920x1080 fps=10 max s=1920x1080 fps=60.0002
+[dshow @ 0000022277b00100]   vcodec=mjpeg  min s=1920x1080 fps=10 max s=1920x1080 fps=60.0002 (pc, bt470bg/bt709/unknown, center)
+[dshow @ 0000022277b00100]   pixel_format=yuyv422  min s=1920x1080 fps=5 max s=1920x1080 fps=5
+[dshow @ 0000022277b00100]   pixel_format=yuyv422  min s=1920x1080 fps=5 max s=1920x1080 fps=5 (tv, bt470bg/bt709/unknown, topleft)
+```
+
+# Downloading the Content from the Web Camera to a File
+
+Once we have these options, we can connect to the camera and get the data:
+
+```sh
+ffmpeg -r 30 -f dshow -s 1920x1080 -vcodec mjpeg -i video="USB Video" -r 30 out.mp4
+```
+
+For detail see the [ffmpeg option documentation](https://ffmpeg.org/ffmpeg-all.html#dshow).
+
+The one selected are:
+
+`-r`: The first force the reading to be 30 fps. The second one in the command line forces the output to be 30 fps.
+`-f`: File format to be `dshow`
+`-s`: Each frame size
+`-vcodec`: Video codec. We are limited to `mjpeg` with the capture card I had (see the `list_options` output)
+`-i`: Set the input to be a video of a specific name (web cam)
+
+# Problem on the Horizon?
+At this point, something might trigger some questioning. We are streaming an uncompressed video using the `fourcc` of `png` and not the describe format by the capture card `mjpeg`.
+
+# Testing the Hypothesis
+To fully test the current solution, we need to stream the video from another computer. I have a laptop where I got the code, encoded a text with the Rust project, and ran in full screen in the HDMI card to display the content. On the other side, on my computer, I used the `ffmeg` command above and then used the Rust code to extract the text. The output:
+
+```sh
+❯ cargo run -- -m extract -i outputs/out_from_hdmi.avi -o outputs/text_from_hdmi.txt --fps 30 --height 1080 --width 1920 --size 1
+warning: unused manifest key: build
+warning: unused manifest key: doc
+    Finished dev [unoptimized + debuginfo] target(s) in 0.05s
+     Running `target/debug/hdmifiletransporter -m extract -i outputs/out_from_hdmi.avi -o outputs/text_from_hdmi.txt --fps 30 --height 1080 --width 1920 --size 1`
+[mpeg4 @ 0x558a4f546900] mcbpc damaged at 36 66
+[mpeg4 @ 0x558a4f546900] Error at MB: 8022
+```
+
+The file was damaged. However, we can see that the file often had the video looping with the red frame. Looking at the produced video from the HDMI or locally looked the same to my human eyes. One hypothesis that justifies the data alteration is video compression.
+
+# What We Known
+Transferring data via video is plausible, as seen when injecting a file into a video and video into a file when there is no compression. It works well within the same computer. We know that ffmpeg with the display card and HDMI alter the content of the original video slightly enough that the data cannot be recovered. We understand that injecting a red frame to determine the beginning and end works and can continue to be used.
+
+# What Next?
+The next step is to change the way we encode the data. We should create more frames, play with the size of the data (many pixels for the same data) and rely on a more lenient way to encode. Having an exact pixel value (RGB) for each character is efficient in theory, but a slight variation in the color, which can happen when encoding, will cause the data to be damaged.

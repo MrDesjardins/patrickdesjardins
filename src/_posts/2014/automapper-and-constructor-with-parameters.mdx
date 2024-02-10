@@ -1,0 +1,27 @@
+---
+title: "AutoMapper and constructor with parameters"
+date: "2014-05-06"
+categories: 
+  - "automapper"
+---
+
+In some use case you are forced to have classes that has `constructor with parameters`. This is more rare if you are using Entity Framework (EF) because it requires to have parameterless constructor. However, if the scenario occurs, remember that `AutoMapper` does not have this constrain. In fact, you can have a private parameterless constructor for Entity Framework (EF) and force the use of a public constructor with parameters when using in your code.
+
+First of all, during the mapping configuration, you must use `ConstructUsingServiceLocator` method. 
+
+```csharp
+ Mapper.CreateMap<ContestEditableViewModel, Model.Entities.Contest.Contest>() .ConstructUsingServiceLocator(); 
+```
+
+This instruct AutoMapper to check for the option `ConstructServicesUsing` method that can be provided during the mapping instruction.
+
+Second, when you are using AutoMapper to map between classes, you must specify every parameters.
+
+
+```csharp
+ var model = AutoMapper.Mapper.Map<ContestEditableViewModel, Model.Entities.Contest.Contest>(viewModel , options=>options.ConstructServicesUsing( t=>new Model.Entities.Contest.Contest(yourFirstParameter, yourSecondParameter, 
+ /*and so on*/) 
+ ) ); 
+```
+
+This way, you can have classes that have parameters and control how to provided them values.

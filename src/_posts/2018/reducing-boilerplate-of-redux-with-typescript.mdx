@@ -1,0 +1,65 @@
+---
+title: "Reducing Boilerplate of Redux with TypeScript"
+date: "2018-05-15"
+categories: 
+  - "redux"
+  - "typescript"
+---
+
+For quite a while, I found that working with TypeScript and Redux was slow in term of all the boilerplate required when adding a new Redux's action. The creation of a unique constant, a unique type to narrow down the type and then an action creator function to have a unique place to call the action. The last step was to create a union of all actions (type) allowed for the Redux's reducer which was passed in the reducer (similar when the action was used in a middleware). With the arrival of TypeScript 2.8, it's easy to reduce the boilerplate.
+
+First, some generic code must be in place.
+
+```typescript
+export function createActionPayload<TypeAction, TypePayload>(actionType: TypeAction): (payload: TypePayload) => ActionsWithPayload<TypeAction, TypePayload> { 
+  return (p: TypePayload): ActionsWithPayload<TypeAction, TypePayload> => { return { payload: p, type: actionType }; }; 
+  } 
+  
+export function createAction<TypeAction>(actionType: TypeAction): () => ActionsWithoutPayload<TypeAction> { 
+  return (): ActionsWithoutPayload<TypeAction> => { 
+    return { payload: {}, type: actionType }; 
+  }; } 
+  
+export interface ActionsWithPayload<TypeAction, TypePayload> { 
+  type: TypeAction; 
+  payload: TypePayload; 
+}
+
+export interface ActionsWithoutPayload<TypeAction> { 
+  type: TypeAction; 
+  payload: {}; 
+}
+
+export type ActionsUnion<A extends ActionCreatorsMapObject> = ReturnType<A[keyof A]>; 
+``` 
+
+It might look like a lot of code, but in reality, you won't touch that code at all, just call it. Special mention at the last type which uses a TypeScript 2.8 feature `ReturnType` which will get all return types of the function we will have in a type removing some manual entries.
+
+At that point, to create a new action consist of few steps but not too many keystrokes.
+
+First, you still need a constant. The constant is of a type of a string literal (not a string) and must be unique by action. This will be used later to narrow the type down to the payload of the action itself. 
+
+```typescript
+export const ACTION_1 = "ACTION_1"; 
+``` 
+
+
+The second step is to create the action with one of the two methods above. One method creates an action with a payload while the second one creates an action without a payload. Something interesting is that it is more convenient to gather all your action into a constant. This way, later, we will leverage the "ReturnType" to get all action type from the action creator function. For example, the example we are building, the action returns a unique type that uses the string literal of the action's constant.
+
+```typescript
+export const SharedActions = { 
+  action1: createActionPayload<typeof ACTION_1, string>(ACTION_1), 
+}; 
+``` 
+The third step is to consume the action. We can use a reducer and type the action it receives to have the only action from one or many constant we build. You can still restrict which actions a reducer can receive by specifying which variable that holds many actions with "ActionsUnion". In the example below, I mention that any action from the SharedAction object, and the OtherGroupAction and a specific other one is tolerated in that reducer. The greatest feature of this approach is that once you use a conditional statement like an IF or a SWITCH against the action's type, the type of the payload is narrowed down to the action. This gives an excellent IntelliSense.
+
+```typescript
+type ReducerAcceptedActions = ActionsUnion<typeof SharedActions & typeof OtherGroupOfAction & GroupB.individualAction>;
+
+export function oneReducerHere( state: State = initialState(), action: ReducerAcceptedActions): State {
+  switch (action.type) { 
+    case ACTION_1: { // ... } 
+  } 
+} 
+``` 
+This way to proceed with Redux and TypeScript removes many boilerplate codes that were initially needed in TypeScript. In the end, the code is easy to read even if you have hundreds or thousands of actions because you can separate them in a bundle. Also, the automatic type narrowing is a bless giving a huge edge when developing by bringing a natural boundary of what is available in each payload automatically.

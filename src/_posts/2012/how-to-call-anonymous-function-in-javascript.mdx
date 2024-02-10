@@ -1,0 +1,30 @@
+---
+title: "How to call anonymous function in Javascript?"
+date: "2012-05-19"
+categories: 
+  - "javascript"
+---
+
+You may have anonymous function that you want to call later in the same method (or to pass this one by parameter and call this one later). To be able to have a reference to this anonymous function, you need to use a variable that will keep a reference to this anonymous function. Later, when you want to use it, you simply need to call it by writing the variable name with parentheses.
+
+```typescript
+var anonymous= function(){ 
+  alert("Test123"); 
+}; 
+anonymous(); 
+``` 
+
+From here you can have more complex prototype (Javascript class mechanism).
+
+```typescript
+function MyClass(val1, val2){ 
+  this.val1 = val1; 
+  this.val2 = val2; 
+  this.function1 = function() { alert(this.val1); } 
+} 
+//... 
+var x = new MyClass('Test','Hello'); 
+x.function1(); 
+``` 
+
+This example show you that you can have an anonymous function that can be called later like the previous example.

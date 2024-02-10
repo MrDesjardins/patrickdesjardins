@@ -1,0 +1,44 @@
+---
+title: "Mastering SqlConnection"
+date: "2011-09-26"
+categories: 
+  - "ado-net"
+---
+
+The `SqlConnection` object is an object that derive of `DbConnection`. It opens the connection between the application and the database. It's also inherit of `IDisposable` because of `DbConnection`.
+
+
+```csharp
+var connection = new SqlConnection(); 
+connection.ConnectionString = @"Data Source=PATRICK-PC\\SQLEXPRESS;Initial Catalog=Northwind;Integrated Security=True"; 
+connection.Open(); 
+connection.Close(); 
+```
+or
+
+```csharp
+using (var connection = new SqlConnection()) { 
+  connection.ConnectionString = @"Data Source=PATRICK-PC\\SQLEXPRESS;Initial Catalog=Northwind;Integrated Security=True"; 
+  connection.Open(); 
+  connection.Close(); 
+} 
+```
+
+These two snippets of code illustrate the creation of a connection. Both of them were using connection string from a string but the value can be directly loaded from the app.config or web.config.
+
+```csharp
+ConnectionStringSettings connectionStringSettings = ConfigurationManager.ConnectionStrings["ApplicationServices"]; 
+using (var connection = new SqlConnection(connectionStringSettings.ConnectionString)) { 
+  connection.Open(); 
+  connection.Close(); 
+} 
+``` 
+
+```xml
+<configuration> 
+  <connectionStrings> 
+    <add name="ApplicationServices" connectionString="Data Source=PATRICK-PC\\SQLEXPRESS;Initial Catalog=Northwind;Integrated Security=True" providerName="System.Data.SqlClient" /> 
+  </connectionStrings> 
+... ... 
+```
+

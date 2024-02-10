@@ -1,0 +1,51 @@
+---
+title: "Creating Test with Jest and TypeScript wiht describe, beforeEach and it"
+date: "2018-03-20"
+categories: 
+  - "jest"
+  - "typescript"
+---
+
+Jest provides an easy structure to organize unit tests. It consists of blocks a function imbricated. Each function is a division of a test but not a test itself. The test is inside the function "it". Here is an example:
+
+```typescript
+describe("Test Class A", () => { 
+  describe("method 1", () => { 
+    describe("when parameter a < 0", () => { 
+      it("throwns an exception", () => { }); 
+      }); 
+    describe("when parameter a == 0", () => { 
+      it("returns 0", () => { }); 
+      }); 
+    describe("when parameter a > 0", () => { 
+      it("returns xyz", () => { }); 
+      }); 
+  }); 
+}); 
+``` 
+
+The structure is a little bit convoluted but enforces a logical way to divide test and to create very small functions which are easier to maintain. The idea is to strive to have one assertion by test (by "it" function).
+
+Another particularity of the describe function is that since it is a function it creates a closure where variables can live. This allows sharing variables between children functions. A distinction is that it's alright to declare variables to be shared at the beginning of the describe block, but not to assign. The reason is to respect the order of execution, initialization must be set in the special function "beforeEach" or "beforeAll" which are executed before the subsequent block (describe or it). Here is the same code with an object used in each test.
+
+```typescript
+describe("Test Class A", () => { 
+  let myObj: ObjectType1; 
+  describe("method 1", () => { 
+    beforeEach(() => { 
+      moObj = new ObjectType1(); 
+    }); 
+    describe("when parameter a < 0", () => { 
+      it("throwns an exception", () => { }); 
+    }); 
+    describe("when parameter a == 0", () => { 
+      it("returns 0", () => { }); 
+    }); 
+    describe("when parameter a > 0", () => { 
+      it("returns xyz", () => { }); 
+    }); 
+  }); 
+}); 
+``` 
+
+It might sound very easy and logical, but you may be in a situation that you think that something is wrong -- that beforeEach are executed after you test! If this occurs, double check that you do not have an exception thrown in the beforeEach that short-circuit the remaining of the beforeEach code. Double check as well if there is a code assigned directly to a describe block that might be executed out of order.

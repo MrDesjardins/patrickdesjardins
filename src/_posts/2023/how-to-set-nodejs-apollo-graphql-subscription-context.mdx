@@ -1,0 +1,60 @@
+---
+title: "How to set NodeJS Apollo GraphQL Subscription Context for your WebSocket functions and for your Resolvers?"
+date: "2023-03-09"
+categories:
+  - "apollo"
+  - "context"
+  - "graphql"
+  - "websocket"
+---
+
+Using [Apollo GraphQL Subscription](https://www.apollographql.com/docs/apollo-server/data/subscriptions) entails relying on the [graphql-ws library](https://github.com/enisdenjo/graphql-ws). There is some documentation surrounding handling context in both libraries, but a minor detail escapes both sides: where to set the context.
+
+# Why Using context?
+
+Before digging into the specifics of the implementation, let's quickly talk about the context. Context is a mechanism to share information between several steps in the lifetime of a request or connection. For example, in the subscription world, which is a WebSocket connection, the context is shared from the connection's inception until the connection is closed. The context can also get into a different dimension by sharing information with the future subscription resolvers functions.
+
+# Two Contexts
+
+There are two contexts: GraphQL Resolvers and the WebSocket. The GraphQL resolvers receive their context from the `onContext` function of the WebSocket function, and the WebSocket context shares the context by altering the context object. The vital detail is that one is filled by the return of the `onContext` while the other is not.
+
+# Setting GraphQL Context
+
+Using the initialization of the server (`useServer`) there is a possibility to define an `onConnect`, `context`, and `onClose`.
+
+The `onConnect` is the best place to authorize your user. The user may pass an authorization bearer token. The function `onConnect` is where you perform these tasks once and not at every message.
+
+Next, there is the `context`. Here is the tricky part: you need to set the context and return the context. For example:
+
+```ts
+useServer({
+  schema,
+  context: async (ctx) => {
+    const userId = await getFromJWTUserId(ctx.connectionParams.authorization); // Function you create that handle your JWT
+    ctx.userId = userId; // Available in onClose, onDisconnect, onError ...
+    return {
+      userId, // Available in all your resolvers' subscription functions
+    };
+  },
+  //...
+});
+```
+
+# Consuming GraphQL Context
+
+From here, you know when a user disconnects with the accuracy of its unique id:
+
+```ts
+//...
+
+onClose: async (ctx) => {
+  console.log(`${ctx.userId} disconnected`);
+};
+//...
+```
+
+Similarly, the `onError` can now have the user id in the error message. Also, inside your resolver, you can
+perform some filtering on the user if required because the resolver context has the `userId`.
+
+# Conclusion
+The confusion of setting the context resides in the fact that there are two contexts. Thus, you must place the same information twice if you want to share the context between your WebSocket functions and the Apollo GraphQL resolver functions.

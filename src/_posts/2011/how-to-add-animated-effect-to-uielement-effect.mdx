@@ -1,0 +1,83 @@
+---
+title: "How to add animated effect to UIElement.Effect"
+date: "2011-12-08"
+categories: 
+  - "silverlight"
+---
+
+If you want to make glowing a shape with Silverlight without having to use Xaml it's possible. At first, I thought it was impossible because I were using a third-party object that use their own type of Shape. After reading the property I figured out that the `Effect` property was exposed. This let us use `System.Windows.Media.Effects`.
+
+To make it looks glowing, I decided to use the `DropShadowEffect` which can have a blurry shadow.
+
+
+```csharp
+var errorEffect = new DropShadowEffect { 
+  BlurRadius = 50, 
+  Color = Color.FromArgb(255, 255, 0, 0), 
+  Direction = 0, 
+  ShadowDepth = 0, 
+  Opacity=1
+}; 
+```
+
+This create the blurry effect because the `ShadowDepth` is at 0 and the `BlurRadius` somehow high.
+
+The problem is that I wanted it to fade it and fade out which wasn't possible without using StoryBoard. I also thought that it was impossible cause the shape didn't have any story board or animation property. I was wrong.
+
+It's possible to use the static method of the StoryBoard class to set an animation or many animation to an object.
+
+Here is two ways to make the shape going on and off.
+
+
+```csharp
+ var shadowOpacityAnimation = new DoubleAnimationUsingKeyFrames { 
+  Duration = new Duration(TimeSpan.FromMilliseconds(10000)), RepeatBehavior = RepeatBehavior.Forever, AutoReverse = true }; 
+  shadowOpacityAnimation.KeyFrames.Add(new EasingDoubleKeyFrame { KeyTime = new TimeSpan(0,0,0,0), Value = 0 }); 
+  shadowOpacityAnimation.KeyFrames.Add(new EasingDoubleKeyFrame { KeyTime = new TimeSpan(0,0,0,1), Value = 1 }); 
+  shadowOpacityAnimation.KeyFrames.Add(new EasingDoubleKeyFrame { KeyTime = new TimeSpan(0,0,0,7), Value = 1 }); 
+  shadowOpacityAnimation.KeyFrames.Add(new EasingDoubleKeyFrame { KeyTime = new TimeSpan(0,0,0,10), Value = 0 }); 
+  Storyboard.SetTarget(shadowOpacityAnimation, myShape); 
+  Storyboard.SetTargetProperty(shadowOpacityAnimation, new PropertyPath("(UIElement.Effect).(DropShadowEffect.Opacity)")); 
+```
+
+This way let you use key frame which are some time mark where you can set value. In the above example, I set the total animation time to 1000 milliseconds and make it repeat forever. I also specify that I want the animation to go on to off, and off to on with the `AutoReverse` to True. I after that add 4 time marks which set the opacity to 0 and will fade in for 1 second to the maximum opacity value : 1. Then, I wait from 1 second to the 7th second with full opacity before going down to 0.
+
+The last two line tell to set the animation target to my shape. In that case, I were setting the shadowOpacityAnimation to myShape. The last one specify which property of myShape I will change. This can be a little bit more tricky. If you have blend, it's a good time to fire it up and check the generated Xaml. Otherwise, do not worry, it's logic.
+
+You need to create a PropertyPath which will tell what property to change.
+
+
+```csharp
+ ... new PropertyPath("(UIElement.Effect).(DropShadowEffect.Opacity)") .... 
+```
+
+In my case, I want to change the Opacity of the DropShadowEffect which are in the Effect of my objec that inherit this method from UIElement. As you can see, you have to write the sequence in reverse and you are done.
+
+If you want to make it glows without using opacity, you can also do it with the `BlurRadius` property.
+
+
+```csharp
+ var blurRadiousAnimation = new DoubleAnimation { 
+  From = 50, 
+  To = 0, 
+  Duration = new Duration(TimeSpan.FromMilliseconds(2000)), 
+  RepeatBehavior = RepeatBehavior.Forever, AutoReverse = true }; 
+  Storyboard.SetTarget(blurRadiousAnimation, addFlowShape); 
+  Storyboard.SetTargetProperty(blurRadiousAnimation, new PropertyPath("(UIElement.Effect).(DropShadowEffect.BlurRadius)"));
+
+
+```
+
+In that case, it's simpler. We do not use key frame but simply a DoubleAnimation that will go from one value to another. This one is changing the BlurRadius every 2 seconds.
+
+In both case, you need after to add the animation to the story board and to start it.
+
+
+```csharp
+ var stb = new Storyboard(); 
+ stb.Children.Add(shadowOpacityAnimation); 
+ stb.Children.Add(blurRadiousAnimation); 
+ stb.Begin(); 
+```
+
+In that case, I have added both animation. Yes, you can add more than 1 animation per object. Do not forget to use the _Begin()_ method and you will be all set.

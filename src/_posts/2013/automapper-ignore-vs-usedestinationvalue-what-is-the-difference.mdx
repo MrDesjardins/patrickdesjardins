@@ -1,0 +1,14 @@
+---
+title: "Automapper Ignore vs UseDestinationValue, what is the difference?"
+date: "2013-05-17"
+categories: 
+  - "automapper"
+---
+
+Automapper gives you big leverage when it's the time to transfer values from one object into another object. While most of the transfer is done automatically with AutoMapper, sometimes, specific values must not be transferred. Imagine the case for a destination class that has not the property or for a class that has do not want the value from the source but will compute the value in its constructor.
+
+Automapper gives the property `Ignore` which tells the mapper to not take the value of a property from the source class. `Ignore` not only ignore the mapping for the property, but also ignore the mapping of all inner properties. It means that if the property is not a primitive type, but another class, that if you are using `Ignore`, this class properties won't be mapped. So, A.B.C would be A.Null.
+
+But, if you have a scenario that you must not map a property, but map all inner properties should remain then you should use `UseDestinationValue`. That will end to be `A.B.C -> A.B.C` (where B is from the destination class, not the source class, probably initialized in the destination's constructor).
+
+To conclude, `Ignore` method will not map any property, neither the inner properties of the property defined to be ignored. `UseDestinationValue` will not map the property. It keeps the existing value of the property but will map the value of this one. It's the same with a collection. The reference of the collection stays the same while the object inside is mapped.

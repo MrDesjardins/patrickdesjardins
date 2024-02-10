@@ -1,0 +1,19 @@
+---
+title: "Grouping resource files with its designer"
+date: "2012-08-25"
+categories: 
+  - "c-sharp"
+  - "visual-studio"
+---
+
+You may come into project that has resource file that are not linked with their designer file. 
+
+![](/images/blog/ResourceNotGrouped.png)
+
+The cause is simply that the custom tool has been removed. You only need to set it back and the resource and designer will be linked.
+
+![](/images/blog/resourcegroupedproperties-400x149.png)
+
+Will create the designer file under the resource. You can then delete the old designer files. 
+
+![](/images/blog/groupedresource.png)

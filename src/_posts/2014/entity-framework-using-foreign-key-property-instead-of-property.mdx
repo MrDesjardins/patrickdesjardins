@@ -1,0 +1,23 @@
+---
+title: "Entity Framework Using Foreign Key Property Instead of Property"
+date: "2014-10-01"
+categories: 
+  - "entity-framework"
+---
+
+Entity Framework allows to have two types of association. The first one require less change in your classes because it uses the normal way to have association in oriented object. This is called **independent association**. For example, if you have a CAR class that has an OWNER than you just need to have in your CAR class a property of OWNER type. With Entity Framework, you will need to do something when saving the entity if you do not want to have a new instance of the OWNER. This can be done by attaching or by setting the property with Entity Framework to EntityState.Unchanged. However, it is simpler if you add in your classes not only the property of the type but also an additional property with the foreign key. For example, your CAR class could have the property of OWNER but also OWNERID.
+
+```csharp
+public class Car { public int Id { get; set; } public string Type { get; set; } public Person Owner { get; set; } public int OwnerId { get; set; } } public class Person { public int Id { get; set; } public string Name { get; set; } public DateTime BirthDate { get; set; } } 
+```
+
+Creating a new Car and associating the car to a Person (Owner) can be done without having to do any hard code. The code below adds a Person and then create a new Car with an association to the person that own the car.
+
+
+```csharp
+ private static void AddByIdInsteadOfProperty() { using (var context = new YourContext()) { var person = new Person { Name = "Automatically added from the property", BirthDate = DateTime.Now }; context.Set<Person>().Add(person); context.SaveChanges(); Console.WriteLine("Person id = " + person.Id); var car = new Car {OwnerId = person.Id, Type = "Honda"}; context.Set<Car>().Add(car); context.SaveChanges(); Console.WriteLine("Car id = " + car.Id); } } 
+```
+
+Without this property you would have to set the Owner property to a new Person with this one at the id of the existing person previously created. But, this will try to add the person and will crash because Entity Framework will try to insert an entity with an existing ID. To fix this, we need to set the property state to attached and it everything would commit without a problem. The reason that it is simpler to the property ID defined is that Entity Framework tracks only scalar property. Scalar property is a property with primitive value.
+
+You can find the [code here](https://github.com/MrDesjardins/EntityFrameworkTestConsole/tree/7ff7ac9bdbb3d73c971de0e8b45b3802ad7bd8c0) or download the [Zip file here](https://github.com/MrDesjardins/EntityFrameworkTestConsole/archive/7ff7ac9bdbb3d73c971de0e8b45b3802ad7bd8c0.zip).

@@ -1,0 +1,28 @@
+---
+title: "JavaScript Insertion Sort"
+date: "2017-07-12"
+categories:
+  - "javascript"
+---
+
+Insertion sort name is confusing. It won't swap in the same manner that the bubble sort or the selection sort did, however, it won't insert new element in the array neither. It will save the value to position in a variable and go down the array to find the proper place to swap the value. During the progress of going down the array, many swapping can occur.
+
+The idea is : Position at the beginning of the array by moving previous value up and finally swap once reach the correct spot.
+
+```typescript
+function insertionSort(arrayToSort) {
+  var key;
+  var length = arrayToSort.length;
+  for (var i = 1; i < length; i++) {
+    key = arrayToSort[i];
+    var j = i - 1;
+    while (j >= 0 && arrayToSort[j] > key) {
+      arrayToSort[j + 1] = arrayToSort[j];
+      j = j - 1;
+    }
+    arrayToSort[j + 1] = key;
+  }
+}
+```
+
+Insertion sort is `O(n^2)` with its double imbricated loop.

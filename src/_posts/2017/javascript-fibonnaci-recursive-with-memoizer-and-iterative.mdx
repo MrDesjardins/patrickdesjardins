@@ -1,0 +1,65 @@
+---
+title: "JavaScript Fibonnaci Recursive, with Memoizer and Iterative"
+date: "2017-09-18"
+categories:
+  - "javascript"
+---
+
+Fibonnaci numbers are a sequence of number that keep adding from previous result. It's a common problem that can be resolve with few lines of code by using recursivity. The formula is `F(x) = F(n-1) + F(n-1)`. The following code is a basic Fibonnaci implemented with a recursive loop.
+
+```typescript
+function fib(x) {
+  if (x <= 0) {
+    return 0;
+  }
+  if (x == 1 || x == 2) {
+    return 1;
+  } else {
+    return fib(x - 1) + fib(x - 2);
+  }
+}
+
+console.log("10:" + fib(10));
+```
+
+We can use a closure to keep in memory previous value. This increase the speed since you do not have to compute many time the same function. However, this solution will grow your memory consumption.
+
+```typescript
+var fibMemoize = (function () {
+  var memoize = [0, 1, 1];
+  var innerFib = function (x) {
+    var resultFromMemoize = memoize[x];
+    if (resultFromMemoize === undefined) {
+      memoize[x] = innerFib(x - 1) + innerFib(x - 2);
+      return memoize[x];
+    } else {
+      return resultFromMemoize;
+    }
+  };
+  return innerFib;
+})();
+
+console.log("10:" + fibMemoize(10));
+```
+
+It's also possible to implement an iterative version of Fibonnaci. We do not need to keep an array since we won't compute more than once every possibility (we do not have a branch of `n-1` and `n-2`). In that case, what we do is always keeping the `n-2` and `n-1` result in a variable and keep swapping the value while iterating to the number desired.
+
+```typescript
+function fibIterative(x) {
+  if (x <= 0) {
+    return 0;
+  }
+  var n2 = 1;
+  var n1 = 1;
+  for (var i = 2; i < x - 1; i++) {
+    var newValue = n2 + n1;
+    n2 = n1;
+    n1 = newValue;
+  }
+  return n2 + n1;
+}
+
+console.log("10 iterative:" + fibIterative(10));
+```
+
+There is plenty of other solutions, but these three are the basic ones.

@@ -1,0 +1,43 @@
+---
+title: "Asp.Net MVC, How to Simplify your Testing with a Running Contextual Class"
+date: "2015-02-13"
+categories: 
+  - "asp-mvc"
+  - "test"
+---
+
+A good practice is to inject a `running context` class and a class that has information about the current user. This can be injected by your favorite injector of control container. I like dividing one for the running context and one for the current user. The first one get information about the running context and use the second one. In fact, the running context has many advantages. It allows you to easily separate from any of your code all information about how to get the user and also about the time. The time issue can become a nightmare if you are using directly DateTime.Now all over the place in your code. The problem is that you may have different timezone and you may want to facade the logic that handle it. This is often the cause if you have severs around the world. It is also the simplest way to unit test. If you want to test something about the current date, using the running context to set the "current time" is easier. It allows you to test all different paths. Here is an example in code of both interface. 
+
+```csharp
+public interface IRunningContext { string GetUserId(); string GetUserDisplayName(); DateTime GetCurrentTime(); string GetDomainNameWithPort(); }
+
+public interface ICurrentUserInformation { string GetCurrentUserName(); string GetCurrentUserId(); string GetCurrentEmail(); } 
+```
+
+The concrete representation of these interfaces could be one for Http that use the HttpContext for the user and the current DateTime for the time. 
+
+```csharp
+ public class HttpContextCurrentUserInformation : ICurrentUserInformation { public string GetCurrentUserName() { return HttpContext.Current.User.Identity.Name; }
+
+public string GetCurrentUserId() { return HttpContext.Current.User.Identity.GetUserId(); }
+
+public string GetCurrentEmail() { return ""; } }
+
+public class HttpRunningContext:IRunningContext { private readonly ICurrentUserInformation currentUserInformation; public HttpRunningContext(ICurrentUserInformation principal) { currentUserInformation = principal; }
+
+public string GetUserId() { return currentUserInformation.GetCurrentUserId(); }
+
+public string GetUserDisplayName() { return currentUserInformation.GetCurrentUserName(); }
+
+public DateTime GetCurrentTime() { return DateTime.Now; }
+
+public string GetDomainNameWithPort() { var stringDomain = HttpContext.Current.Request.Url.Authority; return stringDomain; } } 
+```
+
+Having these interface allows to easily mock those interfaces. You can have in your code initialization something that setup your running context. Here is a code with `Moq Mocking Framework`. 
+
+```csharp
+ protected Mock<IRunningContext> runningContext; //... [TestInitialize] public void InitializeBetweenTest() { runningContext = new Mock<IRunningContext>(); runningContext.Setup(d => d.GetCurrentTime()).Returns(new DateTime(2014, 03, 02)); runningContext.Setup(d => d.GetUserId()).Returns(ApplicationUser.SYSTEM_TEST_USER_ID); } 
+```
+
+With few line of code, you can test code for different users but also different time without having to do a lots of gymnastic. For example, if you have code that must be executed only between a specific time frame, if you need to test this condition without that pattern, you are almost screw. However, having this interface being mockable allows you to modify the return's value of the `GetCurrentTime's` method and you are set.

@@ -1,0 +1,111 @@
+---
+title: "How to bind a collection of Javascript items to a abstracted Asp.Net MVC collection"
+date: "2013-02-13"
+categories: 
+  - "asp-mvc"
+  - "javascript"
+---
+
+This scenario is plausible in multiple business domain. Let say that you have a collection that is built from an external service that your Javascript need to send back to the server or even simpler, let just say that you have a Javascript grid that when you save you take all rows of your table and send it back to the server but this one has a model which is a collection of Interface. How you can bind everything back together?
+
+First, let's take some minutes to understand the mecanism. The example of a the collection is simpler to understand. We have a Model that is bound to the View and the collection is ICollection. Having to create a table is a simple matter of looping the collection and display the properties needed of the interface to the UI.
+
+For example here is what could be the Model: 
+
+```csharp
+ UIHint("MyTableTemplate")] public readonly ICollection<IMyInterface> MyCollection; 
+``` 
+
+The MyTableTemplate simply loop the collection and display everything inside a TABLE, with multiple TR and TD. When it's the time to save back everything to the server, we need to send back the collection which could have changed via Javascript. Rows can have been deleted, and some added. How to send back this table to the Asp.Net server? Simply by using serialization. On the submit, we need to hook the click even and store the table serialized into an hidden field. The hidden field must have the same name of the Model bound. In our case, we will have an hidden field with the name "MyCollection". The code below show you how to do it generically, by having the Template using the information about the name of the property and use it for the hidden field.
+
+
+```csharp
+ @{ var controlPropertyName = ViewData.TemplateInfo.HtmlFieldPrefix; } 
+ <input type="hidden" value="" name="@controlPropertyName"/> 
+```
+
+Having the same name for the hidden field and the model property let Asp.Net MVC know where to map the information.
+
+The Javascript invoked into the serialization is quite simple. It takes all rows and you create a Javascript object that contains the info. The code below display how to serialize with Javascript 2 cells per rows. As you can see, a "data-key" was set by the template to the row to have the unique identifier. This let us know that this row is not new because new row won't have any id. The deserialization will put the default value for your key at the deserialization time.
+
+```typescript
+var obj = []; 
+$('#YouTable tbody tr').each(function () { 
+  var tempo = {}; 
+  tempo.PropertyKey = $(this).attr('data-key'); 
+  tempo.Property1 = $(this).find('td').eq(0).html(); 
+  tempo.Property2 = $(this).find('td').eq(1).html(); 
+  obj.push(tempo); 
+});
+
+$('#YourHiddenField').val(JSON.stringify(obj)); 
+``` 
+
+
+Second, let's see what happen. Asp.Net MVC will try to bind. In fact, it should crash and it's logic because we try to bind to an interface. What we need to do is to create a ModelBinder and handle this specific case. Since you should know which concrete type is used for this case, when deserializing you simply need to specify to which concrete type the deserializer must instanciate.
+
+The first step is to create a class that inherit from IModelBinder. This will give you the BindModel method.
+
+
+```csharp
+ public class MyInterfaceTypeModelBinder:IModelBinder { 
+   public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext) { 
+     var valueResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName); 
+     var modelState = new ModelState {Value = valueResult};
+
+    MyInterface actualValue = null; 
+    try { 
+      actualValue = JsonConvert.DeserializeObject<MyInterface>(valueResult.AttemptedValue); 
+    } catch (FormatException e) { 
+      modelState.Errors.Add(e); 
+    } 
+    bindingContext.ModelState.Add(bindingContext.ModelName, modelState); 
+    return actualValue;
+  } 
+} 
+```
+
+We also need to register the ModelBinder in the Global.asax.cs inside the ApplicationStart method.
+
+
+```csharp
+ ModelBinders.Binders.Add(typeof(IMyInterface), new MyInterfaceTypeModelBinder()); 
+```
+
+In the case that the IMyInterface would have some property which were interface too, you may need to specify to the deserializer to what type to map them. Here is an example.
+
+```csharp
+public class MyInterfaceTypeModelBinder:IModelBinder { 
+  public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext) { 
+    var valueResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName); 
+    var modelState = new ModelState {Value = valueResult};
+
+    MyInterface actualValue = null; 
+    var settings = new JsonSerializerSettings(); 
+    settings.Converters.Add(new MyOtherInterfaceTypeConverter()); 
+    try { 
+      actualValue = JsonConvert.DeserializeObject<MyInterface>(valueResult.AttemptedValue, settings); 
+    } catch (FormatException e) { 
+      modelState.Errors.Add(e); 
+    } 
+    bindingContext.ModelState.Add(bindingContext.ModelName, modelState); 
+    return actualValue; 
+    } 
+  } 
+
+  public class MyOtherInterfaceTypeConverter : JsonConverter { 
+    public override bool CanConvert(Type objectType) { 
+      return (objectType == typeof(IMyOtherInterface)); 
+    }
+
+  public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) { 
+    return serializer.Deserialize<MyOtherInterfaceConcrete>(reader); 
+  }
+
+  public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) { 
+    //... to be done if we care about serialization... 
+  } 
+}
+```
+
+From here, the model binder of Asp.Net MVC will use your model binder for your type and sub type used in the process. This whole post has been used [Json Newton library](http://james.newtonking.com/pages/json-net.aspx) for deserializing the Javascript JSON object.

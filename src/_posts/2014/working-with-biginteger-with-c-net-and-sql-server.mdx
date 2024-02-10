@@ -1,0 +1,24 @@
+---
+title: "Working with BigInteger with C# .Net and Sql Server"
+date: "2014-07-29"
+categories: 
+  - "c-sharp"
+  - "sql"
+---
+
+If you must pass to a Store Procedure or just for a simple query a variable of type `BigInt` beware you can be surprised with the result. `BigInt` in SqlServer has nothing to do with the `BigInteger` class of .Net. `BigInt` in Sql exists a long way before `BigInteger` from .Net (4.0). If you are using `BigInteger` you will get a _System.InvalidCastException_.
+
+> An exception of type 'System.InvalidCastException' occurred in System.Data.dll but was not handled in user code
+> 
+> Additional information: Failed to convert parameter value from a BigInteger to a Int64.
+
+To pass a value to Sql Server of type `BigInt`, you must use a `long` in .Net.
+
+For example, here is how to pass a `long` to SqlServer using SqlParameter.
+
+```csharp
+ long myBigNumber = 1; 
+ var myParameter = new SqlParameter("@myParameterName", myBigNumber) { SqlDbType = SqlDbType.BigInt }; 
+```
+
+You have to use a long for the value, but you specify the type to be of `SqlDbType.BigInt`. Has you can see, we do not need to specify the `DbType` but only the `SqlDbType`. We are using a long because a `long` and `Int64` is the same type.

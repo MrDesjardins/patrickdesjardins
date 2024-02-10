@@ -1,0 +1,38 @@
+---
+title: "How to Curl a GraphQL API?"
+date: "2019-03-19"
+categories: 
+  - "general"
+---
+
+In the last few months, I have been implementing a GraphQL server in TypeScript and NodeJS using Apollo. You can build your query with the playground and see the result immediately. At the top, a "Curl" button generates a Curl command. However, it writes the command with many options that are not required.
+
+The generated command line has "--compressed" and "--data-binary" which might be fine for few people but in some case, these options were not available. I figure out that you do not need to provide them and still be able to invoke the GraphQL server.
+
+```
+curl 'http://retracted.net/playground' \\ 
+  -H 'Accept-Encoding: gzip, deflate, br' \\
+  -H 'Content-Type: application/json' \\ 
+  -H 'Accept: application/json' \\
+  -H 'Connection: keep-alive' \\
+  -H 'DNT: 1' \\
+  -H 'Origin: http://retracted.net' \\
+  --data-binary '{"query":"{\\n  org(orgId: 0) {\\n    nameLong,\\n    nameShort\\n  }\\n}\\n"}' \\
+  --compressed
+```
+
+The generated Curl command line for GraphQL has many headers that can be removed. In my case, I needed to add the authorization header because the service is private.
+
+```
+curl \\
+  -X POST \\
+  -H "Content-Type: application/json" \\
+  -H "authorization: Bearer xxx" \\
+  --data '{"query":"{\\n  org(orgId: 0) {\\n    nameLong,\\n    nameShort\\n  }\\n}\\n"}' \\
+  http://retracted.net/api
+
+```
+
+However, even with the additional header, the command is more straightforward. Instead of requesting the data with `--data-binary`, it is possible to query with `--data`. The compression can be removed if the `accept-encoding` is not specified. The content we will receive is of JSON type, hence we need to specify the `content-type`
+
+In conclusion, this was a short essay on how to use Curl with GraphQL. It can be handy if you have internal tools that mimic Curl but without the more advanced options like compression or binary data.

@@ -1,0 +1,109 @@
+---
+title: "Dissecting the applyMiddleware Function"
+date: "2018-01-16"
+categories: 
+  - "redux"
+---
+
+`applyMiddleware` is probably the most popular [store enhancer](./dissecting-redux-compose)\[1\]. 
+Most people don't realize that a middleware is a concept built as a store enhancer and in this article, we will see how the concept of middleware leverages Redux's store enhancer hook on the store to allows creating custom code to be executed between the dispatch of an action and the time the action reaches the reducers.
+
+The `applyMiddleware` is called when the store is created by the [_createStore_ function](./dissecting-the-createstore-of-redux)\[2\]. The first parameter are the reducers, and the second parameter is the composition of store enhancer. `applyMiddleware` is most of the time called with the compose function and allows to setup many middlewares. Here is a basic setup with _createStore_ where we can see how the `applyMiddleware` is invoked.
+
+```typescript
+const store = createStore( reducers, compose( applyMiddleware(middleware1, middleware2, middleware2), aSecondStoreEnhancerHere ) ) 
+``` 
+
+
+If we recall from the article entitled "dissecting the createstore"\[2\], the _createStore_ function call at some point the composition of enhancers like the code below this paragraph. For the sake of simplicity, we will assume that we are not composing store enhancer but only have one which will be the `applyMiddleware`. The only difference with the composition is that the composition would be called one after the other one in sequence. The main idea to grasp at the moment is not the possibility of calling several enhancers one after the other but that the enhancer calls the store and that the return function of the enhancer is called with the reducers and the preloaded state.
+
+```typescript
+return enhancer(createStore)(reducer, preloadedState) 
+``` 
+
+
+This is crucial to visualize. The enhancer is a function that takes as a parameter the store and outputs a function that will be executed by the createStore with two parameters which is the reducer and preloaded state. This function will return at its turn the store and how to dispatch action to this one.
+
+This is why the applyMiddleware has the following shapes:
+
+```typescript
+export default function applyMiddleware(...middlewares) { 
+  return (createStore) => (...args) => {
+    // Code removed for brevity
+    return { ...store, dispatch };
+  } 
+} 
+``` 
+
+If we deconstruct or de-generalize the code of the _createstore_ to be using directly the `applyMiddleware` store enhancer we would end up with the following code.
+
+```typescript
+return applyMiddleware(createStore)(reducer, preloadedState)
+
+//Or:
+
+const createStoreFromApplyMiddleware = applyMiddleware(createStore); 
+return createStoreFromApplyMiddleware(reducer, preloadedState); 
+``` 
+
+
+The `applyMiddleware` code first task is to call the actual createStore function which returns the store. The second task is to get a reference to the dispatch function. This will be used in the third task which is to create the `middlewareAPI` object who is sent to every middleware.
+
+```typescript
+const store = createStore(...args);
+let dispatch = store.dispatch;
+let chain = [];
+
+const middlewareAPI = { 
+  getState: store.getState, 
+  dispatch: (...args) => dispatch(...args) 
+} 
+// To be continued, removed for brivety 
+``` 
+
+
+Since `applyMiddleware` is having a collection of middleware, the store `applyMiddleware` store enhancer will call each of them with the `middlewareAPI` and return all the middleware return values into a chain of result. The chain of results is then composed and invoked with the store's dispatch which allows every middleware to be executed with a `next` argument that will move the next composed middleware and still have them access the `middlewareAPI` which contains the dispatch of the store and the current state of the reducer.
+
+```typescript
+chain = middlewares.map(middleware => middleware(middlewareAPI)) dispatch = compose(...chain)(store.dispatch) 
+``` 
+
+
+At the end, the whole store enhancer is about 20 lines of code.
+
+```typescript
+export default function applyMiddleware(...middlewares) { 
+  return (createStore) => 
+    (...args) => { 
+      const store = createStore(...args);
+      let dispatch = store.dispatch;
+      let chain = [];
+
+      const middlewareAPI = { 
+        getState: store.getState, 
+        dispatch: (...args) => dispatch(...args) 
+      }; 
+      chain = middlewares.map(middleware => middleware(middlewareAPI));
+      dispatch = compose(...chain)(store.dispatch);
+
+      return { ...store, dispatch } 
+  } 
+} 
+``` 
+
+As we can see, it's possible to have different behavior like altering the dispatch function in the actual case with the middleware. The function is actually called once at the creation of the store which set up the chain to be called once a dispatch is executed. Since the code is overriding the dispatch and returning a wrapper of composed functions (middleware), every time something is dispatched it will be pass-through all the middleware. The capability to alter dispatch in a [store enhancer allows injecting code to be executed after a store](./how-to-have-a-hook-before-a-redux-store-notify-its-subscriber-with-typescript)\[3\] is being modified. The code below is an excerpt that illustrates how the compose function could be replaced and used to be returned allowing a _hook_ function.
+
+```typescript
+function dispatch(...args) { 
+  const dispatchResult = store.dispatch(dispatchArgs); 
+  hook(notifyListeners, store); 
+  return dispatchResult; 
+} 
+``` 
+
+
+In this article, we have brushed the store enhancer of middleware. In the next article, we will see how middlewares actual work and see in detail how the popular Thunk middleware brings asynchronous capability.
+
+- 1: [Redux Compose](./blog/dissecting-redux-compose)
+- 2: [Create Store](./dissecting-the-createstore-of-redux)
+- 3: [Redux Store Notify](./how-to-have-a-hook-before-a-redux-store-notify-its-subscriber-with-typescript)

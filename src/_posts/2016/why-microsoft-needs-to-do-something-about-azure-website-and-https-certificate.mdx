@@ -1,0 +1,16 @@
+---
+title: "Why Microsoft needs to do something about Azure Website and Https certificate"
+date: "2016-10-24"
+categories: 
+  - "azure"
+---
+
+Websites are going Https as a normal protocol now. It's secure and faster than it was. Even [Google gives a push in their ranking algorithm](https://webmasters.googleblog.com/2014/08/https-as-ranking-signal.html) to websites that are https. With Azure, the free and easy solution is to use [LetsEncrypt](https://letsencrypt.org/). It's a company that give for free certificate with a 3 months live before it expires. Afterward, it can be renewed. However, it's a cumbersome task. Microsoft Azure had a top rated [UserVoice](https://feedback.azure.com/forums/169385-websites/suggestions/6737285-add-support-for-free-ssl-certs-like-those-from-let) asking to bring Https on Azure and since LetsEncrypt provided something convenient and that someone on the web created an [Azure extension](https://gooroo.io/GoorooTHINK/Article/16420/Lets-Encrypt-Azure-Web-Apps-the-Free-and-Easy-Way/21872#.V_HM0PArIuU) to setup it up, Microsoft closed this need as "done". It's not a surprise to see that now, the top ranked request in Azure [UserVoice](https://feedback.azure.com/forums/169385-web-apps-formerly-websites/suggestions/15099342-add-support-for-let-s-encrypt-in-the-azure-portal) is to have something that doesn't rely on a third party.
+
+While [LetsEncrypt](https://letsencrypt.org/) is doing a great job, the problem is the free Azure Extension. It's maintained by someone outside Microsoft and it's not as ready, follow or is compatible with other Azure features. While the best solution would be to just have to use a checkbox to activate Https, at least a solution that is not broken should exist.
+
+Some may have problem during setup -- I did not. It went all smooth and took less than 1 hour. The problem started few weeks after the installed. First, it doesn't support Azure Slot. It means that every time you switch between slot, something break. For example, switching slot break the jobs that are responsible to renew the certificate in 3 months. I learned that the hard way by having an email from LetsEncrypt few days before the certification expired.
+
+Second, how to debug what this extension is doing is not clear and documented. It's pretty black-boxed. You can end up having multiple certificated installed for the same DNS. That is what happen to me when I reinstalled the third-party Azure Extension. And, even if I had many new certificated installed, I was still receiving from LetsEncrypt notice about that my certificate was about to expire.
+
+At the end, if you are using Azure Deployment Slot and the Azure Extension for LetsEncrypt, you will have to manually to install again the certificate. It's not a big deal, but it's not working "as advertised". I do not understand how come Microsoft simply closed this first UserVoice request without evaluating that implications. The current proposed solution is broken with how Azure's features and not maintained by anyone active (nothing has changed in the last 3 months).

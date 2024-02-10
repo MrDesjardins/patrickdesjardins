@@ -1,0 +1,39 @@
+===
+Last Article Date: 2022-07-29
+
+=== Future Topics
+💡 Node JS JWT
+💡 https://stackoverflow.com/questions/47165108/docker-environment-variables-in-multi-stage-builds
+💡 How to remove docker container from registry
+
+=== Draft Started
+✍️ 2022-11-24:  
+
+=== Draft Started but frozen
+🥶 2122-09-14: How to Access your Web Application on Kubernetes Azure with Ingress
+🥶 2122-10-01: How to Add HTTPS to your Kubernetes Ingress
+
+=== Completed waiting
+
+⏲️ 2022-12-23: Keys to success with remote work as a software engineer
+⏲️ 2022-12-28: Recapitulation 2022
+
+
+=== Published
+✅ 2022-12-15: Sharing Code Between TypeScript Repositories Using Git Submodules
+✅ 2022-11-21: How to debug Rust CLI application with VsCode using Windows
+✅ 2022-11-16: How to Minimized React Children Function Component Render
+✅ 2022-11-04: Structure Memory when Using a Function
+✅ 2022-11-01: Migration of Hilbert Curve from TypeScript to Rust
+✅ 2022-10-27: React with CSS Variable
+✅ 2022-10-20: Using Framer Motion to animate keyframe event on a parent following up by a children transition
+✅ 2022-10-10: How to animate unmounting of a child with Framer Motion
+✅ 2022-10-04: Using Framer Motion to transition (position) between two React components
+✅ 2022-09-21: How to fix the import EcmaScript module error with Create React App and Framer
+✅ 2022-09-14: How to use Helm Chart to configure dynamically your Kubernetes file for beginner?
+✅ 2022-09-07: How to Access your Web Application on Kubernetes Azure
+✅ 2022-08-26: How to Debug a Kubernetes Pod that Crash at Startup (works on Microsoft Azure Kubernetes)
+✅ 2022-08-23: How to reverse proxy your NodeJS frontend server with NGINX using Docker to talk to your backend?
+✅ 2022-08-11: How to have ViteJS (via SolidJS) to Hot Reload when inside a Docker Container
+✅ 2022-08-05: An Introduction to Microsoft Azure and Kubernetes using Helm and Docker Images
+✅ 2022-07-28: How to use Kubernetes with Microsoft Azure and GitHub and how to debug if it does not workout

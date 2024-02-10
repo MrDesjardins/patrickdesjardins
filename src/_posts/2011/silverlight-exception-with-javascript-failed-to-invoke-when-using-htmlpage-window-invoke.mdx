@@ -1,0 +1,15 @@
+---
+title: "Silverlight exception with javascript \"failed to invoke\" when using HtmlPage.Window.Invoke"
+date: "2011-11-06"
+categories: 
+  - "javascript"
+  - "silverlight"
+---
+
+Silverlight can interact with the Javascript that reside in the page that this one is hold. We have seen in the [Silverlight Communication](./silverlight-communication-with-javascript) post that it's possible with the use of _System.Windows.Browser.HtmlPage.Window.Invoke_.
+
+Sometime, an exception can be thrown with the title `_"InvalidOperationException was unhandled by user code"_`. The troubleshooting tips should contain something like `_"Failed to invoke"_`.
+
+![](/images/blog/invalid-400x213.png)
+
+In fact, what happen is the Javascript is throwing an error. It can be any errors not catch in the Javascript. So, when you get this error, the best thing to do is to launch a Javascript Developer tool (for example F12 with Internet Explorer) and activate the Script Debugging functionality. When an error will be thrown and not catch, the tool will break and you will be able to change your script.

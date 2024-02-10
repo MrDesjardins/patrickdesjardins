@@ -1,0 +1,143 @@
+---
+title: "How to reverse proxy your NodeJS frontend server with NGINX using Docker to talk to your backend?"
+date: "2022-08-23"
+categories:
+  - "docker"
+  - "container"
+---
+
+The title is a little longer to hold all the proper keywords, but we will discuss how you can have your web application perform HTTP requests to your frontend instead of directly accessing your backend API. 
+
+
+
+The reason can be multiple, sometimes is a question of permission. The backend is only available for specific servers or users. It helps to prevent exposing your backend infrastructure, simplify the entry point, allows to narrow the security, and avoid CORS complexity. In my last case, I wanted to configure the frontend code to be unaware of the backend DNS has it would be deployed on Kubernetes and who knows what will be the backend when deployed. Indeed, there are ways to get everything, but it is more complex. You will need to pass the environment variable when the containers start, which limits an application already built that runs on a browser since the environment variables are unavailable inside a browser. You can have a DNS to your backend API; that way, when you build your frontend, you can have the DNS, but that requires more pieces to be in place, like a DNS and public security access to the backend. All that complexity can be avoided with a reverse proxy.
+
+# Reverse Proxy Explained
+The idea of a reverse proxy is to perform a call to the frontend server that will redirect the request to another server.
+
+![](/images/blog/reverseproxy-dev-env.png)
+
+
+Let's start with the dev environment of a React application. The image above shows that the first two steps are the same as usual. If you are using CRA or SolidJS, they both run a web development server (default with port `3000`). It allows TypeScript and React to be transformed into HTML and JavaScript. The first step requests HTML and JavaScript. The difference with reverse proxy is that the browser needs to perform an HTTP call to fetch data that will not achieve the request against the backend but like step three on the frontend. The frontend receives the request and redirects it to the backend. The like three to four shows the redirect. The response moves similarly but at the opposite direction.
+
+The question is, how do you do the reverse proxy? And maybe a second question is why I added the initial default of _dev environment_? A reverse proxy is a feature available to many web servers like Apache and NGINX. That is not an issue with production because with React application when in production, we release only static files that are hosted by a web server like Apache or NGINX. Now you see where the fun will start: we need to introduce a web server parallel to the one provided for development.
+
+# Development Environment with NGINX
+Let's assume we have one Docker image for the frontend and one for the backend. Let's take that we want to stay that way and not introduce an additional Docker image for the web server. That makes sense to keep the architecture simple but also cohesive between development and production, where we want a single image for the frontend web server and one for the backend api.
+
+![](/images/blog/reverseproxy-dev-prod.png)
+
+The image illustrates the development and production Docker images. At the top, the development where NGINX is fronting all the requests and deciding whether to direct the request to the Node Dev Server (CRA, ViteJs, etc). It redirects the request to the backend. At the bottom of the illustration is the production environment. NGINX remains the one taking all the requests and redirecting, that time, no need to have inside the Docker container a second Node Dev Server, only serving the built files.
+
+# Docker Configuration
+In my case, I was migrating a project relying on the Node Docker image for development and an NGINX image for production. So, that is the first change. Both now depend on the NGINX docker image, but the development one will have to install Node and run it inside the container.
+
+
+```
+FROM nginx:1.21.6 AS development
+
+# Install Python and NPM
+RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    python3 \
+    npm
+
+# Install Node Version 16
+RUN npm install npm@latest -g && \
+    npm install n -g && \
+    n 16
+
+# Set the dev nginx.conf
+COPY services/frontend/nginx.development.conf /etc/nginx/conf.d/default.conf
+
+# Other tasks here...
+# More tasks here...
+
+CMD npm run start:development & nginx -g "daemon off;"
+```
+
+Before building the code, a copy of NGINX configuration must be done. The file `nginx.development.conf` is unique for development and contains different reverse proxy instructions than in production. I'm skipping some tasks you can add between your configuration and starting because it is irrelevant. What is essential is the `CMD` that starts the Node Dev server and, in parallel, starts NGINX.
+
+![](/images/blog/reverseproxy-dev-port.png)
+
+
+The Node Dev Server runs on port `3000`, NGINX runs on port `80`. The Docker image port is set to : `80:80`. So, it means that any request that reach the Docker container on port 80 is redirected to the NGINX server. Then, NGINX can move that request to the backend API (different IP and port) or redirect it internally to port `3000`. The redirection is called reverse proxy and is all performed inside the `nginx_developement.conf` file.
+
+```
+upstream backendupstream {
+    server backend:80;
+}
+
+server {
+  listen 80;
+
+  location / {
+    proxy_http_version 1.1;
+    proxy_cache_bypass $http_upgrade;
+
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    proxy_pass http://127.0.0.1:3000/; # Trailing backslash is required for not having the location sent to the backend
+  }
+
+  location /api/ {
+    proxy_http_version 1.1;
+    proxy_cache_bypass $http_upgrade;
+
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    proxy_pass http://backendupstream/; # Trailing backslash is required for not having the location sent to the backend
+  }
+}
+```
+One key piece to understand is that the reverse proxy is performed using a pattern matching of the URL. Also, NGINX does it from the more precise pattern matching a request to a more loose one. In our example, a request performed with `/api/endpointhere` is caught with the second `location` because it is more accurate than the first location, which is everything else (using the root `/`). Inside the location, NGINX adds some HTTP headers. You choose the one you desire. The most important instruction is the `proxy_pass http://backendupstream/;`. The `proxy_pass` commands tell NGINX where to redirect the request. In that case, the HTTP request is redirected to the address `http://backendupstream/`, which is defined at the top of the script as `backend:80`. The `backend` is the name of the service inside the `docker-compose.yaml` file in the development environment. Because they are on the same Docker Network, the NGINX server is able to communicate with the backend. 
+
+An important detail is the trailing `/` at the end of the `proxy_pass`. It allows trimming the `/api/` from the URL when sending the request to the backend API. That way, the backend API is unaware that it was a reverse proxy using an URL different than the expected one. The backend API expects the request to reach with `/endpoint1/...` format and not `/api/endpoints1/...`. Avoiding the `/` would make the backend receive the full original URL sent from the browser with the `api` prefix. Most of the time, you want to avoid it because the routing system of your backend shouldn't mingle in the business of custom reverse proxy URL logic.
+
+# Docker Configuration Production
+Some detail must be adjusted for production. First, NGINX configuration needs to redirect to a different upstream. The Docker service name is not possible anymore as (in my case) I'm deploying with Kubernetes. Fortunately, a similar concept exists, and referring to a Kubernetes service (load-balancer) does the trick. The second modification is the `/` proxy_pass that must not redirect to a local Node Dev Server but serve the JavaScript/Html/CSS static files.
+
+
+```
+upstream backendupstream {
+    server backend-service:80;
+}
+
+server {
+  listen 80;
+
+  location / { # No proxy to the ViteJS server, it only host the static files
+    root /usr/share/nginx/html/;
+    include /etc/nginx/mime.types;
+    try_files $uri $uri/ /index.html;
+  }
+
+  location /api/ {
+    proxy_http_version 1.1;
+    proxy_cache_bypass $http_upgrade;
+
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    proxy_pass http://backendupstream/; # Trailing backslash is required for not having the location sent to the backend
+  }
+
+}
+```
+
+# Conclusion
+For this project, I had to adjust WebSockets to get into the reverse proxy. The concept is similar to a unique endpoint `/ws` that redirect to the backend end. In this project, I used NGINX, but I have done it for a longer time with Apache. It is the same in the end and should not impact your decision to use or not a reverse proxy. Keep in mind that by redirecting all the traffic to the frontend that there is a down point that the frontend servers will need to scale differently: it does not only serve the static files in production, but it also behaves as a proxy that receives all requests. However, most people will tell you that it is a small price to pay for more benefits and simplicity of security.

@@ -1,0 +1,19 @@
+.sectionFixedWitdh {
+  display: flex;
+  flex-flow: wrap;
+  row-gap: 20px;
+  justify-content: space-around;
+  width: 80%;
+  margin: auto;
+}
+.sectionFixedWitdhContent {
+  flex-grow: 0;
+  flex-shrink: 0;
+  flex-basis: var(--size-column);
+}
+
+@media only screen and (max-width: 500px) {
+  .sectionFixedWitdhContent {
+    flex: 1 1 100%;
+  }
+}

@@ -1,0 +1,106 @@
+---
+title: "How to have a single project to hold multiple scheduled Azure Webjobs"
+date: "2016-04-25"
+categories: 
+  - "azure"
+---
+
+They are many ways to run scheduled jobs on Windows Azure. You can have a console application uploaded and configured directly on the portal. This first solution isn't perfect because the schedule is done directly on the website, would be better to have it on code repository.
+
+You can use the Azure Scheduler to setup trigger to manual job, but this is more expense and still require configurations that are not in a great format (as Cronjob).
+
+You can create a file per Azure WebJob named _settings.job_ and setup a `Cronjob` schedule. This is good but still need one project per Azure Webjob. The latest solution works fine. In the `Properties/webjobs-list.json` of your website, you define a single entry for each webjobs. When you publish your website, the Webjobs get updated. Here is an example of the `webjobs-list.json`.
+
+```typescript
+{ 
+  "$schema": "http://schemastore.org/schemas/json/webjobs-list.json", 
+  "WebJobs": [ 
+    { "filePath": "../Jobs/webjob1.csproj" }, 
+    { "filePath": "../Jobs/webjob2.csproj" }, 
+    { "filePath": "../Jobs/webjob3.csproj" }, 
+    ... ... ] } 
+``` 
+
+
+This is an example of one settings.job (in the previous example, we would have 1 per webjob, thus 3). 
+```typescript
+{ 
+  "schedule": "0 0 */1 * * 1-5" 
+} 
+``` 
+ You will also need a third file, also 1 per Webjobs called `webjob-publish-settings.json`. This one is next to the Properties/webjobs-list.json. This one define the Webjobs properties. It needs to be set to run `OnDemand`. Here is an example:
+
+```typescript
+{ 
+  "$schema": "http://schemastore.org/schemas/json/webjob-publish-settings.json", 
+  "webJobName": "ScriptBotBuyContest", 
+  "startTime": null, 
+  "endTime": null, 
+  "jobRecurrenceFrequency": null, 
+  "interval": null, 
+  "runMode": "OnDemand" 
+} 
+``` 
+
+
+Still, the problem is that we need to have a lot of work to do on each of you WebJobs since you need to have 2 .json file per WebJobs, a project per WebJobs and defined all of them in the website.
+
+[Microsoft Azure WebJobs Sdk Extensions](https://github.com/Azure/azure-webjobs-sdk-extensions#timertrigger) provides an answer to that problem : 1 project that can run multiple scheduled WebJobs with the feature named `Timer Trigger`.
+
+The first step, is to create a new Console Project and few Nuget package. The default one for WebJobs "Microsoft.Azure.WebJobs" is needed as well as "Microsoft.Web.WebJobs.Publish" that will let you public the WebJobs project with you website. Th third library needed is the Extensions on named "Microsoft.Azure.WebJobs.Extensions". This one depend on the package called "ncrontab". You will also needs "WindowsAzure.Storage" because some information needs to be stored on Azure Storage.
+
+The second step, is to add 2 entries in Connection Strings. 
+```xml
+ <add name="AzureWebJobsDashboard" connectionString="DefaultEndpointsProtocol=https;AccountName=...;AccountKey=..." /> 
+ <add name="AzureWebJobsStorage" connectionString="DefaultEndpointsProtocol=https;AccountName=...;AccountKey=..." /> 
+```
+
+
+You can create an Azure Storage for Dev and for Production if you do not want to mix up your local test. I haven't mentioned it but this solution will let you run it locally just by running from Visual Studio, with the normal "F5" debug this console.
+
+The third step is to create a file named `webjob-publish-settings.json` under the Properties folder of your console solution. The important detail is to set the `runMode` to `Continuous`. The content should look like the following:
+
+```typescript
+{ 
+  "$schema": "http://schemastore.org/schemas/json/webjob-publish-settings.json", 
+  "webJobName": "ScriptJobs", 
+  "startTime": null, 
+  "endTime": null, 
+  "jobRecurrenceFrequency": null, 
+  "interval": null, 
+  "runMode": "Continuous" 
+} 
+``` 
+
+
+Forth and finally, you need to have your startup class having a specific initialization and 1 static method per job you have. If you have 50 jobs, than this class would have 50 static methods.
+
+
+```csharp
+ static void Main() { 
+   var config = new JobHostConfiguration(); 
+   config.UseTimers(); //Allow to use scheduler
+   JobHost host = new JobHost(config); host.RunAndBlock(); 
+} 
+```
+
+Here is an example of a signature of a job. 
+```csharp
+ public static void WebJob1(
+   [TimerTrigger("0 */12 * * * 1-5")] 
+   TimerInfo timerInfo, TextWriter log) { 
+     //Your job here 
+  } 
+```
+
+This solution doesn't need to have settings.job because the Cronjob is directly in the signature, with the attribute `TimerTrigger.` However, this method still need with your website to have the webjobs-list.json to link to the single project that hold all your jobs.
+
+```typescript
+{ 
+  "$schema": "http://schemastore.org/schemas/json/webjobs-list.json", 
+  "WebJobs": [ { "filePath": "../Job/webjobprojectthatcontainsallyourjobs.csproj" } ] 
+} 
+``` 
+
+
+This method is very powerful. It reduces the amount of project, whence create a overall build solution speed faster. Having a single project remove the amount of configuration files required with a single one for the job, and a single one for the website (webjobs-list.json to specify that single WebJob). It is also very powerful because you can see read the log from Azure portal, you do not loss feature. You can find some documentation on [Microsoft Azure Extensible blog](https://azure.microsoft.com/en-us/blog/extensible-triggers-and-binders-with-azure-webjobs-sdk-1-1-0-alpha1/) and on [GitHub](https://github.com/Azure/azure-webjobs-sdk-extensions#timertrigger).

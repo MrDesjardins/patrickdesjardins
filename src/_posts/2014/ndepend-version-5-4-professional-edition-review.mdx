@@ -1,0 +1,56 @@
+---
+title: "NDepend Version 5.4 Professional Edition Review"
+date: "2014-11-10"
+categories: 
+  - "softwares"
+---
+
+NDepend exists since many years and is one of the best static analytic tool around. This tool can be integrated within Visual Studio or run independently from a GUI or a console. It is interesting because it output with nice graphic the dependencies between your classes, namespaces and assemblies. Also, NDepend powerful Linq language allows to have custom metrics about your code and keep track of it during the development lifetime. This is possible with analyzed comparison.
+
+For this review, I did a run on one project that I am working on that has 7 100 lines of code, 702 types, 34 assemblies and 3 900 lines of comment. I can tell you that because NDepend's dashboard give you all these information straight after your first run.
+
+![](/images/blog/NDependDashBoard-400x297.png)
+
+As you can see in the dashboard, code coverage is also possible. At the time I did my first run, I did not have the unit test configured for coverage. After specifying the coverage output file to NDepend, this one was able to show some information.
+
+![](/images/blog/CodeCoverageDashBoardNDepend.png)
+
+From the DashBoard, we can see that the project is having some rules violation. By default, NDepend comes wiht hundreds of pre-defined rules. 
+
+![](/images/blog/CodeViolatedFromNDepend.png)
+
+Clicking the "Critical Rules Violated" opens the **Queries and Rules Explorer**. This filter all rules by the rule that has pass the reasonable threshold. 
+
+![](/images/blog/10CriticalRulesViolatedFromNDepend-400x287.png)
+
+The next step is to match the rules' violation with the code. This is make easily by clicking the problem and NDepend opens the methods matched panel where every methods in violation appear. However, it might have some false positive. For example, NDepend found that I have 5 methods with too many arguments. The problem is that the 5 methods from an assembly that use Entity Framework's Migration Tool. Double clicking the method from NDepend
+
+![](/images/blog/NDependCannotOpenDeclarationSourceFile-400x195.png)
+
+This could be resolved by changing the CQLinq which is NDepend Linq language. The too many parameters look like this:
+
+``` 
+ warnif count > 0 from m in JustMyCode.Methods where m.NbParameters > 8 orderby m.NbParameters descending select new { m, m.NbParameters } 
+```  
+
+To fix the problem I edited the query to do not check the class in problem.
+
+``` 
+ warnif count > 0 from m in JustMyCode.Methods where m.NbParameters > 8 && m.FullName.Contains("DataAccessMigration") orderby m.NbParameters descending select new { m, m.NbParameters } 
+``` 
+
+What is interesting is that you have auto-completion and the result is live. That mean that whilst typing the query you see the result to the output panel. For me, the Queries and Rules Explorer is the panel that I use the most of all NDepend's feature. The only negative I have found is that I was expecting to move to Visual Studio when double clicking a method in problem inside the Visual NDepend. It does open the code but every time into a new Visual Studio instance. That mean that you can have 10 Visual Studio running if you double clicked 10 methods to be improved.
+
+Another tool that NDepend offers is the **Dependency Graph**. For me, that tool is not useful because it creates a spaghetti graph. 
+
+![](/images/blog/NDependMatrixDependency-400x281.png)
+
+This tool can also shows you the coupling and cohesion of your code. More the squares are close together, more the code is high in cohesion. So a group of squares show the cohesion and the space between these group shows the coupling. More space they are, more the coupling is high. In the example of the Dependency Matrix, it's hard to get some result. We can see high cohesion at the top and low coupling. High cohesion because we have 6 squares near together and low coupling because these squares are very far away of the rest of the code.
+
+Another panel is the Metrics graph. This is a panel where pixel represent a metric. For example, you can display a Metric Graph for Cyclomatic Complexity. This one will blue every Cyclomatic Complexity that is high and that needs to be fixed.
+
+![](/images/blog/NDependCyclomaticMetrics-400x184.png)
+
+This can be useful but I prefer to use directly the **Queries and Rules Explorer** to have a list of methods.
+
+NDepend is a big software and it would be hard for me to cover all its functionality. You can find more information on the official website where videos, articles and documentations are available: [http://www.ndepend.com/](http://www.ndepend.com/)

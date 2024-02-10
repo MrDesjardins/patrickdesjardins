@@ -1,0 +1,76 @@
+---
+title: "TypeScript and Redux Immutability Functions"
+date: "2018-06-05"
+categories: 
+  - "redux"
+  - "typescript"
+---
+
+The actual system I am working in my daily job is using TypeScript, React and Redux. I am not relying on any framework to do the immutability. 
+I am using pure JavaScript cloning mechanism and have unit tests for each of my reducer that makes sure that the instance returned is not the same. 
+It works great, it's easy to understand, and doesn't require any dependencies. 
+However, few utility functions ease the whole process mostly when using dictionary which is present everywhere since I an normalizing my data in the Redux store to avoid having any duplicated values.
+
+First, I am using an alias for the index signature just to avoid repeating the square brackets syntax everywhere. This doesn't provide much but is worth mentioning because all the future function I'll share use this interface.
+
+```typescript
+export interface GenericMap<T> { [id: string]: T; } 
+``` 
+
+The first useful function is to add into an array an object without mutating this one. This function relies on the array's function `slice` to return a copy of the array. 
+
+```typescript
+export function addInArrayIfNotPresent<T>(array: T[], item: T): T[] { 
+  let returnArray: T[] = []; 
+  if (array !== undefined) { 
+    returnArray = array.slice(); 
+    if (array.indexOf(item) === -1) { 
+      returnArray.push(item); 
+    } 
+  } 
+  return returnArray; 
+}
+
+// Usage: 
+const newReferenceArrayWithItemsAdded = addInArrayIfNotPresent(existingArray, itemsToAdd); 
+``` 
+
+
+The second function is to add a new element in a map without mutating the existing dictionary. This is useful because it handles the cloning and swap the value into the cloned dictionary.
+
+```typescript
+export function alterImmutablyMap<T>(stateMap: GenericMap<T>, key: number | undefined, modelMember: T): GenericMap<T> { 
+  if (key !== undefined) { 
+    const cloneStateMap = Object.assign({}, stateMap); 
+    cloneStateMap[key] = modelMember; 
+    return cloneStateMap; 
+    } 
+    return stateMap; 
+  }
+
+// Usage: 
+const newDictionary = alterImmutablyMap(existingDictionary, key, value); 
+``` 
+
+The third function allows changing a property of an existing object in a dictionary. The function is useful if the user change a single property and you do not want to change to extract the current object and manually clone it to set the new value into a new clone of the object.
+
+```typescript
+export function alterImmutablyMapMember<T, K extends keyof T>(stateMap: GenericMap<T>, key: number | undefined, modelMember: K, value: T[K]): GenericMap<T> { 
+  if (key !== undefined) { 
+    if (stateMap[key] !== undefined) { 
+      const cloneStateMap = Object.assign({}, stateMap); 
+      const modelFromState = Object.assign({}, cloneStateMap[key]) as T; 
+      if (modelFromState !== undefined) { 
+        modelFromState[modelMember] = value; 
+        cloneStateMap[key] = modelFromState; 
+      } 
+      return cloneStateMap; 
+    } 
+  } 
+  return stateMap; 
+} 
+// Usage: 
+const newDictionary = alterImmutablyMapMember(existingDictionary, key, member, value); 
+const newDictionary2 = alterImmutablyMapMember(existingDictionary, 1, "name", "Patrick"); // Change the item 1's property name to Patrick 
+``` 
+

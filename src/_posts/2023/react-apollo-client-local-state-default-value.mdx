@@ -1,0 +1,102 @@
+---
+title: "React Apollo Client Local State with Default Value on Fragment"
+date: "2023-02-02"
+categories:
+  - "react"
+  - "apollo"
+  - "graphql"
+---
+
+The best approach is to rely on the local state if you need to add additional value to an existing GraphQL entity from your GraphQL server. Apollo has several patterns, and in this article, I am showing how to use the local state using the `InMemoryCache` and the `writeFragment` method.
+
+# When to use the GraphQL Apollo Local State?
+
+The main reason to add a local state to the GraphQL Apollo is to attach information not needed on the server but needed on the client side. The main justification to use the GraphQL Apollo local state instead of a variable or a React's state is to still impacts all queries on your client side on value change. The concept is you are attaching a new **field** on one of your GraphQL entities (defined by the GraphQL server). By using the GraphQL client, if the local state change, a trigger to render all React hooks that use that entity occurs -- similar to if a refetch data or a new query comes with a response that alters an entity. Hence, if you change the value of the local state you can ensure the user interface updates. Furthermore, because it uses the `InMemoryCache` of GraphQL, the local state is normalized inside the Apollo storage. Thus, you do not have to manage duplication if the entity is used on several queries.
+
+For example, if you have an entity called `Movie` and want to add a property `isStreaming` that indicates if the movie is playing or not. You may not want that information persisted on the server and only on the client side. However, if you change that boolean value from one value to another, you want the user interface to render differently. Using a state might work, but once you have a collection of `Movie`, the object used in many React components will be complicated to keep in synchronization. Thus, having it in a single place and being reactive to change is an elegant solution.
+
+I recommend using Apollo local state only for information that strongly depends on the property type you add. Otherwise, another alternative, like client-side state management (for example, Redux) or to have a component state (for example, `useState`) is less entangled.
+
+# Step to Add a Field to a Type
+
+## Modifying your GraphQL Schema
+
+The first step to adding your new piece of data is to include the field in your GraphQL schema. In my case, I have a generated server-side unified file that has all the types of the GraphQL server. To keep the server-side schema separated, the best is to define a separate GraphQL file (`.graphql`) for the local state. After that, specifying the exact type again is tolerated. The re-defined type only needs the local fields. Apollo will merge all types even if defined multiple types.
+
+```graphql
+type Movie {
+  isStreaming: Boolean!
+}
+```
+
+In our example, the `Movie` type has many fields, but we only define the local state field in this new file.
+
+Then, you need to go into the fragment (or query) where you are fetching the field and add the new field to be fetched. The need of `@client` is required. It indicates that the field is not on the server.
+
+```graphql {4}
+fragment MovieFragment on Movie {
+  id
+  title
+  isStreaming @client
+}
+```
+
+## Modifying your CodeGen Configuration File
+
+If you are using [The Guild CodeGen](https://the-guild.dev/graphql/codegen/docs/integrations/apollo-local-state), there is an easy way for the generator to include the local state field. First, you must add a `schema` to your local GraphQL file you did in the previous step. That's it. Second, you auto-generated TypeScript. Now, the output will have the `isStreaming` field but will not query the field in the auto-generated `gql` statement.
+
+## Default Value
+
+Any `useQuery` that asks for your fragment (or query) that has the field will now fetch the data but still, need a default value for these fields. Until the value is written explicitly by you (we will cover that in a few), the value is `undefined`. To define a default value, you must change the `InMemoryCache` to add a policy for your GraphQL type.
+
+The concept is that you can determine how each field behaves in reading and writing. In that case, we specify our field `read` property to return `false` if the field is new (`undefined`). Otherwise, it returns the value determined by us.
+
+```tsx {10}
+// Snip...
+new ApolloClient({
+  link: // Snip,
+  cache: new InMemoryCache({
+    typePolicies : {
+      Movie: {
+        fields:{
+          isStreaming :{
+            read(existingValue) {
+              return existingValue ?? false;
+            }
+          }
+        }
+      }
+    }
+  });
+```
+
+## Updating the Value
+
+The last step is to update the value locally. A change should not generate a GraphQL mutation because the field is unknown to the server. However, we want to have the same effect: on change it impacts everywhere the field was used. In our case, every React component that relies on the `MovieFragment` must be updated for a new render.
+
+There are a few options; the one I prefer relies on the `writeFragment` because its foundation is the same as the data from the server. The method does not rely on external reactivity systems or third-party state management tools. It is also a single instruction using the Apollo Client.
+
+```tsx
+// Snip
+const client = useApolloClient();
+// Snip
+client.writeFragment({
+  id: `${existingEntity.__typeName}:${existingEntity.id}`,
+  fragment: MovieFragmentDoc,
+  data: {
+    ...existingMovie,
+    isStreaming: true,
+  },
+});
+```
+
+The example above shows how to set the value to `true`. Few details that are critical to have the mechanism working:
+The `id` field must have the format of `<entity name>:<entity id>`. You can write it the way I did, which works for every type.
+Pass the `fragment`, which is a breeze if you are using CodeGen since it has it for you auto-generated.
+You pass the object with the value that you want to give.
+You must pass a complete object; hence take the `existingMovie` coming from the `useQuery` from your component.
+
+When this line is executed, if you have a breakpoint to the `read` function defined in this article, you will break the amount of time the field is used across your application to evaluate the value of the changing field. Exactly what we want.
+
+# Conclusion
+The documentation around this feature is present but needs clarification about the default value and how to ensure the field is updated. Also, I have not seen any mention of leveraging The Guilt Code Generator. I hope this article helps some of you.

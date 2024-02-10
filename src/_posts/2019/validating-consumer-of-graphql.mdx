@@ -1,0 +1,49 @@
+---
+title: "Validating Consumer of GraphQL with Jenkins"
+date: "2019-05-22"
+categories: 
+  - "graphql"
+---
+
+I will demonstrate a way to configure a continuous environment that gives insight on if a change on the GraphQL server can impact negatively a consumer. The solution assumes that both code bases are under the same organization, not under the same repository and that Jenkins is used.
+
+I like to start with an image of what I am describing. So here is the solution.
+
+![](/images/blog/GraphQLServers-ConsumersValidation.png)
+
+The diagram shows on the top-right the GraphQL engineer who push a change in the repository. The normal continuous integration (CI) kicks a build when it receives a new code. So far, nothing changes from a typical workflow. However, the third step is where it changes. The idea is to create a new Jenkins job that is independent of the GraphQL server and independent of the consumer application. The independence of this job keep both existing builds untouched and the whole ecosystem tidy. The Jenkins jobs wait for the GraphQL job to complete. It is possible to configure the option under _Jenkins Build Triggers_.
+
+![](/images/blog/graphqlci.png)
+
+When the GraphQL changes, the Jenkins job fetch the consumer code and fetch the GraphQL code. Do not forget we assumed that we had access to both source code. However, if the GraphQL is not internal, you can always download the GraphQL unified schema and accomplish the same end results. In fact, the next step is to run the GraphQL server script that builds the latest schema (stitches the schema). Then, it runs a tool that validates the consumer code. The tool looks for _gql_ tags inside TSX and TS file (TypeScript) and analyzes all queries against the schema. If a breaking change occurs, the build fails and an email is sent to the engineers to act before it reaches deployment.
+
+The Jenkins' execute Shell script install NPM because it must run the tool which is from an NPM library. It gets the server because we do not have a graph unified (stitched) schema. Then, it runs the _graphql-inspector_ tool.
+
+```
+npm install
+git clone ssh://git@youServer/yourGraphQLServer.git graphql_repo
+cd graphql_repo
+npm install
+npm run generateunifiedschema
+cd ..
+./node_modules/.bin/graphql-inspector validate ./src/**/*.graphql ./graphql/unifiedSchema.graphql
+``` 
+
+A special mention, the _graphql-inspector_ does not work well (in my experience) with analyzing .ts and.tsx files. However, it worked perfectly when I moved the GraphQL query into .graphql files.
+
+Most of the time, breaking change should not occur. GraphQL allows additional change and to deprecate fields slowly instead of working with several versions. Nonetheless, having additional awareness is something beneficial and by having the tooling configured to automatically verify potential breakdown we reduce the stress of introducing consequences in production.
+
+## My GraphQL Articles
+
+- [Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)
+- [Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)
+- [Apollo Server and Secured Playground](apollo-server-and-secured-playground)
+- [GraphQL Context](graphql-context)
+- [GraphQL Query with Argument](graphql-query-with-argument)
+- [Apollo GraphQL Resolvers and Data Source separation](apollo-graphql-resolvers-and-data-source-separation)
+- [How to setup a TypeScript, NodeJS, Express Apollo Server to easy debugging with VsCode](how-to-setup-a-typescript-nodejs-express-apollo-server-to-easy-debugging-with-vscode)
+- [GraphQL Resolvers with Apollo](graphql-resolvers-with-apollo)
+- [Configuring Apollo Playground and API on two different URL](configuring-apollo-playground-and-api-on-two-different-url)
+- [How to automatically generate TypeScript for consumers of your GraphQL](how-to-automatically-generate-typescript-for-consumer-of-your-graphql)
+- [GraphQL and HTTP Telemetry](graphql-extension-to-collect-http-and-resolvers-telemetry)  
+- [GraphQL and TypeScript/React](how-to-consume-graphql-in-typescript-and-react)

@@ -1,0 +1,19 @@
+---
+title: "Publishing to Azure Website Slots"
+date: "2016-08-20"
+categories: 
+  - "azure"
+  - "vsts"
+---
+
+Azure allows to create website's slots once you have your website created. Before everything, what is an Azure website slot? Slots are a way to create a clone of your website on a temporary website. Having this clone let's you test your code without affecting your production code. You can have custom application settings, like pointing to a second database if you want. It has the advantage to also warm-up without affecting your user. The first call to a website is always slower. With a slot, it's slow on this one. You can configure to have this one warmed up completely before auto-swap back to the production, where your user see it. Or, you can manually swap it when ready, which allow you to do some manually testing on the slot.
+
+The first step is to create the slot. This is a matter of less than a minute. You can do it directly on the portal.
+
+![](/images/blog/AzureDeploymentSlots.png)
+
+The second step is to deploy to this slot instead of the main production one. This was the step that is not clear. You have to publish to a slot and then swap. To do so, you need to get the publish settings. This can be downloaded in Azure Portal. Just go on the main website, click slots, select the one you want to deploy and click **Get Publish Profile**.
+
+![](/images/blog/DeploymentSlotGetPublishSettings-1024x600.png)
+
+This is how to deploy a website on Azure with slot. By publishing to a specific slot and then handling the slot manually or automatically (auto-swap). A special note, if you want to use **Azure Deployment slots**, you need to go in your website deployment slot and configure the Deployment directly on the slot, not the main website.

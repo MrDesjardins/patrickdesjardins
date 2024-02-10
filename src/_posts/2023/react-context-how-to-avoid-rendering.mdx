@@ -1,0 +1,297 @@
+---
+title: "React Context and How to Avoid repetitive re-rendering"
+date: "2023-01-20"
+categories:
+  - "react"
+  - "context"
+  - "optimization"
+---
+
+In this article, we will see how to optimize the usage of a context to avoid rendering components along the path of the context. We already explored [React Children Function Render optimization](https://patrickdesjardins.com/blog/react-children-function-render). This time, we will focus on children that are not functions.
+
+# Context
+
+The small project is an application with three layers.
+
+![](/images/blog/react-re-render1.png)
+
+The top layer, named `Layer1` is wrapped by a context. The context is updated every second with an incremental value. It simulates a data change that occurs often. The example is set that only `Layer3` needs the value. Thus, we would like to avoid rendering Layer1, and Layer2 as they have no business with the changed value.
+
+# Skeleton Code
+
+Before talking, let's establish a code baseline to illustrate the context of the multi-layer components that rely on context.
+
+<CodeSandbox codeSandboxId="react-context-re-render-part1-wqpp64" />
+
+The `MyUniqueContext` has an interval function that increments a number every second. The change modifies the state, making the context change.
+
+```tsx
+export const MyContextProvider = (
+  props: MyContextStateContextProviderProps
+): ReactElement => {
+  const [counter, setCounter] = useState<number>(0);
+  useInterval(() => {
+    setCounter((d) => d + 1);
+  }, 1000);
+  return (
+    <MyContextStateContext.Provider
+      value={{
+        counter: counter,
+      }}
+    >
+      {props.children}
+    </MyContextStateContext.Provider>
+  );
+};
+```
+
+`Layer1` and `Layer2` do not need to be re-render because they do not consume the context. Only `Layer3`.
+
+```tsx
+export const Layer1 = () => {
+  console.log("Render: Layer 1");
+  return (
+    <div>
+      <h1>Layer1</h1>
+      <Layer2 />
+    </div>
+  );
+};
+
+export const Layer2 = () => {
+  console.log("Render: Layer 2");
+  return (
+    <div>
+      <h2>Layer2</h2>
+      <Layer3 />
+    </div>
+  );
+};
+```
+
+`Layer3` component calls `useContext`, making it aware of changes, and re-rendering every counter change. Therefore, it is expected that it renders the value of the counter.
+
+```tsx
+export const Layer3 = () => {
+  console.log("Render: Layer 3");
+  const contextState = useContext(MyContextStateContext);
+  return (
+    <div>
+      <h3>Layer3</h3>
+      <p>{contextState.counter}</p>
+    </div>
+  );
+};
+```
+
+# No Problem?
+
+If you are running the code, you notice that it works as expected. Only the Layer3.tsx has in the console the text about being rendered.
+
+```json
+1: Render: Layer 1
+1: Render: Layer 2
+694: Render: Layer 3 // Here we see 694 updates
+```
+
+# Changing the Example
+
+The example needs to be more realistic. Most of the time, a context will have several values. Many values are essential to `Layer1` and `Layer2,` but only the `counter` value is noisy, with many updates. We would still want only `Layer3` to be re-render on the counter change. Let's adapt our example. Now, the name of each layer is inside the context. Each layer renders the value from the context into its header tag.
+
+For example, `Layer1` looks like this:
+
+```tsx
+export const Layer1 = () => {
+  console.log("Render: Layer 1");
+  const contextState = useContext(MyContextStateContext);
+  return (
+    <div>
+      <h1>{contextState.layer1Name}</h1>
+      <Layer2 />
+    </div>
+  );
+};
+```
+
+`Layer2` is similar but connect to `layer2Name`
+
+<CodeSandbox codeSandboxId="react-context-re-render-part2-wt6qys" />
+
+If you run the code, the console output looks different now:
+
+```json
+2: Render: Layer 2
+2: Render: Layer 3
+2: Render: Layer 1
+2: Render: Layer 2
+2: Render: Layer 3
+...
+```
+
+Two different things are wrong. First, we see that each component is rendered every second. Too many rendering is incorrect because only `Layer3` is updating every second with the counter value. Second, every render is performed twice (see the `2` at the beginning of each line).
+
+# Context Object Reference
+
+The problem is that we are changing the `value` reference every second which includes the unchanged strings. It would be smart to return the same reference for the unchanged portion of the state. By having a different reference, React think the whole object change (with reason). Before modifying the context, you may think that because we are consuming the **whole** context instead of only the string that React render the entire layer.
+
+In a nutshell, changing:
+
+```tsx
+const contextState = useContext(MyContextStateContext);
+```
+
+to:
+
+```tsx
+const { layer1Name } = useContext(MyContextStateContext);
+```
+
+does not fix the problem -- we are destructing a new object with a new reference.
+
+# Optimizing the Context: Breaking the Context Root State
+
+A first instinct is to break the state into several objects, which can be memoized in memory. Then, if a part of the object does not change, it will continue to receive the same object -- same reference. Hence, if we have a new object with two paths: the titles and the dynamic data, the titles ones will not change and hence the Layer1 and Layer 2 should not be re-render.
+
+```tsx
+export const MyContextProvider = (
+  props: MyContextStateContextProviderProps
+): ReactElement => {
+  const [counter, setCounter] = useState<number>(0);
+  const [layer1, setLayer1] = useState<string>("Layer1");
+  const [layer2, setLayer2] = useState<string>("Layer2");
+  const dynamicMemo = useMemo(() => {
+    return { counter: counter };
+  }, [counter]);
+  const titlesMemo = useMemo(() => {
+    return { layer1Name: layer1, layer2Name: layer2 };
+  }, [layer1, layer2]);
+  const dataMemo = useMemo(() => {
+    return {
+      dynamic: dynamicMemo,
+      titles: titlesMemo,
+    };
+  }, [dynamicMemo, titlesMemo]);
+  useInterval(() => {
+    setCounter((d) => d + 1);
+  }, 1000);
+  return (
+    <MyContextStateContext.Provider value={dataMemo}>
+      {props.children}
+    </MyContextStateContext.Provider>
+  );
+};
+```
+The change is sound but the output remains the same. The reason is that the top `dataMemo` reference changes every time one of the children changes. That is the case of the property `dynamic`. 
+
+<CodeSandbox codeSandboxId="react-context-re-render-part3-1vu9k0" />
+
+# Optimizing the Consumer: React Hook
+
+An idea might be to isolate the portion of the state into a hook. Then, the hook could have memorization of the interested part. For example, a `useTitles` could track the reference of the `titles` branch of the state. Because the object reference of titles does not change in our example, the reference remains the same, meaning the hook returns a unique reference.
+
+```tsx
+export const useTitles = () => {
+  console.log("Render: useTitles hook");
+  const fullState = useContext(MyContextStateContext);
+
+  const titlesMemo = useMemo(() => {
+    console.log("useTitles hook reevaluate memo for titles");
+    return fullState.titles;
+  }, [fullState.titles]);
+  return titlesMemo;
+};
+```
+
+Changing `Layer1` and `Layer2` to use the hook looks like the following:
+
+```tsx
+export const Layer2 = () => {
+  console.log("Render: Layer 2");
+  const titles = useTitles();
+  return (
+    <div>
+      <h2>{titles.layer2Name}</h2>
+      <Layer3 />
+    </div>
+  );
+};
+```
+
+However, running the code does produce little change. The code still has re-rendering for `App`, `Layer1`, `Layer2` and `Layer3`. The positive is that the `console.log` into the memo ran once, meaning the reference to the object within the hook remains the same.
+
+<CodeSandbox codeSandboxId="react-context-re-render-part4-eb9b1h" />
+
+The output:
+```json
+Render: Layer 1 
+Render: useTitles hook 
+Render: Layer 1 
+Render: useTitles hook 
+Render: Layer 2 
+Render: useTitles hook 
+Render: Layer 2 
+Render: useTitles hook 
+2 Render: Layer 3 
+```
+
+# Optimizing using React.memo
+A quick search online shows some obscure messages from Twitter from 2020 about always using [React.memo](https://reactjs.org/docs/react-api.html#reactmemo) when using `context` to avoid the exact scenario we are into: re-redering component that does not change.
+
+<CodeSandbox codeSandboxId="react-context-re-render-part5-ecmuch" />
+
+However, in our example, using `React.memo` to the direct descendant of the context and all the child components (`Layer1` and `Layer2`) continues to produce rendering.
+
+# Optimizing the Components
+
+The problem remains that the `Layer1` is using the content of the context. The documentation on [React.memo](https://reactjs.org/docs/react-api.html#reactmemo) specifies that is memoize the component but still re-render if a `useState` or `useContext`, which does indirectly with the `useTitles`. There is a deep [Git thread](https://github.com/facebook/react/issues/15156#issuecomment-474590693) about `useContext` and performance. The first tip is to break the context into several contexts. It makes sense until you get into so many contexts. 
+
+The second recommendation is to split your components. In our example, the context is used for the title only. Creating a `Title` component that pass by property the name would ensure with `React.memo` that this component only changes when the value of the title change.
+
+```tsx
+export interface TitleProps {
+  title: string;
+}
+export const Title = React.memo((props: TitleProps) => {
+  console.log("Rendering Title in Layer1");
+  return <h1>{props.title}</h1>;
+});
+```
+And `Layer1`:
+
+```tsx
+export const Layer1 = React.memo(() => {
+  console.log("Render: Layer 1");
+  const titles = useTitles();
+  return (
+    <div>
+      <Title title={titles.layer1Name} />
+      <Layer2 />
+    </div>
+  );
+});
+```
+The `Layer1` component continues to be re-rendered, but not the `Title` portion. `Title2` continues to be re-rendered, too, because it relies on the hook (which depends on `useContext`). But, `Title2` also does not re-render the title portion because it uses the memoized `Title` component.
+
+# Step Back and Understand
+
+I see few articles and even fewer patterns in the official documentation to handle context efficiently in React. I see even fewer articles that clearly state that once you touch `useContext` that even if you isolate as much as possible and memoize as much as you can that you will see have a re-render. In this article, you were able to see that there is a limitation on how much you can isolate yourself from re-render.
+
+A word of caution. Suppose you have data that barely change but has a different timestamp (for example, a modified date), if you are receiving an object that has only the time adjusting that it might always be a different object. Hence, maybe changing a lot your state within your context. If you are using data coming from real-time sources (via web socket) you may also be surprised that the context is continually changing and causing side-effects of more rendering than anticipated.
+
+Using the React Dev Tool, you will see that in our example the Layer1 to Layer 3 are always re-render. Using the Chrome tool that highlights what is painted on the browser, you will see the same that the Layer1 to Layer3 title's string are re-painted. Hence, a lot of performance cost.
+
+So, it using context a bad idea to keep global state in your application? Well, if you read some discussion from an alternative state management solution like Redux, it might be! There is a [Git thread](https://github.com/facebook/react/issues/13739) about React-Redux version 6 that tried to rely on `createContext`. It was "a big deal" affecting the performance; however [they moved forward and used it](https://github.com/reduxjs/react-redux/issues/1177). It has been [acknowledged since 2018](https://github.com/facebook/react/issues/14110) that hooks that rely on `useState` and `useContext` has limited (if not no way) to optimize the re-rendering. [Facebook is not actively](https://github.com/reactwg/react-18/discussions/73) working on a _selector_ approach which would allow being updated only from a subset of the context. To put in perspective, React-Redux while moving to rely on `useContext` from version 5 to 6 [moved out of it in version 7](https://github.com/reduxjs/react-redux/releases/tag/v7.0.1) with the reason that _"unfortunately the Context API isn't as optimized for frequent updates"_.
+
+# Conclusion
+Using the context to keep a large amount of changing information is not ideal. However, it does work out well until you reach a point when it does not. Until then, the React context may seem like a potential quick solution that does not rely on other third parties. However, you may need to migrate in the future. 
+
+I used Redux in 2018, and it was fine. However, at that time, several custom TypeScript utility types were needed. In 2023, Redux is now at version 8, and [Redux is well supported with TypeScript](https://react-redux.js.org/tutorials/typescript-quick-start). Furthermore, the heavy boilerplate needed is abstracted -- no more need for middleware and Thunk. Hence, it might be a candidate migration road once you hit performance issues.
+
+# CodeSandbox Links
+
+- [Part 1: Simple React Context Example](https://codesandbox.io/s/react-context-re-render-part1-wqpp64)
+- [Part 2: Context with Many Values Example](https://codesandbox.io/s/react-context-re-render-part2-wt6qys)
+- [Part 3: Optimizing the Context Example Memoization of Properties](https://codesandbox.io/s/react-context-re-render-part3-1vu9k0)
+- [Part 4: Optimizing the Context Example Hook](https://codesandbox.io/s/react-context-re-render-part4-eb9b1h)
+- [Part 5: Optimizing with React.memo](https://codesandbox.io/s/react-context-re-render-part5-ecmuch)
+- [Part 6: Optimizing by Breaking into Several Components](https://codesandbox.io/s/react-context-re-render-part6-g6mhyl)

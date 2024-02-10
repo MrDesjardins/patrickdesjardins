@@ -1,0 +1,23 @@
+---
+title: "How to convert Entity Framework that use file database to server database"
+date: "2011-09-05"
+categories: 
+  - "entity-framework"
+---
+
+When using Entity Framework, this one create a copy of the database when generating from the database and create a .mdf for the project. This database is used. This is good for small project but once you want to use Sql Profiler or to use the real database, it's not.
+
+To do the switch, only one place need to be changed and it's the app.config or if you are in a web environment the web.config.
+
+Here is the generated connection string generated and after the modified one.
+
+```xml
+<add name="NorthWindContainer" connectionString="metadata=res://*/FromNorthWind.csdl|res://*/FromNorthWind.ssdl|res://*/FromNorthWind.msl; provider=System.Data.SqlClient; provider connection string='Data Source=.\\SQLEXPRESS; AttachDbFilename=|DataDirectory|\\northwnd.mdf; Integrated Security=True; Connect Timeout=30; User Instance=True; MultipleActiveResultSets=True'" providerName="System.Data.EntityClient" /> 
+```
+
+
+```xml
+<add name="NorthWindContainer" connectionString="metadata=res://*/FromNorthWind.csdl|res://*/FromNorthWind.ssdl|res://*/FromNorthWind.msl; provider=System.Data.SqlClient; provider connection string='Data Source=.\\SQLEXPRESS; Initial Catalog=Northwind; Integrated Security=True; Connection Timeout=60; multipleactiveresultsets=true'" providerName="System.Data.EntityClient" /> 
+```
+
+This simple modification do the trick and you are ready to go.

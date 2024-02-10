@@ -1,0 +1,57 @@
+---
+title: "How to AutoMap Asp.Net Attribute from Model to ViewModel"
+date: "2015-03-17"
+categories: 
+  - "asp-mvc"
+  - "automapper"
+---
+
+If you are using DisplayAttribute and DataAnnotation Attribute with an architecture that use Model and ViewModel, by default, you have to duplicate those attributes. The problem is that you cannot keep all display attribute on the view model only because you want to have you exception to have the display name into it. You also want to have the data annotation on your model because they add validation into the model, not into a class designed for rendering, the view model. That say, Display Attribute and Data Annotation are quite useful in Asp.net because they are using for Label and for client-side validation. So, we need them in both place. The best place is to have the attribute on the Model classes. Mostly because the model classes are the heart of the system where logic of your system live.
+
+With that in mind, we need when transferring the values from the model classes into the view model classes transfer the attributes too. This require some works to change some Asp.Net behaviors and also do some work with AutoMapper to maps more than just the specified properties but also attributes for those specified properties. All code discussed in this article is open sourced in this Git Repository : [https://github.com/MrDesjardins/AutoMapperAttributesMapping](https://github.com/MrDesjardins/AutoMapperAttributesMapping).
+
+The first change is on Asp.Net MVC. We need to define a new `DataAnnotationsModelMetadataProvider`. The goal of this class is to create a new provider to handle attributes. So every times MVC will access the attributes on the view model, it will call this method. We will access AutoMapper and get from the attributes from the model. As you can notice, we pass inside the constructor a `IConfigurationProvider` that allow you to pass AutoMapper configuration. 
+
+```csharp
+ internal class MappedDataAnnotationsModelMetadataProvider : DataAnnotationsModelMetadataProvider { private readonly IConfigurationProvider mapper;
+
+public MappedDataAnnotationsModelMetadataProvider(IConfigurationProvider mapper) { this.mapper = mapper; }
+
+protected override ModelMetadata CreateMetadata(IEnumerable<Attribute> attributes, Type containerType, Func<object> modelAccessor, Type modelType, string propertyName) { var mappedAttributes = containerType == null ? attributes : mapper.GetMappedAttributes(containerType, propertyName, attributes).ToArray(); var modelMetadata = base.CreateMetadata(mappedAttributes, containerType, modelAccessor, modelType, propertyName); return modelMetadata; } } 
+```
+
+This class must be instantiated during the startup of you web project. Ideally in the `Global.asax`. I created a class to have a public access which can be called from the global.asax. 
+
+```csharp
+ public class ModelMetadataProviderConfig { public static void RegisterModelMetadataProvider() { ModelMetadataProviders.Current = new MappedDataAnnotationsModelMetadataProvider(Mapper.Engine.ConfigurationProvider); } } 
+```
+
+The big piece of code is with AutoMapper. The `DataAnnotationsModelMetaDataProvider` calls the `GetMappedAttributes` from AutoMapper. This is a custom method that do the mapping for attributes. This method is pretty big and do a lot of looping. The first one is looping all the registered mapping. We need to get from all mapper where we are going to map to the destination one. Since we are using the meta data from the type used inside the view, which is the View Model class, we need to search through the list of mapping for the destination type. This can lead to several mapping, this is why we have a second loop that search for the property name. We make sure that we search only for mapped type, not those ignored. The last loop can be customized for your need. I decided to map attribute that are of type `ValidationAttribute` and `DisplayAttribute`.
+
+
+```csharp
+ public static IEnumerable<Attribute> GetMappedAttributes(this IConfigurationProvider mapper, Type viewModelType, string viewModelPropertyName, IEnumerable<Attribute> viewModelPropertyAttributes) { if (viewModelType == null) throw new ArgumentNullException("viewModelType");
+
+//For all automapper configurations about the view model we are working with foreach (var typeMap in mapper.GetAllTypeMaps() .Where(i => i.DestinationType == viewModelType)) { //Get the properties from the model we found from automapper var propertyMaps = typeMap.GetPropertyMaps() .Where(propertyMap => !propertyMap.IsIgnored() && propertyMap.SourceMember != null) .Where(propertyMap => propertyMap.DestinationProperty.Name == viewModelPropertyName);
+
+foreach (var propertyMap in propertyMaps) { //Only get the attribute from the model if the view model does not define it foreach (Attribute attribute in propertyMap.SourceMember.GetCustomAttributes(typeof(ValidationAttribute), true)) { if (!viewModelPropertyAttributes.Any(i => i.GetType().IsInstanceOfType(attribute) || attribute.GetType().IsInstanceOfType(i))) yield return attribute; } //Only get the attribute from the model if the view model does not define it foreach (Attribute attribute in propertyMap.SourceMember.GetCustomAttributes(typeof(DisplayAttribute), true)) { if (!viewModelPropertyAttributes.Any(i => i.GetType() == attribute.GetType())) yield return attribute; }
+
+} }
+
+//Add all view model attribute if (viewModelPropertyAttributes != null) { foreach (var attribute in viewModelPropertyAttributes) { yield return attribute; } } } 
+```
+
+This method returns a list of attributes that are then set to the ViewModel object with the call to the `base.CreateMetaData` method. To see the result, you can add a display attribute on the model and see what is happening when you use the Html helper for label.
+
+```csharp
+ public class UserModel { public int Id { get; set; }
+
+[Display(Name = "First Name Here")] public string FirstName { get; set; } public string LastName { get; set; } } public class UserViewModel { public int Id { get; set; } public string FirstName { get; set; } public string LastName { get; set; } } 
+``` 
+The .csHtml: 
+
+```html  
+<div class="row"> <div class="col-md-6"> @Html.LabelFor(d => d.FirstName) @Html.TextBoxFor(d => d.FirstName) </div> <div class="col-md-6"> @Html.LabelFor(d => d.LastName) @Html.TextBoxFor(d => d.LastName) </div> </div> 
+``` 
+
+![](/images/blog/Display.png)

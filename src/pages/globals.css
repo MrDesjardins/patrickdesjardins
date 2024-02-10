@@ -1,0 +1,16 @@
+/* ============================================================ Variables ============================================================*/
+:root {
+  --text-color1: #666666;
+  --text-color2: #fff;
+  --text-color3: #000;
+
+  --header-color1: #fff;
+
+  --background1: #3a393f;
+  --background2: #f0f0f0;
+  --background3: #fff;
+
+  --link-background1: #eb4c44; /*Match the color of the image (red)*/
+
+  --size-column: 400px;
+}

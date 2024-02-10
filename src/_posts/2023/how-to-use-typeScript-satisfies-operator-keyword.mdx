@@ -1,0 +1,264 @@
+---
+title: "How to use TypeScript Satisfies Operator Keyword?"
+date: "2023-03-17"
+categories:
+  - "typescript"
+---
+
+My first reaction when `satisfies` operator launched with TypeScript 4.9 was that it was one more complex to understand in the language. I continued my way without spending much of my time understand the goal until one day I stumble into a scenario that was problematic for many years. TypeScript should do something about it! Then, I suddenly thought about `satisfies` and realized that it was the solution to my current and many years issue.
+
+# Preface: The Problematic Situation
+
+To understand `satisfies`, you must feel the pain of not having the operator. 
+
+## Example 1: Too Many Fields
+
+Imagine you have a type that defines a `Person` and a function to add people into something.
+
+```ts
+interface Person {
+    name: string;
+    age: number;
+}
+
+declare function addPerson(p:Person):void;
+```
+
+In this example, we use `declare` to avoid getting into the detail of the function, as it is irrelevant to the point we are illustrating. What is important is how to call this function. Calling the function with a variable is the safest way without `satisfies` as the variable has an explicit type. For example:
+
+```ts
+interface Person {
+    name: string;
+    age: number;
+}
+
+declare function addPerson(p:Person):void;
+
+const p: Person = {name:"Patrick", age: 89}; // Variable
+addPerson(p); // Using the variable
+```
+
+The problem is that you **must** define an explicit variable. While it is acceptable in many cases, it would be, in some cases, more straightforward to remove that line.
+
+```ts
+interface Person {
+    name: string;
+    age: number;
+}
+
+declare function addPerson(p:Person):void;
+
+addPerson({name:"Patrick", age: 89}); // Will be dangerous soon
+```
+
+The problem with the above code is that you may add fields later. As long as the minimum is there, TypeScript will allow passing the object because of its structural nature.
+
+```ts
+addPerson({name:"Patrick", age: 89, lastName:"Haha!"}); // lastName added, still pass the compilation time
+```
+
+The problem is that maybe the `lastName` was there in the past and removed. Then, you have a piece of code that should not be there anymore, but you are not warned. It might sound like a small problem so let's get into a second example.
+
+
+## Example 2: Union
+
+Let's add more complexity. Let's have a function called `add` that accepts a union of two interfaces with no field that overlaps.
+
+```ts
+interface Person {
+    name: string;
+    age: number;
+}
+
+interface Animal {
+    breathUnderWater: boolean;
+}
+
+declare function add(p:Person|Animal):void;
+
+add({name:"Patrick", breathUnderWater:true}); // dangerous
+```
+
+This example compiles without problem. The function takes a union of a `Person` or `Animal` and it is legit to pass a mix of both because it fulfills the `Animal` part of the contract and the `name` is superfluous. The auto-complete in Visual Studio Code (VsCode) is also mixed up by the suggestion a mix of both types.
+
+Before using TypeScript `satisfies` keyword, a trick was to use `cast`. For example, if we knew we wanted to pass a `Person` we could use `as Person` and the example above would be in error.
+
+```ts
+add({name:"Patrick", breathUnderWater:true} as Person); // dangerous
+```
+
+However, it opens another issue: it coerces the type to be a `Person` while it is not. So it means that maybe we are getting an error because we forgot some fields, in that case `age`, and adding the field fixes the compiler error.
+
+```ts
+add({name:"Patrick", age:123, breathUnderWater:true} as Person);
+```
+
+But, it remains that the `breathUnderWater` field should not be acceptable.
+
+## Example 3: Nested Implicit Object
+
+Another example is if you have a list of nested objects that are not explicitly typed. For example, you may have an object with many constants or feature flags.
+
+Here is a small example.
+
+```ts
+const MY_APP_CONSTANTS = {
+    SIZES: {
+        MIN: 1024
+    },
+    THRESHOLDS: {
+        LOWER_BOUND: 0,
+        UPPER_BOUND: 100
+    },
+    FEATURE_FLAGS: {
+        ENABLE_POST_FORM: true
+    }
+};
+```
+
+The problem is that each field are `number` or `boolean` and it can be improved with `as const` so that each field has exactly only one possible value (the one defined in the object).
+
+```ts
+const MY_APP_CONSTANTS = {
+    SIZES: {
+        MIN: 1024
+    },
+    THRESHOLDS: {
+        LOWER_BOUND: 0,
+        UPPER_BOUND: 100
+    },
+    FEATURE_FLAGS: {
+        ENABLE_POST_FORM: true
+    }
+} as const;
+```
+
+The `const` and `as const` works well, and trying to access an additional field that does not exist does not compile.
+
+```ts
+MY_APP_CONSTANTS.SIZES.MAX = 10000; // Compiler error, as expected.
+```
+
+So, there is no problem with example 3? There is. In that case, there is no type, and the implicit typing takes care of the issue. However, in a similar matter, we may have a type that will get into a similar problem of example 2, where we can access a non-existant field without compilation error.
+
+Let's simplify the constant to have only the feature flag and to be open for additional flags. Later, we will allow any feature flag name as a string if the value is a boolean.
+
+```ts
+interface AppThresholds extends Record<string, boolean>{}
+
+interface AppConfig {
+    FEATURE_FLAGS: AppThresholds;
+}
+
+const MY_APP_CONSTANTS:AppConfig = {
+    FEATURE_FLAGS: {
+        ENABLE_POST_FORM: true
+    }
+};
+```
+
+So far, so good. However, a problem occurs when we use a type for the root of the object rather than the children.
+
+```ts
+interface AppFlags extends Record<string, boolean>{}
+
+interface AppConfig {
+    FEATURE_FLAGS: AppFlags;
+}
+
+const MY_APP_CONSTANTS: AppConfig = {
+    FEATURE_FLAGS: {
+        ENABLE_POST_FORM: true
+    }
+};
+
+MY_APP_CONSTANTS.FEATURE_FLAGS.ENABLE_POST_FORM = true;
+MY_APP_CONSTANTS.FEATURE_FLAGS.do_not_exist = true; // dangerous
+```
+
+The code compiles but `do_not_exist` does not exist. Using `as const` does not help.
+
+```ts
+const MY_APP_CONSTANTS: AppConfig = {
+    FEATURE_FLAGS: {
+        ENABLE_POST_FORM: true
+    } as const
+} as const;
+```
+
+The only way is not to type, which will have the constant to infer the type and not use the feature flag as a `Record<string>`, which means can be anything like `do_not_exist`.
+
+```ts
+const MY_APP_CONSTANTS = {
+    FEATURE_FLAGS: {
+        ENABLE_POST_FORM: true
+    } 
+}
+```
+However, the problem is that someone might add something else and change the goal of this object! 
+
+
+```ts
+const MY_APP_CONSTANTS = {
+    FEATURE_FLAGS: {
+        ENABLE_POST_FORM: true
+    },
+    DO_NOT_ADD: { // Oh no! It does not respect the intended AppConfig contract
+        SHOULD_NOT: true
+    }
+} 
+```
+Hence we are stuck between having a contract that forces the developer that block unintended additional fields in the interface at the expense of using fields that might not be there or having a strongly typed object that blocks the developer from adding fields outside the expected ones from the interface but allow them to access field not defined later.
+
+# Satisfies Role
+
+In all three examples, the TypeScript operator `satisfies` fixes the issues.
+
+## Example 1: Too Many Fields
+
+The first example showed that the function accepted too many fields.
+
+```ts
+addPerson({name:"Patrick", age: 89, lastName:"Haha!"} satisfied Person); // Compiler error
+```
+
+Using `satisfies` tells the compiler that the object must _satisfies_ the contract of the `Person` interface, and it that case the field `lastName` is not part of the contract, thus causing a compilation error. `satisfies` is better than an `as` because it does not try to coerce the type to be casted to something that it does not. In this example, it would be cast because it has the minimum structural field to match the expected `Person`. Thus, `as` is not the solution.
+
+## Example 2: Union
+
+Similarly, with example two with the union where a mix of the two desired type was compiled without a problem.
+
+```ts
+add({name:"Patrick", age:123, breathUnderWater:true} satisfies Person);
+```
+
+The code was working with `as` but we were adding a field that did not belong there. With `satisfies` the code does not compile as expected.
+
+## Example 3: Nested Implicit Object
+
+The final example works well with `satisfies` if you do not type the object. The object will respect the contract or _satisfy_ the interface by only allowing the developer to add `FEATURE_FLAGS` to the `MY_APP_CONSTANTS` object but will not allow the usage of the object to access fields that do not _satisfy_ the feature flag object signature.
+
+```ts
+interface AppFlags extends Record<string, boolean>{}
+
+interface AppConfig {
+    FEATURE_FLAGS: AppFlags;
+}
+
+const MY_APP_CONSTANTS = {
+    FEATURE_FLAGS: {
+        ENABLE_POST_FORM: true
+    } satisfies AppFlags,
+    DO_NOT_ADD: { // Do not compile because we typed `AppConfig` to the object
+       SHOULD_NOT: true
+    }
+} satisfies AppConfig; 
+
+MY_APP_CONSTANTS.FEATURE_FLAGS.ENABLE_POST_FORM = true;
+MY_APP_CONSTANTS.FEATURE_FLAGS.do_not_exist = true; // Do not compile
+```
+
+# Conclusion
+The TypeScript operator `satisfies` may not be needed in many prominent areas of your code base but should get into a reflect anytime you use `cast` or are into a situation where the code compiles by adding superfluous fields where it should not.
+
+I have been using TypeScript since version 1.3-ish, and TypeScript seems to get bloated every year with new keywords or how keywords are used (for example, `const` or `extends`). The TypeScript operator `satisfies` fulfill a role to fix an issue with structural language and is worth learning and, to some extent _worth_ bloating TypeScript a little more. While it would be great that some of these pitfalls be automatically fixed without explicitly marking the code with a keyword, it is currently the best solution to ensure type safety in a few scenarios.

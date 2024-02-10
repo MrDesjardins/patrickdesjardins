@@ -1,0 +1,24 @@
+---
+title: "Dragging a DOM Element Visually Properly"
+date: "2018-10-09"
+categories:
+  - "ui"
+---
+
+A few weeks ago, I started using a web appliance (Trello) to handle my side projects priority.  The main action is moving the cards between columns and I realized that I did a way better job when I worked at Microsoft with Visual Studio Team Services than Trello.
+
+![My Visual Studio Team Services Animation](videos/DragDropAnimationBothWays.mp4)
+
+You can compare with the following example of Trello and probably see the difference right away.
+
+![Trello board](videos/DragDropAnimationSingleWay.mp4)
+
+Trello has the idea of showing that something is in motion, which is great. However, the way I created the animation feels more natural. The concept is like if the mouse cursor is a pin on a piece of paper. Moving a piece of paper with a pin naturally tilt the paper differently when moving left to right, or right to left. This is what I developed. Trello tilts the card, but in a constant way, which is on the right side.
+
+I am using shadow to create a depth of field and showing that we are above other elements that remain still. Trello is also using that technic.
+
+However, I also added a CSS scale effect of about 5% which simulate we take from the board and move it somewhere else. Like in real life, when taking a piece of something and moving it, the perspective change. Trello does not change the scaling factor, hence the card remains the same size. In my view, the lack of scaling removes the realistic aspect of the movement.
+
+Finally, I changed the cursor icon to to be the move pointer. The move pointer shows to the user the potential direction the item can be dragged and moved. In VSTS, it was every direction hence the 4 arrows cursor. Trello is not changing the cursor. Once again, small detail.
+
+In the end, small details matter. The combination of a dynamic tilting, scaling, shadow and cursor modifications create a smooth and snazzy user interface. You can push the limit by slightly blurring the background. However, this last detail was removed for performance reason but would make total sense without that speed penalty.

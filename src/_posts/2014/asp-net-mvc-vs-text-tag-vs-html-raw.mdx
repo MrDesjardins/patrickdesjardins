@@ -1,0 +1,43 @@
+---
+title: "Asp.Net MVC @: vs text tag vs Html.Raw"
+date: "2014-07-03"
+categories: 
+  - "asp-mvc"
+---
+
+Asp.Net MVC offers several ways to output Html from a Razor page, also know as a .cshtml page or the view.
+
+The first way is to use the syntax shortcut `@:`. This indicate to MVC that the rest of the line is a content block. The advantage of this way to output is that Visual Studio handles closing and opening tag and will continue to work by showing you if a closing tag is missing. The disadvantage is that you cannot use this for Html tag that is over multiple lines.
+
+The second way is the `text` tag. Very similar to the shortcut syntax but this time it goes on several line. 
+
+```csharp
+ <text> This is super to output something like the date : @DateTime.Now </text> 
+```
+
+Finally, you can use the Html Helper .`Raw`. You have to remember that the helper return a HtmlString. This require you to use the `@` before the Html Helper. Otherwise, the method will return the value but nothing will be rendered.
+
+
+```csharp
+ @Html.Raw("<div>It works</div>") Html.Raw("<div>This does not work</div>") 
+```
+
+If you are within a multi-statement block`@{...}` and that you want to output Html than you have all three choices. The first one is the `@:` and the second is the Html Helper `Raw`.
+
+
+```csharp
+ <div class="row"> 
+ @{ 
+  foreach (var contest in Model.SubscribedContests) { 
+    if (iSubScribe != 0 && iSubScribe % itemPerColumnSubScribe == 0) { 
+      @Html.Raw("</div>"); 
+      @:</div> 
+    } 
+  } 
+} 
+</div> 
+``` 
+
+As you can see, the two closing divisions are legal. Both output the div html tag. You cannot use directly the html because it expects to have C\# code. Visual Studio will not be able to resolve the Html.
+
+The rules of thumb is that if you need to output Html content to the browser to have this one interpreted it, than you need to send non-encoded html, which require to send "raw" html. Otherwise, you should always send html encoded element which is more safe. This is the default behavior because it protects you to have user trying to embedded undesirable html in your web page.

@@ -1,0 +1,258 @@
+---
+title: "Using Framer Motion to transition (position) between two React components"
+date: "2022-10-04"
+categories:
+  - "typescript"
+  - "react"
+  - "framer"
+---
+
+In this article, we will see how to have an HTML div at a specific boundary (x, y, width and height) and moving it to a second boundary to actually load another component. Visually the transparent to the user we will mount/unmount behind the curtain! Confusing! In other words, we have two React components and one is visible to the user. At some point in time, the user interact to have this visible component move to a second location where it goes away to reveal a new React components. A use case is that you have a HTML div showing information and you click "edit" to give the posibility to change the content. This editing mode might be bigger than the original content and also you may want the content to be in the middle of your screen.
+
+The challenge is to handle the back and forth between the two React component. At one time, one is mounted while the other unmounted and they swap their state. Using React Framer Motion, we can leverage the capability of animating using their state management of when a component is mounted and unmounted.
+
+# Basic Animation
+Let start with a foundation with basic code. The first snippet of code is mostly what you can have with Framer Motion using the `motion.div` inside two React components.
+
+<CodeSandbox codeSandboxId="framer-motion-transition-div-part-1-zxn7pi" />
+
+The application consists of a top and bottom panel. The top host one of our two components and the bottom has a single button that toggle between the two components. The toggle mount and unmount each component.
+
+# Initial, animated and exit
+A next step is to remove setting the position and dimension with styles but to rely solely on Framer Motion. To do so, let's refactor our code to have all the position inside an object. It will simplify the repetition into a central place. Then, let's inject all the position into our two boxes. That way, both know each other boundary. The code set the `initial` which is the position when mounted. For `Box1` component, we set the initial to be the other box: `Box2`. That way, when we mount the first box we start at box two position and dimension. We do the opposite for box two. The `animate` is the final position. For `Box1` we use the `boxInfo.box1` and for `Box2` the final position that is inside `boxInfo.box2`. The `exit` is the transition when unmount is called which is the same as the `initial`.
+
+<CodeSandbox codeSandboxId="framer-motion-transition-div-part-2-p4cp2h" />
+
+# Scaling
+The problem with the actual code is that we have Box 1 and Box 2 that are swapping. However, it does not scale well if we have 10 boxes which has two states meaning 20 configurations.
+
+Let's change our TypeScript interface, our model, to support a collection of Box that has two states.
+
+```typescript
+export interface BoxInfo {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
+export interface BoxState {
+  name: string;
+  state1: BoxInfo;
+  state2: BoxInfo;
+}
+
+export interface BoxProps {
+  boxState: BoxState;
+}
+```
+
+Creating two differents boxes can be done using a collection:
+
+```typescript
+const data = {
+  boxInfos: [
+    {
+      name: "Alpha",
+      state1: {
+        left: 10,
+        top: 10,
+        width: 100,
+        height: 100
+      },
+      state2: {
+        left: 120,
+        top: 50,
+        width: 100,
+        height: 150
+      }
+    },
+    {
+      name: "Beta",
+      state1: {
+        left: 170,
+        top: 10,
+        width: 100,
+        height: 100
+      },
+      state2: {
+        left: 20,
+        top: 150,
+        width: 100,
+        height: 100
+      }
+    }
+  ]
+};
+```
+
+and the mounting and unmounting
+
+```tsx
+<div className="Main">
+  <div className="BoxContainer">
+    {data.boxInfos.map((box, index) => {
+      return box1 ? (
+        <Box1 key={index} boxState={box} />
+      ) : (
+        <Box2 key={index} boxState={box} />
+      );
+    })}
+  </div>
+</div>
+```
+The animation works as expected between the `Box1` and `Box2`. Indeed, for now, both React component are almost the same expect the background color. However, let's imagine that they are two distinct components with more than just some visual change. 
+
+<CodeSandbox codeSandboxId="framer-motion-transition-div-part-3-83wsne" />
+
+Still, something is off. First, the initial/animate/exit is repetitive regardless of the unique feature of each box. The next step will be to extract the commonality between the two.
+
+![](/images/blog/framermotion-reverted-code.png)
+
+The wrapper is called `BoxWrapper` and has the role to handle the position and dimension of the actual React component.
+
+```tsx
+export default function App() {
+  const [firstState, setFirstState] = useState(true);
+  return (
+    <div className="App">
+      <div className="Main">
+        <div className="BoxContainer">
+          {data.boxInfos.map((box, index) => {
+            return (
+              <BoxWrapper firstState={firstState} boxState={box}>
+                {firstState ? (
+                  <Box1 key={index} boxState={box} />
+                ) : (
+                  <Box2 key={index} boxState={box} />
+                )}
+              </BoxWrapper>
+            );
+          })}
+        </div>
+      </div>
+      ...
+      ...
+```
+
+# Improving React Framer Motion Translation
+
+There is still quite a bit of redundancy in the `BoxWrapper` and a loading animation that is not needed. Let's take a look of the component:
+
+```tsx
+export interface BoxWrapperProps {
+  firstState: boolean;
+  boxState: BoxState;
+}
+export const BoxWrapper = (props: PropsWithChildren<BoxWrapperProps>) => {
+  const init = props.firstState ? props.boxState.state1 : props.boxState.state2;
+  const ani = props.firstState ? props.boxState.state2 : props.boxState.state1;
+  return (
+    <motion.div
+      className="boxWrapper"
+      initial={{
+        x: init.left,
+        y: init.top,
+        width: init.width,
+        height: init.height
+      }}
+      animate={{
+        x: ani.left,
+        y: ani.top,
+        width: ani.width,
+        height: ani.height
+      }}
+      exit={{
+        x: init.left,
+        y: init.top,
+        width: init.width,
+        height: init.height
+      }}
+      transition={{ duration: 1 }}
+    >
+      {props.children}
+    </motion.div>
+  );
+};
+```
+The redundancy part is between `initial` and `exit` are the same. We can extract the boundary information outside the `<motion.div>`. Actually, Framer Motion has the concept of `variants` that we can leverage in that particular case.
+
+```tsx
+export const BoxWrapper = (props: PropsWithChildren<BoxWrapperProps>) => {
+  const init = props.firstState ? props.boxState.state1 : props.boxState.state2;
+  const ani = props.firstState ? props.boxState.state2 : props.boxState.state1;
+  const variants: Variants = {
+    init: {
+      x: init.left,
+      y: init.top,
+      width: init.width,
+      height: init.height,
+      transition: { duration: 1 }
+    },
+    ani: {
+      x: ani.left,
+      y: ani.top,
+      width: ani.width,
+      height: ani.height,
+      transition: { duration: 1 }
+    }
+  };
+
+  return (
+    <motion.div
+      className="boxWrapper"
+      variants={variants}
+      initial="init"
+      animate="ani"
+      exit="init"
+    >
+      {props.children}
+    </motion.div>
+  );
+};
+```
+
+To fix the first mounting animation that start from the state 2 toward state 1, we need to not have an `initial` state. Instead, setting to `false` will skip the animation and go directly to the `animate` end result.
+
+```tsx
+export const BoxWrapper = (props: PropsWithChildren<BoxWrapperProps>) => {
+  const init = props.firstState ? props.boxState.state2 : props.boxState.state1;
+  const ani = props.firstState ? props.boxState.state1 : props.boxState.state2;
+
+  const variants: Variants = {
+    ex: {
+      x: init.left,
+      y: init.top,
+      width: init.width,
+      height: init.height,
+      transition: { duration: 1 }
+    },
+    ani: {
+      x: ani.left,
+      y: ani.top,
+      width: ani.width,
+      height: ani.height,
+      transition: { duration: 1 }
+    }
+  };
+
+  return (
+    <motion.div
+      className="boxWrapper"
+      variants={variants}
+      initial={false}
+      animate="ani"
+      exit="ex"
+    >
+      {props.children}
+    </motion.div>
+  );
+};
+```
+
+<CodeSandbox codeSandboxId="framer-motion-transition-div-part-5-po75hj" />
+
+
+# Conclusion
+
+The result is not as expected. When we load the application, the two HTML divs (Box 1 and Box 2) are both in the state 1 position. Clicking the button, change the state to two. Both HTML div are moving to their state 2 positions and size. Under the scene, the two components `Box1` are unmounting and two new components of type `Box2` are mounted. It is transparent to the user.

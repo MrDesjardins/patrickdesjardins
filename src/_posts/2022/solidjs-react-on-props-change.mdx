@@ -1,0 +1,117 @@
+---
+title: "SolidJS: How to React on Property Change"
+date: "2022-03-07"
+categories:
+  - "solidjs"
+  - "typescript"
+---
+In this article, we will show a couple of ways to react to a change of property with SolidJS. There are many types of reactions:
+
+- We can recompute another variable. For example, a value is built upon a property.
+- We can execute code. For example, clearing a list or a canvas.
+
+# Derived Signal
+
+The first case is called a [derived signal](https://www.solidjs.com/tutorial/introduction_derived). It is a well-documented case where you have a computed value that depends on another. However, the documentation is around derived signals and not props. But, the reality is that it behaves the same way hence the same mindset should be observed. By that, the derived value will automatically be recomputed when the property changes.
+
+If we use an example with a single component that passes a single property, we can change the name every second.
+```typescript
+interface HelloWorldProps {
+  name: string;
+}
+
+const HelloWorld = (props: HelloWorldProps) => {
+  return <h1>Hello, {props.name}!</h1>;
+};
+
+const names = ["World", "Test", "You"];
+const App: Component = () => {
+  const [index, setIndex] = createSignal(0);
+  onMount(() => {
+    const id = setInterval(() => {
+      setIndex((prev) => {
+        return prev + 1;
+      });
+    }, 1000);
+    onCleanup(() => clearInterval(id));
+  });
+  return <HelloWorld name={names[index() % names.length]} />;
+};
+
+render(() => <App />, document.getElementById("app"));
+```
+A derived property could be added in the `HelloWorld` component.
+
+```typescript
+const HelloWorld = (props: HelloWorldProps) => {
+  const derivedName = () => `[${props.name}]`;
+  return <h1>Hello, {derivedName()}!</h1>;
+};
+```
+
+In this example, the component will have the `derivedName` function called every time the property is changing. However, the `HelloWorld` itself is rendered only once. For example, writing this variation:
+
+```typescript
+const HelloWorld = (props: HelloWorldProps) => {
+  console.log("HelloWorld Rendered");
+  const derivedName = () => {
+    console.log("Derived Name Called");
+    return `[${props.name}]`;
+  };
+  return <h1>Hello, {derivedName()}!</h1>;
+};
+```
+
+The console output looks like this:
+
+```
+HelloWorld Rendered 
+Derived Name Called (67 times)
+```
+So, the function is not re-created every second; only the function is called because it derives from the changing property.
+
+# Executing code
+In the previous case, we were computing a value, but what if you need to execute a piece of code if the a property change? Similar to React, it is possible using an _effect_. With SignalJS, we need to use `createEffect`. What is excellent and confusing if you are coming from React Hooks, is that you do not need to explicitly specify in the creation of the effect which variable to look at. SolidJS framework handles the reactivity based on what is being used within the effect.
+
+For example:
+
+```typescript
+createEffect(() => {
+  document.bgColor = document.bgColor === "red" ? "white" : "red";
+});
+```
+The background will flip to red since the effect will be executed once when the `HelloWorld` is rendered (first execution of the component). What if we want to change the color every time the `props.name` change? For that, we need to _use_ the `props.name` inside the `createEffect`. For example, adding a `console.log` using the property causes the SignalJS framework to know about the property. And, every change of the property must run the effect and hence make the color swap.
+
+```typescript
+createEffect(() => {
+  console.log(props.name); // Make the createEffect to be called at every change of the property "name"
+  document.bgColor = document.bgColor === "red" ? "white" : "red";
+});
+```
+
+So, there is a caveat here, what if we want to change the background without using `console.log`? Removing the `console.log` makes the component renders once, as we saw earlier. So, you can cheat your way to use the variable without assigning.
+
+```typescript
+createEffect(() => {
+  props.name; // Make the effect to depend on the property
+  document.bgColor = document.bgColor === "red" ? "white" : "red";
+});
+```
+However, there is an utility function that can be used that make the code cleaner.
+
+```typescript
+  createEffect(
+    on(
+      () => props.name,
+      () => {
+        document.bgColor = document.bgColor === "red" ? "white" : "red";
+      }
+    )
+  );
+  return <h1>Hello, {derivedName()}!</h1>;
+};
+```
+The `on` function takes a **function** that returns the property you want to _watch_. In that example, the function `() => props.name` cause the effect to be evaluated every time the reference of the `name` is changing. The second function of the `on` is the code you would put directly in the `createEffect`. For one rare time, SolidJS is more complex than React, and the documentation about `on` covers the case of a signal, not props which is confusing.
+
+# Conclusion
+You can find all the code in [CodeSandBox.io](https://codesandbox.io/s/solidjs-props-5omf9f?file=/src/index.tsx:393-551). SolidJS offers simplicity by removing the burden of using a Linter to avoid stale data in React by analyzing what is used within the body of the effect or by being smart enough to update the derivative function. The simplicity comes with the caveat that you may expect an effect to be called but it won't. For example, if you debug and use property in the `console.log`, the effect will suddenly behave differently. Or, if you remove the line in the last example that does nothing to the property, you will end up with a stale background color instead of an alternating one.

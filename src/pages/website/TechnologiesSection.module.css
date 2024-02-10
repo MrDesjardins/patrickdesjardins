@@ -1,0 +1,16 @@
+.technologiesColumn {
+  margin: auto;
+}
+
+.technologiesColumn,
+.cardWithImageContainer {
+  max-width: 600px;
+}
+
+
+@media only screen and (max-width: 500px) {
+  .technologiesColumn{
+    max-width: --var(--size-column);
+    grid-template-columns: none;
+  }
+}

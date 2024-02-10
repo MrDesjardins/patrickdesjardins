@@ -1,0 +1,83 @@
+---
+title: "Using a FilteredDbSet with Entity Framework to have dynamic Filtering"
+date: "2013-03-21"
+categories: 
+  - "entity-framework"
+---
+
+If you are using an application that require to have your user to own data and not let other to see or edit it, you need to specify to each of your entity a user id to whom the entity belong. All my entities that belong to a user inherit from `IUserOwnable`. This interface force the entity to have a UserId.
+
+
+```csharp
+ public interface IUserOwnable { int UserId { get; set; } } 
+``` 
+
+From here, when I want to get the list of entity of my user I just need to specify in the where clause the logged user id and Entity Framework get me all entities that belong to this one. The following example show you how to get all workout from the logged user.
+
+
+```csharp
+ public override IQueryable<Workout> GetAll() { return DatabaseContext.Set<Workout>().Where(e=>e.UserId == logguedUserId); } 
+```
+
+The problem is that you need to set the UserId every time. This can lead to a problem of security if a developer forget to add the condition. It also a pain to repeat this code everywhere. This is why a better way to do it is to have a `FilteredDbSet` which will automatically add this condition. Here is the FilteredDbSet class.
+
+
+```csharp
+ public class FilteredDbSet<TEntity> : IDbSet<TEntity>, IOrderedQueryable<TEntity>, IListSource where TEntity : class { private readonly DbSet<TEntity>_set; private readonly Action<TEntity>_initializeEntity; private readonly Expression<Func<TEntity, bool>>_filter;
+
+public FilteredDbSet(DbContext context, Expression<Func<TEntity, bool>> filter, Action<TEntity> initializeEntity) : this(context.Set<TEntity>(), filter, initializeEntity) { }
+
+public IQueryable<TEntity> Include(string path) { return_set.Include(path).Where(_filter).AsQueryable(); }
+
+private FilteredDbSet(DbSet<TEntity> set, Expression<Func<TEntity, bool>> filter, Action<TEntity> initializeEntity) {_set = set;_filter = filter;_initializeEntity = initializeEntity; }
+
+public IQueryable<TEntity> Unfiltered() { return_set; }
+
+public TEntity Add(TEntity entity) { DoInitializeEntity(entity); return_set.Add(entity); } public void AddOrUpdate(TEntity entity) { DoInitializeEntity(entity);_set.AddOrUpdate(entity); } public TEntity Attach(TEntity entity) { DoInitializeEntity(entity); return_set.Attach(entity); }
+
+public TDerivedEntity Create<TDerivedEntity>() where TDerivedEntity : class, TEntity { var entity =_set.Create<TDerivedEntity>(); DoInitializeEntity(entity); return entity; }
+
+public TEntity Create() { var entity =_set.Create(); DoInitializeEntity(entity); return entity; }
+
+public TEntity Find(params object[] keyValues) { var entity =_set.Find(keyValues); if (entity == null) return null;
+
+return entity; }
+
+public TEntity Remove(TEntity entity) { if (!_set.Local.Contains(entity)) {_set.Attach(entity); } return_set.Remove(entity); }
+
+public ObservableCollection<TEntity> Local { get { return_set.Local; } }
+
+IEnumerator<TEntity> IEnumerable<TEntity>.GetEnumerator() { return_set.Where(_filter).GetEnumerator(); }
+
+IEnumerator IEnumerable.GetEnumerator() { return_set.Where(_filter).GetEnumerator(); }
+
+Type IQueryable.ElementType { get { return typeof(TEntity); } }
+
+Expression IQueryable.Expression { get { return_set.Where(_filter).Expression; } }
+
+IQueryProvider IQueryable.Provider { get { return_set.AsQueryable().Provider; } }
+
+bool IListSource.ContainsListCollection { get { return false; } }
+
+IList IListSource.GetList() { throw new InvalidOperationException(); }
+
+void DoInitializeEntity(TEntity entity) { if (_initializeEntity != null)_initializeEntity(entity); }
+
+public DbSqlQuery<TEntity> SqlQuery(string sql, params object[] parameters) { return_set.SqlQuery(sql, parameters); } } 
+```
+
+From here, you just need to call the DbSet that is filtered instead of the default one.
+
+
+```csharp
+ public override IQueryable<Workout> GetAll() { return DatabaseContext.SetOwnable<Workout>(); } 
+```
+
+Of course, the DatabaseContext is your class that inherit from DbContext. The SetOwnable method will call the FilteredDbSet.
+
+
+```csharp
+ public IDbSet<TEntity> SetOwnable<TEntity>() where TEntity : class, IUserOwnable { return new FilteredDbSet<TEntity>(this, entity => entity.UserId == CurrentUser.UserId, entity => entity.UserId = CurrentUser.UserId); } 
+``` 
+
+As you can see, we create a `FilteredDbSet` and assign the user Id with the CurrentUser which is the logged user.

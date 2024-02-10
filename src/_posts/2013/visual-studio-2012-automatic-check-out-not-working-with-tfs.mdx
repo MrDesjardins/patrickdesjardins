@@ -1,0 +1,24 @@
+---
+title: "Visual Studio 2012 Automatic Check Out Not Working with TFS"
+date: "2013-08-14"
+categories: 
+  - "visual-studio"
+---
+
+This is annoying and can come from a lot of place. How come some time you cannot automatically check out a file when editing inside Visual Studio.
+
+First of all, the most obvious thing to do is to be sure that Visual Studio has the option to automatically checkout file when this one is edited. This can be verified by going to `Tools>Options>Source Control>Environment` and be sure that Visual Studio does have into the Editing setting the option "Check out automatically" selected.
+
+![](/images/blog/checkoutautomaticvisualstudio2012-400x231.png)
+
+Second, your Windows account is linked with TFS and your password might been expired or changed since the last time this one has been verified by Visual Studio. To be sure, just select Team>Connect to Team Foundation Server.
+
+![](/images/blog/connectToTFS.png)
+
+This will open a panel and you'll be able to click "Connect". The problem is that it might do nothing if you are already connected.
+
+The last step is to verify that the solution might be offline. This is often the case if you are branching with TFS. If you open the solution in your new branch, the solution may not be "online".
+
+To be sure to be "online", you need to go to `File>Source Control>Go Online`.
+
+From here, if you were not connected, you will see in the output window some movement of activities.

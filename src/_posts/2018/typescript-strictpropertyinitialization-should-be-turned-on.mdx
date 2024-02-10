@@ -1,0 +1,53 @@
+---
+title: "TypeScript strictPropertyInitialization should be turned on"
+date: "2018-03-27"
+categories: 
+  - "typescript"
+---
+
+Finally, TypeScript with its version 2.7 brings more rigidity around class properties. For many years, it was possible to define class' properties without initializing them at the declaration level, neither in the constructor.
+
+Before 2.7, the only difference between an optional and a non optional class's property was that optional could receive the value of undefined while the other one was undefined until a value was set. After initialized, the non-optional protects the field to receive undefined. However, the case of declaring and not defining the value makes TypeScript less valuable by creating confusion. The nomenclature indicate that a field cannot be undefined but the missing initialization create a limbo where the value is something not allowed.
+
+TypeScript 2.7 brings a new compiler flag: "strictPropertyInitialization". This new strict flag indicates to TypeScript that any class property must initialize the field at the declaration time or inside the constructor of the class.
+
+Let's see an example that compile prior to the adoption of strictPropertyInitialization or if this flag is set to false. The following code shows three properties. The "m1" is initialized in the constructor. The "m2" is initialized at declaration. The "m3" is initialized by a call to a method from the constructor. The last example works only without the flag to true.
+
+```typescript
+class C { 
+  private m1: number; 
+  private m2: string = "2"; 
+  private m3: boolean;
+
+  public constructor() { 
+    this.m1 = 1; 
+    this.init(); 
+  } 
+  private init():void { 
+    this.m3 = true; 
+  } 
+} 
+``` 
+
+
+The problem with initializing in a method is the lack of guarantee of invocation. The call to the method might be immediate or might be under a condition that make it not initialize or to initialize partially its properties. TypeScript can perform a deeper analysis if it concentrates on the each field and under a single method -- the constructor.
+
+Let's examine a second example where the compiler catches a missing initialization.
+
+```typescript
+class C { 
+  private m1: number; 
+  private m2: string = "2"; 
+  private m3: boolean;
+
+  public constructor(b: boolean) { 
+    this.m1 = 1; 
+    if (b) { 
+      this.m3 = true; 
+    } 
+  }
+} 
+``` 
+ The second example initialize the field "m3" but not in every code path. TypeScript detects that the field might not be initialized, hence doesn't compile.
+
+An important detail is the flag enters in action when TypeScript configures the `strickNullChecks` to true. Otherwise, TypeScript accepts undefined without mentioning optional. The combination of strict flags, `strickNullChecks` and `strictPropertyInitialization` works hand in hand to reduce potential undesired undefined value for field doesn't mention the possibility of undefined.

@@ -1,0 +1,45 @@
+---
+title: "How to map 1 table to 2 objects with Entity Framework 4.3 Code-First (POCO)?"
+date: "2012-06-20"
+categories: 
+  - "entity-framework"
+---
+
+In some scenario, your database table may look different from your classes. You could have a class that contain an object which is a subdivision of some data with high cohesive representation and in the same time you may not want to divide this information in a 1-1 table. This is often the case if you cannot refactor an existing database or the case where information belong in a single table but since the data is conceptually better to be together in a second object that you need to be different from your database. In that case, Entity Framework call this scenario `"Complex Type"`.
+
+Let say that you have a table with these fields:
+
+`[Table] -Field1 -Field2 -Field3 -Field4`
+
+And let say that you end up having classes like this:
+
+`[Class1] -Field1 -Field2 -Class2 object here  [Class2] -Field3 -Field4`
+
+In fact, as you can see, the Class1 can access Class2 data with the property Class2. For example : myClass1.Class2.Field3.
+
+To be able to map automatically data with Entity Framework, you need to setup a complex type.
+
+First of all, you need to ensure that the property doesn't have a null value. This mean that you have to initialize this property. The best way is to initialize the inner object (Class2) in the constructor of the main class (Class1).
+
+Second, Entity Framework will do his mapping of the property inside the inner object with the property name of this one. That mean that Entity Framework will think that the table look like this:
+
+`[Table] -Field1 -Field2 -Class2_Field3 -Class2_Field4`
+
+If you do not want to alter your table, you will need to configure the Database Context.
+
+
+```csharp
+protected override void OnModelCreating(DbModelBuilder modelBuilder) { 
+  modelBuilder.Configuration.Add(new MyTable2Configuration()); 
+  //Add subsequent configuration... 
+}
+
+public class MyTable2Configuration: ComplexTypeConfiguration<Class2> { 
+  public MyTable2Configuration() { 
+    Property(o => o.Field3).HasColumnName("Field3"); 
+    Property(o => o.Field4).HasColumnName("Field4"); 
+  } 
+} 
+```
+
+You do not have to configure the Table1 class, only the complex type. If you need more information about Complex Type, you can always check this [blog](http://weblogs.asp.net/manavi/archive/2011/03/28/associations-in-ef-4-1-code-first-part-2-complex-types.aspx) which give additional information.

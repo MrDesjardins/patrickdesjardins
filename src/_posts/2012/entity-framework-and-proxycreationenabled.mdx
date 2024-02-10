@@ -1,0 +1,12 @@
+---
+title: "Entity Framework 4.3 and ProxyCreationEnabled"
+date: "2012-03-21"
+categories: 
+  - "entity-framework"
+---
+
+The property `ProxyCreationEnabled` is by default to `true`. This property is required to be able to do LazyLoading and also to keep track of changes to the object.
+
+But, in some situation, you may need to set it up to false. One case if to gain on performance. Entity Framework will generate a proxy class which contain some overhead that will contains the previous state of the the object. Furthermore, creating object with proxy make them not serializable. Finally, some controls like Telerik suite (version 2012.1.214.340), cannot be bind to proxy classes.
+
+To set the `DbContext` to `false` for proxy, you need to set the property `Configuration.ProxyCreationEnable = false`. This property is available to any `DbContext` object.

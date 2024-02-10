@@ -1,0 +1,79 @@
+---
+title: "How to debug Rust CLI application with VsCode using Windows"
+date: "2022-11-21"
+categories:
+  - "rust"
+  - "vscode"
+  - "debug"
+---
+
+# Prerequisites
+
+Before debugging using Visual Studio Code (VSCode), you need to have VsCode and [CodeLLDB extension](https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb).
+
+# Launch File
+
+VsCode's debug configuration file is under `.vscode/launch.json`. You need two entries: one for your executable (command line) to test the _cli_ and one for the unit tests.
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug executable 'rust-p2p-chat'",
+      "cargo": {
+        "args": ["build", "--bin=rust-p2p-chat", "--package=rust-p2p-chat"],
+        "filter": {
+          "name": "rust-p2p-chat",
+          "kind": "bin"
+        }
+      },
+      "args": [
+        "--ip",
+        "127.0.0.1",
+        "--port",
+        "8077",
+        "--username",
+        "YourNameHere"
+      ],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug unit tests in executable 'rust-p2p-chat'",
+      "cargo": {
+        "args": [
+          "test",
+          "--no-run",
+          "--bin=rust-p2p-chat",
+          "--package=rust-p2p-chat"
+        ],
+        "filter": {
+          "name": "rust-p2p-chat",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
+```
+
+One detail that is not obvious is how to have default arguments for your executable. The configuration has a `args` property that allows an array of arguments. Each element of the array must be what you would separate by a space. For example, if you type normally `myApp.exe --argument1 value1`, then in the `args`, you write:
+
+```json
+"args": [
+  "--argument1",
+  "value1",
+]
+```
+
+Of course, all the `rust-p2p-chat` needs to change for your application name. The good news is that if your project does not have any launch.json file, you can have VsCode generates the scaffolding for you. Then, only the `args` is needed to fill.
+
+# How to debug?
+
+The last step is to set a breakpoint. Click on the left side gutter of the editor next to the line number. A red dot appears, then you can launch the application using the VsCode _Run and Debug_ using the configuration to debug the executable. The editor will stop once the program reaches the line with the breakpoint.

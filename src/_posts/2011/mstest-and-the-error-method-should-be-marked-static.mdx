@@ -1,0 +1,39 @@
+---
+title: "MSTest and the error Method should be marked static"
+date: "2011-12-26"
+categories: 
+  - "c-sharp"
+---
+
+If you came from the world of NUnit you may stomped into the error "Method should be marked static" without any other indication of which method it's about.
+
+With NUnit, you were using _TestFixtureSetUp_ as attribute to a class' method to get it executed before all test once. With MSTest you have to use the attribute _ClassInitialize_.
+
+So, if you are used to write :
+
+```csharp
+[TestFixtureSetUp] 
+public void Init() { 
+  //Some code executed once 
+} 
+```
+
+You cannot simply use :
+
+```csharp
+[ClassInitialize] 
+public void Init() { 
+  //Some code executed once 
+} 
+```
+
+In fact, the Microsoft Unit Testing framework require to have this method public with a parameter of _TestContext_.
+
+```csharp
+[ClassInitialize] 
+public static void Init(TestContext ctx) { 
+  //Some code executed once 
+} 
+```
+
+Once this is set as it should, with the statis method and the TestContext attribute, the error "Method should be marked static" will be removed and you will be all fine.

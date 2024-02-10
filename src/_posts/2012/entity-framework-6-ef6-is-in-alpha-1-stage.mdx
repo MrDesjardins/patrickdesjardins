@@ -1,0 +1,30 @@
+---
+title: "Entity Framework 6 (EF6) is in Alpha 1 stage"
+date: "2012-12-14"
+categories: 
+  - "entity-framework"
+---
+
+Microsoft has released few weeks ago the [list of features](http://blogs.msdn.com/b/adonet/archive/2012/10/30/ef6-alpha-1-available-on-nuget.aspx) that Entity Framework 6, EF6 will contains.
+
+Here is a summary of the changes that can already used if you use [NuGet](http://msdn.microsoft.com/en-us/data/ee712906) to download this alpha version.
+
+## Framework 4.0 and Entity Framework
+
+It's now possible to use .Net 4.0 framework with Entity Framework 6 and have enumeration support, performance increase and spatial support. With EF5.0, we had to upgrade to .Net 4.5. They have moved from .Net into EF6.0 the code required to benefit from these 3 subjects. This is a good news because it will increase the migration from EF4 to EF6 without having to upgrade the framework. For small project it wasn't an issue, but for bigger project, the cost (and the fear) to upgrade was seen as a show blocker for some people.
+
+## EF 6.0 is more open
+
+Entity Framework 6.0 has changed is open source agreement and to be fully compatible they had to open few things. Now, it doesn't use the provider of Ado.Net. This mean that you have to change the configuration file to provide the provider of your choice. Of course, most if not all scenario will (should) use Ado.Net as provider. Nonetheless, it's not configurable.
+
+Not only it's more open for the provider but a lot of interface can be injected. DbSpatialServices, IDbModelCacheKeyFactory, IDbProviderFactoryService, IManifestTokenService, IDbConnectionFactory, MigrationSqlGenerator,IDatabaseInitializer and as said, DbProviderServices can be injected. This is a good new to provide you own implementation of these services.
+
+## Migration Update
+
+Some new feature for the migration update mechanism are also available. The first one let you customized the history table and the second let Entity Framework's context to be multi-tenant. This give you the possibility to have a single DbContext that can communicate to multiple physical database.
+
+## Global Entity Configuration
+
+EF6.0 bring custom configuration of entity to an other level. It's now possible to configure a property globally for all context object. So if for all your entity you have the property ID that is a primary key with the same configuration, instead of defining this one in each entities configuration, you just have to specify it in the convention as part of a rule of your system.
+
+That's it for the moment, a lot of great improvement is done on EF6.0 and we keep looking forward for new improvement in a more stable release soon.

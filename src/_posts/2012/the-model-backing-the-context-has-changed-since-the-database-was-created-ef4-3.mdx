@@ -1,0 +1,27 @@
+---
+title: "The model backing the context has changed since the database was created, EF4.3/5.0"
+date: "2012-03-20"
+categories: 
+  - "entity-framework"
+---
+
+Entity Framework version 4.35.0 (and since 4.1) can throw the exception that the model and the database cannot be mapped correctly. In fact, EF is saying that the model has changed since the database has been created.
+
+> The model backing the 'MyContext' context has changed since the database was created. Consider using Code First Migrations to update the database (http://go.microsoft.com/fwlink/?LinkId=238269)
+
+To resolve this problem, you will find on the Web a lot of solution but most of them work with previous version of Entity Framework 4.35.0.
+
+![](/images/blog/modelBackingException-400x262.png)
+
+The solution from this version is to use the static method SetInitializer and bind to the context a Null value. If you are working on a Web solution, the best position to write the code is in the Application_Start of your Global.asax.cs file.
+
+```csharp
+protected void Application_Start() { 
+  AreaRegistration.RegisterAllAreas(); 
+  RegisterRoutes(RouteTable.Routes); 
+  //... 
+  Database.SetInitializer<MyContext>(null); 
+} 
+```
+
+Using this code remove the error and let you handle manually the creation of the database.

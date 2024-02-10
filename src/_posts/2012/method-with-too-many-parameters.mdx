@@ -1,0 +1,38 @@
+---
+title: "Method with too many parameters"
+date: "2012-08-07"
+categories: 
+  - "c-sharp"
+  - "general"
+---
+
+I see often this kind of problem in development. It's ain't about C\# or any other languages but often people add parameters on the fly without getting the situation a little bit more in perspective. This is often the case when someone start working in someone else code; which often all the time in development.
+
+Let start with this example: 
+
+```csharp
+ public void MyUserReport(List<User> users){} 
+```
+
+This method goal is to display the list of the users that we have. Later, a modification will be made to highlight a specific user. This is why the method signature will change to:
+
+```csharp
+ public void MyUserReport(IEnumerable<User> users, int userToHighlightId){} 
+```
+
+The problem is that we also want to be able display the rating of this highlighted user but not the other one.
+
+
+```csharp
+ public void MyUserReport(IEnumerable<User> users, int userToHighlightId, int ratingScore){} 
+```
+
+And so on. Every new request of feature add a new parameters to the method. This shouldn't because it will drive the code to have monstrous method with huge parameter count. Also, every parameters will require to have their validation rule. For example, can we put a ratingScore under 0? This is why instead of passing primitive we should pass business logic objet. Instead of using userToHighlightId to the method and its score, we should pass a User object. 
+
+```csharp
+ public void MyUserReport(IEnumerable<User> users, User userToHighlightId){} 
+```
+
+Not only it makes the method shorter, but it gives us the leverage to reuse the validation that is already done by the User model class. The rating, if located in the User class, will already been validated by itself and inside the Report method we won't have to do any validation. Not only it's better because we do not have to have external validation logic but it also the place to validate : inside the model. Cohesion is kept for User and the report class and the maintenability is increased. Furthermore, unit testing the user logic is only at one place and the report can mock the User for its own test (if required).
+
+This situation occur often, and shouldn't. This happen also at the client side with Javascript. The same refactoring is possible by simply encapsulate the data into class and to use the class instead of primitive.

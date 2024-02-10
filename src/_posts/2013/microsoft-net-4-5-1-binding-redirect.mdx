@@ -1,0 +1,25 @@
+---
+title: "Microsoft .Net 4.5.1 Binding Redirect"
+date: "2013-09-24"
+categories: 
+  - "c-sharp"
+  - "visual-studio"
+---
+
+With the new version of the Microsoft .Net, the 4.5.1, you will be able to use assembly that as been compiled with an other framework version dependency. For example, a project that use a library that itself use a library that we might use in the project but with an other version won't work normally. But, with the new feature called binding redirect, an entry inside the web.config (or app.config) is added to tell the .Net virtual machine to use for specific library the version of the dependency.
+
+Here is an example of the web.config:
+
+
+```xml
+ <dependentAssembly> <assemblyIdentity name="assemblyWithDependencyProblem" publicKeyToken="32ab4ba45e0a69a1" culture="en-us" /> <bindingRedirect oldVersion="1.0.0.0" newVersion="2.0.0.0" /> </dependentAssembly> 
+```
+
+
+``` 
+ Project A --> Library A --> Dependency 1 (version1) |---------> Dependency 2 (version2) 
+``` 
+
+The example above would have an entry in the web.config (or app.config) that tell the dependency to use version 1 if used by Library A and use the version 2 when directly used by the project.
+
+It might not be an impressive feature because it's not visual but it's very useful. Often, library from the .Net framework could be problematic but this is a thing of the past.

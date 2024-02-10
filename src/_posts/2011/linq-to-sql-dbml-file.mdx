@@ -1,0 +1,147 @@
+---
+title: "Linq To Sql .dbml file"
+date: "2011-09-14"
+categories: 
+  - "linq-to-sql"
+---
+
+To create a new Linq To Sql classes to communicate with your database you need to add a new item of Linq To Sql classes types in Visual Studio.
+
+![](/images/blog/linq2sqlcreate-400x386.png)
+
+Once created, the next step is to drag and drop table into the Visual Designer. This will generate Linq To Sql data class. You can also drag and drop stored procedure to be used.
+
+When done, you need to save and you can after that instantiate the Linq to Sql's data context.
+
+
+```csharp
+var dataContext = new MapperDataContext(); 
+dataContext.UpdateRegion(1, "Estern"); 
+```
+
+The process of creating a Linq to Sql data context will create a .dbml file. This file contains all tables dropped into the visual designer.
+
+This file is a XML file that contain all definitions of the table and the stored procedure you added into the Visual Designer.
+
+Here is a snippet of the .dbml of Northwind database with a custom stored procedure UpdateRegion.
+
+
+```xml
+<Table Name="dbo.Region" Member="Regions"> 
+  <Type Name="Region"> 
+    <Column Name="RegionID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" /> 
+    <Column Name="RegionDescription" Type="System.String" DbType="NChar(50) NOT NULL" CanBeNull="false" /> 
+    <Association Name="Region_Territory" Member="Territories" ThisKey="RegionID" OtherKey="RegionID" Type="Territory" /> 
+  </Type> 
+</Table> 
+... 
+<Function Name="dbo.UpdateRegion" Method="UpdateRegion"> 
+  <Parameter Name="id" Type="System.Int32" DbType="Int" /> 
+  <Parameter Name="txt" Type="System.String" DbType="VarChar(50)" /> 
+  <Return Type="System.Int32" /> 
+</Function> 
+```
+
+But that's not all, the .dbml come with a .dbml.layout file. This file is also a XML but a little bit more complicate to understand. Here is a short section of the file.
+
+
+```xml
+<classShape Id="40fcd11c-862f-4d4c-9d0f-b7b810cf15f4" absoluteBounds="6.75, 7.5, 2, 1.1939925130208344"> 
+  <DataClassMoniker Name="/MapperDataContext/Region" /> 
+  <nestedChildShapes> 
+    <elementListCompartment Id="59d75784-613d-41c6-b53c-10f870c17964" absoluteBounds="6.765, 7.96, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" /> 
+  </nestedChildShapes> 
+</classShape> 
+```
+
+
+This esoteric is in fact just the information of the visual representation of all data classes of the visual designer. You should never have to look it.
+
+The last file that you have under the .dbml is *.dbml.designer.cs that contain the class that you will create an instance from. This file inherit of System.Data.Linq.DataContext and contains all methods generated to correspond to the classed generated from the tables dropped into the Visual Designer. This file contains multiple classes. You will have the DataContext class but also a single class for each of the tables. Here is an example of the code generated for the small table "Regions" of Northwind database.
+
+
+```csharp
+ [global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Region")] 
+ public partial class Region : INotifyPropertyChanging, INotifyPropertyChanged { 
+  private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty); 
+  private int_RegionID; 
+  private string_RegionDescription; 
+  private EntitySet<Territory>_Territories; 
+  #region Extensibility Method Definitions 
+  partial void OnLoaded(); 
+  partial void OnValidate(System.Data.Linq.ChangeAction action); 
+  partial void OnCreated(); 
+  partial void OnRegionIDChanging(int value); 
+  partial void OnRegionIDChanged(); 
+  partial void OnRegionDescriptionChanging(string value); 
+  partial void OnRegionDescriptionChanged(); 
+  #endregion 
+  public Region() { 
+    this._Territories = new EntitySet<Territory>(new Action<Territory>(this.attach_Territories), new Action<Territory>(this.detach_Territories)); 
+    OnCreated(); 
+  } 
+  [global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RegionID", DbType="Int NOT NULL", IsPrimaryKey=true)] 
+  public int RegionID { 
+    get { return this._RegionID; } 
+    set { 
+      if ((this._RegionID != value)) { 
+        this.OnRegionIDChanging(value); 
+        this.SendPropertyChanging(); 
+        this._RegionID = value; 
+        this.SendPropertyChanged("RegionID"); 
+        this.OnRegionIDChanged(); 
+        } 
+    } 
+  } 
+  
+  [global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_RegionDescription", DbType="NChar(50) NOT NULL", CanBeNull=false)] 
+  public string RegionDescription { 
+    get { 
+      return this._RegionDescription; 
+    } 
+    set { 
+      if ((this._RegionDescription != value)) { 
+        this.OnRegionDescriptionChanging(value); 
+        this.SendPropertyChanging(); 
+        this._RegionDescription = value; 
+        this.SendPropertyChanged("RegionDescription"); 
+        this.OnRegionDescriptionChanged(); 
+      } 
+    } 
+  } 
+  
+  [global::System.Data.Linq.Mapping.AssociationAttribute(Name="Region_Territory", Storage="_Territories", ThisKey="RegionID", OtherKey="RegionID")] 
+  public EntitySet<Territory> Territories { 
+    get { return this._Territories; } 
+    set { 
+      this._Territories.Assign(value); 
+    } 
+  } 
+  public event PropertyChangingEventHandler PropertyChanging; 
+  public event PropertyChangedEventHandler PropertyChanged; 
+  protected virtual void SendPropertyChanging() { 
+    if ((this.PropertyChanging != null)) { 
+      this.PropertyChanging(this, emptyChangingEventArgs); 
+    } 
+  } 
+  protected virtual void SendPropertyChanged(String propertyName) { 
+    if ((this.PropertyChanged != null)) { 
+      this.PropertyChanged(this, new PropertyChangedEventArgs(propertyName)); 
+    } 
+  } 
+  
+  private void attach_Territories(Territory entity) { 
+    this.SendPropertyChanging(); 
+    entity.Region = this; 
+  } 
+  
+  private void detach_Territories(Territory entity) { 
+    this.SendPropertyChanging(); 
+    entity.Region = null; 
+  } 
+} 
+```
+
+The most interesting part is to notice the inheritance of two interfaces. The `INotifyPropertyChanging` and `INotifyPropertyChanged` interface that notify when a property is changing.
+
+To conclude, Linq to Sql dbml file is an auto-generated file that you should never really need to look the code. The Visual Designer is powerful enough to handle all modifications possible with Linq to Sql.

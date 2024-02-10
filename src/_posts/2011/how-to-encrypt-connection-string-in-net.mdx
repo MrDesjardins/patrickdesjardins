@@ -1,0 +1,41 @@
+---
+title: "How to encrypt connection string in .Net?"
+date: "2011-10-03"
+categories: 
+  - "ado-net"
+---
+
+It's always more secure to not have the user and password in clear text. This is true for application but also for web application.
+
+Microsoft .Net Framework comes with tool to encrypt the connection string. This tool is **aspnet_regiis.exe** and you can find it at `C:\\Windows\\Microsoft.NET\\Framework\\v2.0.50727\\` if you are working on .Net 2.0 or at `C:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319` if you are working with .Net 4.0.
+
+Two providers come with the .Net Framework. The `RSAProtectedConfigurationProvider` and the `DataProtectionConfigurationProvider`.
+
+## How to use aspnet_regiis.exe
+
+You can get help by using the `/?` parameter but you will rapidly see that this tool has a lot of parameters.
+
+To encrypt the connection string, you will need to use these parameters:
+
+
+```csharp
+aspnet_regiis.exe -pef "connectionStrings" "c:\\myProject\\myFolder\\web.config" 
+```
+
+But, what about the provider? You can also add `-prov DataProtectionConfigurationProvider` to use `DataProtectionConfigurationProvider` provider.
+
+## What to code to decrypt inside the application?
+
+Nothing. .Net Framework automatically decrypts configuration sections, therefore you do not need to write any additional decryption code.
+
+## Possible errors
+
+You can have this error message while doing this command: "the configuration for physical path cannot be opened". If you have this error you should be sure that the file is not in read-only. Also, check if you have the permission to edit this file. Then, be sure that the file is no used by any program that may lock the file.
+
+## SSPI
+
+This option let you use the Windows credential instead of using username and password directly in the connection string. To use, modify the connection string to have **Integrated Security=SSPI** or **Integrated Security=True** and remove the username and password. Of course, this mean that the database must let the user connect. This is a good practice to handle the security of you web application with the web Windows credential.
+
+## Conclusion
+
+For more information about the security you should visit [Microsoft MSDN documentation](http://msdn.microsoft.com/en-us/library/ff647398.aspx).

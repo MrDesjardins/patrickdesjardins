@@ -1,0 +1,19 @@
+---
+title: "Merge and Rebase with Auto Stash to Accelerate Pulling"
+date: "2024-01-30"
+categories:
+  - "git"
+---
+
+Keeping your branch up-to-date with the main branch or the feature branch is a necessity. Waiting too long and you may have more conflicts to resolve.
+
+The normal command is invoking `git pull`. However, if you have uncommitted changes, you will need to stash them first or create a commit before receiving the upstream code.
+
+To avoid having to stash your code and pop the stash later, we can add few lines in the `~/.gitconfig`. The change uses `autoStash` which will stash, pull and pop the stash for you.
+
+```
+[rebase]
+	autoStash = true
+[merge]
+	autoStash = true
+```

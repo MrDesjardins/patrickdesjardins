@@ -1,0 +1,33 @@
+---
+title: "Never use Primitive Type for any Entities"
+date: "2015-03-24"
+categories: 
+  - "entity-framework"
+---
+
+I see in a lot of system an abuse of primitive types. Instead of using a class for an entity, the use of primitive is used. Often, when additional needs is required, additional primitives are used which duplicate. Here is some basic example:
+
+```csharp
+ public class Item { public double Price{get;set;} public string Name{get;set;} } 
+``` 
+
+The problem is obvious, the _Item_ class should not be in a primitive type for the _Price_. The first reason is if later we need to have **additional information**, like for example the currency, you will be stuck with a second property. The problem become even more obvious if you have several money element for the same class. The class become clutters of properties. It is also way easier in the future to add additional property or method without having to change a lot of place in your software -- you change at one place, the class.
+
+
+```csharp
+ public class Item { 
+  public double Price{get;set;} 
+  public int CurrencyTypeForPrice{get;set;} 
+  public double SuggestedPrice{get;set;} 
+  public int CurrencyTypeForSuggestedPrice{get;set;} 
+  public string Name{get;set;} 
+ } 
+```
+
+The second problem is when your application become big and you realize that you should have used decimal instead of double that you have to change at several places instead to a **single class**. The third problem is about **operations**. How can you compare two prices? You have to compare the double properties (the price) with the int property (the currency type) every time. Rather than having a class with the operator equal overriding that does it at one place, you have to do it everywhere.
+
+The forth problem is about passing information by parameter. When you have a single class, for example a **Money** class instead of a decimal + type for currency, it is way cleaner to use. The fifth reason is when you are using **Asp.Net MVC and Template**. You can create a visual editor and display template for your entity type. For example, you could create a Money.cshtml which shows the right control for the user to allow him to select from a drop down the currency. Without a specific class for your entity you would have to create an Html helper that take two parameters: the amount and the currency.
+
+Finally, you can add additional **validation**. If you entity is for money than you can say that your money must always be positive. This also imply the advantage to be able to unit test at a single place instead of everywhere when you use your money logic.
+
+To conclude, you can see that their is several advantages like when refactoring your entity, when adding operations or when using framework like Asp.Net MVC. A cleaner code and less repetition is also very interesting. None but not the less, having a class instead of a primitive type allow you to unit tests logic on any logic about your entity.

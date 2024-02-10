@@ -1,0 +1,37 @@
+---
+title: "How to use Entity Framework with a list of Value Objects"
+date: "2014-03-25"
+categories: 
+  - "entity-framework"
+---
+
+A value object can be anything that would be in an enum in C\#. However, we have this one in the database since it is an entity. The difference is that inside the code you have the id and description. This way, we have a fast access in the code without requiring to go in the database and we have a strong database that has all foreign key to the value object class. Even if Entity Framework supports Enum, it is not strongly typed inside the database. The database does not have a foreign key so it could be possible to set a value that would not be in C\#.
+
+Because of how Entity Framework works, we cannot simply have an entity to have a list of value objects. This would produce Entity Framework to set the entity id into the value object table. The desired effect is to have only one entry per value object. For example, I have a Contest entity that has a list of possible Stock Market. I want the value object, Stock Market to have in its table all possible stock exchange market and not have duplicate for different contest.
+
+To fix this problem, we need to create an association table that will act has a association table in the database.
+
+![](/images/blog/ContestMarket-400x90.png)
+
+Concerning Entity Framework, we need to specify the new entity in the configuration. We need to specify that its primary key is the combination of both primary key (Contest and Market). It would also be able to add additional property for the association like having a date. This association can be set by setting a key with an anonymous object.
+
+
+```csharp
+ public class ContestMarketConfiguration : AssociationConfiguration { public ContestMarketConfiguration(): base(Constants.SchemaNames.Contest) { this.HasKey(c => new {MarketId = c.MarketId, ContestId= c.ContestId}); } } 
+```
+
+It is not required to specify the name of the property (MarketId, ContestId) but it is required to have these property directly inside the Entity. The following code **does not** work:
+
+
+```csharp
+ public class ContestMarketConfiguration : AssociationConfiguration { public ContestMarketConfiguration(): base(Constants.SchemaNames.Contest) { this.HasKey(c => new {MarketId = c.Market.Id, ContestId= c.Contest.Id}); } } 
+```
+
+This is unfortunate because you have to play with the Model to had additional property just for the association. The entity looks like this:
+
+
+```csharp
+ public class ContestMarket { public Contest Contest { get; set; } public int ContestId { get; set; } public MarketType Market { get; set; } public int MarketId { get; set; } } 
+```
+
+The Contest entity has a Collection of ContestMarket and the MarketType does not have anything. This way, this one can be used anywhere even without the Contest context.

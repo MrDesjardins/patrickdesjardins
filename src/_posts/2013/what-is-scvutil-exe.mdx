@@ -1,0 +1,26 @@
+---
+title: "What is ScvUtil.exe?"
+date: "2013-03-15"
+categories: 
+  - "webservices"
+---
+
+If you want to consume web services inside your .Net application, a tool exist to help you create the .Net code to interact with web services. This tool is a console application called "**ScvUtil.exe**".
+
+You can find in this blog post the information concerning the location of this tool.
+
+This application generate two files. The first file is a .cs file that contains the code of the proxy and the code of the DTO classes (complex class used by the service). The second file is a .config file that contains the information about how to connect to the web services.
+
+To generate those files, you can simply call the ScvUtil application with the path of the webservice (the WSDL path). This is an URL.
+
+```sh
+ svcutil.exe http://localhost:1234/MyService.svc?wsdl 
+``` 
+
+The problem is that doing it with only a single parameter will output those file to your `C:\\windows\\system32\\` which is not clean and can cause security problem. However, it's possible to tell where to output those two files but adding 2 parameters to the svcutil.exe tools.
+
+```sh
+ svcutil.exe http://localhost:1234/MyService.svc?wsdl /out:"c:\\myPath\\proxy.cs" /config:"c:\\myPath\\config.config" 
+``` 
+
+Explicit destinations give you the leverage to output the CS file and the configuration file where you want.

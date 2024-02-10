@@ -1,0 +1,29 @@
+---
+title: "Handling multiple repository with Entity Framework"
+date: "2012-03-24"
+categories: 
+  - "entity-framework"
+---
+
+If you are using 1 dbcontext per repository, you may end by having problem with your reference between each of your object. Let say that you have an object A with an object B and A is handled by RepoA and you change the object B which is handled by the context inside repoB than you won't have any changes done. This is because the dbcontext contain only reference for RepoA in RepoA and it's not aware of what has been changed in the other dbcontext in RepoB.
+
+The best way to solve this issue is to share the dbcontext between all your repositories. This can be easily done if you are using a repository factory (Abstract Factory pattern). When you create your repository factory you should create the database context and set it to all repository when they are instantiated.
+
+
+```csharp
+public class RepositoryFactory : IRepositoryFactory { 
+  private IClassA a; 
+  private IClassB b; 
+  private IClassC c;
+
+  private readonly DatabaseContext dbContext;
+
+  public RepositoryFactory() { this.dbContext = new DatabaseContext(); }
+
+  public IClassA RepoA { get { return a ?? (a = new RepoA(this.dbContext)); } }
+
+  public IClassB RepoB { get { return b ?? (b = new RepoB(this.dbContext)); } }
+
+  public IClassC RepoC { get { return c ?? (c = new RepoC(this.dbContext)); } } 
+} 
+```

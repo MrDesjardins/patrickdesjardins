@@ -1,0 +1,18 @@
+---
+title: "How to clone a branch from a Git Repository without downloading every branches"
+date: "2015-07-09"
+categories: 
+  - "git"
+---
+
+![](/images/blog/gitlogo.jpg)
+
+The hard way to get a branch `clone` is to clone the repository and do a `checkout` to the desired branch. The first operation will download every files from the repositories. This mean that if you have several branches that you will download them all. Indeed, Git is smart and you do have the master branch and branches are only a difference. Nevertheless, this can be huge and if you really want just to access a specific branch can be long and a waste of bandwidth. This is why Git gives you the posibility to clone a branch with the `-b`. This will save you the checkout operation but it does not save you the download problem -- you still download all commits. To be efficient, you should use the `--single-branch` argument which will tell Git to take care of only the branch specified.
+
+Here is an example:
+
+```sh 
+ git clone -b TheBranchName --single-branch https://YourGitUrl/RepositotyName LocalFolderNameForTheBranch 
+``` 
+
+This is very efficient. If your branch has only 1 file, than you will download only that single file instead of all files from all others branches.

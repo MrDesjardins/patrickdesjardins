@@ -1,0 +1,51 @@
+---
+title: "ModelState.Clear() is required to display back your model object"
+date: "2012-04-19"
+categories: 
+  - "asp-mvc"
+---
+
+If you are getting your Model from a form and you want to manipulate the data that came from the client form and write it back to a view, you need to call `ModelState.Clear()` to clean the ModelState values.
+
+The reason is that normally, you want to postback to the client the form with all the errors. So, when you put back the parameter that contain your model to the view to be returned, this one use the value of the ModelState.
+
+So, for example, if I change a property and sent it back to the client :
+
+
+```csharp
+[HttpPost] public ActionResult Edit(MyObject objModel) { 
+  objModel.Property1 = "NEW VALUE"; 
+  //... 
+  return View(objModel) 
+} 
+```
+
+This won't put on the UI the new value for the property1 because the ModelState values doesn't contain this value but the one entered by the user.
+
+To be able to override the model state you need to remove all the data from it.
+
+
+```csharp
+[HttpPost] public ActionResult Edit(MyObject objModel) { 
+  objModel.Property1 = "NEW VALUE"; 
+  //... 
+  ModelState.Clear(); 
+  return View(objModel) 
+} 
+```
+
+To clear the memory of the model state you need to use `ModelState.Clear()`. You could also remove only the desired field by using method of ModelState.
+
+
+```csharp
+ ModelState.Remove("Property1"); 
+```
+
+Also, if you always want to not use the ModelState, you may want not to use HtmlHelper and directly use the model with Html code.
+
+
+```csharp
+ My Property: <input type="text" name="Property1" value="@Model.Property1" /> 
+```
+
+In all situations, what you need to remember is that `ModelState` is the default mechanism and will by default be the one that will be used to display information back to the form.

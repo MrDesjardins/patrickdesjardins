@@ -1,0 +1,21 @@
+---
+title: "How to get more output from a Http404 error with Asp.Net MVC?"
+date: "2015-06-04"
+categories: 
+  - "asp-mvc"
+---
+
+Asp.Net MVC has some tricky scenario where you can get a 404 error and you have no idea why. You have unit tested all your route but you still have a 404! This is crazy and you start burning time and turning around to figure out what is wrong. This is even more true with complex routing where a single variable can change the whole game.
+
+![](/images/blog/Http404ErrorDetail-400x92.png)
+
+If you get a 404 page, a quick trick is to check the source code of that 404 page. This way you will get some information:
+
+1. The controller that the route try to reach
+2. The action that is invoked
+
+To do that, just right click the 404 page, select **View Page Source**. 
+
+![](/images/blog/http404ViewSource-400x227.png)
+
+If you are sure that the controller and action exist than you should verify that the Http Method is the one you want. For example, the code above has the controller and action but for Http Post only, not Http Get.

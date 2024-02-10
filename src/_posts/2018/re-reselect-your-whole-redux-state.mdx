@@ -1,0 +1,70 @@
+---
+title: "Re-Reselect your whole Redux State"
+date: "2018-11-13"
+categories:
+  - "redux"
+---
+
+Re-Reselect is a library that uses Reselect. Both have the capability to memoize a function returns by its input. It means that if the input of a determine function change, the function is executed and the return is saved in memory. The saved copy of the information is used until one of the specified parameter change. The goal is to avoid computation that is expensive. Once use case with Redux is denormalization. Denormalizing is the act of stitching together information in several places. Redux encourages separating the model in a normalized way to avoid duplicate, thus reducing issue of having more than one entity with different value. Re-Reselect has the advantage of having a set of input that can handle several other selector. The following image, from the official repository of Re-Reselect illustrate the difference.
+
+![](/images/blog/reselect-and-re-reselect.png)
+
+# Reselect versus Re-Reselect
+
+I am using Re-Reselect at Netflix in the Partner Portal application for denormalizing many entities. For example, I have selector for each of our organization we serve and each of them have sites around the world. Each site has appliances as well. When I am receiving information from the backend, depending of the endpoint, I need to invalidate more than one cache. So far, Re-Select is working well. However, I have custom logic to denormalize to handle cases that are beyond that blog post. These one require to access specific Redux store directly to compute information with different functions. It means that during the invalidation of the cache, and while a new value to be memoized I need to have an access to the Redux's state and pass this one to functions.
+
+```javascript
+public denormalizeSitePerformanceExpensive(appReduxState: AppReduxState,
+  site: SiteNormalized | undefined,
+  org: OrgNormalized | undefined,
+  contactSelector: GenericMap<ContactNormalized>,
+  deepDenormalize: boolean = true ): SiteDenormalized | undefined {
+```
+
+The function signature above is an example that to denormalize a site we need to pass the application "head" Redux state. The problem the memoization get invalidate on every change. The reason is not obvious if you never used ReSelect (or Re-Reselect). Because it is an input and because the reference of the head of Redux state will change at any change, then it invalidates the site cache. Here is the cache creation that shows the input that are used to invalidate the cache.
+
+```javascript
+private denormalizeSiteFunction = createCachedSelector(
+    (state: AppReduxState) => state,
+    (state: AppReduxState, siteNormalized: SiteNormalized | undefined) => siteNormalized,
+    (state: AppReduxState, siteNormalized: SiteNormalized | undefined, orgNormalized: OrgNormalized | undefined) => orgNormalized, this.contactSelector, this.applianceSelector,
+    (state: AppReduxState, siteNormalized: SiteNormalized | undefined, orgNormalized: OrgNormalized | undefined, deepDenormalizer: boolean) => deepDenormalizer,
+    (state: AppReduxState, siteNormalized: SiteNormalized | undefined, orgNormalized: OrgNormalized | undefined, contactSelector: GenericMap<ContactNormalized>,
+    applianceSelector: GenericMap<ApplianceNormalized>,
+    deepNormalizer: boolean ) => this.denormalizeSitePerformanceExpensive(state, siteNormalized, orgNormalized, contactSelector, deepNormalizer) )();
+```
+
+The quandary is to find a way to pass the state without having this one invalidating the selector when a change is done but keep having the function invalidated if any other selector in the parameter change. In the example posted, we want the site to denormalize to change if the normalized site change, or the organization the site belong change or a contact change or if an appliance change but not for all other selectors we have in the system, neither any data of the store.
+
+The idea is to build a custom input instead of relying on the shallow comparer that comes by default. It is possible to pass to the _createCachedSelector_ an optional object with a _selectorCreator_
+
+```javascript
+{
+  selectorCreator: this.createShallowEqualSelector;
+}
+```
+
+In my situation, it was a good opportunity to also have a feature to turn off completely the memoization. I always have an off switch to all my caching mechanism. It helps to debug and to preclude any issue with caching. To avoid impacting the memoization with the Redux's store, I am looking for specific children reducer and if they are present, I know that it is the head and I return true which mean that the parameter is equal and it will not invalidate the cache.
+
+```javascript
+private createShallowEqualSelector = createSelectorCreator( defaultMemoize,
+  (previous: any, next: any, index: number): boolean => {
+    if (this.isCacheEnabled) {
+      // 1) Check if head of Redux state
+      if ( previous !== undefined && 
+          previous.router !== undefined && 
+          previous.orgs !== undefined && // ... Simplified for this example 
+         )
+      {
+         return true; // AppReduxState no check!
+      }
+      // Logic removed that figure out if the input is the same or not return isTheSame;
+    }
+    else {
+       return false;
+    }
+  } 
+);
+```
+
+The custom equalizer opens door to interesting pattern. For example, if you do not have all your entity with the same reference even if they are the same, you can provide a global logic that handle that case. For my scenario, I am using a property that each entity has which is the last updated date time from the server. You may wonder why not relying on the object reference. In a perfect world, it would make sense because it is the most efficient way to perform a comparison and have the best performance. However, Partner Portal uses many caching mechanisms. For example, we are using IndexDb which mean that depending of the source of the object, the object may have not changed in term of value but changed in term of reference. Also, at the moment, one flaw of the system is that the cached value is set into the Redux store even if the Redux store has the same value (there is not check before setting the value received by the data access layer). To avoid invaliding because the data was fetched again (Ajax) or from the cache, a simple check to the last updated avoid invalidating the cache.

@@ -1,0 +1,94 @@
+---
+title: "JavaScript Four Patterns to Invoke a Function"
+date: "2017-05-25"
+categories:
+  - "javascript"
+---
+
+There are four ways to call a function in JavaScript. In this article, we will see them all and see the pros and cons of each of them.
+
+**Function invocation pattern** This is when a function is not attached to anything, it's floating which in fact is attached to "window" when in a browser if this one is created not within an object. Here is two examples:
+
+```typescript
+var f1 = function () {
+  console.log("F1");
+};
+f1();
+window.f1();
+function f2() {
+  console.log("F2");
+}
+f2();
+window.f2();
+```
+
+However, if a function is not bound to an object but created withing a function, this one belong to the function. Still, it is not attached to anything.
+
+```typescript
+var myObject = {
+  function2: function () {
+    console.log("Function2");
+    var function2_1 = function () {
+      console.log("Function2_1");
+    };
+    function2_1();
+  },
+};
+myObject.function2();
+```
+
+**Method invocation pattern** Method invocation pattern is when a function is attached to an object that is not instantiated with the "new" keyword.
+
+```typescript
+var myObject = {
+  function2: function () {
+    console.log("Function2");
+  },
+};
+myObject.function2();
+```
+
+**Constructor invocation pattern** I already covered in previous article about prototype. Invoking with a constructor trigger the prototype chain for the created object. Constructor function are created with the keyword "new".
+
+```typescript
+var MyClass1 = function () {
+  this.function2 = function () {
+    return "F2";
+  };
+};
+
+MyClass1.prototype.function1 = function () {
+  return "F1";
+};
+
+var instance = new MyClass1();
+console.log(instance.function1());
+console.log(instance.function2());
+```
+
+As you can see, you can invoke method from the instance or the prototype.
+
+**Apply invocation pattern**
+
+The last pattern is to use a function to call a function! This is possible because every object has some default function attached to their prototype, like the one that interest us which is "apply".
+
+The following example shows how to invoke with apply. Both call to the apply function uses the class' prototype which call the function and apply. The difference is that one pass the method which has a member assigned with `this`, while the second call an anonymous object. The importance is to have a "m1" member because function1 access it in its prototype.
+
+The important detail about "apply" is the parameter. The first one is the pointer `this`, the others are the the function arguments.
+
+```typescript
+var MyClass1 = function () {
+  this.m1 = "Member Value";
+};
+
+MyClass1.prototype.function1 = function () {
+  return "From function1 here is the m1 value : " + this.m1;
+};
+
+var instance = new MyClass1();
+var objectOnTheFly = { m1: "on-the-fly" };
+console.log(MyClass1.prototype.function1.apply(MyClass1()));
+console.log(MyClass1.prototype.function1.apply(objectOnTheFly));
+```
+
+In this example, the `this` got assigned dynamically and the function uses the value by accessing with `this`. In this article we saw 4 different ways to invoke function in JavaScript.

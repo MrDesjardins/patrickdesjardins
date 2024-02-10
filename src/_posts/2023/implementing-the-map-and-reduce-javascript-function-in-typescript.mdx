@@ -1,0 +1,82 @@
+---
+title: "Implementing the Map and Reduce JavaScript Functions in TypeScript"
+date: "2023-12-08"
+categories:
+  - "typescript"
+---
+
+JavaScript is a language with several built-in functions. In this article, we will implement some of them in TypeScript. The goal is to understand how they work and to have a better understanding of the language.
+
+# Map Function
+
+The `map` function loops each element of an array. The function takes a callback function as a parameter. The callback function takes the current value, the current index, and the array as parameters. In this example, we will simplify the `map` function by only taking the current value as a parameter.
+
+```ts
+export function map<T, Z>(arr: T[], fn: (element: T) => Z): Z[] {
+  const newArr: Z[] = [];
+  for (let x of arr) {
+    newArr.push(fn(x));
+  }
+  return newArr;
+}
+```
+
+The function has two generic types: `T` and `Z`. `T` is the type of the array and `Z` is the type of the returned array. The reason for having two generic types is to allow the input array to be of a different type than the output array. For example, the input array can be an array of numbers and the output array can be an array of strings.
+
+```ts
+console.log(map(arr, (x) => x.toString()));
+```
+
+If we remove the generic to tailor this particular example of receiving a list of numbers and returning a list of strings, the function would look like this:
+
+```ts
+export function map(arr: number[], fn: (element: number) => string): string[] {
+  const newArr: string[] = [];
+  for (let x of arr) {
+    newArr.push(fn(x));
+  }
+  return newArr;
+}
+```
+The use of TypeScript generic allows the function to be more flexible. For example, you can transform numbers to return a list of numbers.
+
+```ts
+console.log(map(arr, (x) => x * 10));
+```
+
+# Reduce Function
+
+The reduce function is a function that takes a list of elements and returns a single value. The function loops each value and calls a function. The function accumulates the single value, which is accessible in the subsequent calls. Thus, you can use the previous value to compute the next value. The function takes four parameters: the array, the callback function, the initial value, and the current index.
+
+```ts
+export function reduce<T>(
+  arr: T[],
+  callback: (accumulator: T, currentValue: T, currentIndex: number) => T,
+  initialValue?: T
+): T | undefined {
+  if (arr.length === 0) {
+    return undefined;
+  }
+  let result = initialValue ?? arr[0];
+  const intialIndex = initialValue === undefined ? 1 : 0;
+  for (let i = intialIndex; i < arr.length; i++) {
+    const r = callback(result, arr[i], i);
+    result = r;
+  }
+  return result;
+}
+```
+The function is generic. The single generic value is the type of the array, which is also the type of the final value. The accumulation of the values is also the type of element of the initial collection. The default initial index is 0. However, the initial index is 1 if a call to the function has no initial value. The reason is that the function skips the first element, the base of the accumulation. The initial value becomes the first element of the index instead of a value provided by the user.
+
+```ts
+ console.log(reduce([1, 2, 3, 4], (acc, x) => acc + x));
+ ```
+
+In the example above, the initial value is not provided . Thus, the initial value is the first element of the array. The callback function adds the current value to the accumulator. The accumulator results from the previous call going from `1` to `3` to `6` to `10`. The result is the sum of all the array elements, which is `10`.
+
+ ```ts
+
+# Conclusion
+
+You can play with the code in the following Code Sand Box: https://codesandbox.io/p/sandbox/common-functions-tnt76x?file=/src/index.ts:6,54
+

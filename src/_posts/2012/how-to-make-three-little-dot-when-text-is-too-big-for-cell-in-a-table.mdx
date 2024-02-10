@@ -1,0 +1,23 @@
+---
+title: "How to make three little dot when text is too big for cell in a table?"
+date: "2012-03-06"
+categories: 
+  - "css"
+---
+
+If you are using a grid (third-party) or a simple Html table you may need to have fixed column width but not having the text overlap to the next cell if bigger than the cell width.
+
+![](/images/blog/ellipsis-400x186.png)
+
+To fix this kind of issue, you may want to add 3 dots after a certain amount of character. This can be done automatically with CSS3 and it's called ellipsis.
+
+
+```css
+.yourGridClassName td { 
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis 
+} 
+```
+
+The `white-space:nowrap` is used to make sure that even if space are present that nothing will be warped under neat. The `overflow:hidden` make the text not overlapping to the next cell or outside the table. Finally, the `text-overflow: ellipsis` add three little dots to indicate that the text continue but has not space to show.

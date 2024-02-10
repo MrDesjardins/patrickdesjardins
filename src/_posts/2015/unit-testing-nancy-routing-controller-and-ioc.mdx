@@ -1,0 +1,63 @@
+---
+title: "Unit Testing Nancy Routing, Controller and IoC"
+date: "2015-01-13"
+categories: 
+  - "owin"
+---
+
+Maybe the title should be more integrating test with Nancy than unit testing because this is far more integrated than unit. However, the goal is to test and a NuGet package allow you to test easily test Nancy application. This NuGet package is called Nancy.Testing and can be installed with the following command.
+
+```powershell
+Install-Package Nancy.Testing 
+``` 
+
+This allow to create a Browser (from the CsQuery.dll that is a dependency of the Nancy.Testing.dll) object that will act like a client to the Nancy server. From there, you create a unit test like usual and use the browser object to request to a specific url. Here is an example that request the base page (no page just the localhost). We expect to have a default webpage that return a 202 status.
+
+
+```csharp
+[TestClass] 
+public class IndexModuleTest { 
+  private readonly Browser browser; 
+  public IndexModuleTest() { 
+    var bootstrapper = new NancySelfHostedWithSignalR.Bootstrapper(); 
+    browser = new Browser(bootstrapper); 
+  }
+
+  [TestMethod] 
+  public void GivenDefaultUrl_WhenMarkdownListReturnData_ThenIndexPageLoad() { 
+    var result = browser.Get("/", with => { with.HttpRequest(); 
+  });
+
+  Assert.AreEqual(HttpStatusCode.OK, result.StatusCode); } 
+} 
+```
+
+One problem that you may stumble into is that the IoC of of BootStrapper is using some of the class that you may want to mock. This will require you to create a new Bootstrap and to override your default configuration. Instead of having multiple BootStrap class, we can have one for test where we can push all the mock required for each test. Imagine that you have a BootStrapper that define a lot of Interface to concrete type inside the ConfigureRequestContainer method. What you have to do it to override at your turn of your own Bootstrapper and override too the ConfigureRequestContainer. However, you call the base method before your testing ones. This way, it will override the one you redefine with your mock when testing.
+
+
+```csharp
+private class TestingBootstrapper : YourDefaultBootstrapper { 
+  public List<Tuple<Type, object>> Types { get; set; }
+
+  public TestingBootstrapper(List<Tuple<Type, object>> types) { this.Types = types; }
+
+  protected override void ConfigureRequestContainer(TinyIoCContainer container, NancyContext context) { 
+    base.ConfigureRequestContainer(container, context); 
+    //Override here for test 
+    foreach (var typeInterfaceAndImplementation in this.Types) { container.Register(typeInterfaceAndImplementation.Item1, typeInterfaceAndImplementation.Item2); } 
+  } 
+
+} 
+// Later inside one of your test: 
+var types = new List<Tuple<Type, object>>(); 
+var bootstrapper = new TestingBootstrapper(types); var mock1 = new Mock<IFile1>(); 
+mock1.Setup(...); 
+types.Add(new Tuple<Type, object>(typeof(IFile1),mock1.Object)); 
+var browser = new Browser(bootstrapper); 
+```
+
+The browser uses your testing bootstrapper and in the same time redefine only the interface that you want for your test. This is interesting if you want to reuse a big part of your existing bootstrapper. Otherwise, you can just use the lambda action method to define your classes. 
+
+```csharp
+ var browser = new Browser((c) => c.Module<IndexModule>().Dependency<IFile1>(mock1.Object)) 
+```

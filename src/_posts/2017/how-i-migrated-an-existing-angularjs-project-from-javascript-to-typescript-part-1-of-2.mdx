@@ -1,0 +1,63 @@
+---
+title: "How I Migrated an Existing AngularJs Project from JavaScript to TypeScript (Part 1 of 2)"
+date: "2017-10-02"
+categories:
+  - "angular"
+  - "javascript"
+  - "typescript"
+---
+
+A few weeks ago, I had to present the benefits of TypeScript to a group of people. One argument was that many projects were built in JavaScript, so bringing a new tool to the mix would create a disparity amongst the fleet of repositories we need to maintain. This is a valid argument when we have many different languages like Java, C\#, C++, Python, but is it when TypeScript is a superset of JavaScript? No that much since going with TypeScript allows you to still work in JavaScript if desired. Coming back to JavaScript from TypeScript is allow smooth since you could always transpile into EcmaScript 6 and work from the output. Nevertheless, it's an interesting exercise to demonstrate how to migrate an existing AngularJs project from JavaScript into TypeScript. This also may be a good argument to switch to TypeScript since it's easy and bring all the power of strongly typed language and still be very close of JavaScript.
+
+Before going any further, let's see what kind of project we will migrate. First, it's using AngularJS 1.5. Any version before 2 was built in JavaScript. There is an official definition file available which will be required to fetch during our conversion. Second, the project is using RequireJs as the module loader. Again, this is not an issue since RequireJs has also official definition file. Third and last, this project is using Grunt as tasks manager. This is pretty old since the community drifted to Gulp and now Webpack. However, this won't be a problem since TypeScript has a Grunt library.
+
+The first step is to bring TypeScript into the project and this can be done easily by using NPM. This project was using mostly Bower, but also NPM. Since I am more familiar with NPM, I decided to use NPM to fetch TypeScript.
+
+```sh
+npm install typescript --save-dev
+```
+
+We also need to get the Grunt library that will bridge Grunt and Typescript.
+
+```sh
+npm install grunt-ts --save-dev
+```
+
+Now that we have the tool to transpile, let's do the migration in two phases. The first phase will be to keep every JavaScript in .js file and only use it as a transpiler. We will change some JavaScript file to use the latest EcmaScript and transpile using TypeScript to EcmaScript 3. The second phase will be to migrate files to be TypeScript (.ts) file. To have TypeScript transpiler configured for the need of reading JavaScript, we must specify that TypeScript is allowed to get into JavaScript file. The actual project is having its source code in a folder named `public` and was using Grunt's task to move the code to distribute in a folder named `dist`. Since the goal is to migrate without modifying too much, we will introduce a `dist_ts`folder that will be then moved to the `dist` folder. At the end, the `dist` folder remains the folder to use to deploy and the `public` folder the source folder to modify. We just created an intermediary folder to output our TypeScript file and do some modifications. In the following configuration, you will see all what we just discussed.
+
+```typescript
+{
+   "compilerOptions":
+   {
+   "outDir": "./dist_ts",
+   "allowJs": true,
+   "target": "es3",
+   "rootDir": "./"
+   },
+   "include": [
+   "./public/`/*.js"
+   ],
+   "exclude": [
+   "./public/assets/"
+   ]
+}
+```
+
+For phase 2, we will have to change the include and bring few other configurations, but so far, it does what we want. We just need to put the configuration in tsconfig.json and we are all set to go in the Gruntfile.js to create a task to build TypeScript.
+
+```typescript
+ts: {
+ default: {
+ tsconfig: true
+ }
+}
+
+```
+
+This step as you can see was pretty straightforward. The only thing it says is to read the configuration file. However, a little more work was required to have TypeScript to work properly. The first thing is that this project has a requirejs Grunt task that was using the public folder to bring the whole code into a single JavaScript file. This couldn't point to the public folder since we output the JavaScript in `dist_ts`. It's not a big deal. We need to change the `mainConfigFile` path of requirejs to point to the intermediary folder. However, the requirejs task needed to have access to some assets and third library that was under the public folder. So, a pre-build task was required before calling the Gulp's TypeScript task to move some files in `dist_ts`. And finally, a post-build task to move all the generated JavaScript file and JavaScript's map file in the final destination folder.
+
+From here, any actual JavaScript file could be changed to use `const` or the fat arrow way to work with function and this one will be with `var` and conventional function at the end.
+
+Migrating from JavaScript with a big framework like Angular can be done in steps. So far in this phase 1, we were able to bring TypeScript very smoothly without disrupting any actual JavaScript code. In a next article, we will see phase two which is to bring TypeScript file parallel to JavaScript file to run in a hybrid mode where both can cohabit.
+
+[Migrating from AngularJS to React Part 2](how-i-migrated-an-existing-angularjs-project-from-javascript-to-typescript-part-2-of-2)

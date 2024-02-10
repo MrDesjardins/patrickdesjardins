@@ -1,0 +1,101 @@
+---
+title: "How to have MP4 video in your GatsbyJS Blog MDX file"
+date: "2022-03-15"
+categories:
+  - "gatsby"
+  - "github"
+  - "ci"
+  - "continuous integration"
+---
+
+I have a love and hate relationship with GatsbyJS. I like how fast it renders my blog compared to WordPress. However, a basic feature like hosting MP4 requires some particular configurations. After a couple of evenings trying, I finally found the right recipe.
+
+# Pre-requisite
+
+You need to have the `ffmpeg` open-source software installed on your local machine and on your deployment server (for example, Github Action).
+
+Depending on your configuration, it can mean different things. For example, here are the two lines for a Github Action for a `ubuntu-20.04`.
+
+```
+- run: sudo apt update
+- run: sudo apt install ffmpeg
+```
+
+I'm developing on a MacOS; thus I had to run this command locally one time:
+
+```
+brew install ffmpeg
+```
+
+# GastbyJS Configuration
+
+The hardest part was figuring out how to configure the MDX file to load a video using a simple tag. For example, using something like:
+
+```
+![](/videos/blog/myVideoHere.mp4)
+```
+
+The first step is to have at the root of the `plugins` an entry for ` "gatsby-plugin-ffmpeg"`. This will allow the auto-generation of optimized video formats.
+
+The second step is to have **inside** the `gatsby-plugin-mdx` plugin an option that will have itself plugin. The option must be under `gatsbyRemarkPlugins`. Here is a copy-paste:
+
+```javascript
+"gatsby-plugin-ffmpeg",
+    {
+      resolve: `gatsby-plugin-mdx`,
+      options: {
+        gatsbyRemarkPlugins: [
+          {
+            resolve: `gatsby-remark-videos`,
+            options: {
+              pipelines: [
+                {
+                  name: "vp9",
+                  transcode: (chain) =>
+                    chain
+                      .videoCodec("libvpx-vp9")
+                      .noAudio()
+                      .outputOptions(["-crf 20", "-b:v 0"]),
+                  maxHeight: 480,
+                  maxWidth: 900,
+                  fileExtension: "webm",
+                },
+                {
+                  name: "h264",
+                  transcode: (chain) =>
+                    chain
+                      .videoCodec("libx264")
+                      .noAudio()
+                      .addOption("-profile:v", "main")
+                      .addOption("-pix_fmt", "yuv420p")
+                      .outputOptions(["-movflags faststart"])
+                      .videoBitrate("1000k"),
+                  maxHeight: 480,
+                  maxWidth: 900,
+                  fileExtension: "mp4",
+                },
+              ],
+            },
+          },
+          {
+            resolve: `gatsby-remark-images`,
+            options: {
+              maxWidth: 1200,
+            },
+          },
+        ],
+      },
+    },
+```
+
+You do not need `gatsby-remark-copy-linked-files`. Nor need to have `gatsby-source-filesystem` to move the video anywhere. That is where it isn't very clear; many articles online mentioned the need for these two plugins.
+
+Another detail is that within the `options` is to have `gatsby-remark-videos` before the `gatsby-remark-images`.
+
+# Caveat
+
+The plugin is great, but if you are already using an MP4 it will still be processed by the ffmpeg, which means that the more videos you have, the slower it is to build the whole solution. If you have hundreds of them, it can slow down by quite a lot. For example, before this plugin, my 10 years of blogging (over 600 articles) would take, in average 3 minutes 50 seconds to build. However, with only 4 videos, the time jumped to 4 minutes 40 seconds (+50 seconds).
+
+# Conclusion
+
+There might be a way to skip the ffmpeg steps and to move the MP4 directly into the build folder and have the MDX read it. That would be more efficient for me to provide a format that is already supported by the web. However, since it has been non-obvious and a lot of trial and error, I rather not spend more time at the moment. To be continued... once the time gets unusable for Github Actions.

@@ -1,0 +1,17 @@
+---
+title: "Boosting Asp.Net MVC performance improvement by not using Razor templates"
+date: "2016-09-20"
+categories: 
+  - "asp-mvc"
+  - "asp-net"
+---
+
+Here is a real case scenario. A website running on Azure that got deployed in release mode with everything pre-compiled. Still hitting 400ms to render the whole view. With Glimpse on, we can see that many views are used. Partial views, editor templates and display templates and taking some extra milliseconds here and there.
+
+![](/images/blog/ViewWithEditorTemplate-1024x225.png)
+
+Here is the same view rendered with almost no template. Everything is directly in the view and for specific components, editor and display templates got migrated into Html helper.
+
+![](/images/blog/ViewWithoutEditorTemplate-1024x34.png)
+
+So, at the end, Asp.Net MVC templates are just time consuming. Rendering a simple view shouldn't take 400ms. It should take 10% of that, and this is what we get by trimming templates out.

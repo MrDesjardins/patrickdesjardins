@@ -1,0 +1,45 @@
+---
+title: "JavaScript Bind and Apply/Call Method"
+date: "2017-05-29"
+categories:
+  - "javascript"
+---
+
+JavaScript has three methods that are useful to assign on what `this` refer to. These three methods are Bind, Apply and Call.
+
+Bind are from the prototype of Function. It takes as first parameter the reference to `this`, and all the subsequent parameters to be the argument to the function. The Bind method return a copy of the function with this one having the `this` to the one desired.
+
+Call is similar, but instead of returning a copy with the provided reference to `this`, it provides the `this` reference and invoke the method.
+
+Apply is like call but the second parameter is an array instead of being a signature with undermined amount of parameter.
+
+Here is an example to distinct the difference:
+
+```typescript
+f1.call(myThisRef, param1, param2, param3);
+// or
+f1.apply(myThisRef, [param1, param2, param3]);
+```
+
+How can this be useful? This can be useful to change the context of a piece of code to access different member without assigning the values. For example, in the following code we have the same function and by calling apply or bind we can assign `this` to a complete new object that has what is using by `this`, in that case the_name.
+
+```typescript
+var hero = {
+  _name: "John Doe",
+  getName: function () {
+    return this._name;
+  },
+};
+
+console.log(hero.getName()); // John Do
+// --- var
+hero2 = { _name: "Patrick" };
+var getNameMethod = hero.getName;
+
+console.log(getNameMethod.apply(hero2)); // Patrick
+console.log(getNameMethod.bind(hero2)()); // Patrick
+```
+
+This example illustrates that apply can be called to have momentary a call with a reference to the hero2 instead of the original hero. On the next line, the bind method is called and executed by using the parentheses right away. Normally, we would store the return value of the bind method to get an object that can get subsequent calls with the hero2 `this` reference.
+
+When to use of of the other? apply and call should be used when it's only for one invocation. Bind should be used to store the new variable with that will have a `this` with the provided reference to `this` when created with bind.

@@ -1,0 +1,65 @@
+---
+title: "Validation with ViewModel"
+date: "2013-01-14"
+categories: 
+  - "asp-mvc"
+---
+
+This post won't explain how to do it with [enterprise pattern](./enterprise-asp-net-mvc-part-6-the-three-layers-of-validation) but will focus of some solutions available to validate your Model/ViewModel with Asp.Net MVC. This article won't focus of the advantage to use ViewModel instead of directly use Model object to the view. The article will show you how to validate your view model without having to repeat yourself in several place with your validation. We want to respect the DRY concept which specify that we should never repeat our self.
+
+First of all, Asp.Net MVC will call the data annotation and if the class inherit from IValidatableObject the method Validate. The problem as you can see is that the ViewModel which is bound to the controller doesn't have data annotation, neither inherit from IValidatableObject. Also, the mapping from the View Model to the Model occurs later in the process. This mean that we will need to manually call the validation to trigger the validation process which has been done to the view model.
+
+Second, the error which are associated to properties may not be link directly by the model to the view model. For example, your view model may have a property FullName which use the FirstName and LastName property. During the validation process, if an error occur on FirstName or LastName, the error will be associated to those property name and not FullName. This result that the error won't be displayed around the control in the view.
+
+They are several solution. The easiest is to only display errors in the summary. We simply need to set ExcludePropertyErrors to false in the summary.
+
+
+```csharp
+ @Html.ValidationSummary(false) 
+```
+
+By default, if no parameter is provided, the value is also false. So, you do not need to explicitly write false. Here is the ValidationExtensions.cs code for the two methods.
+
+
+```csharp
+ public static MvcHtmlString ValidationSummary(this HtmlHelper htmlHelper) { return ValidationSummary(htmlHelper, false /* excludePropertyErrors */ ); }
+
+public static MvcHtmlString ValidationSummary(this HtmlHelper htmlHelper, bool excludePropertyErrors) { return ValidationSummary(htmlHelper, excludePropertyErrors, null /* message */); } 
+```
+
+A second solution is to map the property from the model to the view model.
+
+[ScottGu](http://blogs.msdn.com/b/simonince/archive/2010/12/07/view-model-versus-domain-entity-validation-with-mvc.aspx) has a post that contain a helper class that does the job.
+
+
+```csharp
+ public static class ControllerExtensions { public static bool TryValidateAndTranslate(this Controller controller, object model, string prefix, object propertyMap) { return TryValidateAndTranslate(controller, model, prefix, new RouteValueDictionary(propertyMap)); }
+
+public static bool TryValidateAndTranslate(this Controller controller, object model, string prefix, RouteValueDictionary propertyMap) { ModelMetadata metadata = ModelMetadataProviders.Current.GetMetadataForType(() =&gt; model, model.GetType());
+
+foreach (ModelValidationResult validationResult in ModelValidator.GetModelValidator(metadata, controller.ControllerContext).Validate(null)) { var propertyName = CreatePropertyName(validationResult.MemberName, prefix, propertyMap); controller.ModelState.AddModelError(propertyName, validationResult.Message); }
+
+return controller.ModelState.IsValid; }
+
+private static string CreatePropertyName(string memberName, string prefix, RouteValueDictionary propertyMap) { string propertyName = null; object output = null; if (propertyMap.TryGetValue(memberName, out output)) propertyName = String.Format("{0}.{1}", prefix, output.ToString()); else propertyName = String.Empty;
+
+return propertyName; } } 
+```
+
+From there, you need to call the `TryValidateAndTranslate` method. The method will loop all validations associated to the object which can be data annotation validation or validation written inside the Validate method of IValidatableObject. The ModelValidator.GetModelValidator method is in fact used by the framework when you are using TryValidateModel.
+
+The usage of this method should be inside the method of the controller where the form is posted. Just after the mapping from the ViewModel to the Model.
+
+
+```csharp
+{ 
+  //... action method
+
+  //... map view model to model
+
+if (!this.TryValidateAndTranslate( modelObject, "ModelClassName", new { FirstName = "FullName", Property2 = "Property2" })) return View(viewModel);
+
+//... else return where you want to go when everything is without error } 
+```
+
+If something is wrong, we display the view again with the view model, otherwise, we redirect to the list view or to any view you want where no error is found. As you can see, last parameter let you specify that the validation on FirstName property should be mapped to FullName. Of course, a better approach would be to setup in a central place all those mapping. The example is really just informative because you should try to map those property with something like [AutoMapper](./?s=automapper) and reuse the mapping from it.

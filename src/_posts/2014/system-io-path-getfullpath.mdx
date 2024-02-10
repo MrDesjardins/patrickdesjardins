@@ -1,0 +1,22 @@
+---
+title: "System.IO.Path.GetFullPath"
+date: "2014-12-11"
+categories: 
+  - "c-sharp"
+---
+
+You manipulate paths and files with System.IO.Path which is better than trying to handle everything by string. Great! You are using `Path.Combine("c:\\data\\","file.txt")` everything is fine. You have understand that combining path and file are way easier with Path.Combine. It handles for you every slashes, so you do not have to handle string with substring and indexof. However, the dream stop brutally the day you have something with relative path that goes to parent folder. For example, the example below crash. 
+
+```csharp
+ Path.Combine("c:\\data\\","..\\file.txt") 
+``` 
+
+Having double dot return the the c: drive in the example above, but combine will not do it for you. THis is why you need to use `Path.GetFullPath`. 
+
+```csharp
+ Path.GetFullPath("c:\\data\\..\\file.txt") 
+``` 
+
+This will clean the path and output `c:\\file.txt`.
+
+The conclusion is that file path manipulation must still use the System.IO.Path but different methods should be used depending of the case you are encountering.

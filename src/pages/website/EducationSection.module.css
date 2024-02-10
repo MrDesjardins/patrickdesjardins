@@ -1,0 +1,22 @@
+.educationSection {
+  font-size: 20px;
+}
+.educationSection ul {
+  list-style: none;
+}
+
+.educationSection ul li {
+  margin-top: 30px;
+}
+
+.educationSection ul li > svg,
+.educationSection ul li > p {
+  display: inline;
+  width: 32px;
+  width: 32px;
+}
+
+.educationSection ul li > svg {
+  margin-right: 16px;
+  color: var(--text-color1);
+}

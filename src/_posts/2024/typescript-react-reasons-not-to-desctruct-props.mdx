@@ -1,0 +1,236 @@
+---
+title: "Reasons for not using Property Destructuring in React when using TypeScript"
+date: "2024-01-26"
+categories:
+  - "typescript"
+  - "react"
+  - "best-practices"
+---
+
+I have been using React with TypeScript for over seven years. With the transition toward the function component, I see a widely used pattern in JavaScript React emerging into TypeScript React but without a solid gain for the developer experience. I am talking about the use of property destruction in the function parameter.
+
+In this article, I'll be looking at the experience in TypeScript. Using JavaScript, destructuring properties explicitly tell the object's available properties. Thus, it has the benefit of documenting the component properties in JavaScript. In TypeScript, the interface already fulfills that role.
+
+# Reason 1: Component Signature Readability
+
+The first reason why property destructuring shouldn't be automatically selected is it makes the component signature-less readable. When you have a function with many parameters, it is hard to know what each parameter is.
+
+```tsx
+export interface MyComponentProps {
+  configuration: ConfigType;
+  metadata: MetadataType;
+  variant: Variant;
+  color: PrimaryColor;
+  link: string;
+  onClick: () => void;
+  onAction: (action: Action) => void;
+  state: State;
+  title: string;
+}
+
+export function MyComponent({
+  configuration,
+  metadata,
+  variant,
+  color,
+  link,
+  onClick,
+  onAction,
+  state,
+  title,
+}: MyComponentProps): ReactElement {
+  return (
+    <div>
+      <h1>{title}</h1>
+    </div>
+  );
+}
+```
+
+Compared to:
+
+```tsx {13}
+export interface MyComponentProps {
+  configuration: ConfigType;
+  metadata: MetadataType;
+  variant: Variant;
+  color: PrimaryColor;
+  link: string;
+  onClick: () => void;
+  onAction: (action: Action) => void;
+  state: State;
+  title: string;
+}
+
+export function MyComponent(props: MyComponentProps): ReactElement {
+  return (
+    <div>
+      <h1>{props.title}</h1>
+    </div>
+  );
+}
+```
+
+The readability gets worse if the type is not defined in an interface. Here is an example of NodeJS React component:
+
+```tsx
+export default async function MyComponent({
+  params: { segmentId },
+}: {
+  params: { segmentId: string };
+}): Promise<ReactElement | undefined> {}
+```
+
+# Reason 2: Variable Origin
+
+React component tends to get large with state and effects. When you have a large component, it is hard to know where the variable comes from. Is it a prop, a state, or a variable and the parameters of an event? While looking at the component is the key, it is easier to know where the variable comes from when you don't use property destruction—keeping the object you know with certainty that the variable is coming from the props. The following code is short, but if it had 400 lines, it would be more work to find out where the value is coming from. Doing a pull request review is a case where the whole file is not always visible, and having the object clarify at first glance where the variable is coming from.
+
+```tsx {4}
+export function MyComponent(props: MyComponentProps): ReactElement {
+  return (
+    <div>
+      <h1>{props.title}</h1>
+    </div>
+  );
+}
+```
+
+# Reason 3: Reusability with Children Components and Functions
+
+Another reason is that once the properties are out of the object, you must rebuild an object if you need to pass the object to a child component. This is not a big deal, but it is an extra step that is not required. Destructuring can be handy to pass a partial parent prop to a child component.
+
+```tsx
+export function MyComponent(props: MyComponentProps): ReactElement {
+  const childProps: MyChildWithPartialProps = { // Valid destructuring case
+    state: props.state,
+    title: props.title,
+  };
+  return (
+    <div>
+      <MyChild {...props} />
+      <MyChildWithPartial {...childProps} />
+    </div>
+  );
+}
+```
+
+On the same line of thought, if you have a function that handles data from the props, instead of passing back several destructed variables to a function, you can pass the whole object.
+
+```tsx
+export function MyComponent(props: MyComponentProps): ReactElement {
+  //...
+  const filteredData = filterData(props);
+  return (
+    //...
+  );
+}
+```
+
+# Reason 4: Name Conflict
+
+Using the object prevents property conflict with variables inside the React component. A standard solution is to rename when destructing objects, decreasing readability. Instead, using the object isolate variable, which would use the same name of one of the component properties.
+
+```tsx
+export function MyComponent({
+  configuration,
+  metadata,
+  variant,
+  color,
+  link,
+  onClick,
+  onAction,
+  state,
+  title: componentTitle,
+}: MyComponentProps): ReactElement {
+  //...
+  const title = getTitle();
+  //..
+  return (
+    <div>
+      <h1>{componentTitle}</h1>
+      <h2>{title}</h2>
+    </div>
+  );
+}
+```
+
+Versus:
+
+```tsx
+export function MyComponent(props: MyComponentProps): ReactElement {
+  //...
+  const title = getTitle();
+  //..
+  return (
+    <div>
+      <h1>{props.title}</h1>
+      <h2>{title}</h2>
+    </div>
+  );
+}
+```
+
+# Reason 5: Abuse of Property Destructuring with Deep Nestling
+
+The word abuse is a little intense, but nothing restrains someone from getting deep into an object to extract value.
+
+```tsx
+export function MyComponent({
+  title :{
+    translation: {
+      image: {
+        alternate: {
+          title
+        }
+      }
+    }
+  },
+  },
+}): ReactElement {
+  return (
+    <div>
+      <h1>{title}</h1>
+    </div>
+  );
+}
+```
+
+Versus:
+
+```tsx
+export function MyComponent(props: MyComponentProps): ReactElement {
+  return (
+    <div>
+      <h1>{props.translation.image.alternate.title}</h1>
+    </div>
+  );
+}
+```
+
+A bonus issue is that the code will throw an error if the object is null or undefined. With properties, the optional chaining operator will not crash but will set the value to null or undefined.
+
+```tsx
+export function MyComponent(props: MyComponentProps): ReactElement {
+  return (
+    <div>
+      <h1>{props.translation.image?.alternate?.title ?? "No title"}</h1>
+    </div>
+  );
+}
+```
+
+# Reason 6: Developer Experience
+
+When developing with TypeScript and an IDE that supports autocomplete, using `props.` gives all the possible properties of the object. Autocomplete of the whole object is not present when destructing the object. The IDE will not know the type of the object and will not give the properties. You need to adjust the destructed object to add a missing property, which can involve renaming because of name conflict. Instead, you can use properties and not have additional work to do.
+
+Debugging is a similar experience. If you destruct you are blind to potential properties that may have been helpful as you do not have access to the original property. Using the object, you can see all the properties and values selected in the destruction.
+
+Another point about developer experience is renaming. If you rename a variable inside the function from a destructed object, you create an alias on the destructed object and not modify the original object. On the other hand, modifying the interface of the props of the component does not change the variable name inside the function; it alters the destructed object.
+
+# Reason 7: Performance
+
+Each time you are destructuring an object, you create a variable and an object. The variables go into the heap and then are released later. That is not needed. Similarly, suppose you pass down the property to a child component. In that case, every render of the parent component creates variables losing the reference, and thus, the child component needs to evaluate the object each time. The creation of objects is not a big deal, React handles that case well, but it is not needed.
+
+# Conclusion
+
+This article has TypeScript in the title because I understand, coming from a typeless language, that destructuring the object is a way to get what property the object offers. In TypeScript, the type is already known and destructuring the object does not give this benefit. Assigning default value is an argument that favors destructuring, but its optional property can be handled gracefully inside the component. For example, in the deep nestling of property, we saw how the React component shows `No title` without polluting the component signature. The component signature should be simple and straightforward.

@@ -1,0 +1,27 @@
+---
+title: "Asp.Net MVC and the ViewData's TemplateInfo"
+date: "2013-06-15"
+categories: 
+  - "asp-mvc"
+---
+
+The TemplateInfo contains an interesting method which is `HtmlFieldPrefix` property. This property gives the same information than the method `GetFullHtmlFieldName(string.Empty)`.
+
+What is interesting is that from an editor template you can know the property name which is sometime primordial if you want to build your editor or display template. This is required to be able to bind with the ModelBinder back the information to the server once the user will submit the page back to the server.
+
+For example, if you have a special editor template for a string, you can add on your property (usually over the property of your view model or model) the `UIHint` to make a link between the property and the template. Then, in the template you could create your control.
+
+
+```csharp
+@model string
+
+@{ 
+  var controlPropertyName = ViewData.TemplateInfo.HtmlFieldPrefix 
+  <input id="@controlPropertyName" name="@controlPropertyName" value="..."> 
+  <input id="............... 
+} 
+```
+
+The short snippet above show you what from a single property, you could have multiple input with different names and the one that will be bound will be the one that came from the `ViewData.TemplateInfo`.
+
+Having several input may be something required in scenarios of multiple list of elements that needs to be selected for example. Let say that you have a textbox which can be loaded from a list of value. The template will contain the input with the property name to be bound later to the view model (or model) and others input are there only to select a possible value (via Javascript).

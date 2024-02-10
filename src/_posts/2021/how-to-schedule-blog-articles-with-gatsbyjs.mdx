@@ -1,0 +1,110 @@
+---
+title: "How to schedule blog articles with GatsbyJS"
+date: "2021-10-05"
+categories: 
+  - "react"
+  - "gatsby"
+---
+Coming from writing my blog articles on WordPress, I was rapidly disappointed that I couldn't write down a blog article in advance. Indeed, I could write the article without pushing to the master branch or leverage Git by creating a branch for each article and merge when ready to publish. However, I wanted to be able to write an article, set a date, maybe do some modification here and there, and forget about it. I wanted the article to be deployed automatically.
+
+Each blog article has a header portion called frontmatter. The frontmatter has a date which is the date of the article. Thus, we can program some logic to only display articles before or equal to the frontmatter date.
+
+The filtering needs to appear everywhere we have a list of articles. In my case, I have a list by year and a list that paginate all blog articles chronologically. The former GraphQL looks like this:
+
+```typescript {2,7}
+export const query = graphql`
+  query BlogsInYear($yearStart: Date!, $yearEnd: Date!, $currentDate: Date!) {
+    allMdx(
+      sort: { fields: frontmatter___date, order: DESC }
+      filter: {
+        frontmatter: {
+          date: { gte: $yearStart, lt: $yearEnd, lte: $currentDate }
+        }
+      }
+    ) {
+      nodes {
+        frontmatter {
+          date(formatString: "MMMM D, YYYY")
+          title
+          categories
+        }
+        id
+        fields {
+          slug
+        }
+      }
+    }
+  }
+`;
+```
+
+And the chronological pagingation:
+
+```typescript {2,7}
+export const query = graphql`
+  query TopXBlogArticles($limit: Int!, $skip: Int!, $currentDate: Date!) {
+    allMdx(
+      sort: { fields: frontmatter___date, order: DESC }
+      limit: $limit
+      skip: $skip
+      filter: { frontmatter: { date: { lte: $currentDate } } }
+    ) {
+      nodes {
+        frontmatter {
+          date(formatString: "MMMM D, YYYY")
+          title
+          categories
+        }
+        id
+        fields {
+          slug
+        }
+      }
+    }
+  }
+`;
+```
+
+As you can see, in both cases, we pass the `$currentDate`. Here is the twist if you are new to GatsbyJS: the GraphQL is not dynamic in the client environment but when we build the whole website. Inside the `gatsby-node.js`, in the `createPages` function we are parsing the current date. Here is the code for the chronological per year page
+
+```typescript {1-2,16}
+const currentDate = new Date();
+const formattedCurrentDate = currentDate.toISOString().split("T")[0];
+
+const year = node.frontmatter.date.substr(0, 4);
+if (!years.has(year)) {
+  const yearStart = year + "-01-01";
+  const yearEnd = year + 1 + "-01-01";
+  createPage({
+    path: URL_PER_YEAR.replace("{year}", year),
+    component: path.resolve(`./src/templates/BlogsByYear.tsx`),
+    context: {
+      yearStart: yearStart,
+      yearEnd: yearEnd,
+      year,
+      totalPages: totalPageCount,
+      currentDate: formattedCurrentDate,
+    },
+  });
+  years.set(year, year);
+}
+
+```
+
+The last part is that once the code is sent in Github, there is a task to build the website and publish it. But the problem is that if I have an article with a release date in one week, the build needs to be executed on that specific day to have the code in the `gatsby-node.js` to be executed to pass the `currentDate` to the GraphQL query. 
+
+Thus, we need to alter our build script to trigger a build when the code or article changes and every day. It means that inside the `.github/workflows/main.yml` the `on` property changes to
+
+```yaml {4-5}
+on:
+  push:
+    branches: [master]
+  schedule:
+    - cron: '0 8 * * *'
+```
+
+The `schedule` uses a `cron` that executes every day at 8 UTC (which is during the night in the USA the build. So, in short, the whole website is built every day. The following picture shows how the `Actions` tab looks, and you can see many _Scheduled_ tasks and one commit by me (MrDesjardins), which is when I write and push the MardownX file.
+
+![](/images/blog/github-actions-daily.png)
+
+To conclude, the possibility to schedule blog articles with GatsbyJS is possible. Like most features, it is not out-of-the-box but not a very excessive demanding workflow to implement.

@@ -1,0 +1,112 @@
+---
+title: "Steganography: How to hide text in an image"
+date: "2023-01-02"
+categories:
+  - "steganography"
+  - "typescript"
+---
+
+The word steganography means to hide something, like a text into something else, like an image. The definition is very high level. Hence, it has a variety of ways to accomplish the goal of steganography. I'll show you how to use the least significant bits in this article.
+
+# Least Significant Bit (LSB)
+
+Wikipedia a as short mention of _least significant bits_ (LSB) in the [Steganography page](least significan). It says: 
+
+> Secret messages can be introduced into the least significant bits of an image and then hidden. A steganography tool can camouflage the secret message in the least essential bits but can introduce a random area that is too perfect.
+
+It gives a limited amount of information but enough to start exploring what are the _least significant bits_.
+
+The LSB is the right side bit of a binary integer. Regardless of the size of the integer, it is always the most at the extreme right side.
+
+Here is an example of the integer `5`, which is `101` in binary. The LSB of 5 is `1`, the most right number of the sequence of numbers.
+
+```
+Position: [2][1][0]
+Number 5: [1][0][1]
+```
+Similarly, the number `2029` has `1` as the LSB. However, that time, the number in binary has more bits with `11111101101` for value.
+
+```
+Position:   [10][9][8][7][6][5][4][3][2][1][0]
+Number 2029: [1][1][1][1][1][1][0][1][1][0][1]
+```
+However, the LSB remains at index `0` with a value of `1`.
+
+A close number is 2028, which changes the LSB from 1 to 0
+
+```
+Number 2029: [1][1][1][1][1][1][0][1][1][0][1]
+Number 2028: [1][1][1][1][1][1][0][1][1][0][0]
+``` 
+
+Changing the LSB bit keeps the overall value of the number the same by a lot. That last example changed the value from 2029 to 2028, but only a little. So you can see that a considerable number has even less change to be significant.
+
+Each pixel (color) in the picture is represented by four values: RGBA for Red, Green, Blue, and Alpha (transparency). Each number is from 0 to 255. Or from `00000000` to `11111111`. Using the LSB of a pixel means altering the color so that the human cannot see the difference because the change changes a value so tiny that a human eye cannot see. Still, we can manipulate to set and extract the LSB to insert messages.
+
+# The Theory of Injecting Text into Pixel with LSB
+
+There are two theories to know to accomplish the goal of hiding the message.
+
+The first one is that when we open an image into a buffer, we will get for each pixel 4 bytes (1 byte = 8 bits). So we can use the LSD of 1 pixel to store half a character. Half a character because each ASCII character is stored in 1 byte, and to keep it total, we need 8 LSB, and 1 pixel has four colors (4 LSB) hence two pixels for one character.
+
+The second theory is that we need to loop the whole message, get the ASCII char of each character, convert it into binary, and inject 1 bit at a time into a portion (R, G, B, A) of the pixel.
+
+Let's dive into an example and then the code.
+
+# Simple Example of Steganography using Least Significant Bit (LSB)
+
+Let's take the example of the following image, which has 8 pixels wide by 4 pixels high. The total of pixels is 32.
+
+![](/images/blog/steganography1.png)
+
+When we open the image, it will get into a buffer of bytes. Each pixel gets mapped into four elements meaning we are getting 128 (`32 * 4`) place to modify the bit to inject our message. 
+
+![](/images/blog/steganography2.png)
+
+As mentioned, each character is 8 bits, so in this image, we can only store 16 characters (`128 / 8`).
+
+![](/images/blog/steganography3.png)
+
+Because we want to be subtle, we will change each last bit to make our hidden message.
+
+Let's also take the word "Bye" which has three characters. Hence, we have plenty of space to insert the word in the 32 pixels images. In theory, we only need 3 pixels because three characters have 24 bits (1 char = 1 byte = 8 bits, multiplied by 3). 24 bits need six colors (24 / 4 segments).
+
+In summary, the word "Bye":
+|ASCII Character|ASCII Code Integer|ASCII Code Binary|
+|---|---|---|
+|B|66|01000010|
+|y|89|01011001|
+|e|69|01000101|
+
+It means we need to have the following bit in this order.
+
+```
+010000100101100101000101
+```
+If we focus on the first letter, the `B`, which is `01000010`, we need 2 pixels. We alter the pixel by setting the bit of the text into the color. In this example, the two pixels started with all `000000`, meaning it was all black. The letter `B` has two `1`, which change the first-pixel green and the second-pixel green. In both cases, we are changing the LSB, which slightly alters the overall color. For a human, it is still black.
+
+![](/images/blog/steganography4.png)
+
+# End of Message
+Because an image is not all black or white, values are going to be all over the whole picture. Therefore, we need to know when to stop reading. Otherwise, we will extract the bit, make the ASCII character back and at some point convert non-sense coming from the LSB of the image and not from what we injected. Hence, we need to add a character that will mark the end of the message. I use the ASCII character `00000100` which is non-officially the [end-of-file character](https://en.wikipedia.org/wiki/End-of-file#:~:text=EOF%20character,-Input%20from%20a&text=By%20default%2C%20the%20driver%20converts,(usually%20Control%2DV).). When reading the image to extract the message, we will read each pixel and pull all LSB until we reach the series of bit that forms the end of file character.
+
+# Reading the Hidden Message from the Steganography
+Reading the message is the reverse process. We open the image into a buffer and get the RGBA bytes lined up. Then, we convert it into binary. In our example, the first two pixels return `0000000000000001000000000000000000000000000000000000000100000000`, which is what we had injected into the two black pixels.
+
+Then get every 8th bit, which is the LSB: `01000010`, then we convert back to decimal, which is `66`, and then into ASCII, which is `B`.
+
+# Code
+The whole code is available in TypeScript in this [GitHub repository](https://github.com/MrDesjardins/steganographyts), especially in [this file](https://github.com/MrDesjardins/steganographyts/blob/master/src/steganography.ts). The two main functions are about 25 lines of code each -- not too heavy to read.
+
+# Improvement
+Of course, once you know where to look, you can start parsing images and observing what is going on with the LSB. To improve your secrecy, you should always encrypt your message with a symmetric key encryption mechanism like [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard). Using a symmetric key allows you to have a _password_ that is only known by you to modify the text into something unreadable and then extract the message and unencrypt using the key again.
+
+# Conclusion
+Using steganography is an exciting way to hide in plain sight secret message. The same image throughout time can be seen with new messages without being suspicious that information is traveling.
+
+The presented mechanism takes a lot of pixel for each character. It means that a full page with 1250 characters requires to have 2500 pixels.
+
+```
+1 characters -> 8 bits ---Transfered to--> 8 LSB to change -> 8 bytes --> 2 pixels
+```
+

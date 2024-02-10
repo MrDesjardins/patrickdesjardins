@@ -1,0 +1,50 @@
+---
+title: "JavaScript Bubble Sort"
+date: "2017-07-04"
+categories:
+  - "javascript"
+---
+
+The bubble sort is a `O(n^2)` without optimization and in the worse scenario. It's a simple algorithm that traverse the array once completely and every subsequent pass traverse the array less and less.
+
+On the first pass, it compares every element to bubble to the last position of the array the biggest number. On the second pass, it compares to bubble up the second biggest element to the before last position and so on. The bubble sort rely on swapping values.
+
+The idea is : find the biggest one, put it at the end.
+
+```javascript
+function swap(array, left, right) {
+  var temp = array[left];
+  array[left] = array[right];
+  array[right] = temp;
+}
+function bubbleSort(arrayToSort) {
+  var length = arrayToSort.length;
+  for (var i = 0; i < length - 1; i++) {
+    for (var j = 0; j < length - i - 1; j++) {
+      if (arrayToSort[j] > arrayToSort[j + 1]) {
+        swap(arrayToSort, j, j + 1);
+      }
+    }
+  }
+}
+```
+
+A potential optimization would be that if no swap is done in the inner loop that we completely stop both loop. This can happen if the array is getting sorted before needing to more all elements. For example, imagine an array all sorted expect the first element which. The first loop needs to be executed once to bubble that value at its place, on the second loop, every value will in their right position, hence no swap. It means that we do not need to loop anymore. Here is the optimization.
+
+```javascript
+function bubbleSort(arrayToSort) {
+  var length = arrayToSort.length;
+  for (var i = 0; i < length - 1; i++) {
+    var swapped = false;
+    for (var j = 0; j < length - i - 1; j++) {
+      if (arrayToSort[j] > arrayToSort[j + 1]) {
+        swap(arrayToSort, j, j + 1);
+        swapped = true;
+      }
+    }
+    if (swapped === false) {
+      i = length;
+    }
+  }
+}
+```

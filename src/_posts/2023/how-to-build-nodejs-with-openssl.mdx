@@ -1,0 +1,80 @@
+---
+title: "How to Build NodeJS with OpenSSL?"
+date: "2023-08-15"
+categories:
+  - "nodejs"
+  - "openssl"
+---
+
+Once in a while, your work environment could be more optimal for what you try to achieve. The current situation was that I had to use a MacOS with LibreSSL under a supervised man-in-the-middle security loop that mangled the SSL certificates. The network had changed, and using Microsoft Identity Client (MSAL) started to fail on renegotiation. I had little power because I had no exposure, no privilege to change the trickiness of the certificates.
+
+The quick solution was to fall back to Node 14, which was built (the binary) in a way that it was still working. The three years old version of Node does not use the newest OpenSSL libs that support RFC5764 and is compatible with the environment I am developing. However, the production version of Node worked fine with the latest LTS (18+). The described solution explains how to build your version of Node on your machine using a specific OpenSSL version and then use NVM to use the binary without renegotiation problems.
+
+# The Problem
+Upon network and security changes, the communication using MSAL started to fail with the following error:
+
+```sh
+error in secret or public key callback: write EPROTO ......... routines:final_renegotiate:unsafe legacy renegociation disabled.
+```
+
+The error might sound that changing some switches on Node, like adding the `--tls-max=v1.2` or `--openssl-config` with a configuration file, fix the issue, but in my case, it wasn't. The main culprit is my MacOS is configured to use `LibreSSL`. Other tentative using `HTTPS` `secureOptions` with `SSL_OP_ALLOW_UNSAFE_LEGECY_RENEGOTIATION` does not work. The problem is around OpenSSL.
+
+# The Solution: Building NodeJS with OpenSSL
+The current environment is rigorous and only allows a little change. However, using Homebrew, we can install OpenSSL. That is the first step that allows us to get OpenSSL instead of LibreSSL.
+
+```sh
+brew install openssl@1.1
+```
+
+Then, the idea is to get NodeJS source code, and build the code to have a binary that uses the insalled `openssel@1.1`.
+
+Getting the source code is a single GIT command. Then, you need to target the tag of the version you desire. In my case, I wanted to run version 18.17.
+
+```sh
+git clone https://github.com/nodejs/node.git
+git checkout v18.17.0
+```
+
+Then you need to export a few flags that will tell the C++ compiler to use the OpenSSL library during compilation:
+
+```sh
+export LDFLAGS="-L/opt/homebrew/opt/openssl@1.1/lib"
+export CPPFLAGS="-I/opt/homebrew/opt/openssl@1.1/include"
+```
+
+Before building, you need to call a Python script to configure OpenSSL. The script is in the source code.
+
+```sh
+./configure --shared-openssl
+```
+
+Finally, time to build. This step is time-consuming. In my case, it takes about 1 hour.
+
+```
+make -j4
+```
+The `j4` switch allows a performance boost using a parallelist build.
+
+# Using the Binary
+Once the build is completed, you can try the binary using `./out/release/node -v`. That should output the version you used, in my case 18.17.
+
+However, the binary is still inside the folder that you compiled Node. There are many options. You can create a symbolic link to the binary. However, I was already using NVM. NVM enable switching between different NodeJS version. Handy if you work on many projects. The solution I found is hacky but works well.
+
+First, install the official version into your project (not the NodeJS source code project).
+
+```sh
+nvm install v18.17.0
+nvm use v18.17.0
+```
+That will download into your `~/.nvm/versions/node` folder, a cache version of the official version. The folder of the version contains more than just Node. It includes NPM and other libraries.
+
+Then, copy the binary to overwrite the one in the cache:
+
+```sh
+cp ./out/Release/node /Users/pdesjardins/.nvm/versions/node/v18.17.0/bin/node
+```
+
+Then, anytime you use `nvm use` on version 18.17.0, regardless of where on your machine, it will use the binary you compiled.
+
+# Conclusion
+The problem and the solution could be better. It would be better if the environment would support natively renegotiation and other newest features. However, sometimes, what is the best is not available. Thus, the workaround of compiling the system using the needed SSL library with the convenience of a development tool like NVM is good enough to unblock the development.

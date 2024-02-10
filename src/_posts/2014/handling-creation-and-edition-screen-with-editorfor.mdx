@@ -1,0 +1,22 @@
+---
+title: "Handling Creation and Edition Screen with EditorFor"
+date: "2014-02-11"
+categories: 
+  - "asp-mvc"
+---
+
+Creation and Edition screen share a lot of similar information. The view is the same but change if it has a read only screen. Nevertheless, the create and edit view should share the same cshtml to limit future modification like adding a field or modifying existing fields.
+
+It is possible to have the Creation.cshtml and Edition.cshtml use the same partial class. The code above shows how it can be done.
+
+![](/images/blog/PartialViewForSharing-400x205.png)
+
+One way to do it is to use the html helper `EditorForModel`. Often, EditorFor and DisplayFor are used for individual input control but this can be used also for regrouping them. So, the `EditorForModel` is used to share between edition and creation the same group of edition control and inside the `EditorTemplates` you have a file name that has the model (or view model if you are using view model) used by the controller. Inside the editor templates of the model, you can use EditorFor to leverage the dynamic of editor template for controls.
+
+![](/images/blog/EditorForForSharedModel-400x194.png)
+
+The form are not shared because they generate by the controller that have called them. For example, the edition one. 
+
+```html  
+<form action="/House/Edit/1" method="post"> 
+``` 

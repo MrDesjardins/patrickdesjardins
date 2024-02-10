@@ -1,0 +1,494 @@
+---
+title: "Understand TypeScript Iterator and Iterable"
+date: "2023-03-24"
+categories:
+  - "typescript"
+  - "iterator"
+  - "iterative"
+  - "loop"
+---
+
+TypeScript follows ECMAScript (JavaScript) specification, and the concept of iteration grew up in the language in the past few years. Thus, TypeScript support since many versions of the idea of iterator and iterable. I only had a use case to rely on them outside looping collection recently, where I was receiving a stream of data that was never ending using Kafka. I had to consume an infinite stream, perform operations and push the information out in the same endless fashion. This infinite looping introduced me to a more profound knowledge of iterator and iterable in a professional context.
+
+In this article, we will define a few fundamental concepts and demystify the difference between similar keywords around iterator. First, we will clarify the iterator and iterable terms but also see how we can iterate synchronously and asynchronously. In the second part, we will dive into the generator and make a bridge with the reason for their relationship.
+
+# Preface
+
+Before diving, the concept of iteration is obscure. So, do not worry if it is not natural.
+
+Many factors with the iteration topic make it more challenging than others. First, it relies on a concept that must still be official in production release. As of March 2023, the feature is in [stage 3](https://github.com/tc39/proposal-iterator-helpers). Thus, you will see many examples using [iterall](https://github.com/leebyron/iterall), which is a library that was in place until ECMAScript gets an official specification. Iterall has been there since 2016. Thus many online examples rely on it. The two flavors cause fragmentation in samples, blog posts, books, and open-source projects. Moreover, the current online documentation on the topic is sparse, and public open-source projects mix several ways to perform the different actions with iteration.
+
+Second, iterators are harder to grasp because iterable and iterators are rare in many development domains. For example, I had to develop iterable and iterator only once since the concept's inception in JavaScript in 2023. To double down, the idea of an iterator wasn't there for over 15 years in ECMAScript, making alternatives to traverse collection more prevalent.
+
+A third aspect that makes iterable harder to master is that it is built on top of other concepts like symbol, async, and generator (star function). While `async` grew significantly, symbol and generator are less known, except for a few specific frameworks that leverage the concept.
+
+In this post and the following ones, we rely on the current state of iteration that is fully supported in TypeScript and soon to be in ECMAScript. Therefore, we will refrain from discussing older ways like iterall. However, remember that if you must interact with an older library or a library that does not use TypeScript, you may have incompatibility and thus need to accommodate your recent code with older ways.
+
+# Basic Iterable - Array
+
+Before building our own iterable and iteration, let's step back and understand the principle of iterable. An array is iterable. As a consumer of the array, you can loop its content. Looping all values are a form of iteration.
+
+```ts
+const arr: number[] = [1, 2, 3];
+for (const a of arr) {
+  console.log(`Value is: ${a}`);
+}
+```
+
+We can iterate the array using `for` and `of`. The distinction between "iterable" and "iteration" is that "iterable" has the capability to be looped. On the other hand, "iteration" is how we loop the collection of values. In this case, the iterable is a collection of numbers that we use the default iteration that loops from the first index to the last.
+
+Complete code in [CodeSandbox](https://codesandbox.io/p/sandbox/blog-iterator-example-69s022?welcome=true)
+
+# Basic Iterable - Symbol and Iterator Object
+
+The first concept that might be hard to grasp is that an array is an object with a specific function that allows the keywords `for` and `of` to traverse the values. The iterable portion is not particular to an array. The power of that concept is that in the future, we will see that we can iterate an infinite stream as long as we support the contract of iterable.
+
+The symbol is `Symbol.iterator`, which defines a function that must have specific functions. The symbol function is the iterable part, and the function that holds that symbol is the iterator. The difference is fuzzy, and with TypeScript, we can make it more evident as we define these sections instantly.
+
+# Basic Iterable and Iterator Structure
+
+Adding TypeScript was a pivotal point in enlightening my understanding. So, let's create some basic code with both types to stitch both iterable and iteration concepts.
+
+```ts
+const myIterator: Iterator<T> = {
+  next: () =>{
+    // return an IteratorResult<T, TReturn>
+  },
+  return: (value?: any) =>{
+    // return an IteratorResult<T, TReturn>
+  },
+  throw: (e?:any) => {
+    // return an IteratorResult<T, TReturn>
+  }
+};
+
+const myIterable: Iterable<T> = {
+  [Symbol.iterator] : myIterator<T>;
+};
+```
+
+Complete code in [CodeSandbox]https://codesandbox.io/p/sandbox/uwnnnw)
+
+First, we define an iterator. The iterator is what establishes the loop. It is how we execute the action of getting value from a data structure. It is not limited to moving the index by one in an array. In each iteration, the `next` function is called. If the `next` function returns a specific object, it continues to loop; otherwise, it stops. The `returns` function and the `throw` functions are additional optional features; let's not worry about these two functions and focus on the `next`.
+
+The following code creates a loop from 0 to a random ending number under 50.
+
+```ts
+let index = 0;
+const end = 10 + Math.random() * 40;
+const myIterator: Iterator<number> = {
+  next: () => {
+    if (index >= end) {
+      return {
+        value: null,
+        done: true,
+      };
+    } else {
+      index++;
+      return {
+        value: index,
+        done: index >= end,
+      };
+    }
+  },
+  // return: (value?: any) => {
+  //   // return an IteratorResult<T, TReturn>
+  // },
+  // throw: (e?: any) => {
+  //   // return an IteratorResult<T, TReturn>
+  // },
+};
+```
+
+The `myIterable` is the host of the logic for the looping. When the `for` and `of` receives the `Iterable` object, it starts calling `next` on the function specified in `Symbol.iterator`. In our example, it calls `next` on the `myIterator` of type `Iterator<number>`.
+
+The `next` function returns a value that is the `index` but wrapped inside an object with two fields: `value` and `done`. The `value` field is the generic type defined in the `Iterable` object, in our example, `number`. The `done` is a boolean that indicates the iterable if we are done looping.
+
+We can better understand what is happening if we explicitly call the `next` function instead of relying on the `for of` mechanism. Also, to encapsulate the moving part, like the index and end, let's move some pieces of code. Also, let's remove the randomness and only have an iteration that goes from 0 to 2 inclusively.
+
+```ts
+const myIterable: Iterable<number> = {
+  [Symbol.iterator]: () => {
+    let index = 0;
+    const end = 3;
+    const myIterator: Iterator<number> = {
+      next: () => {
+        if (index >= end) {
+          return {
+            value: null,
+            done: true,
+          };
+        } else {
+          index++;
+          return {
+            value: index,
+            done: index >= end,
+          };
+        }
+      },
+      // return: (value?: any) => {
+      //   // return an IteratorResult<T, TReturn>
+      // },
+      // throw: (e?: any) => {
+      //   // return an IteratorResult<T, TReturn>
+      // },
+    };
+    return myIterator;
+  },
+};
+
+for (const c of myIterable) {
+  console.log(`Value is: ${c}`);
+}
+
+const newIteration = myIterable[Symbol.iterator]();
+console.log(newIteration.next());
+console.log(newIteration.next());
+console.log(newIteration.next());
+console.log(newIteration.next());
+```
+
+The result might surprise you. The `for of` loop returns:
+
+```sh
+Value is: 1
+Value is: 2
+```
+
+And the four console logs return:
+
+```json
+{ value: 1, done: false }
+{ value: 2, done: false }
+{ value: null, done: true }
+{ value: null, done: true }
+```
+
+The `for of` loop is natural, showing the value of 1 and 2 since we wanted to loop from 0 to 3, but we increment the index before the check and use the bigger or equal operator -- so 1 and 2 only, not 0 or 3 included. The explicit calls to `next` shows why the loop stops: the `done` is `true` on the third call, in the case of the `for of` the loop end. However, when we call it manually, we can keep calling the function. The result will be the same until something internally change. For example, the index would go with a timer suddenly back to zero.
+
+[CodeSandBox Code](https://codesandbox.io/p/sandbox/blog-iterator-example-2-forked-kbn4px)
+
+# The Iterator Optional Return and Throw Functions
+
+So far, we have commented the `return` and `throw` functions. The `return` function is a way to inject into the iterator that it must stop. We could call this function after the first loop (returning the value 1). It would automatically stop by setting to `done`. Any future call to `next` would never return the value 2. However, that still requires us to handle the return. In our example, it means to set the `index` to a position (value) that it will stop. Thus, to implement the `return` function, the code must set the `index` to `end` and return `done`.
+
+```ts
+const myIterable: Iterable<number> = {
+  [Symbol.iterator]: () => {
+    let index = 0;
+    const end = 3;
+    const myIterator: Iterator<number> = {
+      next: () => {
+        index++;
+        if (index >= end) {
+          return {
+            value: null,
+            done: true,
+          };
+        } else {
+          return {
+            value: index,
+            done: false,
+          };
+        }
+      },
+      return: (value?: any) => {
+        index = end;
+        return {
+          value: null,
+          done: true,
+        };
+      },
+      // throw: (e?: any) => {
+      //   // return an IteratorResult<T, TReturn>
+      // },
+    };
+    return myIterator;
+  },
+};
+
+const newIteration = myIterable[Symbol.iterator]();
+console.log(newIteration.next());
+console.log(newIteration.return());
+console.log(newIteration.next());
+console.log(newIteration.next());
+console.log(newIteration.next());
+```
+
+The result:
+
+```json
+{ value: 1, done: false }
+{ value: null, done: true }
+{ value: null, done: true }
+{ value: null, done: true }
+{ value: null, done: true }
+```
+
+Without setting ` index = end` the following `next` continues as usual.
+
+The `throw` function is similar. The function allows calling the throw function on the iterator. If we modify our code, we can have the logic that if the iterator's consumer calls throws, we reset the index to zero for subsequent `next` to iterate back from the beginning.
+
+```ts
+const myIterable: Iterable<number> = {
+  [Symbol.iterator]: () => {
+    let index = 0;
+    const end = 3;
+    const myIterator: Iterator<number> = {
+      next: () => {
+        index++;
+        if (index >= end) {
+          return {
+            value: null,
+            done: true,
+          };
+        } else {
+          return {
+            value: index,
+            done: false,
+          };
+        }
+      },
+      return: (value?: any) => {
+        index = end;
+        return {
+          value: null,
+          done: true,
+        };
+      },
+      throw: (e?: any) => {
+        index = 0;
+        return {
+          value: 0,
+          done: true,
+        };
+      },
+    };
+    return myIterator;
+  },
+};
+
+const newIteration = myIterable[Symbol.iterator]();
+console.log(newIteration.next());
+console.log("Before returns");
+console.log(newIteration.return());
+console.log("After returns");
+console.log(newIteration.next());
+console.log(newIteration.next());
+console.log(newIteration.next());
+console.log("Before throw");
+console.log(newIteration.throw());
+console.log("After throw");
+console.log(newIteration.next());
+console.log(newIteration.next());
+console.log(newIteration.next());
+```
+
+The output is:
+
+```json
+{ value: 1, done: false }
+
+Before returns
+{ value: null, done: true }
+
+After returns
+{ value: null, done: true }
+{ value: null, done: true }
+{ value: null, done: true }
+
+Before throw
+{ value: 0, done: true }
+
+After throw
+{ value: 1, done: false }
+{ value: 2, done: false }
+{ value: null, done: true }
+```
+
+The `return` and `throw` are not required for iterating and are helpful in a more advanced scenario with a generator interacting more in-depth with the iteration. We will see the generator soon.
+
+[CodeSandBox](https://codesandbox.io/p/sandbox/blog-iterator-example-3-forked-s3e3xx)
+
+# TypeScript Iterator Next, Return and Throw Additional Information
+
+The `next` function is the most used and the one you should focus on first. The `return` and `throw` are not needed in all scenarios but, in some cases, will be mandated to be able to connect your iterator in some existing system.
+
+The `return` and `throw` accept a value upon which the iterator can apply logic.
+
+```ts
+console.log(newIteration.return(100));
+console.log(newIteration.throw(new Error("My Error Here"));
+```
+
+The two functions are a way to inject values on specific cases into the iterator. The goal is to adapt the iteration as the looping occurs.
+
+Finally, all the examples presented are function and type but can be done with `class`. For example, you can migrate the `const myIterable: Iterable<number>` to be `class MyIterable implements Iterable<number>`. As long as the class has the function `[Symbol.iterator]`, it is the same as having an object with the function `[Symbol.iterator]`.
+
+# Asynchronous Iterator
+
+TypeScript (and JavaScript) have the same concept of iterator and iterable with asynchronous code, allowing the loop on code that might take time on each `next`. For example, imagine that you are performing a REST HTTP call on each next. Instead of blocking the main thread, we can use `async` function and have a promise resolved in the return statement. Let's adapt our example to loop with a timer to demonstrate the asynchronous iterator and iterable code.
+
+```ts
+const myIterable: AsyncIterable<number> = {
+  [Symbol.asyncIterator]: () => {
+    let index = 0;
+    const end = 3;
+    const myIterator: AsyncIterator<number> = {
+      next: async () => {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        index++;
+        if (index >= end) {
+          return Promise.resolve({
+            value: null,
+            done: true,
+          });
+        } else {
+          return Promise.resolve({
+            value: index,
+            done: false,
+          });
+        }
+      },
+    };
+    return myIterator;
+  },
+};
+
+(async () => {
+  const newIteration = myIterable[Symbol.asyncIterator]();
+  console.log(await newIteration.next());
+  console.log(await newIteration.next());
+  console.log(await newIteration.next());
+  console.log(await newIteration.next());
+})();
+```
+
+The code prefix the type with `Async` and has a new symbol to define the function `Symbol.asyncIterator`. Having two symbols for sync and async allows your iterator to support both cases if needed. Otherwise, we must return a promise with our values. In this snippet of code, we are calling explicitly the `next` but we could also have a loop using: `for await (const c of myIterable)`.
+
+[CodeSandBox](https://codesandbox.io/p/sandbox/blog-iterator-example-4-forked-rhjjzl)
+
+# Why Iterable and Iterator?
+
+At first, it might be confusing between iterable and iterator. The [design pattern](https://en.wikipedia.org/wiki/Iterator_pattern) behind it is well-known but easy to forget. The concept is that the developer of a structure that can be iterable abstracts how to navigate the data outside the data structure. The logic of traversing the values is outside the iterable structure: it lives inside an iterator. The power of the design pattern is that a single iterable object can have many ways to traverse the data. For example, we could have on a list (iterable) one way to traverse from the first element to the last one (one iterator) and another way to travel from the last element to the first one (second iterator). In the future, we could add an iterator that only could even number (third iterator). Each iterator does not modify the data structure; it only leverages it and applies a custom algorithm to decide the following value to consume.
+
+## Example of One Iterable with Many Iterator
+
+Let's create an iterable structure that holds numbers and has two iterators: one that returns odd numbers and one even number.
+
+The first step would be to create a function that returns an `Iterable` instead of an object. That way, we can _create_ many of this data structure and add additional functions to add values.
+
+```ts
+const numberStructure = () => {
+  const values: number[] = [];
+
+  let iterator: (values: number[]) => Iterator<number> = allIterator;
+  return {
+    [Symbol.iterator]: () => {
+      return iterator(values);
+    },
+    add: (valueToAdd: number) => {
+      values.push(valueToAdd);
+    },
+    iterateBy: (iteratorToChange: (values: number[]) => Iterator<number>) => {
+      iterator = iteratorToChange;
+    },
+  };
+};
+```
+
+Then we can create some iterators. One to loop all values:
+
+```ts
+const allIterator: (values: number[]) => Iterator<number> = (
+  values: number[]
+) => {
+  let index = -1;
+  return {
+    next: () => {
+      index++;
+      if (index >= values.length) {
+        return {
+          value: null,
+          done: true,
+        };
+      } else {
+        return {
+          value: values[index],
+          done: false,
+        };
+      }
+    },
+  };
+};
+```
+
+This particular one is simpler, which iterates every value from the array and returns one object per collection element.
+
+And one to loop only even numbers:
+
+```ts
+const evenIterator: (values: number[]) => Iterator<number> = (
+  values: number[]
+) => {
+  let index = -1;
+  return {
+    next: () => {
+      index++;
+      while (values[index] % 2 !== 0 && index < values.length) {
+        index++;
+      }
+
+      if (index > values.length) {
+        return {
+          value: null,
+          done: true,
+        };
+      } else {
+        return {
+          value: values[index],
+          done: false,
+        };
+      }
+    },
+  };
+};
+```
+
+The `evenIterator` is peculiar because it does not return one object for every value. Instead, it has to return only the even values. Hence, we must skip values in the iteration. To skip values in an iterator, we must not return the object but still have the `next` function return something. Hence, the best approach is to have an inner loop that restraint returning anything until we find a desired value (in this iterator example, an even number) or complete the iteration completely by returning `done` to `true`.
+
+Then we can use a single array of numbers and traverse it differently by assigning a different iterator.
+
+```ts
+const s1 = numberStructure();
+s1.add(1);
+s1.add(2);
+s1.add(3);
+
+console.log("Log all numbers");
+for (const s of s1) {
+  console.log(s);
+}
+
+console.log("Log even numbers");
+s1.iterateBy(evenIterator);
+for (const s of s1) {
+  console.log(s);
+}
+```
+
+We are creating the iterator has a function to ensure that each iterator has a closure for its own `index`. In the case of the _class_ approach, we would instantiate a new iterator class for each iterator.
+
+[CodeSandBox](https://codesandbox.io/p/sandbox/blog-iterator-example-5-forked-yxhqtq)
+
+# Conclusion
+
+Iteration remains a specialized way to perform an operation that we often use basic structure's innate functions. In this blog post, the example of even number can be simplified by using `filter`:
+
+```ts
+myCollection.filter((d) => d % 2 === 0);
+```
+
+Thus, we must be wise when getting into iterable and iterator. A good use case is if you have a unique structure that has a special storing mechanism. Hence, the user may not be able to read the data sequentially like a simple loop. Also, we will cover in a future article that the iterative and iterator are powerful tools when we have a continuous data stream. For example, you may want your user to inject code into a stream of push notifications from a WebSocket or RedPandan/Kafka.
+
+If you are interested to learn more about iterator using _class_, Carlos Caballero wrote a great article [here](https://www.carloscaballero.io/understanding-iterator-pattern-in-javascript-typescript-using-symbol-iterator/).

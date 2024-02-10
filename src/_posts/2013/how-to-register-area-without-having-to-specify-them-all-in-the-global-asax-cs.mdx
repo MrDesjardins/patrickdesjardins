@@ -1,0 +1,65 @@
+---
+title: "How to register Area without having to specify them all in the global.asax.cs"
+date: "2013-08-12"
+categories: 
+  - "asp-mvc"
+---
+
+When you go into an existing project you have two possibilities. The first possibility is that every area are registered into the global asax, or with Mvc4 in the routing class that the global.asax call. The second possibility is to use AreaRegistration class and have 1 class inherit this class per area.
+
+The first solution is simple, fast and it's suitable for a small project (rule of thumb: less than 5 areas). What you need is to add a new entry into routes.
+
+
+```csharp
+protected void Application_Start() { 
+  RegisterRoutes(RouteTable.Routes);
+}
+
+public static void RegisterRoutes(RouteCollection routes) { 
+  routes.MapRootArea("{area}/{controller}/{action}/{id}", "RouteNameHere", new { area="area1", controller = "controller1", action = "action1", id = "" }); 
+} 
+```
+
+The second solution require two steps. The first step is to tell the framework to auto register a specific type of class for routing, and the second step is to define one class per area for configuration purpose.
+
+# Step1: Inside Global.asax.cs 
+
+```csharp
+ protected void Application_Start() { 
+   AreaRegistration.RegisterAllAreas(); 
+} 
+```
+
+# Step2: Inside every folders of every area you have create a class that inherit from AreaRegistration 
+
+```csharp
+public class MyArea_AreaRegistration : AreaRegistration { 
+  public override string AreaName { get { return "MyArea"; }
+}
+
+public override void RegisterArea(AreaRegistrationContext context) { 
+  const string nameSpace = "MyNameSpaceForThisArea"; 
+  const string areaName = "MyAreaName"; 
+  const string defautlRouteUrl = areaName + "/{controller}/{action}/{id}";
+
+  var defaultRouteValueDictionary = new RouteValueDictionary(new { action = "Index", id = UrlParameter.Optional });
+
+  var dataTokensDictionary = new RouteValueDictionary(new { Namespaces = nameSpace, area = areaName, UseNamespaceFallback = false });
+
+  context.Routes.Add(string.Format("{0}_Default", areaName), new Route(defautlRouteUrl, defaultRouteValueDictionary, dataTokensDictionary, new MvcRouteHandler())); } } 
+```
+
+Few things are important. First, you shouldn't copy and paste that code in all your classes. The namespace and area will change but every other lines remain the same across all areas. Be wise and encapsulate the logic in a reusable place. Second, the new `MvcRouteHandler()` will be most of the time something that you will inherit from because you could set over there some specification over localization. For example, you may want to have `/fr/` which if available change the current thread to the language specified in the url.
+
+The override in the example above is more complex that it should be if you do not have a custom RouteHandler. In fact, you could use this simple 1 liner:
+
+
+```csharp
+ context.Routes.MapRoute("DefaultRouteForAreaXYZ" 
+ , "AreaXYZ/{controller}/{action}/{id}" 
+ , new { controller="Home" 
+ , action="index" 
+ , id= UrlParameter.Optional } ); 
+```
+
+Perhaps it's simpler, but you won't have the leverage of controlling every aspect of the routing, which is viable for project where you do not need to parse the routing for additional features.

@@ -1,0 +1,26 @@
+---
+title: "Modifying BootStrap Tab Control for Extra Small Device"
+date: "2014-03-27"
+categories: 
+  - "css"
+---
+
+If you are using **BootStrap** and the **Tab** control you may have a weird rendering for Extra Small Device (under 768 pixel). 
+
+![](/images/blog/BootStrapTab-400x180.png)
+
+
+```css
+ /*For smaller device, tab control should not appear*/ 
+ @media (max-width: 767px) { 
+  .nav-tabs > li { 
+    float:none; border:1px solid #dddddd; 
+  } 
+  .nav-tabs > li.active > a{ border:none; } 
+  .nav > li > a:hover, .nav > li > a:focus, .nav > li > a:hover, .nav > li > a:focus, .nav-tabs > li.active > a, .nav-tabs > li.active > a:hover, .nav-tabs > li.active > a:focus { background:none; border:none; } 
+} 
+```
+
+![](/images/blog/BootStrapTabFixed-400x262.png)
+
+The end result is much better than the default behavior and the solution is simple and clean. I hope that it helps someone.

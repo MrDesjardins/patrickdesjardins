@@ -1,0 +1,56 @@
+---
+title: "Change the URL with JavaScript without redirecting"
+date: "2015-08-26"
+categories: 
+  - "javascript"
+---
+
+If you have a part of your website that need to change the URL in the browser without having to refresh the whole page, than you shouldn't use the window.location.`href` because this one will redirect into that page. `window.location` contains 2 others method that can do the job for you. The first one is `assign`.`window.location.assign(url)` is a method that will change the url and set in your history the new url. Sometime, we want to browser to change but not the history. A second method does that job -- it's called replace.
+
+On the other hand, doing that mean that the user can navigate directly into your webpage by the url in the browser. If you changed the URL by just changing a hash tag that define a specific action in your website, you may have that action trigged by the click event but not when the user access the webpage directly from the url.
+
+For example, you have several link for action like "open item1" and "open item2". You change the url with `window.location.assign` because you want the user to be able to use the back button -- use the history. So the history looks like this:
+
+- http://yourwebsite.com/page1
+- http://yourwebsite.com/page1#item1
+- http://yourwebsite.com/page1#item2
+
+If someone go directly to the _item2_ than you need to execute the code behind this hash tag. To have your code executed you need to use the window event called `onhashchange`. 
+
+```typescript
+window.onhashchange = function() { 
+  //Get the hash value from the url and execute your code 
+}; 
+``` 
+
+ The `onhashchange` become a hub if all time the url change which can be convenient to have a central place has a content controller. This method removes the need to have action handled in every click that has hash url to just have the click event of these links to change the url and let the `onhashchange` handles which action to execute.
+
+Here is an example: 
+```html 
+ <a id="report">Current Order Report</a> 
+ <a id="edit">Edit Current Order</a> 
+```  
+
+```typescript
+$('#report').click(function(){ 
+  window.location.assign("#open-current-report"); 
+});
+
+$('#edit').click(function(){ 
+  window.location.assign("#edit-order"); 
+});
+
+window.onhashchange = function(){ 
+  if(window.location.hash) { 
+    var hashFragment = window.location.hash.substring(1); // Get hash value (without #) 
+    switch(hashFragment) { 
+      case "open-current-report": 
+      //Do your action break; 
+      case "edit-order": 
+      //Do your action break;
+       } 
+    } 
+}; 
+``` 
+
+This example use JQuery to attach the click event but this is not required for the location assign, neither for the `onhashchange` -- they are both pure JavaScript method and event.

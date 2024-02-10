@@ -1,0 +1,73 @@
+---
+title: "Entity Framework 4.3 with Poco and track change"
+date: "2012-03-18"
+categories: 
+  - "entity-framework"
+---
+
+Entity Framework has changed between version 4.1 and 4.3 quite awhile concerning track change. Most of the time, you will read on Internet that you need to `ObjectStateManager` property of the DbContext you create for your Poco. With Entity Framework version 4.3 you won't see that property.
+
+The version 4.3 of EF contain a property Configuration where you can set the LazyLoading, the ProxyCreation, the AutoDetectChange and the ValidateOnSave. By default, all these options are to True.
+
+![](/images/blog/dbContextAllTrue-400x77.png)
+
+Here is an example that I have disable the Lazy Loading and also disable the Proxy Creation. 
+
+```csharp
+var dbContext = new MyDbContext(connectionString); 
+dbContext.Configuration.LazyLoadingEnabled = false; 
+dbContext.Configuration.ProxyCreationEnabled = false; 
+dbContext.Configuration.AutoDetectChangesEnabled = true; 
+dbContext.Configuration.ValidateOnSaveEnabled = false;
+
+var myObjects = dbContext.MyObject.Include("MySubObject"); 
+
+foreach (var c in myObjects) { 
+  c.UpdateDate = DateTime.Now.ToString(); 
+}
+
+dbContext.SaveChanges(); 
+```
+
+This will automatically update the field UpdateDate to the database. If AutoDetectChange is to False, the DbContext won't be notified that a change is been made.
+
+
+```csharp
+dbContext.Configuration.LazyLoadingEnabled = false; 
+dbContext.Configuration.ProxyCreationEnabled = false; 
+dbContext.Configuration.AutoDetectChangesEnabled = true; 
+dbContext.Configuration.ValidateOnSaveEnabled = false; 
+```
+
+The code above won't update to the database when executing `dbContext.SaveChanges()`.
+
+If you want to do it manually, you will need to call the `dbContext.ChangeTracker.DetectChanges()`.
+
+```csharp
+var dbContext = new MyDbContext(connectionString); 
+dbContext.Configuration.LazyLoadingEnabled = false; 
+dbContext.Configuration.ProxyCreationEnabled = false; 
+dbContext.Configuration.AutoDetectChangesEnabled = false; 
+dbContext.Configuration.ValidateOnSaveEnabled = false;
+
+var myObjects = dbContext.MyObject.Include("MySubObject"); 
+foreach (var c in myObjects) { 
+  c.UpdateDate = DateTime.Now.ToString(); 
+} 
+dbContext.ChangeTracker.DetectChanges(); 
+dbContext.SaveChanges(); 
+```
+
+As you can see at the line 12, we need to call it explicitly.
+
+You can see the state of each object object by looping into the ChangeTracker.Entries().
+
+
+```csharp
+var e = dbContext.ChangeTracker.Entries(); 
+foreach (var dbEntityEntry in e) { 
+  Console.WriteLine(dbEntityEntry.State); 
+} 
+```
+
+The code above will display the state of all object modified even if the `AutoDetectChangesEnabled` is to false. Of course, if this is to False and you do not call `dbContext.ChangeTracker.DetectChanges()` before checking the `ChangeTracker` that all state will be to unmodified. One interesting thing to notice is that the Entries property contain all objects and sub-object modified. If you change one property to one object, all its sub-objects will also be inside `Entries()`

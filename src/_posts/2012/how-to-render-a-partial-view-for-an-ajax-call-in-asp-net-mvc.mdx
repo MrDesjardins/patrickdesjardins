@@ -1,0 +1,56 @@
+---
+title: "How to render a partial view for an Ajax call in Asp.Net MVC"
+date: "2012-09-19"
+categories: 
+  - "asp-mvc"
+---
+
+If you have an Ajax call to do an action on the server side you may want to answer back with a message, refreshed values or a portion of the page to be updated. To do, you need to send back into a JSON object the view (or partial view). In this article, we will create a method that should be placed into every of your controller (maybe in a Base Controller).
+
+The method is this one:
+
+
+```csharp
+/// <summary> 
+/// Render a PartialView into a string that contain the Html to display to the browser. 
+/// </summary> 
+/// <param name="partialViewName">The name of the partial view to render</param> 
+/// <param name="model">The model to bind to the partial view</param> 
+/// <returns>The html rendered partial view</returns> 
+protected virtual string RenderPartialView(string partialViewName, object model) { 
+  if (ControllerContext == null) 
+    return string.Empty;
+
+  if (model == null) 
+    throw new ArgumentNullException("model");
+
+  if (string.IsNullOrEmpty(partialViewName)) 
+    throw new ArgumentNullException("partialViewName");
+
+  ModelState.Clear();//Remove possible model binding error.
+
+  ViewData.Model = model;//Set the model to the partial view
+
+  using (var sw = new StringWriter()) { 
+    var viewResult = ViewEngines.Engines.FindPartialView(ControllerContext, partialViewName); 
+    var viewContext = new ViewContext(ControllerContext, viewResult.View, ViewData, TempData, sw); 
+    viewResult.View.Render(viewContext, sw); 
+    return sw.GetStringBuilder().ToString(); 
+  } 
+} 
+```
+
+In short, it uses the View Engines of Mvc to get the result of the partial view (if found). From there, a view context is generated from the current call (with the current controller context). The model is passed with the ViewData that is required by the ViewContext constructor. Finally, we generated the html that is returned.
+
+Here is an example of use.
+
+
+```csharp
+ return Json(new { 
+  StatusCode= 1, 
+  StatusMessage = "Customer has been created", 
+  ResponseView = RenderPartialView("CustomerPanel", customer) 
+}); 
+```
+
+This could have been otherwise, but you can see the logic behind using Json to have an anonymous object serialized back to the client. From there, you can use JQuery or a plain Javascript statement to display the ResponseView into an html element. The idea of rendering a partial view from a controller came from this other [blog](http://craftycodeblog.com/2010/05/15/asp-net-mvc-render-partial-view-to-string/).

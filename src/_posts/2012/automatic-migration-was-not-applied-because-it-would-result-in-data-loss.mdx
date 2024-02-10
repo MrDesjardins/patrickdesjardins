@@ -1,0 +1,24 @@
+---
+title: "Automatic migration was not applied because it would result in data loss"
+date: "2012-10-12"
+categories: 
+  - "entity-framework"
+---
+
+When you are using Entity Framework and try to use the **migration** tool you may have this message.
+
+> Automatic migration was not applied because it would result in data loss
+
+I had this error while doing this exact command inside the **Package Manager Console**.
+
+``` 
+ Update-Database -Verbose 
+``` 
+
+This happen because you have some data inside the table and the migration tool want to drop the table. This create a conflict for the migration tool and instead of taking the decision of deleting the data it show this error. If you are using the migration tool because you want to create the whole database and seed data with the seed method than you can force the table drop.
+
+You need to use _force_.
+
+``` 
+ Update-Database -Verbose -Force 
+``` 

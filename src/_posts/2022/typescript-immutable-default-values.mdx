@@ -1,0 +1,62 @@
+---
+title: "A Safe Way to Define Immutable Default Values in TypeScript"
+date: "2022-02-24"
+categories:
+  - "typescript"
+---
+
+Regardless of the framework you are using, you will end up having some area of code that relies on default values. When the state relies on an object, there is a way to ensure that the default values are not mutated in the future.
+
+The simplest way to define a set of default values is to assign an object's value. TypeScript infers the object to be of two properties. The `p1` to be a `boolean` and the `p2` to be a `number`.
+
+```typescript
+const defaultValues = { p1: true, p2: 100 };
+defaultValues.p1 = false;
+``` 
+
+A step further is to ensure the type does not change and be as narrow as possible using `as const`. In that case, `p1` type is not a boolean but `true`, and `p2` is if type `100`.
+
+```typescript
+const defaultValues = { p1: true, p2: 100 } as const;
+defaultValues.p1 = false; // Error!
+```
+
+That is great for design time, but JavaScript has the `Object.freeze` that ensure that at runtime you cannot change an object. Using the `Object.freeze` generates a type of `ReadOnly<>` between the inferred type.
+
+```typescript
+const defaultValues = Object.freeze({ p1: true, p2: 100 });
+defaultValues.p1 = false; // Error!
+```
+
+This is the same as:
+
+```typescript
+interface MyValueType {
+  p1: boolean;
+  p2: number;
+}
+const defaultValues: Readonly<MyValueType> = Object.freeze({ p1: true, p2: 100 });
+defaultValues.p1 = false; // Error!
+```
+
+I like the explicit interface because we can use it around the application for a parameter. However, also possible to extract the type using `typeof`.
+
+```typescript
+type MyValueType = typeof defaultValues;
+```
+But, that is not right. We cannot use that type around the application because the extraction results to the type:
+
+```typescript
+interface MyValueType {
+  readonly p1: boolean;
+  readonly p2: number;
+}
+```
+A more accurate extraction would be to use a mapped type.
+
+```typescript
+type UnReadonly<T> = { -readonly [P in keyof T]: T[P] };
+type MyValueType = UnReadonly<typeof defaultValues>;
+```
+
+The right approach is the one you defined with your team. Regardless, what is interesting is that you can have a safe type at runtime and design time and still be able to use the type in mutable are of your code when needed.

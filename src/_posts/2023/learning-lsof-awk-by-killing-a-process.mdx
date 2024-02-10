@@ -1,0 +1,80 @@
+---
+title: "Learning the Linux Command Line lsof and awk by Killing a Process that Hold a Port"
+date: "2023-09-19"
+categories:
+  - "linux"
+  - "command line"
+  - "cli"
+---
+
+# Goal and Context
+
+Developing web applications and services requires opening ports on a machine. In some situations, a process using a port might die without releasing the port -- the process is dead but runs in the background, keeping the port reserved. Thus, the solution is to kill the process. Sometimes, some ports might be used by many different processes in different periods of time. Therefore, having a process keeping a port in hostage happens. The solution is to find the process who is holding the port and killing it.
+
+In this article, we will use `lsof` to find the process of who is holding the port and using `kill -9` to kill it. A third tool is needed to combine the information of `lsof` into `kill`, which is `awk`.
+
+# Finding the process id by a port number: Lsof
+
+The command line `lsof` is natively available in Linux. The letters of the tool are for "LiSt Open File".
+
+The trick is to use the `-i` which allows to find a file that matches a specific address. Many combinations vary for ipv4 or ipv6 or different protocols. In my case, the port I want to kill most of the time is for a web server, a docker container, or a port used in Visual Studio Code (VsCode) for debugging. They are all using `tcp`. Thus, using `lsof -i tcp:9229` gives the information.
+
+
+```sh
+lsof -i tcp:9229
+
+COMMAND PID USER FD TYPE DEVICE
+node 19005 pdesjardins 26u IPv4 ox033434234
+```
+The output is simplified but has the information needed: the `PID`.
+
+The `pid` is the process identifier that is needed to pass to the next command line.
+
+
+# Grabbing the last line: Tail
+
+The `tail` command line allows to read a specific line from the end of a file. A file can be the output of a command line. Using `tail` is a way to skip the header of the `lsof`. The following command uses the option `-n 1`, which returns the last line.
+
+```sh
+lsof -i tcp:9229 | tail -n 1
+
+node 19005 pdesjardins 26u IPv4 ox033434234
+```
+
+# Grabbing a record: Awk
+
+The `awk` command scans for a pattern. Awk has an option to scan each tab. The PID is on the second record (tab).
+
+```sh
+lsof -i tcp:9229 | tail -n 1 | awk '{print $2}' 
+
+19005
+```
+
+# Knowing your Tools
+
+As I wrote this blog post, I looked further the `lsof` documentation and found out about `-t` option. The option provides a terse output with only the `pid`, meaning that the information can be piped to kill. It means that `tail` and `awk` can be removed by using:
+
+```sh
+lsof -i tcp:9229 -t
+```
+
+
+# Killing the process: Kill
+
+The `kill` command sends a signal to a process using a `PID`. Killing with `kill -9 <pid here>` instantly kills the process. 
+However, another tool is needed to inject the PID into a command argument: `xargs`.
+
+# xargs: Passing the PID from Lsof to Kill
+
+The last step is to send the process id to `kill` from the `lsof`. The `xargs` executes a command line and can use a pattern to replace a string by a value. In our case, the pattern is `{pid}` and will be replaced by the piped PID. The `xargs` uses the `-I` to specify the string to replace. Then, the command is specified with its option. The command needs to use the string, for example, `{pid}`, which will be replaced by the value piped. If more than one value is passed, then the command will be executed several times with each value.
+
+The final script:
+
+```sh
+lsof -i tcp:9229 -t | xargs -I {pid} kill -9 {pid}
+```
+
+# Conclusion
+
+Ultimately, three tools were needed: `lsof`, `xargs` and kill. Learning about the tool helped to reduce the complexity by removing two additional tools (`tail` and `awk`).

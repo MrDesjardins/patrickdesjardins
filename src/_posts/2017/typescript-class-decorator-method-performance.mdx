@@ -1,0 +1,170 @@
+---
+title: "TypeScript Class Decorator : Method Performance"
+date: "2017-05-09"
+categories:
+  - "typescript"
+---
+
+TypeScript supports decorator for classes, methods, properties, parameters and attributes. In this post, we will see how to create a decorator that will sit on top of a method. The goal of this decorator is to have an easy way to add to any of your method some code that will be executed. This is good for re-usability and doesn't need you to have to add a call inside your method for every method you need to have something executed. We will see that we need to change TypeScript compiler, how to create the decorator and how to use this one.
+
+The use of decorator is still very recent and it needs TypeScript to activate experimental decorator on. This is done by adding in the compilerOptions section of TypeScript compiler the `experimentalDecorators` to `true`. While many other decorator types require also to have `emitDecoratorMetadata` on, this is not the case with method.
+
+```typescript
+{
+  "compilerOptions": {
+    "target": "es6",
+    "experimentalDecorators": true
+    }
+}
+```
+
+The decorator for the method is one of the most powerful decorator. It is executed when the method is called which allow you to do something before and after this one. If you are from .Net, it's a little bit like using a class that inherit IDisposable and have this one wrapping the whole method. The resemblance is that the Disposable method can do something in the constructor as a pre-execution code and do something in the dispose method as post-execution.
+
+```typescript
+class MyCSharpClass{
+  public void TestMethod(){
+    using(new PseudoDecoratorButInsideMethod()){
+      //Code here
+      }
+  }
+}
+```
+
+In TypeScript, there is not something similar else than doing function function callback where you also wrap the code you want to decorate by executing a method that will do your pre and post code. The disadvantage is like with the .Net alternative which is that it needs intervention withing the method.
+
+```typescript
+class MyClass {
+  myMethod() {
+    this.doSomething(() => {
+      console.log("Inside");
+    });
+  }
+  doSomething(callBack: Function): void {
+    console.log("Before");
+    callBack();
+    console.log("After");
+  }
+}
+```
+
+The decorator version is more clean and doesn't need you to change the method where you want to inject some logic.
+
+```typescript
+class MyClass {
+  @myMethodDecorator
+  myMethod() {
+    console.log("Inside");
+  }
+}
+```
+
+From here you should see some scenario where it makes sense to use decorator or not. I'll illustrate one by using a method decorator to capture the time a method takes to execute. I'll call this method "performanceLog" and will allow to supply two parameters, which the latest will be optional with a default value. The first parameter will tell if we want to display in the console the performance. The rational behind it that we may just want to log the information into our telemetry system in production. The second parameter is when to change the log into an error. It's the threshold in millisecond of when it's too long for the method.
+
+To be able to have parameter, we must wrap the decorator into a function. Then, we need to return a function that has 3 parameters. The first one is the target which is the class prototype. This will allow us to dig inside the class to get into the method which is defined by the second parameter. Finally, the third parameter is a variable that contain the value of the method -- this is where we will define the new method we want to swap from the original. As you saw in the previous way to do, we needed to have a callback that was executed between two statements. This is similar. We will extract the actual method and reuse this one between two statements and return a "new" methods into the value.
+
+```typescript
+export function performanceLog(
+  outputConsole: boolean,
+  thresholdToDisplayErrorInMs: number = 1000
+) {
+  /**
+   * @params{any} target - The prototype of the class (Object).
+   * @params{string} propertyKey - The name of the method.
+   * @params{PropertyDescriptor} descriptor - Property that has a value (in that case the method)
+   */
+  return (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor
+  ) => {};
+}
+```
+
+To get the performance of a method, we need to collect the time before executing the original method, and display the final time, after its execution. So, first, before doing anything there is two important steps to do. We need to ensure that we have a descriptor defined (third parameter). This may be overridden by another decorator, hence we need to be sure it's defined, if not to create back this one. Then, we need to do a copy of the original method because we want to execute it at the proper time.
+
+```typescript
+export function performanceLog(
+  outputConsole: boolean,
+  thresholdToDisplayErrorInMs: number = 1000
+) {
+  return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+    // Ensure we have the descriptor that might been overriden by another decorator
+    if (descriptor === undefined) {
+      descriptor = Object.getOwnPropertyDescriptor(target, propertyKey);
+    }
+    // Copy
+    const originalMethod = descriptor.value;
+    // To be continued
+  };
+}
+```
+
+Next, we need to create the new function that will be swapped from the original. This is done by defining a new function in the descriptor.value. You should not use the arrow function syntax because it will mess up the "this" pointer. To get more data for the log, you can get all parameters passed by stringify all parameters. After, you can start a timer and get the user time and call the original method. You must collect the result (in case of method that return something else than void) and stop the timer.
+
+```typescript
+// Redefine the method to this new method who will call the original method
+// Use the function's this context instead of the value of this when log is called (no arrow function)
+descriptor.value = function (...args: any[]) {
+  const parametersAsString = args
+    .map((parameter) => JSON.stringify(parameter))
+    .join(",");
+  const startTime = window.performance.now();
+  const result = originalMethod.apply(this, args);
+  // Call the original method
+  const endTime = window.performance.now();
+  const timespan = endTime - startTime;
+  const stringResult = JSON.stringify(result);
+  // To be continued
+};
+```
+
+The last step is to bring everything to live with showing in the console the performance by using the threshold. Here is the complete TypeScript decorator method.
+
+```typescript
+export function performanceLog(
+  outputConsole: boolean,
+  thresholdToDisplayErrorInMs: number = 1000
+) {
+  return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+    // Ensure we have the descriptor that might been overriden by another decorator
+    if (descriptor === undefined) {
+      descriptor = Object.getOwnPropertyDescriptor(target, propertyKey);
+    }
+
+    const originalMethod = descriptor.value;
+    // Redefine the method to this new method who will call the original method
+    // Use the function's this context instead of the value of this when log is called (no arrow function)
+    descriptor.value = function (...args: any[]) {
+      const parametersAsString = args
+        .map((parameter) => JSON.stringify(parameter))
+        .join(",");
+      const startTime = window.performance.now();
+      const result = originalMethod.apply(this, args);
+      // Call the original method
+      const endTime = window.performance.now();
+      const timespan = endTime - startTime;
+      const stringResult = JSON.stringify(result);
+      if (outputConsole) {
+        const message =
+          "Call [" +
+          timespan +
+          "ms]: " +
+          propertyKey +
+          "(" +
+          parametersAsString +
+          ") => " +
+          stringResult;
+        if (timespan < thresholdToDisplayErrorInMs) {
+          console.log(message);
+        } else {
+          console.error(message);
+        }
+      }
+      return result;
+    };
+    return descriptor;
+  };
+}
+```
+
+TypeScript decorators are still in an early stage like if you were to use them with JavaScript. Decorator with method are a lot more straight forward than other decorator that require other library to extract meta-data for example. Decorators are getting more popular and start to be even cornerstone to some popular JavaScript framework like Angular 2 (and 4). Like every new shiny language feature, using at the proper time is the key of success.

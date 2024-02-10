@@ -1,0 +1,82 @@
+---
+title: "Typescript Utility Type Partial Expect"
+date: "2022-09-05"
+categories:
+  - "typescript"
+---
+
+# How to Transform your Type to Have All Fields Optional Expected Selected Fields to be Required?
+The situation is that you want to transform an existing type into all optional fields except a subset of the fields to be required. A use case is that you wish to have all fields except the primary key and many other keys you know must always be present.
+
+# Example Type
+We need to create a custom TypeScript utility type to have this new type. But first, let's make a testing type.
+
+```typescript 
+interface MyType {
+  a: string;
+  b: string;
+  c: string;
+}
+```
+
+# Breaking Down the Utility Types
+The result is more straightforward if we break the work into smaller chunks. In other words, we break down the utility types into several utility types. Then, combining the utility types allows us to get the sum of the transformation.
+
+The result is the combination of two operations: picking required fields and picking optional fields.
+
+## Picking Required Fields
+
+To pick the required field, we can take a subset of the fields depending of what the developer specifies as required properties of a type.
+
+```typescript
+type RequiredFielsd<T, K extends keyof T> = Required<Pick<T, K>>;
+```
+
+The first utility type uses two native TypeScript's utility types: `Pick` and `Required`.
+The `Pick` extracts from an existing type `T` fields specified.
+
+```typescript
+type MyOtherType1 = RequiredFielsd<MyType, "a">;
+type MyOtherType2 = RequiredFielsd<MyType, "a" | "b">;
+```
+These two examples create one type that has only a property name `a` from the original type that has a `a` and make it required. The second example creates another type with `a` and `b` fields required. No `c` field.
+
+## Picking Optional Fields
+
+The second step is to extract the optional field. Similar to the first part, we will leverage the existing `Pick`. In this type, we will not take the field the user specify but the rest of the field (opposite).
+
+```typescript
+type PartialFields<T, K extends keyof T> = Partial<Pick<T, Exclude<keyof T, K>>>;
+```
+
+The utility type picks all fields that are not specified in `k`. Then, marks them as optional ( `| undefined`). 
+
+```typescript
+type MyOtherType3 = PartialFields<MyType, "a">;
+```
+
+The result of this new type is a type with `b` and `c` that will be both `string | undefined`. No `a`.
+
+# Combining the Utility Functions
+
+Now, we need to combine both.
+
+```typescript
+type PartialExcept<T, K extends keyof T> = RequiredFielsd<T, K> & PartialFields<T, K>;
+```
+
+Using the same `T` with the same `K` means that the `RequiredFielsd` will take the fields specified and mark them as required while all the other fields will be set as optional.
+
+
+```typescript {3}
+type MyFinalType = PartialExcept<MyType, "a">;
+const test: MyFinalType = {
+    a: "Required Value"
+};
+```
+The result is a new type with only `a` required with two optional fields.
+
+# Conclusion
+The best tip when working with TypeScript is to break them down into small transformers. Breaking the utility functions makes it easier to understand while creating and later when maintaining. Furthermore, you can reuse a subset of the transformers in another part of your system.
+
+You can find the code in this post in the [TypeScript Playground](https://www.typescriptlang.org/play?#code/JYOwLgpgTgZghgYwgAgLIE8Aq6AOKDeAUMsnAFzIDOYUoA5gNzHIBGF1tIjzC7N9TAL6FCYXCgBKEAI4BXYFAgATAGLAIAG0pKAPJgA0yANLIIAD0ggllZAGsI6APYxkmAHzIAvMilyFynQAFYARbPUMjNzcmMTw0dAB5MAALaGw8AEYvHxl5RVV1LV0MdIhDACI4cujRcXik1KhSgCZs3zzlNU1tHRLxCqrkAB9kcpZqplq4wLgoMGA4DS6Na3DjUwsIKxt7Jxd3bJm5hY0gkLCDZABRMwQNWSUIHV3nVwiomtiUDAa08QBmQ6zeaLZarPp4AYTERfZBHEEaG5IHBgNYmcyWax2ByvA7edr+ArdXSXSLIABkcOBJzBlDRNSm33QahAi1KQOOiyREBRvSw-VGVRqCEcIGoyEg1AoGBZbLq3iIJBI5FGBPy5UIggYQA)

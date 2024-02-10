@@ -1,0 +1,99 @@
+---
+title: "An Introduction Of How To Load Asynchronously JavaScript Files"
+date: "2014-10-10"
+categories: 
+  - "javascript"
+---
+
+JavaScript files are loaded synchronously from the top to the bottom of the script tag in your html page. This has the advantage to handle correctly references. You can use from a file that is loaded later functions from a file that was loaded earlier. For example, if you set the script tag to load JQuery as the first script to load, every subsequent JavaScript files will be able to use JQuery. However, the problem is that you are losing performance because every files are in a queue to be downloaded. Several options exist like bundling all JavaScript into a single file or to activate in your web server SPDY protocol. But, it still does not fix another problem which is to divide JavaScript file to work by module. This way, you could have reusable modules that could be loaded depending of the need instead of having a huge bundle. This technic is called AMD. AMD for Asynchronous Module Definition. It is a mechanism for defining modules, their dependencies and can load asynchronously all of them.
+
+Open source projects exist that do AMD for JavaScript. One of them is [amdjs](https://github.com/amdjs/amdjs-api) and a second one is [RequireJS](http://requirejs.org/). Both work with the same principle of defining module id which associate one or multiple JavaScript file to an unique identifier.
+
+In this article, I will concentrate on RequireJS which is in my opinion very well documented and easier to understand. To get started, you need to remove from your project all your JavaScript references. You only need to have the RequireJS and to define its bootstrapper function. In the example below, you have your bootstrapper method called main.js that must be defined in the `data-main` attribute of a script tag that define the source to **require.js**.
+
+```typescript
+<script data-main="scripts/main.js" src="scripts/require.js"></script> 
+``` 
+
+The example above could have been written without the .js for the main attribute. This is because RequireJS knows that we are handling JavaScript file and will handle extension byitself if the reference does not start with an http protocol (http or https) or does not start with a slash (/). Advanced configurations are possible for path like defining specific path alias for folders or to define the base path. You can find more information directly on [RequireJS Api Web Page](http://requirejs.org/docs/api.html#jsfiles).
+
+Once paths are define you can now decide which JavaScript file to load for the page you want. The example below is from RequireJs. It loads JQuery, a JavaScript for canvas and something that use a predefined subpath called "app" that us a module named "sub". 
+
+```typescript
+requirejs(['jquery', 'canvas', 'app/sub'], function ($, canvas, sub) { 
+  // Every module are loaded here 
+}); 
+``` 
+
+
+Inside your JavaScript files, you can define dependencies. This is where all the modularity kick in. This example also come from RequireJS Api Web Page. It is the code that is set at the top of the shirt.js file which depend on the cart.js and inventory.js file. The define functions takes in its first parameter an array of module that the file depends. The second parameter is a function that takes the same amount of the dependent module. This also us to have a reference to the dependent module. You can see that like the Dependency Injection pattern.
+
+```typescript
+define(["./cart", "./inventory"], function(cart, inventory) { 
+  //return an object to define the "my/shirt" module. 
+  return { 
+    color: "blue", 
+    size: "large", 
+    addToCart: function() { 
+      inventory.decrement(this); 
+      cart.add(this); 
+    } 
+  } 
+} ); 
+``` 
+
+
+Let's dive in a short demo. Create a simple Html file with that call the bootstrap of Require.js. 
+
+```html  
+<!DOCTYPE html> 
+<html> 
+  <head> <script data-main="scripts/main" src="scripts/require.js"></script> 
+</head> 
+<body> </body> 
+</html> 
+``` 
+
+This imply that we set the require.js file, that you can download from the official website, to be installed into a scripts directory. In that directory we will set the main.js file and a folder that will contain another JavaScript file. This will let you demo JavaScript files in different folders.
+
+![](/images/blog/requireExample.png)
+
+The main JavaScript will require the use of the other JavaScript in the other folder. 
+
+```typescript
+console.log("Main: Before Require"); require(["helper/util"], function(util) { 
+  console.log("Main: After Util loaded"); 
+}); 
+console.log("Main: After Require"); 
+``` 
+
+And the util will be a plain JavaScript that just show in the console the output. 
+
+```typescript
+console.log("Util: Util file is loaded"); 
+``` 
+
+
+The end result is what we expect, the two logs of main.js are executed before the one in util.js. The last log is the one defined in the function inside the require which is trigged only when the util.js is finally loaded.
+
+![](/images/blog/requireOutput.png)
+
+So far we have seen the possibility of the modularity but not the asynchronous feature. To show this in action, let's create some more JavaScript file and modify the main.js to load more than only a single file.
+
+```typescript
+console.log("Main: Before Require"); 
+require(["helper/util","helper/util2","helper/util3"], function(util) { 
+  console.log("Main: After all Util loaded"); 
+}); 
+console.log("Main: After Require"); 
+``` 
+
+The output is about the same but now we have three JavaScript file loaded in parallel. 
+
+![](/images/blog/requireAsync-400x127.png)
+
+Let's do a comparison of these JavaScript files loaded without Require.js to see how it would have looks. 
+
+![](/images/blog/requireNoRequireOuputPerformance-400x119.png)
+
+It is not really different because these file are small but they are not loaded in the same time. However, we see that using Require.js has a performance penalty for small JavaScript file. The time is almost the double when using Require.js in this very small test. It worth to check it out with bigger library. It is also important to keep in mind that it is not only about performance but about modules.

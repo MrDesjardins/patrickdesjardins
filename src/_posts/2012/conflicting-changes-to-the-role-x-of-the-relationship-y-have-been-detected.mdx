@@ -1,0 +1,36 @@
+---
+title: "Conflicting changes to the role X of the relationship Y have been detected."
+date: "2012-08-15"
+categories: 
+  - "entity-framework"
+---
+
+Entity Framework can be something hard to debug. This error was known by me when people use reference to an object and also an integer for the ID within the same object and change both of them. When this happen, Entity Framework raise an error because it cannot know which one is the correct reference.
+
+![](/images/blog/ID-10078092.jpg)
+
+
+```csharp
+public class MyEntity { 
+  public virtual MySecondEntity MySecond{get;set;} 
+  public int MySecondEntityID{get;set;} 
+} 
+``` 
+
+The code above can trig the error :
+
+> Conflicting changes to the role X of the relationship Y have been detected.
+
+To solve this problem, you only need to change the scalar property (integer) and not touching the complex attribute (the property).
+
+But, let say that you have this error without having this kind of structure. Let say you only use reference to the object (like I do). 
+
+```csharp
+ public class MyEntity { 
+  public virtual MySecondEntity MySecond{get;set;} 
+} 
+```
+
+How can I have this error? Well, I had this problem when MyEntity was brand new (`ID = 0`) and when MySecond also a reference to MyEntity. This is because MySecondEntity has a reference to MyEntity which is `ID = 0`. Those 2 MyEntity will be treated as 2 differents entity by Entity Framework. The trick to solve this issue is to set to NULL the reference inside MySecondEntity and let Entity Framework set in the database the reference. This can be done because the new MyEntity does have a reference to the MySecondEntity property.
+
+To conclude, if you have a conflicting change and you are using code first with property reference, be sure that when you insert a new entity that not both reference to an entity with a new ID. Just one part of the navigation require to be defined.

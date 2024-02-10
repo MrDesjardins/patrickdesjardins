@@ -1,0 +1,138 @@
+---
+title: "How to Minimized React Children Function Component Render"
+date: "2022-11-16"
+categories:
+  - "react"
+  - "react-hooks"
+---
+
+# Introduction of React Children
+
+If you have a hierarchy of components, you may have one or more components that wrap HTML elements around something else. For example, you can have a `Layout` component that wraps a child component. The child can be anything from now to the future- it does not matter. 
+
+![](/images/blog/ReactChildrenFunctionRender.png)
+
+React uses the term [children](https://reactjs.org/docs/react-api.html#reactchildren) to inject another component inside your component. So, in the following example, we have a basic `Layout` component with a single property, `children`.
+
+```typescript
+function Layout(props: { children: ReactNode }) {
+  return (
+    <div>
+      <h1>Layout</h1>
+      <main>{props.children}</main>
+    </div>
+  );
+}
+```
+
+The component wraps any other component. For example, the following React `App` component render a `div` that has the `Layout` component, and between `<Layout>` and `</Layout>` is what is injected inside the component.
+
+```typescript {5}
+export default function App() {
+  return (
+    <div className="App">
+      <Layout>
+        <div>Will print inside the main tag of the Layout component</div>
+      </Layout>
+    </div>
+  );
+}
+```
+
+The result is an HTML output with a `div` defined under the `App` into the `Layout` component.
+
+```html
+<div className="App">
+  <div>
+    <h1>Layout</h1>
+    <main>
+      <div>Will print inside the main tag of the Layout component</div>
+    </main>
+  </div>
+</div>
+```
+
+React's context can leverage the capability of `children` to create a _provider_. I have discussed the pattern in a previous article that explains [two patterns with React context](/blog/2021/two-patterns-with-react-context). In short, it provides a clean context with a state encapsulated into a component that does not mingle with the implementation of the context.
+
+# React Children as a function A.K.A. Render Props
+
+Before diving into the main problem, a React's children can return a function instead of a `ReactNode`. The pattern is called [Render Props by React](https://reactjs.org/docs/render-props.html). Returning a function opens the door and still renders a child component that is the return of the function but, at the same time, passes information of function to be called by any component down the hierarchy. 
+
+![](/images/blog/ReactChildrenFunctionRender2.png)
+
+While you can use a hook to access functions or values down the hierarchy, having a function gives some flexibility by providing values or callback to any component under the component utilizing the render props pattern. For instance, if you are using a child component that cannot call your hook to access the value of your context, you can use the render props pattern to pass the information by the property. The hook restriction is a scenario if you do not develop both components.
+
+# The Problem
+
+The trap with React props is the number of renderings. Here is a small example that shows that if a parent React component passes a function down that the whole tree of componenst is rendered when the parent change.
+
+<CodeSandbox codeSandboxId="react-children-function-render-part1-q83h9r" />
+
+
+If you open the _Console_ of the CodeSandbox you see many renders.
+
+```
+// Initial render (mounting)
+App Render 
+UserContextProvider Render 
+Layout Render 
+SmallChild Render 
+SmallChildUsingContext Render 
+
+// Click the Layout button causes 4 renders
+UserContextProvider Render 
+Layout Render  // We do not need to re-render Layout
+SmallChild Render  // We do not need to render the SmallChild
+SmallChildUsingContext Render 
+```
+
+# The Profiling
+
+The screenshot below shows the React's dev tool that tells why the `UserContextProvider` rendered: because a _hook changed_. The `Layout` cause is of a _property changed_ cause. The `SmallChild` is because the _parent changed_ and the `SmallChildrenUsingContext` is because the _context changed_.
+
+This last one is reasonable since the context has changed, same for the `UserContextProvider` but the `Layout` should not have!
+
+![](/images/blog/react-children-function-react-dev-tool-flamegraph.png)
+
+# The Explanation
+
+The React documentation specifies:
+
+> ... because the shallow prop comparison will always return false for new props, and each render in this case will generate a new value for the render prop.
+
+The documentation provides a workaround which is to create the function outside the rendering. A quick modification by memoizing the children inside the `UserContextProvider` limites the rendering to two components: `UserContextProvider` and `SmallChildUsingContext`. The `UserContextProvider` is expected as its state changes, and the `SmallChildUsingContext` must re-render since it uses a value that changes from the context.
+
+<CodeSandbox codeSandboxId="react-children-function-render-part2-6qkx0o" />
+
+The gain is that `Layout` is not changing, which makes sense since it does not rely on any state of the context.
+
+# The Solution
+
+The solution needs to be clarified for many. The following lines:
+
+```typescript
+const fn = useMemo(() => props.children(inc), [props, inc]);
+return <UserContext.Provider value={value}>{fn}</UserContext.Provider>;
+```
+
+Cannot be:
+
+```typescript
+const fn = useCallback(() => props.children(inc), [props, inc]);
+return <UserContext.Provider value={value}>{fn()}</UserContext.Provider>;
+```
+
+The reason is that the function passed down is the same but not the _output_ of the function. Hence, only `useMemo` is memoizing the `children` property, in that example, the `Layout`. The final output is now: 
+
+```
+// Initial render (mounting)
+App Render 
+UserContextProvider Render 
+Layout Render 
+SmallChild Render 
+SmallChildUsingContext Render 
+
+// Click the Layout button causes 2 renders
+UserContextProvider Render 
+SmallChildUsingContext Render 
+```

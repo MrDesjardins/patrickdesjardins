@@ -1,0 +1,54 @@
+---
+title: "How to Import Files from a Sibling Folder when Using TypeScript and NodeJS"
+date: "2022-05-02"
+categories:
+  - "typescript"
+  - "nodejs"
+---
+
+Imagine you have two kinds of services inside your project: frontend and backend. You may want to share some interfaces or other TypeScript files. The idea is to have a sibling folder to the frontend and backend folders called `shared`.
+
+![](/images/blog/typescript-nodejs-sibling-folders.png)
+
+The idea is far from being exotic and workout naturally without doing anything if within the frontend folder you are using TypeScript and SolidJS. However, if the backend folder contains a NodeJS project, issues arise. The problem is that the TypeScript configuration inside the NodeJS will not allow accessing any file parent to the project's root (the backend folder).
+
+# Solution
+The solution is to rely on TypeScript `paths` ability to create an alias. The alias allows start importing from the alias instead of the root of the project (in that case, the backend folder).
+
+For example, in the tsconfig.json of the backend project, you have:
+
+```json {7-9}
+{
+  "compilerOptions": {
+    "module": "commonjs"
+    "lib": ["ESNext"],
+    "outDir": "build",
+    "strict": true,
+    "paths": {
+      "@shared/*": ["../shared/*"]
+    },
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
+```
+
+Then, inside the `backend` folder, it is possible to use the created alias, which is the left-end-side of the `paths`.
+
+```typescript
+import { LoginRequest, LoginResponse } from "@shared/models/login";
+```
+
+The result is appealing as well in terms of import statement. It does not have many `../../..`. However, I found a drawback with VsCode: it cannot automatically resolve the import statement. Nonetheless, the advantage is that the sibling folder can be used across folders without requiring copying between folders or to relies on symbolic links.
+
+# Docker
+If you build your mono repository with Docker using Docker compose of two Docker images (frontend and backend), you will also need to adjust the configuration to access the volumes.
+
+```yaml
+volumes:
+  - "./services/backend:/node/app:delegated"
+  - "./services/shared:/node/shared:delegated"
+```
+

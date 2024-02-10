@@ -1,0 +1,104 @@
+---
+title: "TypeScript: Testing Private Members"
+date: "2018-07-31"
+categories: 
+  - "jest"
+  - "test"
+  - "typescript"
+---
+
+I [wrote about three years ago on how to test private member](how-to-unit-test-private-method). One article was more specific to C# and the two others more abstract and on TypeScript, but still relevant today. In this article, I'll explain how I am testing private members without using any hack with Jest.
+
+The goal of having private and public members is to mark a clear separation about what is restricted as internal use of the object that defines the member from what can be consumed from outside the scope of the object. The idea makes sense. The usage of the keyword "private" does not necessary. Using "private" does not work because you will not be able to test internal logic, neither mock them in your testing -- it is blocked at the scope of the object.
+
+```typescript
+class MyClass1 { 
+  private variable1: string = "init"; 
+  public function2(p1: number, p2: number): void { 
+    // Code here... 
+    if (this.function1(p1)) { 
+      // More code here ... 
+    } 
+    // Code here... 
+  } 
+  private function1(p1: number): boolean { } 
+} 
+``` 
+
+
+There are some workarounds. One popular approach is to avoid testing these functions directly. The problem is that you have code that is not tested. An alternative is to test these private functions through public function. The problem is that you are using a function to proxy all the logic which make all test less "unit test" and fragile because these tests become dependant on another piece of code. If the logic of the private function remains the same, but the public function change, the code that is testing the private function will fail. It sways the simplicity into a nightmare. If the private function returns a boolean value, but the public function returns a void type, testing the return of the private function requires to understand the behavior of the public function that use it to extrapolate a behavior that corresponds to the return value. The proxy function, the public function, might be only a single one or many. When there is only a single function, the choice is limited and can push you in a corner without escape. When many functions, the selection of which one can also be problematic. In the end, the goal is to unit test, not to have many hurdles before even testing.
+
+Another option is to cast to any and access the function. The problem is that any refactoring on the name will make the function to be "undefined." It leads to issues of typing when the ground change that is the role of having a typed language in the first place.
+
+```typescript
+describe("MyClass1", () => { 
+  describe("test the private function #1", () => { 
+    it("public proxy function", () => { 
+      const x = new MyClass1(); 
+      expect(x.function2(1, 2)).toBe("????"); 
+      }); 
+    it("cast with any", () => { 
+      const x = new MyClass1() as any; 
+      expect(x.function1(1)).toBeTruthy(); 
+    }); 
+  }); 
+}); 
+``` 
+
+
+So, if we have all these solutions with weaknesses, what is the best solution? The best solution that I have been used for a while now is this one: do not use private. Instead, you should use interface. The idea is that the concrete object will never be used directly, hence can have its members public. The usage across the whole application is done with an interface that exposes the members that the consumers can interact. Here is the same code as above but with the pattern of using an interface instead of private.
+
+```typescript
+interface IMyClass1 { 
+  function2(p1: number, p2: number): void; 
+}
+
+class MyClass1 implements IMyClass1 { 
+  private variable1: string = "init"; 
+  public function2(p1: number, p2: number): void { 
+    // Code here... 
+    if (this.function1(p1)) { 
+      /// More code here ... 
+    } 
+    // Code here... 
+  } 
+  public function1(p1: number): boolean { } 
+}
+
+describe("MyClass1", () => { 
+  let x: MyClass1; 
+  beforeEach(() => { x = new MyClass1(); }); 
+  describe("function1 with an integer", () => { 
+    it("returns true", () => { 
+      expect(x.function1(1)).toBeTruthy(); 
+    }); 
+  }); 
+}); 
+``` 
+
+
+It works perfectly in term of testability. The unit test code has access to all members because everything is public. It is easy to invoke all members directly but also to mock these and still keep and the type from TypeScript. In the application, we use the interface everywhere. The only place where we use the concrete class is during the initialization. Every declaration uses the interface -- no exception.
+
+Furthermore, a class is easily mockable with framework because you can access every public function and assign them a mock/spy/stub that allows to control specific branches of the code as well as managing the scope of the test to be as much as a single unit. The key of an efficient test is to have every block of code tested as a unit and then moving from bottom to top with more and more integration tests.
+
+```typescript
+describe("MyClass1", () => { 
+  let x: MyClass1; 
+  beforeEach(() => { 
+    x = new MyClass1(); 
+    x.function1 = jest.fn(); 
+  }
+  ); 
+  describe("function2", () => { 
+    it("calls function1", () => { 
+      x.function2(1,2); 
+      expect(x.function1).toHaveBeenCalledTimes(1); 
+      }); 
+    }); 
+  }); 
+``` 
+
+
+Last but not the least, functions that are directly sitting in a module are very hard to unit test. It is not possible to mock or spy their dependencies. The lack of access sway my design to always encapsulate every function into a class.
+
+In summary, encapsulation does not require to rely solely on public, private and protected keywords. The usage of an interface is powerful by adding the protection to what can be accessed while allowing developers to have a sane and simple way to test correctly without using a detour to obtain the desired piece of code.

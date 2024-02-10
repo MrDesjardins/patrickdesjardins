@@ -1,0 +1,393 @@
+---
+title: "How to Create a Dispatch Function that is Strongly Typed with its Payload?"
+date: "2023-04-12"
+categories:
+  - "typescript"
+---
+
+# Situation
+
+You want to send an action from a list of specific possible actions. The action (called in this article trigger) must be accompanied of data that need to be strongly typed. Thus, each trigger must have a unique name and a payload with a type determined when the developer writes down the list of possible triggers.
+
+Then, you have a function that dispatches one of these triggers into your system. Depending on the trigger name, you want that function only to accept the correct payload. How would you accomplish the association? Furthermore, if you associate the action with a specific property of one of your business model objects, how can you specify the field without the user having a typo? For example, how can you be sure that if you determine a trigger "Action1" that accepts "number" the consumer of the developer who calls the dispatch of the trigger only dispatches "Action1" with a number in its payload?
+
+# First Try: Strongly Typed Object that Holds a Strongly Typed List of Trigger
+
+Before digging into the details, let's establish some testing types we can associate with different triggers.
+
+```ts
+interface FakeObj1 {
+  firstname: string;
+  lastname: string;
+}
+interface FakeObj2 {
+  age: number;
+}
+```
+
+Also, let's define two different kinds of triggers. That might be handy to dispatch an action depending on specific user interaction.
+```ts
+type TriggerKind = "onClick" | "onTouch";
+```
+
+The next part is to associate a list of triggers to an object that will be our source of acceptable dispatching action. 
+
+For example, we can have the trigger `onClick` to accept a specific property of `FakeObj1` or `FakeObj2` while `onTouch` only accepts a single property of the `FakeObj1`.
+
+```ts
+interface Triggers {
+  allowedTriggers: Trigger[];
+}
+
+const triggers: Triggers = {
+  allowedTriggers: [
+    {
+      triggerKind: "onClick",
+      triggerInfo: {
+        fieldName: "firstname",
+        value: "defaultValue1",
+      },
+    },
+    {
+      triggerKind: "onClick",
+      triggerInfo: {
+        fieldName: "lastname",
+        value: "defaultValue2",
+      },
+    },
+    {
+      triggerKind: "onTouch",
+      triggerInfo: {
+        fieldName: "age",
+        value: 3,
+      },
+    },
+  ],
+};
+```
+
+We will define `Trigger` soon, but the idea is to have a property `triggerKind` that accepts only `triggerKind` and `triggerInfo` that indicate which field of the object we want to from a specific object. What is missing is to type the `fieldName strongly`. Also, we notice that a `value` is specified. From that field, we could later determine using `typeof` the actual type of the field.
+
+```ts
+interface TriggerInfo<T, Y> {
+  fieldName: keyof T;
+  value: Y;
+}
+
+interface Trigger<T = any, Y = any> {
+  triggerKind: TriggerKind;
+  triggerInfo: TriggerInfo<T, Y>;
+}
+
+interface Triggers {
+  allowedTriggers: Trigger[];
+}
+```
+
+Then, we need to modify the initialization of the `triggers` variable.
+
+```ts
+const triggers: Triggers = {
+  allowedTriggers: [
+    {
+      triggerKind: "onClick",
+      triggerInfo: {
+        fieldName: "firstname",
+        value: "defaultValue1",
+      },
+    } satisfies Trigger<FakeObj1, string>,
+    {
+      triggerKind: "onClick",
+      triggerInfo: {
+        fieldName: "lastname",
+        value: "defaultValue2",
+      },
+    } satisfies Trigger<FakeObj1, string>,
+    {
+      triggerKind: "onTouch",
+      triggerInfo: {
+        fieldName: "age",
+        value: 3,
+      },
+    } satisfies Trigger<FakeObj2, number>,
+  ],
+};
+```
+
+A dispatch function is needed to test how we interact with these determined triggers. Because we do not care about implementing the function, we will only define the type using `declare`.
+
+```ts
+declare function dispatch<T, Y>(triggerKind: Trigger<T, Y>, value: Y): void;
+```
+
+We can try using:
+
+```ts
+dispatch<FakeObj1, string>(
+  {
+    triggerKind: "onClick",
+    triggerInfo: {
+      fieldName: "firstname",
+      value: "MyFirstNameHere",
+    },
+  },
+  222
+); // Does not compile, expect a string: That is what we want
+
+dispatch<FakeObj2, string>(
+  {
+    // Notice the string here
+    triggerKind: "onClick",
+    triggerInfo: {
+      fieldName: "age",
+      value: "MyFirstNameHere", // Should be number
+    },
+  },
+  "test"
+);
+```
+
+The problem is the `value` inside the property `triggerInfo` on the second example passes the compilation when it should fail. The reason is that the second type passed in the generic type is `string`. Changing to `number` fix the problem. However, we must revise the design because the user is forced to redefine the value while the trigger list already contains that information. We want the user of the dispatch to rely on the definition set prior to the dispatch.
+
+# Second try: Literal for Trigger Name
+
+To extract the exact trigger type, having a unique name is the best way. From a union of types, if we have a unique field that has a literal type, we can find out the remaining property of the object.
+
+```ts
+interface TriggerInfo<T = any, Y = any> {
+  triggerName: `${string & keyof T}_${TriggerKind}`;
+  value: Y;
+}
+interface Trigger<T = any, Y = any> {
+  triggerInfo: TriggerInfo<T, Y>;
+}
+const triggers: Triggers = {
+  allowedTriggers: [
+    {
+      triggerName: "firstname_onClick",
+      value: "defaultValue1",
+    } satisfies TriggerInfo<FakeObj1, string>,
+    {
+      triggerName: "lastname_onClick",
+      value: "defaultValue2",
+    } satisfies TriggerInfo<FakeObj1, string>,
+    {
+      triggerName: "age_onTouch",
+      value: 3,
+    } satisfies TriggerInfo<FakeObj2, number>,
+  ],
+};
+```
+
+The code is shorter since we no longer defined a `triggerKind`. Instead, it is combined in the `triggerName` that is the unique key. The additional benefit is the side-effect that we will be sure only to define a single trigger for each field. However, there is still a problem when calling the `dispatch` function.
+
+```ts
+declare function dispatch<T, Y>(triggerKind: Trigger<T, Y>, value: Y): void;
+
+dispatch<FakeObj1, string>(
+  {
+    triggerInfo: {
+      triggerName: "firstname_onClick",
+      value: "MyFirstNameHere",
+    },
+  },
+  "test"
+);
+
+dispatch<FakeObj2, string>(
+  {
+    triggerInfo: {
+      triggerName: "age_onTouch",
+      value: "MyFirstNameHere", // Should be number
+    },
+  },
+  "test"
+);
+```
+
+The problem is the same as before. The `dispatch` requires an explicit mention of the `value` type.
+
+# Third try: Removing the Type of Dispatch
+
+What we want is to only specify the trigger we want to "trig" in the dispatch. Thus, a definition that is like the following:
+
+```ts
+declare function dispatch<T extends TriggerInfo>(
+  triggerKind: TriggerAction<T>
+): void;
+```
+
+Instead of passing a `Trigger`, we are passing a new type called `TriggerAction`. The goal is to pass a value with the string literal that uniquely identifies the trigger.
+
+```ts
+interface TriggerAction<T extends TriggerInfo> {
+  triggerName: T["triggerName"];
+  value: any;
+}
+```
+
+Now the execution looks like this:
+
+```ts
+dispatch<TriggerInfo<FakeObj1>>({
+  triggerName: "firstname_onClick",
+  value: "test",
+});
+dispatch<TriggerInfo<FakeObj2>>({ triggerName: "age_onTouch", value: "test" });
+```
+
+It still does not work correctly with the `value` because we accept `any`. However, having a typo in the `triggername` works well, and the code does not compile.
+
+# Forth try: Any to Extract Type
+
+The next step is to extract the type instead of `any`.
+
+```ts
+interface TriggerAction<T extends UniqueKeyTrigger> {
+  triggerName: T;
+  value: Extract<AllTriggersUnionTypes, { triggerName: T }>["_valueType"];
+}
+```
+
+The `value` is of type `Extract`, a TypeScript's utility type that extracts the type that fulfills the requirement specified in the after the comma. Hence, we need a first type (called `AllTriggersUnionTypes` in this example) and a second type `{ triggerName: T }`.
+
+First, we need to define the type that will contain all the valid triggers. We already have a list of triggers but now we must extract their type:
+
+```ts
+type Unpacked<T> = T extends (infer U)[] ? U : T;
+type AllTriggersUnionTypes = Unpacked<typeof triggers>;
+```
+
+The `Unpacked` takes the type of the array. So, if you have `number[]` it would return the type `number`. The `typeof` determines the type of the `triggers` list. It is important to **not** explicitly type the list with `Trigger[]`. We want each element to be **not** a `Trigger` but to be **unique** using the field `triggerName` as a string literal type. However, we can still have some type safety by using `satisfies` to ensure the anonymous type has the expected shape.
+
+```ts
+const triggers = [
+  // Notice the lack of explicit type here; more later in this article about it
+  {
+    triggerName: "FakeObj1.firstname_onClick",
+    valueType: "string",
+    _valueType: "",
+  } satisfies TriggerInfo<FakeObj1, string>,
+  {
+    triggerName: "FakeObj1.lastname_onClick",
+    valueType: "string",
+    _valueType: "",
+  } satisfies TriggerInfo<FakeObj1, string>,
+  {
+    triggerName: "FakeObj2.age_onTouch",
+    valueType: "number",
+    _valueType: 0,
+  } satisfies TriggerInfo<FakeObj2, number>,
+];
+```
+
+Some modifications in the `TriggerInfo` as you see. The trigger name has a specific format, and we have `valueType` and `_valueType`. One is for runtime, and one if for TypeScript to know the type. For example, we can use at runtime the first trigger to determine that the type is a `"string"` and at design type to use `type _valueType` to know that the type is `string`.
+
+It is possible to define the format of the string literal, to ensure that we have a standard format.
+
+```ts
+interface TriggerInfo<T = any, Y = any> {
+  triggerName: `${string & T}.${string & keyof T}_${TriggerKind}`;
+  valueType: TriggerValueType;
+  _valueType: Y;
+}
+```
+
+At this point, we call dispatch with the trigger name and value:
+
+```ts
+declare function dispatch<T extends UniqueKeyTrigger>(
+  triggerKind: TriggerAction<T>
+): void;
+```
+
+The `triggerKind` is changed to extract the `_valueType`.
+
+```ts
+interface TriggerAction<T extends UniqueKeyTrigger> {
+  triggerName: T;
+  value: Extract<AllTriggersUnionTypes, { triggerName: T }>["_valueType"];
+}
+```
+
+Because `T` is shared between the `triggerName`, TypeScript can, with the `value` that uses `Extract` determine that the one is from the union of type that has the `triggerName` specified.
+
+```ts
+dispatch({ triggerName: "FakeObj1.firstname_onClick", value: "test" });
+dispatch({ triggerName: "FakeObj2.age_onTouch", value: 2 });
+dispatch({ triggerName: "FakeObj1.firstname_onClick", value: "false" });
+```
+
+The dispatch is strongly typed. An unknown name fails. Having the wrong kind for a specific field fails. Passing the incorrect value type fail.
+
+# Flaws
+
+The final example remains imperfect, with the major flaw that the `triggers` list is implicitly typed. At first, it might not sound like an issue since there is still some structural validation. However, if you need to _store_ this list in another object, how would you do?
+
+```ts
+interface MySystem {
+  triggers: ????;
+}
+```
+
+Well, you can always extract the type explicitly yourself using `typeof`:
+
+```ts
+interface MySystem {
+  systemTriggers: typeof triggers;
+}
+```
+
+Then, you can set the list of triggers:
+
+```ts
+const syst: MySystem = {
+  systemTriggers: triggers,
+};
+```
+
+However, you can hardly directly set the `triggers` without this `triggers` object since it would mean that the `MySystem` would not have a type to specify in its interface.
+
+The current design can scale to have many lists of triggers. That is important if your system is defining these triggers across your application.
+
+```ts
+const triggers1 = [
+  {
+    triggerName: "FakeObj1.firstname_onClick",
+    valueType: "string",
+    _valueType: "",
+  } satisfies TriggerInfo<FakeObj1, string>,
+  {
+    triggerName: "FakeObj1.lastname_onClick",
+    valueType: "string",
+    _valueType: "",
+  } satisfies TriggerInfo<FakeObj1, string>,
+];
+
+const triggers2 = [
+  {
+    triggerName: "FakeObj2.age_onTouch",
+    valueType: "number",
+    _valueType: 0,
+  } satisfies TriggerInfo<FakeObj2, number>,
+];
+type AllTriggersUnionTypes =
+  | Unpacked<typeof triggers1>
+  | Unpacked<typeof triggers2>;
+// Snip
+interface MySystem {
+  systemTriggers: AllTriggersUnionTypes[];
+}
+
+const syst: MySystem = {
+  systemTriggers: [...triggers1, ...triggers2],
+};
+```
+
+Finally, a flaw is that the dispatch function is strongly bounded to `UniqueKeyTrigger` linked directly to `AllTriggersUnionTypes`. It is not a problem for internal use, but if you are building a third-party library, let your user specify the type differently. For example, on the dispatch, select a set (or subset) of triggers to check the validity. Consequently, modifying to have the trigger type only on dispatch might limit future use of the trigger. So far, the dispatch does nothing, but in a real system, the trigger might have another part of the system to react and would need to get the payload. Ideally, the consumer of the trigger should have the message strongly typed. Fortunately, because of the uniqueness of the `triggerName` it would be possible if the consumer has access to the trigger list to extract the type, like the dispatch function. But still, it remains that the list of triggers takes a central role in keeping the type traveling the stack of code. 
+
+# Conclusion
+
+The current article shows the evolution of a simple task into a better-typed model. Dispatching an action name with a value that has a pre-determined type occurs in many scenarios for data model framework or if you have a dynamic system for your user to connect different typed systems.
+
+The simple solution proposed relies on a string literal for a type extraction of a list of potential actions that the developer can choose. Furthermore, the design allows the extraction of pieces of information from the `triggerName` for the dispatch consumer to use if needed. For example, the user could extract the first part to get the interface's name, the middle part to know the property of the interface, or the last part to see the action performed.

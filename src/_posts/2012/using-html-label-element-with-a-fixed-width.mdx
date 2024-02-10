@@ -1,0 +1,18 @@
+---
+title: "Using Html Label element with a fixed width"
+date: "2012-07-29"
+categories: 
+  - "css"
+---
+
+You may want to use Label juxtaposed with input element and want those label to be with a fixed width. This can be the case if have some column done with division and you want to have all label to be aligned on the left and having all their input control aligned left but at the same distance and not depending of the text's size. For that, you want a fixed width for all label. This can be done by setting the width but also setting the display to block instead of inline. Also, you will need to make it floats.
+
+
+```css
+ label { 
+  display: block; 
+  float: left; 
+  width: 200px; 
+} 
+```
+

@@ -1,0 +1,147 @@
+.bodystyle {
+  margin: 0;
+  font-family: "Oswald";
+  --text-color1: #666666;
+  --text-color2: #fff;
+  --text-color3: #000;
+
+  --header-color1: #fff;
+
+  --background1: #3a393f;
+  --background2: #f0f0f0;
+  --background3: #fff;
+
+  --link-background1: #eb4c44; /*Match the color of the image (red)*/
+
+  --size-column: 400px;
+}
+@media only screen and (max-width: 500px) {
+  .main {
+    width: 90%;
+    margin: auto;
+  }
+}
+.container {
+  margin: auto;
+  max-width: 800px;
+  font-family: sans-serif;
+}
+.heading {
+  color: #4b4b4b;
+  font-family: "Oswald";
+}
+.siteTitle {
+  font-size: 3rem;
+  color: gray;
+  font-weight: 700;
+  margin: 3rem 0;
+  font-family: "Oswald";
+}
+.navLinks {
+  display: flex;
+  list-style: none;
+  padding-left: 0;
+  font-family: "Oswald";
+}
+.navLinkItem {
+  padding-right: 2rem;
+}
+.navLinkText {
+  color: black;
+  margin-right: 10px;
+  padding: 2px 6px 2px 6px;
+  display: inline-block;
+}
+
+.blogPostContainer {
+}
+
+.blogPostContainer p,
+.blogPostContainer ol,
+.blogPostContainer ul {
+  color: #4b4b4b;
+  line-height: 22px;
+  font-size: 16px;
+  margin-bottom: 24px;
+  text-align: justify;
+}
+
+.blogPostContainer blockquote p {
+  font-style: italic;
+  color: #a7a7a7;
+}
+
+.blogPostContainer pre {
+  overflow: auto;
+}
+
+.blogPostContainer p.blogPostDate {
+  color: #858585;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-bottom: 12px;
+}
+
+.blogPostContainer h1 {
+  color: #4b4b4b;
+  font-size: 24px;
+  text-decoration: underline;
+}
+
+.blogPostContainer h2 {
+  color: #4b4b4b;
+  font-size: 20px;
+  font-family: "Oswald";
+}
+
+.blogPostContainer p code {
+  color: #ff778f;
+  background-color: #ececec;
+  padding: 2px 4px 2px 4px;
+  border-radius: 4px;
+}
+
+.blogPostContainer p:has(img) {
+  text-align: center;
+}
+
+.blogPostContainer ul {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  list-style-type: square;
+}
+
+.blogPostContainer p + ul {
+  margin-top: -20px;
+}
+
+.blogTopPicture {
+}
+
+.paginationBar {
+  margin-top: 36px;
+}
+
+.paginationTitle {
+  padding-top: 8px;
+  border-top: 1px solid #4b4b4b;
+  color: #4b4b4b;
+  font-family: "Oswald";
+  font-size: 24px;
+}
+
+.paginationBar a {
+  margin-left: 2px;
+  padding: 2px 6px 2px 6px;
+  font-size: 20px;
+  line-height: 30px;
+  display: inline-block;
+}
+.currentLink {
+  background-color: #ff778f;
+  border-radius: 4px;
+}
+.paginationLinks {
+  font-size: 24px;
+  margin-top: 8px;
+}

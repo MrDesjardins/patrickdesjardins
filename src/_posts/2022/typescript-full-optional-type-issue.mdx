@@ -1,0 +1,178 @@
+---
+title: "TypeScript Type with Full Optional Field Might Cause you Issue"
+date: "2022-03-30"
+categories:
+  - "typescript"
+---
+
+I recently received a message from one of my teammates asking to look at a piece of code that was compiled but wrong. After a moment, I realized that the interface (type) that was used was coming from a generated package from one of our gRPC. Because all the gRPC Protobuf type had their fields optional, the generated types were also optional.
+
+# Example of the Issue
+
+Here are two types that illustrate the situation.
+
+```typescript
+interface TypeA {
+    id?: number;
+    name?: string;
+}
+interface TypeB {
+    id?: number;
+    age?: number;
+}
+```
+
+The problem with `TypeA` and `TypeB` having all their fields optional is that a valid `TypeA` can be `{}`. And that a valid `TypeB` can be `{}`. By consequence, a function like the following accepts either type.
+
+```
+function forEach(a: TypeA): void {
+    console.log(a);
+}
+```
+
+I did not choose the name `forEach` by accident. The real `forEach` or `map` function suffers from the same behavior. If you expect a collection of `<T>` and that your `T` is a type of full optional field, then you can fall into the illusion that you are passing the right object when you are actually not. Before diving any further, you can [play](https://www.typescriptlang.org/play?#code/JYOwLgpgTgZghgYwgAgCoE8AOECCyDeAsAFDJnLAAmA-AFzIgCuAtgEbQDcJ5DczEdZAGcwUUAHMuxAL4kSoSLEQoM2AEIFu5KoKZtOWsnHED6e9lCmziJGIxAIwwAPYhkMZ1ACiiABYAKOHpVXABKegA3ZypNUnIEVyFnABsIADpk53FA0Ks5YgSQEWQgtCxcZABeAgpKegBGABpefnoAIlQIETbkaSlC4tZg8o1q-FqG5uMIBoAGXqlbTx8EALhcpe8-f1YN4g8t1f98aVygA) with the following code to see by yourself how the function `forEach` that is expecting `TypeA` accept a `TypeB` and even `{}`.
+
+```typescript
+interface TypeA {
+    id?: number;
+    name?: string;
+}
+
+interface TypeB {
+    id?: number;
+    age?: number;
+}
+
+function forEach(a: TypeA): void {
+    console.log(a);
+}
+
+const a: TypeA = { id: 1, name: "Test" };
+const b: TypeB = { id: 1, age: 10 };
+
+forEach(a);
+forEach(b);
+forEach({});
+```
+
+Let's explain why with some examples.
+
+## Example 1: Implicit Declaration
+
+Let's define a variable `a`.
+
+```typescript
+const a = { id: 1, name: "Test" }; // Coubt be TypeA
+
+``` 
+
+The variables `a` is not explicitly typed. It does not have `: TypeA` after the `a`. It is **not** officially a `TypeA` but a "on-the-fly" unamed type that share the same structure. Thus, is is totally acceptable to 
+
+```typescript
+const a: TypeA = { id: 1, name: "Test" }; 
+``` 
+
+Hence, the variable `a` compiles when used in the `forEach` function. It is important to understand that we are not coercing the type to be `TypeA`. That would happen if we were doing:
+
+```typescript
+const a = { id: 1, name: "Test" } as TypeA; // THIS IS BAD, DO NOT DO IT but it compiles
+```
+
+That should never be done since you can convert anything to `TypeA` even if it is not true.
+
+```typescript
+const x = {asd:123} as TypeA; // THIS IS WRONG but it compiles
+```
+
+## Example 2: Explicit Declaration
+
+The `forEach` does not accept `TypeB`. Defining a variable `b` with the explicit type `TypeB` and providing only the field that is common with `TypeA` is not enough to have `b` to compile when passing to `forEach`.
+
+```typescript
+const b: TypeB = { id: 1 };
+forEach(b); // Does not work because we typed explicitly to TypeB (and having the right TypeB structure, hence no coearcing with as)
+```
+
+That makes sense in terms of "naming" being different. Hence, by being explicit, you are protecting yourself.
+
+## Example 3: Implicit or Explicit with Discriminant Field
+
+While I try to be as explicit as possible, there are many situations where being implicit is valid. 
+
+There is an easy fix that is a default when using GraphQL. In GraphQL, when you generate your TypeScript type (interface), you receive all the translated properties from the GraphQL schema type to the TypeScript interface. However, it comes with a discriminant field. The discriminant field is a field in which the type is a unique string. It is critical to understand that the field type is **not** of string but a particular string. If we transform the previous example to have a discriminant field, the two types become:
+
+```typescript {1,7}
+interface TypeA {
+    __typename: "TypeA";
+    id?: number;
+    name?: string;
+}
+
+interface TypeB {
+    __typename: "TypeB";
+    id?: number;
+    age?: number;
+}
+```
+
+With the field in place, you can write:
+
+```typescript
+const d = { __typename: "TypeA" as const, id: 1 }; // Match TypeA without specifying the type
+forEach(d); // Works because __typename is defined
+```
+The variable `d` is not officially of type `TypeA` but it does respect the structure of `TypeA` and hence can be used with the `forEach`.
+
+```typescript {1,7}
+interface TypeA {
+    __typename?: "TypeA";
+    id?: number;
+    name?: string;
+}
+
+interface TypeB {
+    __typename?: "TypeB";
+    id?: number;
+    age?: number;
+}
+```
+
+Differently but with the same result, if you have the discriminant optional, it remains enough to block a type with a discriminant of a type that is not `TypeA`.
+
+```typescript
+const e = { __typename: "TypeB" as const, id: 1 }; 
+forEach(e);
+```
+
+The reason is that the `forEach` expect `TypeA` or should we way a structure that respects:
+
+```typescript
+__typename?: "TypeA";
+id?: number;
+name?: string;
+```
+
+We can see that because `__typename` of `e` is set to `TypeB` that it does not pass the structural comparison. The accepted values are for `__typename` to be `TypeA` or nothing at all.
+
+Hence this compile:
+
+```typescript
+const e = { __typename: undefined, id: 1 }; 
+const f = { __typename: "TypeA" as const, id: 1 }; 
+const g = { id: 1, name: undefined }; 
+forEach(e);
+forEach(f);
+forEach(g);
+```
+
+However, this one does not:
+
+```typescript
+const h = { __typename: "TypeA" , id: 1 }; 
+forEach(g);
+```
+
+A keen observer understands that the type `h` is still not of `TypeA` but results in an unnamed type of `{__typename: string; id: number}` which is not the same as `{__typename: "TypeA"; id: number}`. We are using `as const` previously to have TypeScript narrowing down the type to is strictness definition.
+
+# Conclusion
+Interfaces and types are structural in TypeScript, and the name does not matter. However, it is essential to understand the concept, and it is potent as it does not require a lot of work around building an object with a name in mind. Relying on a discriminant field is one of my favorite patterns. It does not require creating a function to create a [user-defined guard](https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates) removing to work with casting and generating a lot of code as the amount of interface grow. Also, it works well even if all the fields are optional, which might happen as we saw in the scenario that a situation force you to have all the fields optional (e.g., Protobuf outside your control).

@@ -1,0 +1,26 @@
+---
+title: "No parameterless constructor defined for this object"
+date: "2013-09-09"
+categories: 
+  - "asp-mvc"
+---
+
+Few times ago, I open up a solution that was perfectly working previously and realized that this one compile but when I launch the browser raise me an exception :
+
+> No parameterless constructor defined for this object
+
+
+![](/images/blog/parameterlessConstructor-400x130.png)
+
+Usually, this exception occur when you are using Asp.Net MVC with Unity and this one cannot resolve the parameters of your constructor. This mean that you request a controller method but the parameters aren't provided. To solve this problem, usually people that develop with Asp.Net MVC and Unity use the [Unity.MVC3](http://unitymvc3.codeplex.com/) code that let you set the Unity dependency resolver to the framework that will resolve controller's parameters when Asp.Net do a http request. The second option is to have constructor without parameter, which is often not possible.
+
+But, in my scenario, I was using [Unity.MVC3](http://unitymvc3.codeplex.com/) and it was working before. The problem reside in the Web.Config file. Visual Studio has inserted an attribute that cause all the chaos of this exception.
+
+The web.config has an attribute called "xmlns" with the value "http://schemas.microsoft.com/.NetConfiguration/v2.0" for the element configuration.
+
+
+```xml
+ <configuration xmlns="http://schemas.microsoft.com/.NetConfiguration/v2.0"> <configSections> ... 
+```
+
+By removing the xmlns attribute (and its value) everything worked as before. No more exception "No parameterless constructor defined for this object", no more problem. So, if you have a parameterless constructor exception when using Asp.Net MVC and Unity, check out your configuration file to be sure that this attribute is not set.

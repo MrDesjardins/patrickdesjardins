@@ -1,0 +1,46 @@
+---
+title: "Javascript's variables grouping with object acting like namespace"
+date: "2011-11-17"
+categories: 
+  - "javascript"
+---
+
+In Javascript, if you need to have multiple global variable in a script you could finish with something like a chunk of `var`.
+
+```typescript
+var v1; 
+var v2; 
+var v3; 
+var v4; 
+var v5; 
+``` 
+
+
+This can cause problem because, maybe someone will need to define a variable with the same name (locally or globally). To reduce this problematic, you can use Javascript object notation (JSON). By using JSON syntax you can create a "virtual" namespace with an object. I say "virtual namespace" because it's not a namespace. In fact, it's an object... but it's created just to group variable instead if letting them wild at the top of a Javascript file. This is pretty important because if a web page include many Javascript file this could end having 2 files using the same variable name which would override the value of the other.
+
+```typescript
+var mynamespace = { 
+  "v1":"value1" ,
+  "v2":"value2" ,
+  "v3":"value3" ,
+  "v4":"value4" ,
+  "v5":"value5" ,
+  "v6":"value6" 
+}; 
+``` 
+
+
+This way, instead of using in your code v1 directly you use the object v1.
+
+```typescript
+mynamespace.v1 = "Patrick";
+
+//...
+
+if(mynamespace.v1 == "Unknown") { 
+  //... 
+} 
+``` 
+
+
+This post cover only the basic. You can have multiple level of deepest as JSON let you have inner array or "object". I'll cover this later.

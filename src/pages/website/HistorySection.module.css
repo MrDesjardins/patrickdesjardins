@@ -1,0 +1,47 @@
+.historyContainerBackground {
+  background: url(/images/backgrounds/patrickdesjardinsatmicrosoft.jpg)
+    no-repeat top center fixed;
+  background-size: cover;
+  width: 100%;
+  overflow: hidden;
+  color: var(--header-color1);
+  padding: 0;
+}
+
+.historyOverlay {
+  width: 100%;
+  overflow: hidden;
+  min-height: 600px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  background-color: rgba(0, 0, 0, 0.55);
+  width: 100%;
+  overflow: hidden;
+  min-height: 600px;
+}
+
+.historyOverlayColumn1,
+.historyOverlayColumn2 {
+  margin: 150px 30px 150px 30px;
+
+  background-color: rgba(226, 226, 226, 0.28);
+  padding: 40px;
+}
+
+@media only screen and (max-width: 500px) {
+  .historyOverlay {
+    display: block;
+  }
+}
+
+.historyOverlayColumn1 header {
+  font-size: 48px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.historyOverlayColumn1 p,
+.historyOverlayColumn2 p {
+  color: var(--header-color1);
+}

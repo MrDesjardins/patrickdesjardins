@@ -1,0 +1,25 @@
+---
+title: "Asp.Net Identity 2.2 Localization of error messages"
+date: "2015-09-14"
+categories: 
+  - "asp-mvc"
+  - "identity"
+---
+
+It's interesting to see that Microsoft is trying to better in term of localization but still fail to provide a perfect solution. Asp.Net Identity is by default English oriented but at least not hardcoded. It uses inside the Identity library a resource file. 
+
+![](/images/blog/BadExample-400x135.png)
+
+Here is what you can see if your decompile Asp.Net Identity assembly. You will see a resource file with defined strings.
+
+![](/images/blog/IdentityResourceFile.png)
+
+The problem is that you cannot just define your own resource file and setup the string you desire. You must use one of Microsoft's package for your language. Here is the one for French. 
+
+``` 
+ Install-Package Microsoft.AspNet.Identity.Core.fr 
+``` 
+
+![](/images/blog/AspNetIdentityCore-400x304.png)
+
+The problem with that solution is that you must be lucky to have your language available and you must like the string they chose for you. Some other options available is to create your own `UserValidator` and `PasswordValidator` and by inheriting the Identity ones can still have the benefit of `Identity`. Overall, there is some workaround but still is time consuming for nothing. Better solution like just having to drop a resource file of your own would have been way easier and easily custom for solution. Nevertheless, it starts to get in the right direction after more than a decade trying to create a better Identity framework.

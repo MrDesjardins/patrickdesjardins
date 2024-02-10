@@ -1,0 +1,85 @@
+---
+title: "GraphQL Context"
+date: "2019-01-28"
+categories: 
+  - "graphql"
+  - "typescript"
+---
+
+GraphQL has a mechanism to pass information to every resolver. The resolvers are at the core of resolving core logic about how to fetch the data. 
+It is a centerpiece in term of security by allowing to know which user is authenticated and how to filter the information of this particular one. The resolver's role is the brain to know if information must be stitched in a particular custom way, to reuse information previously requested and to decide which service and endpoints to consume to bring the data in the graph.
+
+The GraphQL's context allows specifying data when a request is performed and to pass the computed data to every resolver seamlessly. 
+The configuration occurs when specifying the `ApolloServerConfig`, next to where [we configured the GraphQL playground](apollo-server-playground). 
+This time, we need to define a function under the property `context`. The function that we provide takes a single parameter that is `context`.
+
+```typescript
+type Context<T = any> = T;
+``` 
+The context schema is defined by you. As you can see by the definition of the type, from Apollo Core, it is of type T. The context comes with a req property that Express injects. Because Express works with middleware, that can modify the request before reaching Apollo, we can leverage the architecture by having a custom middleware injected the Apache's header with the user's information in the request and then read the context object from the context to have the resolvers consume it.
+
+![](/images/blog/GraphQLServers-ExpressMiddlewareAuth.png)
+
+Express calls the auth middleware and Apollo uses the injected data that will be passed to resolvers
+
+## Express Middleware
+
+I will skip most of the authentication middleware because it is very unique to Netflix's security model. However, here is the structure that should be what you use.
+
+```typescript
+export const authorizeUserMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    const expressRequest = (req as unknown) as IUserRequest;
+    expressRequest.userId = req.headers.injected_header_here_id;
+    return next();
+};
+``` 
+
+The code can return an error in the case that you have specific logic that blocks a user to query the GraphQL. GraphQL has many places to block access to a user. The middleware level, at Express server level, is the second higher level you can achieve. The first level is with Apache blocking the request to even reach the NodeJS server that host Express. Later, we will see how to block at the resolvers level which allows blocking a user for a particular entity or even a particular field.
+
+## Apollo Context
+
+The Apollo's context is defined to be of any type. The most pragmatic type is a function. When a function is defined, the function is invoked on every request that Apollo receives. For my particular case, at the moment, the only role of the context function is to pass the information defined in the request object by the Express middleware. I am changing the type with a custom type which will be used by the resolvers.
+
+```typescript
+context: (context: Context) => {
+    const requestTyped = context.req as IUserRequest;
+    const newContext: GraphQLCustomContext = {
+        request: requestTyped
+    };
+    return newContext;
+},
+```
+
+## Consuming the Context by Resolvers
+
+Every resolver is a function with three parameters. The parameter that concern the context is the third one. We previously used a hard-coded list of two books. We can modify the resolver to return the list but to change the first entry to have the author name with the data from the injected header. It is not a real use case, but shows that you can use the information from the context in the resolver.
+
+```typescript
+export const bookResolversMap = {
+    Query: {
+        books: (obj: null, args: {}, context: GraphQLCustomContext) => {
+            books[0].author = context.request.headers.injected_header_here_id;
+            return books;
+        }
+    }
+};
+``` 
+
+## Summary
+
+GraphQL context is crucial in a GraphQL architecture to bring external information in the graph for wise data resolving. In this article, we saw how to particularly hook an Express middleware that mutate the initial request to open the door to Apollo to build a context with the injected information. In the next article, we will step-out of authentication and improve the Apollo to query with argument opening the door to a more accurate response instead of returning a whole list of entities.
+
+## My Other GraphQL Articles
+
+- [Getting Started with GraphQL for Netflix Open Connect](getting-started-with-graphql-for-netflix-open-connect)
+- [Install Apollo Server to host a GraphQL service](install-apollo-server-to-host-a-graphql-service)
+- [Apollo Server and Secured Playground](apollo-server-and-secured-playground)
+- [GraphQL Context](graphql-context)
+- [GraphQL Query with Argument](graphql-query-with-argument)
+- [Apollo GraphQL Resolvers and Data Source separation](apollo-graphql-resolvers-and-data-source-separation)
+- [How to setup a TypeScript, NodeJS, Express Apollo Server to easy debugging with VsCode](how-to-setup-a-typescript-nodejs-express-apollo-server-to-easy-debugging-with-vscode)
+- [GraphQL Resolvers with Apollo](graphql-resolvers-with-apollo)
+- [Configuring Apollo Playground and API on two different URL](configuring-apollo-playground-and-api-on-two-different-url)
+- [How to automatically generate TypeScript for consumers of your GraphQL](how-to-automatically-generate-typescript-for-consumer-of-your-graphql)
+- [GraphQL and HTTP Telemetry](graphql-extension-to-collect-http-and-resolvers-telemetry)  
+- [GraphQL and TypeScript/React](how-to-consume-graphql-in-typescript-and-react)

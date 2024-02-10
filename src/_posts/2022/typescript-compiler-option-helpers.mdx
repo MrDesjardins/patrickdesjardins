@@ -1,0 +1,27 @@
+---
+title: "TypeScript ImportHelpers Compiler Options"
+date: "2022-02-15"
+categories:
+  - "typescript"
+---
+
+TypeScript transpiles your code into JavaScript. In the process, some common functions must be injected into the code if the target does not support the feature. For example, if you are using the spread operator and target an old version of ECMAScript that does not support it, TypeScript must shim a function that behaves at runtime like the spread operator.
+
+Each file that uses a not-supported feature will have an injection. It means that a big project might have hundreds or thousands of duplicated functions. TypeScript's compiler options have the `importHelpers` option that can be enabled to rely on a single instance of a shim for the whole transpilation.
+
+Here is an example of a tsconfig.json:
+
+```typescript
+{
+    "compilerOptions": {
+        "importHelpers": true
+    }
+}
+```
+
+One question that might scratch your mind is, why is it not the default? Well, the truth is that there is an additional step. To rely on the `importHelpers` you must also have a dependency on the `tslib` package that contains all the functions that will be used by the TypeScript compiler. It is a matter of using the NPM (Node Package Manager) to download it.
+
+```
+npm install tslib --save
+```
+

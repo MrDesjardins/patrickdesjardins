@@ -1,0 +1,46 @@
+---
+title: "How to Transfer Files Between Computers Using HDMI (Part 2: Prototype Code Video Creation)"
+date: "2023-05-16"
+categories:
+  - "rust"
+  - "hdmi"
+  - "video"
+  - "encoding"
+  - "steganography"
+---
+The second part of transferring a file via video using HDMI will focus on the file-to-video and video-to-file code portions. The following blog article will explain flaws when communicating via HDMI. 
+
+Even with the appearance of flaws, the prototype in this article works: a video file will contain the data of a file. Not only is the content inside a video file, but it is also inside a video that can run on a machine, and a human can see random colors on the screen. The same Rust script will read the video file and transfer it back into a file, and finally, the file's content is readable and the same as the original.
+
+# Code
+The Rust project has a CLI (terminal) application and a library. A user can use `cargo` to use the tool in the secured system. The CLI uses the library portion of the project. The library has two paths: injecting a file into a video and extracting the file from a video. Thus, we have the entire loop.
+
+The code takes a file with an input, asks for a few parameters, and a file to export the video. Here is an example of injecting a text file.
+
+```sh
+hdmifiletransporter -m inject -i testAssets/text1.txt -o outputs/out1.avi --fps 30 --height 1080 --width 1920 --size 1
+```
+In this example, the file `text1.txt` is injected into a file `out1.avi` that Rust creates using `OpenCV`. Other optional parameters, like the resolution and frame per second, can be added. However, these parameters should match the data found by the capture card. In the following article, we will use `ffmpeg` to extract the supported resolution and frame per second.
+
+The following command reads the video and produces the original file.
+
+```sh
+hdmifiletransporter  -m extract -i outputs/out1.avi -o outputs/text1.txt --fps 30 --height 1080 --width 1920 --size 1
+```
+The parameters are similar and should match the original value.
+
+# Injection Logic
+The injection of the file into a video consists of getting the data into frames. Each frame is a table of the height by the width. The Rust program reads each byte from the file and creates a piece of a pixel with it. Each pixel has three portions: R, G, and B, that is, 1 byte each. It fits characters well (that are not Unicode). The `size` parameter tells how wide and tall each pixel is. Currently, the idea is that we use `1`, and every three characters of the file is a single pixel. However, in the future, we could make it bigger to mitigate possible alterations during the communication with HDMI (to be determined). 
+
+Because the injected file's content may not fit a full color, we have an end-of-file character we can inject at any time. Also, the end-of-file character fills the rest of the frame to ensure a full frame. The end-of-file is `4u8`. Depending on the size of the injected file, a few or many frames are created and put together. The OpenCV library sticks all the frames together and generates a video with our requirements like size, frame per second (fps), etc. The last step is introducing a frame full of red pixels as the first frame. The goal is to have a clear signal that the video is starting. As described in the first article, a computer streams the video in a loop. We can start reading the stream at any time, and we need to generate a video with more than less to ensure the entire file. With a red frame injected, we can figure out where the start and end are.
+
+# Extraction Logic
+The steps are mostly the reverse. First, we read the video using OpenCV and looped all frames. Next, we need to find the first frame, which is red. Once we have the frame, we mark it as a "relevant" frame and keep appending frames until we reach another frame. If (and when) a second frame is reached, we know the video restarted and thus did not need anything from that point.
+
+With all the relevant frames in order, we need to loop each pixel using OpenCV methods to extract video data. Each pixel color is then read and translated into a character. Finally, each character is added to a list. The list of characters forms the same file as the original one.
+
+# The Flaws
+There is more than one flaw: the video is generated using a loseless format and read back locally. Lossless data is not possible using the capture card. The other flaws will be describe in the next articles.
+
+# What Next?
+We need to start using the HDMI, which will expose many flaws and make the solution different and less performant regarding data transfer.

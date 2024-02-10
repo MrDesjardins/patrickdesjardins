@@ -1,0 +1,17 @@
+---
+title: "Telemetry with Application Insights for Website and Webjobs"
+date: "2016-02-23"
+categories: 
+  - "asp-net"
+  - "azure"
+---
+
+If you have a website and also some WebJobs you may want have both of them use the same library for your telemetry. Once idea is to create a shared project that both project refers. This shared project can have a class that abstract your abstraction. The real implementation can use Microsoft Azure Application Insights to send telemetries to Azure. As you may have read in the official documentation is that your website needs to have the **Microsoft.ApplicationInsights.Web** package, and **Microsoft.ApplicationInsights.WindowsServer**. What you need to know is that the shared project also need to have the **Web** and **WindowsServer** package but the WebJobs also need to have the WindowsServer package. If you don't, your will get some exception on **Telemetry.Active...**
+
+Finally, you should always give some time for the telemetry to be sent after it is flushed. Here is a snippet of the method that send the constructed telemetry from my Telemetry class in the shared project. 
+
+```csharp
+ private void Send(string eventName, Dictionary<string, string> properties, Dictionary<string, double> metrics) { this.telemetry.TrackEvent(eventName , properties , metrics ); this.telemetry.Flush(); System.Threading.Thread.Sleep(5000); } 
+``` 
+
+The 5 seconds sleep is more than enough. You can have less. The important is just giving enough time to the telemetry to be sent to Azure.

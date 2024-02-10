@@ -1,0 +1,14 @@
+=== Draft Started
+✍️ 2023-02-07: 
+
+=== Completed waiting
+⏲️ 2024-02-07: Display Git Pull Request Status on the Steelseries APEX 7 TKL keyboard OLED
+⏲️ 2024-01-30: Merge and Rebase with Auto Stash to Accelerate Pulling
+
+
+=== Published
+✅ 2023-01-26: Reasons for not using Property Desctruction in React when using TypeScript
+
+=== Draft Started but frozen
+🥶 2122-09-14: How to Access your Web Application on Kubernetes Azure with Ingress
+🥶 2122-10-01: How to Add HTTPS to your Kubernetes Ingress

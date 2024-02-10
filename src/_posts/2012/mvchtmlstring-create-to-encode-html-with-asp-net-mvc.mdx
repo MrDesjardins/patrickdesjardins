@@ -1,0 +1,77 @@
+---
+title: "MvcHtmlString.Create to encode Html with Asp.net MVC"
+date: "2012-06-04"
+categories: 
+  - "asp-mvc"
+---
+
+You may want to use a string that contain Html and display this one not with the Html tag but to execute it. Of course, you would like to do it encoded with Html (to have secure rendering).
+
+This can be done by using `MvcHtmlString.Create`.
+
+This method takes a string as parameter and return a MvcHtmlString.
+
+So, instead of using directly `@Model.YourStringProperty, you should use MvcHtmlString.Create(Model.YourStringProperty)`
+
+This method will check if the input (parameter) inherit of IHtmlString, if it does, it won't do anything. The reason is that class that inherit from `IHtmlString`. If not, it will encode the html output.
+
+From here, you can create your own Html extension to extend
+
+
+```csharp
+ public static class HtmlHelpers { 
+   public static MvcHtmlString HtmlEncode(this string data) { 
+     return MvcHtmlString.Create(data); 
+    } 
+  } 
+```
+
+This extension will let you encode any string so you could use it with you properties.
+
+
+```csharp
+ This is my property : @Model.Name.HtmlEncode() 
+```
+
+On the other side, if you do not want to have the Html encoded, you could use `Html.Raw()` method which return a IHtmlString which won't be encoded by MVC framework.
+
+If you go inside the source code of Asp.Net we will find that `Html.Raw()` use the string and generate a simple IHtmlString from the concrete class HtmlString.
+
+
+```csharp
+public IHtmlString Raw(string value) { 
+  return new HtmlString(value); 
+}
+
+public IHtmlString Raw(object value) {
+   return new HtmlString(value == null ? null : value.ToString()); 
+} 
+```
+
+This is different from `MvcHtmlString.Create()`
+
+
+```csharp
+public sealed class MvcHtmlString : HtmlString { 
+  public static readonly MvcHtmlString Empty = Create(String.Empty);
+
+  private readonly string_value;
+
+  public MvcHtmlString(string value) : base(value ?? String.Empty) {_value = value ?? String.Empty; }
+
+  public static MvcHtmlString Create(string value) { return new MvcHtmlString(value); }
+
+  public static bool IsNullOrEmpty(MvcHtmlString value) { return (value == null || value._value.Length == 0); } 
+} 
+```
+
+Are you can see, this one return a MvcHtmlString. At the end, both return something similar and encoded html.
+
+In the scenario you want to display the html's string you simply need to use the variable: 
+
+```csharp
+@{ var x= "<b>Test</b>"; }
+@x 
+```
+
+To conclude, if you need to display html rendered to the browser, you can use one of the two methods and it will work. The reason is that MvcHtmlString inherit from HtmlString which inherit from IHtmlString. If you need to display the content of the string which contain Html (which will print the Html's string and not the rendered content) simply use directly the variable like : `@Model.MyStringWithHtml`

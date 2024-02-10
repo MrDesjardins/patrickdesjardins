@@ -1,0 +1,121 @@
+---
+title: "Asp.Net MVC EditorTemplate and DisplayTemplate with HtmlAttributes On Custom Template"
+date: "2014-09-02"
+categories: 
+  - "asp-mvc"
+---
+
+The EditorTemplate and the DisplayTemplate can be used with the HtmlHelper EditorFor and DisplayFor. It is also possible to pass in a second parameter custom html attributes. This is very interesting if you need to add style class.
+
+
+```csharp
+ @Html.EditorFor(d => d.PriceLimit , new {htmlAttributes = new { @class = "col-md-8 order-price-money-limit" }}) 
+```
+
+The example above call the EditorFor on the PriceLimit property. It has in its second parameter an anonymous object that set htmlAttibutes. This one is also an anonymous object that set two classes. One class is for BootStrap and the second is a custom one.
+
+If you have defined that the PriceLimit must use a custom home made template, than you may want to gather this information and use it on the html element you desire.
+
+For example, this is the custom editor template:
+
+
+```csharp
+ <div ?????????> @Html.EditorFor(viewModel => viewModel.Current.Value) @Html.HiddenFor(viewModel => viewModel.Current.Currency.Id) </div> 
+```
+
+As you can see, the first line would like to benefit of the html attributes passed by the EditorFor.
+
+The task would have been easy if we only wanted to pass the html attribute to a TextBoxFor, or any existing defined Html helper because you could simply set the viewdata back to the second parameter. However, if you are in the scenario that you want to use the html attributes for any html element, than some code must be done. Also, we need to think about the possibility that the custom editor template (or display template) may want to have html attribute by default and just be enhanced by the html attributes passed by the Html Helper.
+
+
+```csharp
+ <div class="constant-class-always-there ????" ?????????> @Html.EditorFor(viewModel => viewModel.Current.Value) @Html.HiddenFor(viewModel => viewModel.Current.Currency.Id) </div> 
+```
+
+The first task is to handle the case that we may want to have default attribute. The code that is following this paragraph is set at the top of the Editor Template. In this example, we want to be sure that the class "input-group" is set. Whatever what is passed on the Html Helper EditorFor, we want to have this class set.
+
+
+```csharp
+ @{ object htmlAttributes = null; if (Html.ViewData.ContainsKey("htmlAttributes")) { htmlAttributes = Html.Custom().RenderHtmlAttributes(ViewData["htmlAttributes"], new { @class = "input-group" }); } else { htmlAttributes = Html.Custom().RenderHtmlAttributes(new{@class="input-group"}); } } 
+```
+
+The IF check if the EditorFor html helper contains any html attributes, if it is the case, than it add it to the EditorFor html attributes, otherwise, it just set it without taking care of the view data passed by the html helper. Something may have catch your attention : the RenderHtmlAttributes method. This is a custom html helper that takes one or multiple object and create a MvcHtmlString to be used to your Razor code. The end result would look like this:
+
+```csharp
+@{ object htmlAttributes = null; if (Html.ViewData.ContainsKey("htmlAttributes")) { htmlAttributes = Html.Custom().RenderHtmlAttributes(ViewData["htmlAttributes"], new { @class = "input-group" }); } else { htmlAttributes = Html.Custom().RenderHtmlAttributes(new{@class="input-group"}); } } <div @htmlAttributes> @Html.EditorFor(viewModel => viewModel.Current.Value) @Html.HiddenFor(viewModel => viewModel.Current.Currency.Id) </div> 
+```
+
+The RenderHtmlAttributes loops all html attributes object and extend each of them to create a final RouteValueDictionary. Finally, it creates a string.
+
+```csharp
+ /// <summary> 
+ /// Render one or many html attribute together 
+ /// </summary> 
+ /// <param name="htmlAttributes"></param> 
+ /// <returns></returns> 
+ public MvcHtmlString RenderHtmlAttributes(params object[] htmlAttributes) { 
+  var finalRouteValue = new RouteValueDictionary(); 
+  foreach (var htmlAttribute in htmlAttributes) { 
+    var routeValue = new RouteValueDictionary(htmlAttribute); 
+    finalRouteValue = finalRouteValue.Extend(routeValue); 
+  } 
+  var htmlAttributesString = String.Join(" ", finalRouteValue.Keys.Select(key => String.Format("{0}=\\"{1}\\"", key, this.htmlHelper.Encode(finalRouteValue[key])))); 
+  return MvcHtmlString.Create(htmlAttributesString); 
+} 
+```
+
+The heavy lift about handling if one html attribute object contains a key that has already been defined or not to handle the merge is done in the **Extend** method. For example, if two html attributes define the key "class" than we want to merge both value to have in the final result a single "class" key with both class value defined.
+
+```csharp
+ /// <summary> 
+ /// The extend method takes values from the source and add them into the destination. You do not need to use the return value 
+ /// because the destination object will already have the element of the source. 
+ /// </summary> 
+ /// <param name="destination"></param> 
+ /// <param name="source"></param> 
+ /// <returns></returns> 
+ public static RouteValueDictionary Extend(this RouteValueDictionary destination, IEnumerable<KeyValuePair<string, object>> source) { 
+  foreach (var srcElement in source.ToList()) { 
+    if (destination.ContainsKey(srcElement.Key)) { 
+      destination[srcElement.Key] += " " + srcElement.Value; 
+    } else { 
+      destination[srcElement.Key] = srcElement.Value; 
+    } 
+  } 
+  return destination; 
+} 
+```
+Here is two unit tests. The first one has two different keys. The end result is that both keys are not merged together. The second test has two route value with the same key. Each of them with different values. The result is that both value are in the first object.
+
+```csharp
+ [TestClass]
+ public class RouteExtensionsTest { 
+  [TestMethod] 
+  public void GivenTwoRouteValueDictionary_WhenBothDoesNotContainSameKey_ThenValueAreNotMerged() { 
+    // Arrange 
+    var valueObject1 = new RouteValueDictionary { { "key1", "value1" } }; 
+    var valueObject2 = new RouteValueDictionary { { "key2", "value2" } };
+
+    // Act 
+    valueObject1.Extend(valueObject2);
+
+    // Assert 
+    Assert.AreEqual("value1", valueObject1["key1"].ToString()); 
+  }
+
+  [TestMethod] 
+  public void GivenTwoRouteValueDictionary_WhenBothContainSameKey_ThenValueAreMerged() { 
+    // Arrange 
+    var valueObject1 = new RouteValueDictionary {{"key1", "value1"}}; 
+    var valueObject2 = new RouteValueDictionary {{"key1", "value2"}};
+
+    // Act 
+    valueObject1.Extend(valueObject2);
+
+    // Assert 
+    Assert.AreEqual("value1 value2", valueObject1["key1"].ToString()); 
+  } 
+} 
+```
+
+It requires some work to work with Editor Template and Display Template when you want to go beyond basic functionality. However, it is possible to extend everything with some Html Helper and Extension methods.

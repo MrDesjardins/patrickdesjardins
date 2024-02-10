@@ -1,0 +1,131 @@
+---
+title: "Having a menu at the top of the screen with inner anchor"
+date: "2013-06-24"
+categories: 
+  - "css"
+  - "javascript"
+  - "web"
+---
+
+If you want to have a menu that will change what is selected depending of where you are on the screen, this can be done. First, you need to define your menu. Second, you need to have anchor inside your webpage. This is done by setting id to some element of your page. The example below has set id to 3 links. We could have set the id to H1 tag also.
+
+
+```html 
+<ul id="top-menu"> 
+  <li class="active"> <a href="#">Home</a> </li> 
+  <li> <a href="#header1">Header 1</a> </li> 
+  <li> <a href="#header2">Header 2</a> </li> 
+  <li> <a href="#header3">Header 3</a> </li> 
+</ul>
+
+<a id="header1">This is my header 1</a> 
+<p>Text here ...</p> 
+<a id="header2">This is my header 2</a> 
+<p>Text here ...</p> 
+<a id="header3">This is my header 3</a> 
+<p>Text here ...</p> ​
+``` 
+
+The next step is to write some Javascript code that will use the scroll position to know what is the active anchor. The Javascript will also verify if a link is clicked.
+
+```typescript
+var lastId, 
+topMenu = $("#top-menu"), 
+topMenuHeight = topMenu.outerHeight()+15, // All list items 
+menuItems = topMenu.find("a"), // Anchors corresponding to menu items 
+scrollItems = menuItems.map(function(){ var item = $($(this).attr("href")); 
+if (item.length) { return item; } });
+
+// Bind click handler to menu items 
+// so we can get a fancy scroll animation 
+menuItems.click(function(e){ 
+  var href = $(this).attr("href"), 
+  offsetTop = href === "#" ? 0 : $(href).offset().top-topMenuHeight+1; 
+
+  $('html, body').stop().animate({ scrollTop: offsetTop }, 300); 
+  e.preventDefault(); 
+});
+
+// Bind to scroll 
+$(window).scroll(function(){ 
+  // Get container scroll position 
+  var fromTop = $(this).scrollTop()+topMenuHeight; // Get id of current scroll item 
+  var cur = scrollItems.map(function(){ 
+    if ($(this).offset().top < fromTop) 
+      return this; 
+  }); 
+  // Get the id of the current element 
+  cur = cur[cur.length-1]; 
+  var id = cur && cur.length ? cur[0].id : ""; 
+  if (lastId !== id) { 
+    lastId = id; 
+    // Set/remove active class 
+    menuItems.parent()
+    .removeClass("active")
+    .end()
+    .filter("[href=#"+id+"]")
+    .parent()
+    .addClass("active"); 
+  } 
+});​
+``` 
+
+Finally, the last step is to set the CSS to have a fixed menu that will stay at the top of the screen.
+
+
+```css
+body { 
+  height: 6000px; 
+}
+
+#top-menu { 
+  position: fixed; 
+  z-index: 1; 
+  background: white; 
+  left: 0; 
+  right: 0; 
+  top: 0; 
+}
+
+#top-menu li { 
+  float: left; 
+}
+
+#top-menu a { 
+  display: block; 
+  padding: 5px 25px 7px 25px; 
+  -webkit-transition: 1s all ease; 
+  -moz-transition: 1s all ease; 
+  transition: 1s all ease; 
+  border-top: 3px solid white; 
+  color: #666; 
+  text-decoration: none; 
+}
+
+#top-menu a:hover { 
+  color: #000; 
+}
+
+#top-menu li.active a { 
+  border-top: 3px solid #333; 
+  color: #333; 
+  font-weight: bold; 
+}
+
+#header1{ 
+  position: absolute; top: 400px; 
+}
+
+#header2{ 
+  position: absolute; top: 800px; 
+}
+
+#header3{ 
+  position: absolute; top: 1200px; 
+} 
+```
+
+
+Here is an example, the code is pretty the same as here. I have adapted the code here for this blog. The credit goes to the person who has posted it on [JsFiddle](http://jsfiddle.net/mekwall/up4nu/).
+
+If you want to have an existing website that use that technic, you can go see [http://letsmake.github.com/bettertogether/](http://letsmake.github.com/bettertogether/) which use this type of menu and effect.

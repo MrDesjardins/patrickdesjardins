@@ -1,0 +1,284 @@
+---
+title: "Communicating Between Sibling React Hook Components"
+date: "2021-11-01"
+categories: 
+  - "react"
+  - "react-hooks"
+---
+Communication between React's components is natural using the properties of each component. However, if a child wants to send information back the tree of components, some additional work is required. In this article, I'll clarify how to communicate top-down, bottom-up, and side-to-side.
+
+Let's start with a basic React application that has three components.
+
+```typescript
+export default function App() {
+  return (
+    <div className="App">
+      <Parent>
+        <Sibling1 name="Patrick" />
+        <Sibling2 age={100} />
+      </Parent>
+    </div>
+  );
+}
+``` 
+
+The parent:
+
+```typescript
+export interface ParentProps {
+  children: React.ReactNode | React.ReactNode[];
+}
+
+export const Parent = (props: ParentProps) => {
+  return <div id="parent">{props.children}</div>;
+};
+``` 
+
+And the two children components:
+
+```typescript
+export interface Sibling1Props {
+  name: string;
+}
+
+export const Sibling1 = (props: Sibling1Props) => {
+  return <div id="sibling1">Sibling1 name is: {props.name}</div>;
+};
+
+export interface Sibling2Props {
+  age: number;
+}
+
+export const Sibling2 = (props: Sibling2Props) => {
+  return <div id="sibling2">Sibling2 age is {props.age}</div>;
+};
+
+```
+# Top-Bottom Communication
+The scaffolding already contains one communication principle: passing the information by property. In that case, `App` hands down the `name` and `age`. Important to note that `Parent` does not pass the information down. The `Parent` component contains only an instruction to render what the `children` property.
+
+How can we have one of the siblings having an action to send information from the bottom-up? If we want to remain on track with React, we are limited by the property mechanism. However, instead of passing the information directly, we give the value inside a _function_.
+
+First, let's modify one of the siblings to have a property that takes a function without a parameter and that returns no value.
+
+```typescript
+export interface Sibling2Props {
+  age: number;
+  notifyParent: () => void;
+}
+
+export const Sibling2 = (props: Sibling2Props) => {
+  return (
+    <div id="sibling2">
+      <div>Sibling2 age is {props.age}</div>
+      <div>
+        <button
+          onClick={() => {
+            props.notifyParent();
+          }}
+        >
+          Click me
+        </button>
+      </div>
+    </div>
+  );
+};
+```
+
+You can play with the code in [CodeSandbox.io](https://codesandbox.io/s/react-sibling-communication-part1-ssdge).
+
+# Bottom-Up Communication
+
+If we modify the `App.tsx` to have a title and that each time the application gets notified that the title adds a smiley face, we get:
+
+```typescript
+export default function App() {
+  const [title, setTitle] = useState("App Title");
+  return (
+    <div className="App">
+      <div>{title}</div>
+      <Parent>
+        <Sibling1 name="Patrick" />
+        <Sibling2
+          age={100}
+          notifyParent={() => {
+            setTitle((title) => title + "😀");
+          }}
+        />
+      </Parent>
+    </div>
+  );
+}
+```
+You can play with the code in [CodeSandbox.io](https://codesandbox.io/s/react-sibling-communication-part2-tlzzw).
+
+Hence, the child that has a property that is function can send the information above.
+
+# Slibling Communication by the parent
+The reflex is to communicate to a sibling is to look at the common point. In our case, the parent or the application component at the root of the application. For example, if we want to have the `Sibling2.tsx` communicate with `Sibling1.tsx` we would visit `Parent.tsx`. In terms of code, it is a slight change compared to the previous iteration. First, we need to remove the title from the `App.tsx` into `Sibling1.tsx`. We keep the `useState` in the `App.tsx`. The reason is that the function continues to be invoked in the `App.tsx`. Then, to send the information from the function to the sibling, we need to use the state. The reason is that we want to send top to bottom the information. Thus, we need to pass the new title to the other child. The code looks like this:
+
+```typescript
+export default function App() {
+  const [title, setTitle] = useState("App Title");
+  return (
+    <div className="App">
+      <Parent>
+        <Sibling1 name="Patrick" title={title} />
+        <Sibling2
+          age={100}
+          notifyParent={() => {
+            setTitle((title) => title + "😀");
+          }}
+        />
+      </Parent>
+    </div>
+  );
+}
+
+export interface Sibling1Props {
+  name: string;
+  title: string;
+}
+
+export const Sibling1 = (props: Sibling1Props) => {
+  return (
+    <div id="sibling1">
+      <div>Title is: {props.title}</div>
+      <div>Sibling1 name is: {props.name}</div>
+    </div>
+  );
+};
+```
+
+A keen eye realizes one conceptual issue here. The `App` does not have any business with the `title`. The state is the responsibility of the `Sibling1.tsx` only. So the logic to increment is a logic that belongs to the owner of the title, not the app, neither the sibling triggering the notification that something happened. An idea that is impossible to do is to have the `notifyParent` in the `App` to _call_ a function in `Sibling1`. Something like:
+
+```typescript {10}
+export default function App() {
+
+  return (
+    <div className="App">
+      <Parent>
+        <Sibling1 name="Patrick" title={title} />
+        <Sibling2
+          age={100}
+          notifyParent={() => {
+            sibling1.notify();
+          }}
+        />
+      </Parent>
+    </div>
+  );
+}
+```
+
+Unfortunately, that does not exist. One pattern is to rely on React'S context.
+
+# Communication sibling to sibling using Context
+
+To communicate with a sibling without polluting a component with a state is to store that state elsewhere -- a shared place. That place is a custom context.
+
+Define the contract in an interface. In that particular example, we will share a way to consume using a property `title` and a way to send information `setTitle`. With the interface, we create a context. The values don't matter at that step. Actually, an alternative is to provide fake data is to mark the field as optional.
+
+```typescript
+export interface Communication {
+  title: string;
+  setTitle: (newTitle: string) => void;
+}
+
+export const CommunicationContext = createContext<Communication>({
+  title: "",
+  setTitle: () => {}
+});
+```
+
+Then, you create a React component that will handle the values:
+
+```typescript
+export interface CommunicationContextProviderProps {
+  children: ReactElement | ReactElement[];
+}
+
+export const CommunicationContextProvider = (
+  props: CommunicationContextProviderProps
+) => {
+  const [title, setTitle] = useState("App Title");
+  return (
+    <CommunicationContext.Provider
+      value={{
+        title: title,
+        setTitle: (newTitle: string) => {
+          setTitle(newTitle);
+        }
+      }}
+    >
+      {props.children}
+    </CommunicationContext.Provider>
+  );
+};
+
+```
+The idea is the state is stored in the _Provider_ function. It does not pollute the application or the parent component. Instead, it keeps the data inside the provider. By providing a `setTitle`, the sibling2 will be able to set the title. By providing the `title`, because we use a state, once the value change, anyone under the provider will have its component re-render and receive the new value using the context.
+
+Looks how uncluttered is the application now:
+```typescript
+
+export default function App() {
+  return (
+    <div className="App">
+      <CommunicationContextProvider>
+        <Parent>
+          <Sibling1 name="Patrick" />
+          <Sibling2 age={100} />
+        </Parent>
+      </CommunicationContextProvider>
+    </div>
+  );
+}
+```
+
+The sibling2, which invokes the function looks the following. No more function in its properties for communication to a sibling but a call to the `useContext` to have access to the function to trigger a call that the other sibling will receive.
+
+```typescript {6,13}
+export interface Sibling2Props {
+  age: number;
+}
+
+export const Sibling2 = (props: Sibling2Props) => {
+  const context = useContext(CommunicationContext);
+  return (
+    <div id="sibling2">
+      <div>Sibling2 age is {props.age}</div>
+      <div>
+        <button
+          onClick={() => {
+            context.setTitle("From sibling 2");
+          }}
+        >
+          Click me
+        </button>
+      </div>
+    </div>
+  );
+};
+```
+
+The other sibling is also uncluttered. No more properties that receive the title. Instead, it relies on the context and consumes the value.
+
+```typescript
+export interface Sibling1Props {
+  name: string;
+}
+
+export const Sibling1 = (props: Sibling1Props) => {
+  const context = useContext(CommunicationContext);
+  return (
+    <div id="sibling1">
+      <div>Title is: {context.title}</div>
+      <div>Sibling1 name is: {props.name}</div>
+    </div>
+  );
+};
+```
+You can play with the code in [CodeSandbox.io](https://codesandbox.io/s/react-sibling-communication-part3-pmrtj).
+
+I'll conclude by teasing the topic of the following article: how can you notice that something is pressed? So far, we are passing a string (the title). Because the value of the string is changing, the state is changing in the React's context. Insofar, we rely on the change to trigger the property to be passed down and have the title changing. But, in a situation where we have no value to pass down, only when something happens, how can we do it? For example, imagine sibling2 having a button "reset" and that each time we press, sibling1 reset its values. 

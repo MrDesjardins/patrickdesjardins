@@ -1,0 +1,143 @@
+---
+title: "React Client Side State Management with Zustand"
+date: "2023-01-27"
+categories:
+  - "react"
+  - "context"
+  - "state"
+---
+
+In a [previous post](/blog/react-context-how-to-avoid-rendering) I explained that the React Context is re-rendering a lot if you change the state inside the context. I concluded that using a state management, like Redux, might still be relevant. However, Redux comes with its baggage of middleware, connection, hooks, actions, etc. So, here enters a more straightforward solution: [Zustand](https://github.com/pmndrs/zustand).
+
+# Why use Zustand for your State Management?
+
+First of all, it is very lean and simple. It took me 20 minutes to grasp what was needed.
+
+Second, the usage of Zustand is very similar to `useState`, making it easy to understand but also to use.
+
+Third, when you change a portion of your _store_ (object that is deep with properties) only the components interested to a specific part gets updated.
+
+Forth, it works with code outside React. Useful if you have a library that is framework agnostic but wants to push changes or read data.
+
+Finally, fifth, it is type-safe with TypeScript.
+
+# When not to use Zustand?
+
+I do not recommend using Zustand for data that is coming and changing from the backend. For example, I rely on Apollo Client for all my data coming from the backend. Not having the data duplicated in two places is a good strategy. If you want a copy in Zustand, you will need many `useEffect` or code in a callback (`onComplete`) to update your state in Zustand. While possible, it implies synchronization which is a source of potential error.
+
+# How Zustand works in a Nutshell?
+
+## Creating a Store
+
+You create a store by defining its schema and setting default values. Similar to reducer or having state using hooks. For example, if you have a `userPreferences`, you can have an application-wide store with one branch (property) with the user preferences.
+
+```tsx
+interface MyAppState {
+  userPrefrerences: UserPreferences;
+  setUserPreference: (data: UserPreferences) => void;
+}
+
+const useMyAppState = create<MyAppState>()(
+  devtools(
+    persist(
+      (set) => ({
+        userPrefrerences: {
+          theme: "light",
+          profile: { id: 0, name: "unknown" },
+        },
+        setUserPreference: (data) =>
+          set((state) => ({ userPreferences: data })),
+      }),
+      {
+        name: "useMyAppStateStore",
+      }
+    )
+  )
+);
+```
+
+The first usage of the hook defined with `create` defines the store for the whole application. Hence, you do not need to wrap your application with a context (or provider pattern). Then, you call the hook that you defined in one or many of your components. In our example, it would be an invocation to `useMyAppState`. All future calls to the hook will get the information. When you set the state, the state does a copy automatically. However, you will need to create a copy as you go deeper like you do with Redux or with a React Context. For example, you can set a new setter for setting the profile that is a property deep in the store (under the user preference).
+
+```tsx
+interface MyAppState {
+  userPrefrerences: UserPreferences;
+  setUserPreference: (data: UserPreferences) => void;
+  setUserProfile: (data: UserProfile) => void;
+}
+
+const useMyAppState = create<MyAppState>()(
+  devtools(
+    persist(
+      (set) => ({
+        userPrefrerences: {
+          theme: "light",
+          profile: { id: 0, name: "unknown" },
+        },
+        setUserPreference: (data) =>
+          set((state) => ({ userPreferences: data })),
+      },
+        setUserProfile: (data) =>
+          set((state) => ({ userPreferences: {...state.userPreference, profile: data}} })),
+      }
+      ),
+      {
+        name: "useMyAppStateStore",
+      }
+    )
+  )
+);
+```
+Another typical use case is to derive value from your store's data. When using a React Context, you define a `useMemo` with dependency on the source of the data and then pass the memoized value to your context. With Zustand, you create a property. 
+
+```tsx {5, 22-24}
+interface MyAppState {
+  userPrefrerences: UserPreferences;
+  setUserPreference: (data: UserPreferences) => void;
+  setUserProfile: (data: UserProfile) => void;
+  isNewUser: boolean;
+}
+
+const useMyAppState = create<MyAppState>()(
+  devtools(
+    persist(
+      (set, get) => ({
+        userPrefrerences: {
+          theme: "light",
+          profile: { id: 0, name: "unknown" },
+        },
+        setUserPreference: (data) =>
+          set((state) => ({ userPreferences: data })),
+        setUserProfile: (data) =>
+          set((state) => ({
+            userPreferences: { ...state.userPreference, profile: data },
+          })),
+        get isNewUser() {
+          return get().userPreference.id === 0;
+        },
+      }),
+      {
+        name: "useMyAppStateStore",
+      }
+    )
+  )
+);
+```
+
+## How to Consume the Store Data?
+
+Consuming is the act of calling the hook and defining which property to _listen_ for a change. Very powerful since you control which elements need to change to cause a render. For example, if you are interested in getting the user name only, then only when the `userPreferences` is mutated will you get a render. If the `MyAppState` has many sibling properties to `userPreferences`, the component relying on `userPreferences` will remain stable and only get rendered in a limited way.
+
+```tsx
+// ... Snip, inside your React component
+const userName = useMyAppState((state) => state.userPreference.name);
+```
+# Debugging
+Debugging relies on the existing Redux tool. Looking back at the previous example, you see the create function calls `devtools`. That is a _middleware_ that registers your changes like it would with Redux.
+
+Another trick is that because these are functions, you can set breakpoint directly on the `set` of the desired setter and explore the `data`.
+
+# Single Store or Many Stores
+While having a single store is excellent, I appreciate how easy it is to create many stores. I have one for my main application but also one for all the notifications, and one for other topics that could be extracted for many different projects in the future. Thus, I feel free to have only one store. Zustand contrives to adapt to your way of working instead of constraining your development.
+
+# Closing Notes
+You can use [Immer](https://immerjs.github.io/immer/) with Zustand if you desire -- or not. You can persist your store in the local storage -- or not. You can get fancy with middlewares and expand the features -- or not. Overall, Zustand is lightweight state management that opens into more complex scenarios if you desire. I focus on simple solutions, thus suitable for my case. The best is that you can be very accurate on how you impact rendering by having a central state that only triggers rendering on a very narrow set of data.

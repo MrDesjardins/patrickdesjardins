@@ -1,0 +1,39 @@
+---
+title: "Nuget package, how to not commit all libraries to your source control"
+date: "2013-12-26"
+categories: 
+  - "nuget"
+  - "visual-studio"
+---
+
+I am publishing more and more code to [GitHub](https://github.com/MrDesjardins) when I am posting blog post to have something to the reader to test. The problem is that if I want to have something that works, I need to have all references published into the source control. This can start to be huge if I have several packages. Nuget gives three advantage to not have these libraries into the source control.
+
+- Source control include every version of every file within the repository, and binary files that are updated frequently can lead to significant repository bloat and more time required to clone the repository.
+- With the packages included in the repository, team members may add references directly to package contents on disk rather than referencing packages through NuGet.
+- It becomes harder to "clean" your solution of any unused package folders, as you need to ensure you don't delete any package folders still in use.
+
+But, how can we send a project into a repository and have NuGet knows that it needs to download every references on the first build? This can be done by changing the solution to use **NuGet Package Restore**. To enable this feature, right click the solution in the Solution Explorer and select _Enable Restore NuGet Package Restore_. 
+
+![](/images/blog/nugetfiles.png)
+
+This will install all referenced packages before a project is built, thereby ensuring that all dependencies are available to a project without requiring them to be stored in source control!
+
+# Two NuGet Restore Approach
+
+When NuGet Restore is enabled, you have two different option. The first one allow Visual Studio to download automatically the reference. This is the default approach and the recommended one. The second approach is the console one that is more manual.
+
+# Automatic Approach
+
+The automatic approach is the default one since NuGet 2.7. When the code is compiled, Visual Studio raises an event that NuGet is hooked to. This allow NuGet in a pre-event to execute itself. NuGet reads the packages.config file and download every package not present. This mean that the first time you get the code that the build is slower. The speed is not reduced because of the compilation but because NuGet downloads every package. The second time you will compile, the speed will be back at only having the source code to compile. Of course, Visual Studio needs to have the option to download NuGet package. This can be found in the Tools>Option menu of Visual Studio. 
+
+![](/images/blog/PackageManagerPackageRestoreOptions-400x232.png)
+
+# Manual Approach
+
+As we have mentioned, NuGet added 3 files. One is an executable called NuGet.exe that can be called manually to download package from the packages.config. Here is an example of the command you can write to get every files. 
+
+```sh
+ nuget.exe restore YourSolutionFile.sln 
+```  
+
+I recommend you to read the [NuGet console command](http://docs.nuget.org/docs/reference/command-line-reference#Restore_command).

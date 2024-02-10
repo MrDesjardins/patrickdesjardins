@@ -1,0 +1,76 @@
+---
+title: "How to Transfer Files Between Computers Using HDMI (Part 5: Instruction Header)"
+date: "2023-06-04"
+categories:
+  - "rust"
+  - "hdmi"
+  - "video"
+  - "encoding"
+  - "steganography"
+---
+
+This fifth article is about how to transfer a file using only video from one computer to another. Using a capture card and a HDMI output, we can play a video containing a file's content and read the video on the other end. Once the video is received, we can extract the content and have the file.
+
+# Current Situation
+
+At this point, we can transfer a single file containing a few words. We stubble into several issues: data transfer quality issues, rgb losing accuracy on bits, video encoding, and duplicate data. Now, we need to tackle a bigger file.
+
+# Case 1: 53 megs zip file
+
+The first case was to inject into a video a zip file containing several pictures. The size was 53 megs and took about 4 minutes 20 seconds to inject into a video. The time is reasonable, but many optimization could be applied to improve the performance. The generated video file is a 188 megs video of 7 seconds. The configuration is
+
+```sh
+cargo run -- -m inject -i outputs/Picture.zip -o outputs/out_zip_1px.mp4 --fps 30 --height 1080 --width 1920 --size 1 -a bw
+```
+
+I ran on the target computer:
+
+```sh
+ffmpeg -r 30 -f dshow -s 1920x1080 -vcodec mjpeg -i video="USB Video" -r 30 out_picturezip_1px.mp4
+```
+
+And it failed with a video of 75 megs and an extracted zip file of 8kb. However, I noticed the source computer lagging while playing the video. I suspect many frames were not displayed, thus not recorded by the capture card.
+
+Other than trying to make the source computer run faster, I decided to give it a try with a size of 5. The rationale is that when extracting, I noticed that the red frame was at 99.8 red. Thus some information was missing, as 100% would be that all the frames were red, meaning all the black and white pixels might not display.
+
+Increasing from 1 pixel for each bit to 5 has a couple of side effects. The main one is the performance. Instead of 4 minutes, it was still running 30 minutes later. I had to stop the process and start improving the code to iterate faster. But before, I tried to inject a 22megs zip file with a size of 5 took 7 minutes 14 seconds.
+
+A first change to increase the speed was to run the tool using the `--release` flag (use this argument after the `cargo run`. As a result, the 7 minutes went down to 2 minutes 12 seconds.
+
+# Case 2: Picture File Failure
+
+I decided to step back and try more on a single machine without the additional step of the display card. So far, I've been focusing on fine text, but a zip file and a picture didn't work. What about doing a picture locally?
+
+```sh
+cargo run -- -m inject -i outputs/test4.jpg -o outputs/test4_out_5px.mp4 --fps 30 --height 1080 --width 1920 --size 5 -a bw -p true
+cargo run -- -m extract -i outputs/test4_out_5px.mp4 -o outputs/test4_extracted.jpg --fps 30 --height 1080 --width 1920 --size 5 -a bw
+```
+
+57 megs video for 10 seconds for a 2.99 meg picture. The extraction command 137kb! Something was off!
+
+At this point, my gut feeling was that the file was parsed and stopped because the end of the file (eof) character was detected (the 0x04). With text, the character makes sense, but with ZIP or picture or other format, the character might be used. A modification to ensure that the end of the content into a frame was needed further than a single character. A quick search in a HEX editor on the video shows a lot of the character everywhere!
+
+![](/images/blog/hdmi-file-transfer-article4_eof_char.png)
+
+The solution might be as easy as having several eof characters next to each other. For example, having 50 eof means that it is the end of the content. However, this is easy to say, harder to implement without introducing other issues. For example, managing several frames where information of this static 50 eof may be on several frames
+
+```rust
+let rgb = get_pixel(source, x, y, info_size);
+rgbs.push(vec![rgb[0], rgb[1], rgb[2]]);
+let bit_value = get_bit_from_rgb(rgb);
+mutate_byte(&mut data, bit_value, bit_index);
+bit_index = if bit_index == 0 { 7 } else { bit_index - 1 };
+if bit_index == 7 {
+    if data != EOF_CHAR { // <---- This need to change
+        result.bytes.push(data);
+        data = 0;
+    } else {
+        return result; 
+    }
+}
+```
+A frame could be almost full, having only few character lefts to add the eof character and would need 49 spaces on the next frame. The actual code does not handle context between frame parsing. So, some changes would be needed.
+
+# Solutions
+
+After thinking everything straight, I noticed that we could reserve the first few pixels to inject the number of bytes to extract. Instead of only encrypting the message (or picture) we could have the first 64 bytes to tell us the number of bytes to extract. For example, if we know that the message is 4 characters, instead of injecting 32 bits (black and white) we would have 64+32 bits. The video would be bigger, but a relative addition when injecting a large file as the 64 bytes would remain constant. I'll go with 64 since it gives us a large number for large files.

@@ -1,0 +1,45 @@
+---
+title: "When to use cast with AS and with explicit cast"
+date: "2012-08-03"
+categories: 
+  - "c-sharp"
+---
+
+You can cast object into another object in many way in C\#.
+
+Even if both technically do the same thing if successful, they shouldn't be used without thinking.
+
+I often see people using AS to cast and never check if the cast is successfully executed.
+
+
+```csharp
+ var myObject = myOtherObject as MyObject; 
+ myObject.Property1 = 1; 
+```
+
+This is wrong. First, the cast can fail which will return null. In that case, a NullReference is trigged when the value 1 is set to the property. Second, why casting with AS? The goal of AS is to cast and if something wrong return the value NULL. This is good when NULL is an accepted state of the object which is not in the current example.
+
+What we want is that if the cast goes wrong to be notified because it should never go wrong.
+
+
+```csharp
+ var myObject = (MyObject)myOtherObject; 
+ myObject.Property1 = 1; 
+```
+
+In the case that a possible error occur, an exception will be thrown with the good exception message : InvalidCast.
+
+Nevertheless, you can cast with AS and check if the value is NULL. This is a good way to cast if NULL value can happen and you need to act differently in this situation.
+
+For example, if you know that something, when casting, the value return Null than you should do :
+
+
+```csharp
+ var myObject = myOtherObject as MyObject; 
+ if(myObject != null) 
+  myObject.Property1 = 1; 
+ else 
+  //... 
+```
+
+So, next time you need to cast, ask yourself if you expect to have NULL (you expect that it won't cast because of the design not because of a bug). If yes, you can use AS, otherwise, use the explicit cast with the parentheses which will trigger an exception.

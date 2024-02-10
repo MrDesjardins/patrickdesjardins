@@ -1,0 +1,20 @@
+---
+title: "Regex to get Everything Until a Specific Character is Found"
+date: "2015-03-02"
+categories: 
+  - "regex"
+---
+
+Stripping attribute from HTML can be time consuming if you do it manually. Since the value can change on each of the attribute, you cannot do a simple search and replace. What you need is a regular expression that will search for the attribute you want to remove and with anything between quotes. That mean you need to have a Regex that search a string until a specific character is reach. In the case of having an Html attribute with a value between double quote that change you need to search what does not change and have the Regex catching all until it found the second quote.
+
+
+```html  
+data-info="this is value 1" data-info="thisIsValue2" 
+```  
+
+The Regex to parse all string and is the following one. It takes the part that does not change and search for everything not a double quote. The Regex part that does this is the square bracket following by the `^` symbol. It informs the Regex to search everything until it finds the double quote. The "everything" is specified by the star character that is following the ending square bracket. 
+
+```typescript
+data-info=\\"[^"]*\\" 
+``` 
+

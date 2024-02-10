@@ -1,0 +1,158 @@
+---
+title: "Migration from Create React App CRA to ViteJS"
+date: "2023-03-02"
+categories:
+  - "react"
+  - "vitejs"
+  - "cra"
+---
+
+# What is Create React App?
+
+Create React App (CRA) has been around since 2016 and has been a delight since its origin. CRA allows starting coding fast by avoiding the recurrent problem with a project to configure its tools. The web development ecosystem surrounding JavaScript has been 2010 changing a lot with tools that require expertise while continually evolving and changing direction. CRA fixed abstract the configuration of WebPack and other tools into a single command line. Under the tool, a local server runs for you with many capabilities to make you focus on your code and when ready to ship the code with another command.
+
+# Why Migrate?
+
+However, the positivity around CRA shifted recently, and the movement got amplified with a few online community influencers.
+
+I was still recommending CRA for a new project in 2022. It has been simple and stable since 2016 and was not jumping into the latest trend. However, many people want to have the option to try the latest, and CRA needs to be actively maintained. Releases could be faster with many old dependencies.
+
+However, this [Github's thread](https://github.com/reactjs/reactjs.org/pull/5487) got a [response](https://github.com/reactjs/reactjs.org/pull/5487#issuecomment-1409720741) from one of the most popular maintainer of React: Dan Abranov. The discord around CRA is mostly fueled by developers building public applications. However, for people working on internal web applications, it does not matter since most arguments are around server-side rendering (SSR) that CRA does not provide. Hence, I always favor no SSR solution, like CRA for internal tool because they are simpler to users and avoid several issues like requiring a server to run the web application or opening unnecessary server-side solution which split the code with client/server logics making in the process everything harder to grasp. Dan Abramov points this particular point as well in the response:
+
+> This doesn't even mean necessarily depending on a Node.js server. Many popular frameworks don't require a server and can work in SSG mode, so they can address the "fully static" use cases too.
+
+So, why did I migrate from CRA to ViteJS? Because it was getting harder to get other tools to work without ejecting or using an alternative solution like Craco that is [not actively supported](https://github.com/dilanx/craco/issues/426). In particular, I wanted to use an absolute reference to point to a Git submodule.
+
+# Why ViteJS?
+
+There are plenty of solutions to replace CRA. It is problematic with so much fragmentation to pick one that will last for the long term without having too much of a learning curve. React does provide a [list of alternatives](https://beta.reactjs.org/learn/start-a-new-react-project) but some of them are questionable, like using GatbyJS with simple [migration that does not work](https://github.com/gatsbyjs/gatsby/discussions/37200#discussioncomment-4538715). ViteJS is lightweight, and does not impose custom routing or mechanisms unique to ViteJS. Similar to CRA with a more active development and [well respected at the top position of 2022](https://2022.stateofjs.com/en-US/libraries/#tier_list).
+
+# Migration Steps
+
+## Migration Step 1: Install NPM Packages
+
+The first step is to install ViteJS and a few dependencies. You may have to install more or less depending on your project. In my case, I wanted to have ViteJS and the absolute path capability. Thus, I'll describe the step to migrate CRA to ViteJS using TypeScript and absolute path.
+
+```sh
+npm install --save-dev vite @vitejs/plugin-react vite-tsconfig-paths
+```
+
+There is nothing particular to install for TypeScript. Vite supports TypeScript.
+
+## Migration Step 2: ViteJS Configuration File
+
+A single TypeScript file must be present at the root of your project, next to your `package.json` file. The file name is: `vite.config.ts`. The content varies depending on your need. In my case:
+
+```ts
+/// <reference types="vitest" />
+import path from "path";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import viteTsconfigPaths from 'vite-tsconfig-paths';
+
+export default defineConfig({
+  plugins: [react(), viteTsconfigPaths()],
+  build: {
+    outdir: "build"
+  },
+  server: {
+    open: true,
+    port: 3000
+  },
+  preview: {
+    port: 8000,
+    open: false
+  },
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: "./src/setupTest.ts",
+    coverage: {
+      reportDirectory: "./coverage",
+      clean: false,
+      reporter: ["cobertura", "text", "html"],
+      exclude: ["node_modules/"]
+    },
+  }
+});
+```
+
+The plugins are to work with React and to handle TypeScript alias path from the .tsconfig.json file. The `viteTsconfigPaths` plugins allows to not have to add a configuration similar to TypeScript to define the path for each alias. For example, the following code is **not** needed if you use the plugin (if you have the alias defined in your TypeScript configuration file.
+
+```json
+resolve: {
+  alias: {
+    "@myaliashere" : path.resolve(__dirname, "./packages/mypackagehere")
+  }
+},
+```
+
+The build configuration is to push the building code to the same place CRA used.
+
+The server and preview are the configurations for the local development server (port 3000) and the build for the deployment server (port 8000). It would help if you had these configurations explicitly to mimic CRA values. One important configuration is the `open` that must be set to `false` otherwise your continuous  integration system (CI) might fail with a `spawn xdg-open` exception. 
+
+The resolve indicates the path for an alias.
+
+The test section gives the coverage output configuration and how to handle tests in general. An important point if you are using **Docker** is to ensure that you have a volume to the specified `reportDirectory` to allow the CI to access the result. Also, you **must** set the `clean` option to `false`. Otherwise, vstest execute a `rmdir` to the specified `reportDirectory` which will thrown an exception (error). The reason is that Docker with the volume will hold the folder and prevent any deletion.
+
+## Migration Step 3: Index.html
+
+With CRA, the index.html is in the `public` folder. With ViteJS, the index.html is inside the root folder, next to the package.json file (and the vite.config.ts file). Besides moving the file, you need to edit the index.html. First, remove all mention of the `%PUBLIC_URL%`. You do not need to replace it with anything -- just remove it. Second, you need to add a `script` with a `module`. Here is what is needed without the `<head>` portion, which should be the same (without `%PUBLIC_URL%`).
+
+```html
+<html>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/index.tsx"></script>
+  </body>
+</html>
+```
+
+## Migration Step 4: TypeScript
+
+TypeScript changes are limited to adding two types: one for Vite and one for Vitest (the test framework that replaces Jest).
+
+```json
+"types": ["vite/client", "vitest/globals"]
+```
+
+Then, you need to create a file called `vite-env.d.ts` with this single line:
+
+```ts
+/// <reference types="vite/client" />
+```
+
+## Migration Step 5: Environment Variable
+
+React uses the prefix `REACT_APP_` before each environment variable. Vite uses a different prefix but also a position to store the values. CRA stores the value directly in `process.env` but ViteJS stores the value under `import.meta.env`.
+
+For example:
+
+```ts
+process.env.REACT_APP_myvar;
+// Become
+import.meta.env.VITE_myvar
+```
+The change is fast by performing a search and replaces of `process.env.REACT_APP_` to `import.meta.env.VITE_` and you are good to go.
+
+## Migrating Step 6: Package.json
+
+You need to change the CRA commands for Vite commands.
+
+```json
+"scripts": {
+  "start": "vite",
+  "build": "tsc && vite build",
+  "serve": "vite preview --host",
+  "test": "NODE_OPTIONS=\"\" vitest run",
+  "test:watch": "NODE_OPTIONS=\"\" vitest watch",
+  "test:cov": "NODE_OPTIONS=\"\" vitest run --coverage"
+},
+```
+
+You can see that the test change the environment variable `NODE_OPTIONS` to nothing. In my case, the Dockerfile injected some certificate with the SSL option, causing the vitest to fail.
+
+Another detail is to add `--host` which will allow the IP to be beyond the `localhost`. In the case you are using **Docker** in Kubernetes, you want to serve outside your _pod_ meaning you need to expose your server to the outside.
+
+# Conclusion
+The migration was quick when looking at it from the perspective of the project size I had to migrate. It wasn't without a hiccup but was smoother than expected as barely any code in change was needed, except for the environment variables and few options to turn on and off. The changes were all configurations to fit the previous CRA or to get ViteJS into the project. Tests were still using the describe/it mechanism and the same assertion, the React components remained unchanged, and the development commands remained the same. One positive aftermath of the migration wast the compilation speed, which drastically improved with over twice fast to build and instantly for development hot-reload behavior.
