@@ -1,14 +1,13 @@
-import { MDXRemote } from 'next-mdx-remote/rsc';
+import { compileMDX } from "next-mdx-remote/rsc";
 import { MdxData, getAllPosts, getTotalPages } from '../../../lib/api';
 import styles from "../../layout.module.css";
 import { CodeSandbox } from "../_blogcomponents/CodeSandbox";
+import { SoundCloud } from '../_blogcomponents/SoundCloud';
 import { TocAzureContainerSeries } from "../_blogcomponents/TocAzureContainerSeries";
 import { YouTube } from "../_blogcomponents/YouTube";
-import { CodeBlock } from "../_components/CodeBlock";
 import { BlogBody } from "../_components/blogbody";
-import { GetStaticPaths, InferGetStaticPropsType } from 'next';
-import { compileMDX } from "next-mdx-remote/rsc";
-import { SoundCloud } from '../_blogcomponents/SoundCloud';
+import rehypePrettyCode from 'rehype-pretty-code';
+import "./linenumber.css";
 export interface GeneratedPageContentType {
   source: MdxData;
   totalPages: number;
@@ -19,31 +18,6 @@ export async function generateStaticParams() {
   );
 }
 
-
-// export async function getStaticPaths() {
-//   const posts = await getAllPosts();
-//   return {
-//     paths: posts.map(p => ({
-//       params: {
-//         slug: p.metadata.fileName
-//       },
-//     })
-//     ),
-//     fallback: false, // false or "blocking"
-//   }
-// }
-
-// export async function getStaticProps(context: { params: { slug: string; }; }) {
-//   const posts = await getAllPosts();
-//   const totalCount = getTotalPages(posts);
-//   return {
-//     props: {
-//       totalPages: totalCount,
-//       post: posts.find((post) => post.metadata.slug === context.params.slug)
-//     }
-//   }
-// }
-
 export default async function Page(props: { params: { slug: string } }) {
   const posts = await getAllPosts();
   const totalPages = getTotalPages(posts);
@@ -51,12 +25,15 @@ export default async function Page(props: { params: { slug: string } }) {
   if (post === undefined) {
     throw new Error("Post not found");
   }
-
+  const options = {
+    defaultLang: "plaintext",
+    theme: "github-light",
+    keepBackground: true,
+  };
   const { content, frontmatter } = await compileMDX({
     source: post.rawFileContent,
-    options: { parseFrontmatter: true },
+    options: { parseFrontmatter: true, mdxOptions: { rehypePlugins: [[rehypePrettyCode as any, options]] } },
     components: {
-      //pre: CodeBlock,
       "TocAzureContainerSeries": TocAzureContainerSeries,
       "CodeSandbox": CodeSandbox,
       "YouTube": YouTube,

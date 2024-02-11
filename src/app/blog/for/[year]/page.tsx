@@ -1,9 +1,8 @@
-import { GetStaticPropsContext, InferGetStaticPropsType } from "next"
-import { BlogBody } from "../../_components/blogbody"
+import { FIRST_YEAR, LAST_YEAR } from "../../../../constants/constants"
+import { MdxData, getAllPosts, getTotalPages } from "../../../../lib/api"
 import styles from "../../../layout.module.css"
 import { BlogEntry } from "../../_components/BlogEntry"
-import { FIRST_YEAR, LAST_YEAR } from "../../../../constants/constants"
-import { MdxData, getAllPosts, getTotalPages, getTotalPagesCount } from "../../../../lib/api"
+import { BlogBody } from "../../_components/blogbody"
 export interface GeneratedPageContentType {
   blogPosts: MdxData[];
   year: number;
@@ -17,38 +16,6 @@ export async function generateStaticParams() {
   return years.map((y) => ({ year: String(y) }));
 
 }
-
-
-// export async function getStaticPaths() {
-//   const years = [];
-//   for (let year = LAST_YEAR; year >= FIRST_YEAR; year--) {
-//     years.push(year);
-//   }
-
-//   return {
-//     paths: years.map(p => ({
-//       params: {
-//         year: String(p)
-//       },
-//     })
-//     ),
-//     fallback: false, // false or "blocking"
-//   }
-// }
-
-// export async function getStaticProps(context: { params: { year: string; }; }) {
-//   const posts = await getAllPosts();
-//   const totalPages = getTotalPages(posts);
-//   const year = Number(context.params.year);
-//   const postForYear = posts.filter((file) => file.metadata.year === year);
-//   return {
-//     props: {
-//       blogPosts: postForYear,
-//       year: year,
-//       totalPages: totalPages
-//     },
-//   }
-// }
 
 export default async function Page(props: { params: { year: string } }) {
   const year = Number(props.params.year);
