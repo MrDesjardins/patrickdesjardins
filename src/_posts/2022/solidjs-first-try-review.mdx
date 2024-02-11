@@ -49,7 +49,7 @@ const getWaterHeight = createMemo((): number => {
 ```
 The memo does not need to have the array of dependencies. Nor need the `useEffect`. The SolidJS handles it for you. In the example above, the `currentWeight()` is detected by SolidJS to be a dependency. When the state change, it invalidates the memoization. The implicit dependency is great because you do not have to rely on an external tool (like a Linter) to handle dependencies. You can code without worrying about side effects like stale data.
 
-![](/videos/blog/WaterTankAnimation.mp4)
+<video src="/videos/blog/WaterTankAnimation.mp4" controls/>
 
 # Styles
 By default, a new project with SolidJS comes with CSS module. So you only need to have a file with a suffix `.module.css`, and then you can import it and use it.

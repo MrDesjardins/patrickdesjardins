@@ -37,11 +37,11 @@ For example, if you set the transition to be 2 seconds and have a timeline of `[
 
 In our scenario, having only the parent using keyframes allows moving the box from a tiny rectangle into a big one without issue. However, the content shows during the movement making the animation look odd.
 
-![](/videos/blog/FramerMotionAnimationKeyFrameBad2.mp4)
+<video src="/videos/blog/FramerMotionAnimationKeyFrameBad2.mp4" controls/>
 
 Thus, hiding the children's content until the animation is almost completed is a good start. Then, on exit, hiding as fast as possible and moving out is the next move. There are many potential solutions, like using keyframes on the child, but that was causing a different issue of timing. Even synchronous mechanisms like `layout` were not performing well on unmounting.
 
-![](/videos/blog/FramerMotionAnimationKeyFrameBad.mp4)
+<video src="/videos/blog/FramerMotionAnimationKeyFrameBad.mp4" controls/>
 
 # Simplicity Triumph
 

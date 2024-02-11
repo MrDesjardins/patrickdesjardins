@@ -50,6 +50,6 @@ You can see that you can load multiple modules since the first parameter is an a
 
 Here is how the browser handles the HTTP request: 
 
-![](videos/LazyLoadingNetwork.mp4)
+<video src="/videos/blog/LazyLoadingNetwork.mp4" controls/>
 
 Lazy loading should be in your tool belt and be used anytime you can delay unnecessary module on the critical path. Good case are for dialog window, or deep hidden menu options. However, be careful not to degrade the user experience by having the user to wait on every click. Nothing is more annoying than clicking a menu and having a white space for few milliseconds. While not everything needs to be loaded, once the user is having what needed to work, you should eagerly load alternate scenario. At the end, the best strategy is to use lazy-loading at the right moment to have a good balance of performance and user experience.

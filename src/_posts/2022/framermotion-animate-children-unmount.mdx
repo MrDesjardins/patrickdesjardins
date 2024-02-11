@@ -98,7 +98,7 @@ To perform the desired effect of mounting and unmounting the `Child` component o
 
 The animation occurs inside the `Child` components. The idea is to have each `li` having an opacity change from 0 to 1 and simultaneously have the `li` move from right to left with a rotating effect.
 
-![](/videos/blog/FramerMotionAnimationMountUnmount.mp4)
+<video src="/videos/blog/FramerMotionAnimationMountUnmount.mp4" controls/>
 
 React Framer Motion has the concept of `Variants` that define specific animation by name. We will define two sets of variants. One set that will take care of the opacity, movement and rotation on each `LI`. The second variant will take care of the `UL` to ensure each `LI` animation is not coinciding: we want each ``LI` to stagger its animation. That way, the visualization is more fluid with each `LI` starting with a slight delay between each other.
 

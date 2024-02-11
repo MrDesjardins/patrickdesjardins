@@ -28,7 +28,7 @@ I will highlight two features dedicated to development that I think is crucial f
 ### Storybook
 The system gives you two choices when launching the web application: the main application or the storybook. The storybook provides access to the custom-created components. Hence, we can work on the components without having to find a place in the system. Indeed, on the actual machine, the launcher does not appear.
 
-![](/videos/blog/WorkoutStorybook.mp4)
+<video src="/videos/blog/WorkoutStorybook.mp4" controls/>
 
 ### Hidden Dev Panel
 There is a dev panel under the visual viewport of the application, which is 1024x600 because we are using a Raspberry PI with a monitor of this fixed resolution. The panel allows sending a signal by REST API to the NodeJS to send _fake_ signals. Hence, we can develop our software from client to server without having the server (NodeJS) connecting to the actual Raspberry to get real signals. Therefore, it helps a lot in the development and forces to create good abstractions.
@@ -73,11 +73,11 @@ Once an exercise is completed, the system pops a screen allowing the user to adj
 
 The user interface is very responsive. For example, if the tank of water is filling, you will see in real-time on the screen that the water level is changing. The small video under this text also shows another feature: encouragement. If you are a keen observer, you can see that the user goes beyond the six repetitions excepted. The number of exact repetitions starts dancing! The video also shows that when the user drops the weight, the system automatically changes the water (weight).
 
-![](/videos/blog/WorkoutAnimatedTank.mp4)
+<video src="/videos/blog/WorkoutAnimatedTank.mp4" controls/>
 
 Finally, once the workout is completed, we keep encouraging. I'm using the same principle of waves created from the custom weight adjustment that relies on primitive mathematic functions.
 
-![](/videos/blog/WorkoutAnimatedWorkoutCompleted.mp4)
+<video src="/videos/blog/WorkoutAnimatedWorkoutCompleted.mp4" controls/>
 
 # Building the hardware
 
@@ -148,4 +148,4 @@ I enjoyed creating the machine and might continue for fun here and there to impr
 
 Here is the last video showing the custom control with two shades of blue: one for the actual water and one for the desired water. When adjusting the weight, I created a fake wave showing some movement. We can also see the water shifting in color if we cross the threshold of actual water for better visibility.
 
-![](/videos/blog/WorkoutAnimatedCustomControl.mp4)
+<video src="/videos/blog/WorkoutAnimatedCustomControl.mp4" controls/>
