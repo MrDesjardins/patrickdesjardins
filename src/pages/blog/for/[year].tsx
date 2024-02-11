@@ -1,29 +1,57 @@
 import { GetStaticPropsContext, InferGetStaticPropsType } from "next"
-import { BlogBody } from "../../blogbody"
+import { BlogBody } from "../_components/blogbody"
 import styles from "../../layout.module.css"
-import { MdxData, getMdxFileContent, getTotalPagesCount, postFilePaths } from "../../../utils/mdx"
 import { BlogEntry } from "../_components/BlogEntry"
-export async function getStaticPaths() {
-  return { paths: [], fallback: "blocking" }
-}
-export async function getStaticProps(
-  ctx: GetStaticPropsContext<{
-    year: string
+import { FIRST_YEAR, LAST_YEAR } from "../../../constants/constants"
+import { MdxData, getAllPosts, getTotalPages, getTotalPagesCount } from "../../../lib/api"
+// export interface GeneratedPageContentType {
+//   blogPosts: MdxData[];
+//   year: number;
+//   totalPages: number;
+// }
+// export async function generateStaticParams(): Promise<GeneratedPageContentType[]> {
+//   const posts = await getAllPosts();
+//   const totalPages = getTotalPages(posts);
+//   const result: GeneratedPageContentType[] = [];
+//   for (let year = LAST_YEAR; year >= FIRST_YEAR; year--) {
+//     const postForYear = posts.filter((file) => file.metadata.year === year);
+//     result.push({
+//       blogPosts: postForYear,
+//       year: year,
+//       totalPages: totalPages
+//     });
+//   }
+//   return result;
+// }
 
-  }>,
-) {
-  const year = Number(ctx.params?.year);
-  const postForYear = postFilePaths.filter((file) => file.year === year);
-  let post: Promise<MdxData>[] = [];
-  for (const p of postForYear) {
-    post.push(getMdxFileContent(p.fullPathWithFileName));
+
+export async function getStaticPaths() {
+  const years = [];
+  for (let year = LAST_YEAR; year >= FIRST_YEAR; year--) {
+    years.push(year);
   }
-  const posts = await Promise.all(post);
+
+  return {
+    paths: years.map(p => ({
+      params: {
+        year: String(p)
+      },
+    })
+    ),
+    fallback: false, // false or "blocking"
+  }
+}
+
+export async function getStaticProps(context: { params: { year: string; }; }) {
+  const posts = await getAllPosts();
+  const totalPages = getTotalPages(posts);
+  const year = Number(context.params.year);
+  const postForYear = posts.filter((file) => file.metadata.year === year);
   return {
     props: {
-      posts: posts,
-      totalPages: getTotalPagesCount(),
-      year:year
+      blogPosts: postForYear,
+      year: year,
+      totalPages: totalPages
     },
   }
 }
@@ -32,7 +60,7 @@ export default function Page(props: InferGetStaticPropsType<typeof getStaticProp
   return (
     <BlogBody totalPages={props.totalPages} year={props.year}>
       <h1 className={styles.heading}>Blog Posts</h1>
-      {props.posts.map((node) =>
+      {(props.blogPosts??[]).map((node) =>
         <BlogEntry
           key={node.metadata.fileName}
           id={node.metadata.fileName}

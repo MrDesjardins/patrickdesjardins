@@ -1,23 +1,20 @@
 import { GetStaticPropsContext, InferGetStaticPropsType } from "next"
-import { BlogBody } from "../blogbody"
-import styles from "./layout.module.css"
-import { allPosts, getTotalPagesCount, postFilePaths } from "../../utils/mdx"
 import { MAX_POSTS_PER_PAGE } from "../../constants/constants"
 import { BlogEntry } from "../blog/_components/BlogEntry"
+import { BlogBody } from "./_components/blogbody"
+import styles from "./layout.module.css"
+import { getAllPosts, getTotalPages } from "../../lib/api"
 
-export async function getStaticProps(
-  ctx: GetStaticPropsContext<{
-    pageNumber: string
-  }>,
-) {
+export async function getStaticProps() {
   const pageNumber = 1;
-  const posts = await allPosts;
+  const posts = await getAllPosts();
+  const totalPage = getTotalPages(posts);
   posts.sort((a, b) => new Date(a.metadata.date) > new Date(b.metadata.date) ? -1 : 1);
   const pagePost = posts.slice((pageNumber - 1) * MAX_POSTS_PER_PAGE, pageNumber * MAX_POSTS_PER_PAGE);
   return {
     props: {
       pageNumber: pageNumber,
-      totalPages: getTotalPagesCount(),
+      totalPages: totalPage,
       posts: pagePost
     },
   }

@@ -1,11 +1,11 @@
 import "@fontsource/open-sans";
 import "@fontsource/oswald";
 import { Inter } from "next/font/google";
-import styles from "./layout.module.css";
+import styles from "../../layout.module.css";
 import Link from "next/link";
 import Image from "next/image";
 import clsx from "clsx";
-import { FIRST_YEAR, LAST_YEAR } from "../constants/constants";
+import { FIRST_YEAR, LAST_YEAR } from "../../../constants/constants";
 import { PropsWithChildren } from "react";
 const inter = Inter({ subsets: ["latin"] });
 

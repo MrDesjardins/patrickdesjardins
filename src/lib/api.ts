@@ -1,19 +1,14 @@
 import fs from "fs";
+import { MDXRemoteSerializeResult } from "next-mdx-remote";
+import { serialize } from "next-mdx-remote/serialize";
 import path from "path";
 import {
   FIRST_YEAR,
   LAST_YEAR,
   MAX_POSTS_PER_PAGE,
 } from "../constants/constants";
-import { serialize } from "next-mdx-remote/serialize";
-import { MDXRemoteSerializeResult } from "next-mdx-remote";
-import rehypePrism from "rehype-prism-plus";
-import remarkGfm from "remark-gfm";
 export const ROOT_POSTS_PATH = path.join(process.cwd(), "/src/_posts");
 
-// postFilePaths is the list of all mdx files inside the POSTS_PATH directory
-export const postFilePaths = getAllMdxFiles();
-export const allPosts = getAllPosts();
 export interface FileMetadata {
   year: number;
   date: string;
@@ -21,7 +16,16 @@ export interface FileMetadata {
   fileName: string;
   slug: string;
 }
-function getAllMdxFiles(): FileMetadata[] {
+export interface MdxData {
+  metadata: FileMetadata;
+  fileContent: MDXRemoteSerializeResult<
+    Record<string, unknown>,
+    Record<string, unknown>
+  >;
+  frontmatter: Record<string, unknown>;
+}
+
+export function getAllMdxFilesWithoutContent(): FileMetadata[] {
   let files: FileMetadata[] = [];
   for (let y = FIRST_YEAR; y <= LAST_YEAR; y++) {
     const filePath = `${ROOT_POSTS_PATH}/${y}`;
@@ -43,14 +47,6 @@ function getAllMdxFiles(): FileMetadata[] {
   return files;
 }
 
-export interface MdxData {
-  metadata: FileMetadata;
-  fileContent: MDXRemoteSerializeResult<
-    Record<string, unknown>,
-    Record<string, unknown>
-  >;
-  frontmatter: Record<string, unknown>;
-}
 export async function getMdxFileContent(
   fullPathWithFileName: string
 ): Promise<MdxData> {
@@ -78,14 +74,19 @@ export async function getMdxFileContent(
   };
 }
 
-export function getTotalPagesCount(): number {
-  const allPostCount = postFilePaths.length;
+export async function getTotalPagesCount(): Promise<number> {
+  const allPosts = await getAllPosts();
+  return getTotalPages(allPosts);
+}
+export function getTotalPages(posts: MdxData[]): number {
+  const allPostCount = posts.length;
   const totalPages = Math.ceil(allPostCount / MAX_POSTS_PER_PAGE);
   return totalPages;
 }
 
-async function getAllPosts(): Promise<MdxData[]> {
+export async function getAllPosts(): Promise<MdxData[]> {
   let post: Promise<MdxData>[] = [];
+  const postFilePaths = getAllMdxFilesWithoutContent();
   for (const p of postFilePaths) {
     post.push(getMdxFileContent(p.fullPathWithFileName));
   }

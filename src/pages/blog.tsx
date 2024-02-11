@@ -1,29 +1,32 @@
-import { GetStaticPropsContext, InferGetStaticPropsType } from "next"
-import { BlogBody } from "./blogbody"
+import { BlogBody } from "./blog/_components/blogbody"
 import styles from "./layout.module.css"
-import { allPosts, getTotalPagesCount, postFilePaths } from "../utils/mdx"
 import { MAX_POSTS_PER_PAGE } from "../constants/constants"
 import { BlogEntry } from "./blog/_components/BlogEntry"
+import { MdxData, getAllPosts, getTotalPages } from "../lib/api"
+import { InferGetStaticPropsType } from "next"
 
-export async function getStaticProps(
-  ctx: GetStaticPropsContext<{
-    pageNumber: string
-  }>,
-) {
+export interface GeneratedPageContentType {
+  pageNumber: number;
+  totalPages: number;
+  posts: MdxData[];
+}
+export async function getStaticProps() {
   const pageNumber = 1;
-  const posts = await allPosts;
+  const posts = await getAllPosts();
+  const totalPagesCount = getTotalPages(posts);
   posts.sort((a, b) => new Date(a.metadata.date) > new Date(b.metadata.date) ? -1 : 1);
   const pagePost = posts.slice((pageNumber - 1) * MAX_POSTS_PER_PAGE, pageNumber * MAX_POSTS_PER_PAGE);
   return {
     props: {
-      pageNumber: pageNumber,
-      totalPages: getTotalPagesCount(),
-      posts: pagePost
-    },
+        pageNumber: pageNumber,
+        totalPages: totalPagesCount,
+        posts: pagePost
+    }
   }
 }
 
 export default function Page(props: InferGetStaticPropsType<typeof getStaticProps>) {
+
   return (
     <BlogBody currentPage={Number(props.pageNumber)} totalPages={props.totalPages}>
       <h1 className={styles.heading}>Blog Posts</h1>

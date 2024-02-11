@@ -1,58 +1,64 @@
-import { GetStaticPropsContext, InferGetStaticPropsType } from "next";
 import { MDXRemote } from 'next-mdx-remote';
-import Error from 'next/error';
-import { getMdxFileContent, getTotalPagesCount, postFilePaths } from "../../utils/mdx";
-import { BlogBody } from "../blogbody";
+import { MdxData, getAllPosts, getTotalPages } from '../../lib/api';
 import styles from "../layout.module.css";
-import { CodeBlock } from "./_components/CodeBlock";
-import { TocAzureContainerSeries } from "./_blogcomponents/TocAzureContainerSeries";
 import { CodeSandbox } from "./_blogcomponents/CodeSandbox";
+import { TocAzureContainerSeries } from "./_blogcomponents/TocAzureContainerSeries";
 import { YouTube } from "./_blogcomponents/YouTube";
+import { CodeBlock } from "./_components/CodeBlock";
+import { BlogBody } from "./_components/blogbody";
+import { GetStaticPaths, InferGetStaticPropsType } from 'next';
+
+// export interface GeneratedPageContentType {
+//   source: MdxData;
+//   totalPages: number;
+// }
+// export async function generateStaticParams(): Promise<GeneratedPageContentType[]> {
+//   const posts = await getAllPosts();
+//   const totalPagesCount = getTotalPages(posts);
+//   return posts.map((p) => ({
+//     source: p,
+//     totalPages: totalPagesCount
+//   })
+//   );
+// }
+
 
 export async function getStaticPaths() {
-  return { paths: [], fallback: "blocking" }
-}
-export async function getStaticProps(
-  ctx: GetStaticPropsContext<{
-    slug: string
-  }>,
-) {
-  const { slug } = ctx.params!
-
-  // retrieve the MDX blog post file associated
-  // with the specified slug parameter
-  const postFile = postFilePaths.find((file) => file.fileName === (`${slug}.mdx`))
-  if (postFile === undefined) {
-    return {
-      props: {
-        status: 404
-
+  const posts = await getAllPosts();
+  return {
+    paths: posts.map(p => ({
+      params: {
+        slug: p.metadata.fileName
       },
-    }
+    })
+    ),
+    fallback: false, // false or "blocking"
   }
+}
 
-  const content = await getMdxFileContent(postFile.fullPathWithFileName);
-
+export async function getStaticProps(context: { params: { slug: string; }; }) {
+  const posts = await getAllPosts();
+  const totalCount = getTotalPages(posts);
   return {
     props: {
-      status: 200,
-      source: content,
-      totalPages: getTotalPagesCount()
-    },
+      totalPages: totalCount,
+      post: posts.find((post) => post.metadata.slug === context.params.slug)
+    }
   }
 }
+
 export default function Page(props: InferGetStaticPropsType<typeof getStaticProps>) {
-  if (props.source === undefined) {
-    return <Error statusCode={props.status} />
+  if (props.post === undefined) {
+    throw new Error("Post not found");
   }
-  const content = props.source.fileContent
+  const content = props.post.fileContent
   return (
     <BlogBody totalPages={props.totalPages}>
       <h1>
-        {props.source.frontmatter.title as string}
+        {props.post.frontmatter.title as string}
       </h1>
       <div className={styles.blogPostContainer}>
-        <p className={styles.blogPostDate}>Posted on: {props.source.frontmatter.date as string}</p>
+        <p className={styles.blogPostDate}>Posted on: {props.post.frontmatter.date as string}</p>
         <MDXRemote
           {...content}
           components={{
