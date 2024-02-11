@@ -3,7 +3,7 @@ export interface CardFixedWidthProps {
   title: string;
   description: string;
   link: string;
-  image: JSX.Element
+  image: JSX.Element;
 }
 export const CardFixedWidth = (props: CardFixedWidthProps): JSX.Element => {
   return (
@@ -12,7 +12,7 @@ export const CardFixedWidth = (props: CardFixedWidthProps): JSX.Element => {
       <p className={styles.cardFixedWidthImage}>{props.image}</p>
       <p>{props.description}</p>
       <p>
-        <a href={props.link} target="_blank" rel="noopener noreferrer" >
+        <a href={props.link} target="_blank" rel="noopener noreferrer">
           Link
         </a>
       </p>

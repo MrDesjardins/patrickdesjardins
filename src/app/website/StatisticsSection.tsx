@@ -34,7 +34,7 @@ export const StatisticsSection = (): JSX.Element => {
             />
           </div>
           <div className="counterup-content">
-            <h5 className="count-number">{(new Date().getFullYear() - 2004)}</h5>
+            <h5 className="count-number">{new Date().getFullYear() - 2004}</h5>
             <h6>Years of programming</h6>
           </div>
         </div>

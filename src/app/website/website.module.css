@@ -8,7 +8,6 @@
   transition-duration: 0.5s;
 }
 
-
 section.contactSection a {
   text-transform: uppercase;
   text-decoration: none;
@@ -108,11 +107,9 @@ section.contactSection a:hover {
   margin: auto;
 }
 
-
 @media only screen and (max-width: 500px) {
   .cardWithImageContainer {
     max-width: --var(--size-column);
     grid-template-columns: none;
   }
 }
-

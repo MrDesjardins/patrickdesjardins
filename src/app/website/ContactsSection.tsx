@@ -1,4 +1,3 @@
-
 import clsx from "clsx";
 import styles from "./website.module.css";
 import styles2 from "./ContactsSection.module.css";
@@ -20,7 +19,11 @@ export const ContactSection = (): JSX.Element => {
   return (
     <section
       id="contact"
-      className={clsx(styles.sectionMainpage, styles.sectionVisualTwo, styles2.contactSection)}
+      className={clsx(
+        styles.sectionMainpage,
+        styles.sectionVisualTwo,
+        styles2.contactSection,
+      )}
     >
       <header>Contact</header>
       <h3>You can contact me directly by email or use social media</h3>

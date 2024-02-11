@@ -5,7 +5,10 @@ import * as React from "react";
 import { CardFixedWidth } from "./CardFixedWidth";
 export const BookSection = (): JSX.Element => {
   return (
-    <section id="book" className={clsx(styles.sectionMainpage, styles.sectionVisualOne)}>
+    <section
+      id="book"
+      className={clsx(styles.sectionMainpage, styles.sectionVisualOne)}
+    >
       <header>Books</header>
       <div className={styles.sectionFixedWitdh}>
         <CardFixedWidth

@@ -1,8 +1,8 @@
-import { FIRST_YEAR, LAST_YEAR } from "../../../../constants/constants"
-import { MdxData, getAllPosts, getTotalPages } from "../../../../lib/api"
-import styles from "../../../layout.module.css"
-import { BlogEntry } from "../../_components/BlogEntry"
-import { BlogBody } from "../../_components/blogbody"
+import { FIRST_YEAR, LAST_YEAR } from "../../../../constants/constants";
+import { MdxData, getAllPosts, getTotalPages } from "../../../../lib/api";
+import styles from "../../../layout.module.css";
+import { BlogEntry } from "../../_components/BlogEntry";
+import { BlogBody } from "../../_components/blogbody";
 export interface GeneratedPageContentType {
   blogPosts: MdxData[];
   year: number;
@@ -14,7 +14,6 @@ export async function generateStaticParams() {
     years.push(year);
   }
   return years.map((y) => ({ year: String(y) }));
-
 }
 
 export default async function Page(props: { params: { year: string } }) {
@@ -26,7 +25,7 @@ export default async function Page(props: { params: { year: string } }) {
   return (
     <BlogBody totalPages={totalPages} year={year}>
       <h1 className={styles.heading}>Blog Posts</h1>
-      {(postForYear ?? []).map((node) =>
+      {(postForYear ?? []).map((node) => (
         <BlogEntry
           key={node.metadata.fileName}
           id={node.metadata.fileName}
@@ -34,6 +33,8 @@ export default async function Page(props: { params: { year: string } }) {
           title={node.frontmatter.title as string}
           date={node.frontmatter.date as string}
           categories={node.frontmatter.categories as string[]}
-        />)}
-    </BlogBody>)
+        />
+      ))}
+    </BlogBody>
+  );
 }

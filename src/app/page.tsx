@@ -78,10 +78,9 @@ export default function Index() {
                 src="/images/backgrounds/patrickdesjardinsatnetflix.jpg"
                 fill
                 style={{
-                  objectFit: 'cover',
+                  objectFit: "cover",
                 }}
               />
-
             </div>
           </div>
           <AboutMeSection />

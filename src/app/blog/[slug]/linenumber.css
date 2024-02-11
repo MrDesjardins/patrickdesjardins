@@ -22,7 +22,6 @@ code[data-line-numbers-max-digits="3"] > [data-line]::before {
   width: 3rem;
 }
 
-
-code > [data-highlighted-line]{
+code > [data-highlighted-line] {
   background-color: rgb(220 236 253);
 }

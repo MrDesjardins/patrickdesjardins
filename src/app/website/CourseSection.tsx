@@ -4,7 +4,10 @@ import styles from "./website.module.css";
 import Image from "next/image";
 export const CourseSection = (): JSX.Element => {
   return (
-    <section id="course" className={clsx(styles.sectionMainpage, styles.sectionVisualOne)}>
+    <section
+      id="course"
+      className={clsx(styles.sectionMainpage, styles.sectionVisualOne)}
+    >
       <header>Courses</header>
       <div className={styles.sectionFixedWitdh}>
         <CardFixedWidth

@@ -9,7 +9,7 @@ export const AchievementsSection = (): JSX.Element => {
       className={clsx(
         styles.sectionMainpage,
         styles.sectionVisualTwo,
-        styles2.achievementContainerBackground
+        styles2.achievementContainerBackground,
       )}
     >
       <div className={styles2.achievementOverlay}>
@@ -34,7 +34,10 @@ export const AchievementsSection = (): JSX.Element => {
         <div className={styles2.achievementColumn2}>
           <div className={styles2.achievementGallery}>
             <div style={{ margin: "auto", width: 200 }}>
-              <a href="https://stackexchange.com/users/7901" rel="noopener noreferrer">
+              <a
+                href="https://stackexchange.com/users/7901"
+                rel="noopener noreferrer"
+              >
                 <Image
                   src="https://stackexchange.com/users/flair/7901.png"
                   width={208}
@@ -114,7 +117,11 @@ export const AchievementsSection = (): JSX.Element => {
                   marginLeft: 5,
                 }}
               >
-                <a href="https://github.com/MrDesjardins" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="https://github.com/MrDesjardins"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <Image
                     loading="lazy"
                     src="https://avatars0.githubusercontent.com/u/1014796?v=4"
@@ -217,7 +224,10 @@ export const AchievementsSection = (): JSX.Element => {
             <br />
             <br />
             <div className={styles2.amazonFlair}>
-              <a href="https://www.amazon.com/Patrick-Desjardins/e/B01MZBUL14" rel="noopener noreferrer">
+              <a
+                href="https://www.amazon.com/Patrick-Desjardins/e/B01MZBUL14"
+                rel="noopener noreferrer"
+              >
                 <Image
                   alt="Amazon Logo"
                   src="/images/brand-logo/amazonlogo.jpg"
@@ -230,8 +240,12 @@ export const AchievementsSection = (): JSX.Element => {
             <br />
             <br />
             <div className={styles2.mvpFlair}>
-              <Image alt="MVP Logo" src="/images/brand-logo/mvp.png" width={187}
-                height={75} />
+              <Image
+                alt="MVP Logo"
+                src="/images/brand-logo/mvp.png"
+                width={187}
+                height={75}
+              />
 
               <div>Microsoft MVP in 2013, 2014, 2021, 2022, 2023</div>
             </div>
@@ -244,27 +258,45 @@ export const AchievementsSection = (): JSX.Element => {
               </a>
               <div style={{ color: "black" }}>
                 Online Available:
-                <a href="https://www.freepatentsonline.com/y2019/0199645.html" rel="noopener noreferrer">
+                <a
+                  href="https://www.freepatentsonline.com/y2019/0199645.html"
+                  rel="noopener noreferrer"
+                >
                   1
                 </a>
                 ,
-                <a href="https://www.freepatentsonline.com/y2018/0356957.html" rel="noopener noreferrer">
+                <a
+                  href="https://www.freepatentsonline.com/y2018/0356957.html"
+                  rel="noopener noreferrer"
+                >
                   2
                 </a>
                 ,
-                <a href="https://www.freepatentsonline.com/y2018/0367478.html" rel="noopener noreferrer">
+                <a
+                  href="https://www.freepatentsonline.com/y2018/0367478.html"
+                  rel="noopener noreferrer"
+                >
                   3
                 </a>
                 ,
-                <a href="https://www.freepatentsonline.com/y2017/0359434.html" rel="noopener noreferrer">
+                <a
+                  href="https://www.freepatentsonline.com/y2017/0359434.html"
+                  rel="noopener noreferrer"
+                >
                   4
                 </a>
                 ,
-                <a href="https://www.freepatentsonline.com/y2018/0316637.html" rel="noopener noreferrer">
+                <a
+                  href="https://www.freepatentsonline.com/y2018/0316637.html"
+                  rel="noopener noreferrer"
+                >
                   5
                 </a>
                 ,
-                <a href="https://www.freepatentsonline.com/y2018/0153458.html" rel="noopener noreferrer">
+                <a
+                  href="https://www.freepatentsonline.com/y2018/0153458.html"
+                  rel="noopener noreferrer"
+                >
                   6
                 </a>
                 ,

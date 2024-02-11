@@ -5,7 +5,10 @@ import Image from "next/image";
 import { CardFixedWidth } from "./CardFixedWidth";
 export const WorkSection = (): JSX.Element => {
   return (
-    <section id="work" className={clsx(styles.sectionMainpage, styles.sectionVisualOne)}>
+    <section
+      id="work"
+      className={clsx(styles.sectionMainpage, styles.sectionVisualOne)}
+    >
       <header>My Work</header>
       <div className={styles.sectionVisualOneSubHeader}>
         An excerpt of some of my works from the last few years. See resume for
@@ -42,8 +45,6 @@ export const WorkSection = (): JSX.Element => {
             />
           }
         />
-
-
 
         <CardFixedWidth
           title="Netflix - Partner Portal"

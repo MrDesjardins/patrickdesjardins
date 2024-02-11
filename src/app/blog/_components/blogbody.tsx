@@ -12,11 +12,10 @@ const inter = Inter({ subsets: ["latin"] });
 export interface BlogBodyProps extends PropsWithChildren {
   currentPage?: number;
   year?: number;
-  totalPages:number;
+  totalPages: number;
 }
 
 export function BlogBody(props: BlogBodyProps) {
-
   const years = [];
   for (let i = LAST_YEAR; i >= FIRST_YEAR; i--) {
     years.push(i);
@@ -43,7 +42,10 @@ export function BlogBody(props: BlogBodyProps) {
                 return (
                   <Link
                     key={y}
-                    className={clsx({ [styles.navLinkText]: true, [styles.currentLink]: y === props.year })}
+                    className={clsx({
+                      [styles.navLinkText]: true,
+                      [styles.currentLink]: y === props.year,
+                    })}
                     href={`/blog/for/${y}`}
                   >
                     {y}
@@ -62,9 +64,7 @@ export function BlogBody(props: BlogBodyProps) {
             height={300}
           />
         </div>
-        <main className={styles.main}>
-          {props.children}
-        </main>
+        <main className={styles.main}>{props.children}</main>
         <div className={styles.paginationBar}>
           <div className={styles.paginationTitle}>
             Chronological Blog Articles by Page
@@ -74,7 +74,9 @@ export function BlogBody(props: BlogBodyProps) {
               return (
                 <Link
                   key={page}
-                  className={clsx({ [styles.currentLink]: page === props.currentPage })}
+                  className={clsx({
+                    [styles.currentLink]: page === props.currentPage,
+                  })}
                   href={`/blog/page/${page}`}
                 >
                   {page}
@@ -85,6 +87,5 @@ export function BlogBody(props: BlogBodyProps) {
         </div>
       </div>
     </div>
-
   );
 }

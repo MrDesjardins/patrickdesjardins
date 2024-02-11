@@ -38,8 +38,7 @@ section.contactSection {
   padding-bottom: 0;
 }
 
-
-section.contactSection a{
+section.contactSection a {
   text-transform: uppercase;
   text-decoration: none;
   font-size: 32px;
@@ -50,6 +49,6 @@ section.contactSection a{
   color: var(--header-color1);
 }
 
-section.contactSection a:hover{
+section.contactSection a:hover {
   background-color: var(--link-background1);
 }

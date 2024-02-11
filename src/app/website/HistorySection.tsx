@@ -9,7 +9,7 @@ export const HistorySection = (): JSX.Element => {
       className={clsx(
         styles.sectionMainpage,
         styles.sectionVisualTwo,
-        styles2.historyContainerBackground
+        styles2.historyContainerBackground,
       )}
     >
       <div className={styles2.historyOverlay}>

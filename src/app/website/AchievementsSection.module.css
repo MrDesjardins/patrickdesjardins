@@ -1,6 +1,6 @@
 .achievementContainerBackground {
-  background: url(/images/backgrounds/patrickdesjardinsatnetflix2.jpg)
-    no-repeat top center fixed;
+  background: url(/images/backgrounds/patrickdesjardinsatnetflix2.jpg) no-repeat
+    top center fixed;
   background-size: cover;
   width: 100%;
   overflow: hidden;

@@ -10,7 +10,11 @@ export const EducationSection = (): JSX.Element => {
   return (
     <section
       id="education"
-      className={clsx(styles.sectionMainpage, styles.sectionVisualTwo, styles2.educationSection)}
+      className={clsx(
+        styles.sectionMainpage,
+        styles.sectionVisualTwo,
+        styles2.educationSection,
+      )}
     >
       <header>Education</header>
       <div className={styles.sectionFixedWitdh}>
@@ -33,8 +37,14 @@ export const EducationSection = (): JSX.Element => {
             <FontAwesomeIcon icon={faGraduationCap} />
             <p>Pre-University 3 years in Computer Science (Montreal, Canada)</p>
           </li>
-          <li><FontAwesomeIcon icon={faCertificate} /><p>26 Plurasight and Udemy Classes</p></li>
-          <li><FontAwesomeIcon icon={faCertificate} /><p>10 Microsoft Certificaftions</p></li>
+          <li>
+            <FontAwesomeIcon icon={faCertificate} />
+            <p>26 Plurasight and Udemy Classes</p>
+          </li>
+          <li>
+            <FontAwesomeIcon icon={faCertificate} />
+            <p>10 Microsoft Certificaftions</p>
+          </li>
         </ul>
       </div>
     </section>
