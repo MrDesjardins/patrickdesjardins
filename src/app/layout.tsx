@@ -8,10 +8,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <Head>
+      <head>
         <title>Patrick Desjardins Website and Blog</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"></meta>
-      </Head>
+      </head>
       <body className={styles.bodystyle}>{children}</body>
     </html>
   );

@@ -2,6 +2,7 @@ import fs from "fs";
 import { MDXRemoteSerializeResult } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
 import path from "path";
+import { compileMDX } from "next-mdx-remote/rsc";
 import {
   FIRST_YEAR,
   LAST_YEAR,
@@ -22,6 +23,7 @@ export interface MdxData {
     Record<string, unknown>,
     Record<string, unknown>
   >;
+  rawFileContent: string;
   frontmatter: Record<string, unknown>;
 }
 
@@ -58,6 +60,10 @@ export async function getMdxFileContent(
       // rehypePlugins: [[rehypePrism, { ignoreMissing: true }]],
     },
   });
+  // const { content, frontmatter } = await compileMDX({
+  //   source: fileContent,
+  //   options: { parseFrontmatter: true },
+  // });
   const fileName = fullPathWithFileName.slice(
     fullPathWithFileName.lastIndexOf("/") + 1
   );
@@ -70,6 +76,7 @@ export async function getMdxFileContent(
       date: mdxSource.frontmatter.date as string,
     },
     fileContent: mdxSource,
+    rawFileContent: fileContent,
     frontmatter: mdxSource.frontmatter,
   };
 }
@@ -84,13 +91,17 @@ export function getTotalPages(posts: MdxData[]): number {
   return totalPages;
 }
 
+let getAllPostsResult: MdxData[] | undefined = undefined;
 export async function getAllPosts(): Promise<MdxData[]> {
-  let post: Promise<MdxData>[] = [];
-  const postFilePaths = getAllMdxFilesWithoutContent();
-  for (const p of postFilePaths) {
-    post.push(getMdxFileContent(p.fullPathWithFileName));
+  if (getAllPostsResult === undefined) {
+    let post: Promise<MdxData>[] = [];
+    const postFilePaths = getAllMdxFilesWithoutContent();
+    for (const p of postFilePaths) {
+      post.push(getMdxFileContent(p.fullPathWithFileName));
+    }
+    const posts = await Promise.all(post);
+    const today = new Date();
+    getAllPostsResult = posts.filter((p) => new Date(p.metadata.date) <= today);
   }
-  const posts = await Promise.all(post);
-  const today = new Date();
-  return posts.filter((p) => new Date(p.metadata.date) <= today);
+  return getAllPostsResult;
 }
