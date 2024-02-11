@@ -1,6 +1,5 @@
-import { InferGetStaticPropsType } from "next";
 import { MAX_POSTS_PER_PAGE } from "../../../../constants/constants";
-import { MdxData, getAllPosts, getTotalPages } from "../../../../lib/api";
+import { getAllPosts, getTotalPages } from "../../../../lib/api";
 import styles from "../../../layout.module.css";
 import { BlogEntry } from "../../_components/BlogEntry";
 import { BlogBody } from "../../_components/blogbody";
