@@ -39,8 +39,8 @@ figure[data-rehype-pretty-code-figure] {
   margin: 10px 0px;
 }
 
-figure[data-rehype-pretty-code-figure] > pre > code {
+/* figure[data-rehype-pretty-code-figure] > pre > code {
   background-color: rgb(247 247 247);
   padding: 6px;
   border-radius: 8px;
-}
+} */

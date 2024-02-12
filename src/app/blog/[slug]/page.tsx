@@ -49,7 +49,6 @@ export default async function Page(props: { params: { slug: string } }) {
   }
   const options = {
     defaultLang: "plaintext",
-    theme: "github-light",
     keepBackground: true,
   };
   const { content, frontmatter } = await compileMDX({
