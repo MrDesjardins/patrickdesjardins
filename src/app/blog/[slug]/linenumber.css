@@ -2,7 +2,16 @@ code {
   counter-reset: line;
 }
 
-code > [data-line]::before {
+/*Only when a single line*/
+code[data-language="plaintext"]:has(> :nth-child(1):last-child) > [data-line] > span {
+  color: #ff778f;
+  background-color: #fdf4f4;
+  padding: 2px 4px 2px 4px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+:not(code[data-language="plaintext"]) > [data-line]::before {
   counter-increment: line;
   content: counter(line);
 

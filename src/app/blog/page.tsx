@@ -1,10 +1,9 @@
-import { GetStaticPropsContext, InferGetStaticPropsType } from "next";
+import { Metadata } from "next";
 import { MAX_POSTS_PER_PAGE } from "../../constants/constants";
+import { getAllPosts, getTotalPages } from "../../lib/api";
+import styles from "../layout.module.css";
 import { BlogEntry } from "./_components/BlogEntry";
 import { BlogBody } from "./_components/blogbody";
-import styles from "../layout.module.css";
-import { getAllPosts, getTotalPages } from "../../lib/api";
-
 // export async function getStaticProps() {
 //   const pageNumber = 1;
 //   const posts = await getAllPosts();
@@ -19,7 +18,10 @@ import { getAllPosts, getTotalPages } from "../../lib/api";
 //     },
 //   }
 // }
-
+export const metadata: Metadata = {
+  title: 'Patrick Desjardins Blog',
+  description: 'Patrick Desjardins Blog',
+}
 export default async function Page() {
   const pageNumber = 1;
   const posts = await getAllPosts();

@@ -1,0 +1,43 @@
+---
+title: "Migrating my Static Blog from Gatsby to NextJS"
+date: "2024-02-14"
+categories:
+  - "nextjs"
+  - "gatsby"
+  - "ssg"
+---
+
+In 2021, I migrated my WordPress Blog to Gatsby (see [blog post](https://patrickdesjardins.com/blog/migrating-my-wordpress-blog-to-gatsby)). The main goal was to reduce the hosting cost and have a faster website. Within two years, I started to feel the pain of Gatsby. 
+
+# Leaving Gatsby
+The core problem was twofold: It was impossible to migrate from Gatsby v3 to v4 and v5, and slow build time.
+
+The migration is disastrous, and there are many Github issues opened. I still have a [thread open](https://github.com/gatsbyjs/gatsby/discussions/33723#discussioncomment-4319404) and lost track of other problems. Migrating from V3 to a future version was causing never-ending issues. The NodeJS version was incompatible, plugins were not working, and the documentation was unclear. Gatsby supports is a ghost town. People ask questions, but actual solutions still need to be present. I gave a fair shot to Gatsby and tried twice to migrate. Both attempts ended up with three evenings of 3h without success. It was nothing complicated, just a static blog already under the Gatsby framework.
+
+The second issue was that Gatsby is fast for people to consume the generated static website but could be faster for development. I am under Windows and was using WSL, and writing a new blog post was brutal. Starting the dev command took a long time, and changing was not hot-reloading. I had to stop the server and restart it. It was a pain. I was not the only one.
+
+# NextJS
+I ran the static website for a few months without updating. Until I started playing with NextJS professionally. The server and client-side rendering is used at work but not the SSG (server-side generation). I wanted to see how it would work. I started to play with it, and I was impressed. The dev server was fast, the hot-reload was working and the build time was fast. I decided to migrate my blog to NextJS. The migration was with frustration. Mostly because NextJS changed its routing system with NextJS 13, and a lot of documentation is behind. The official documentation is confusing with both ways. I had to rely on a migration post of NextJS to understand the new way of doing things. See the "[create first app with NextJS](https://nextjs.org/learn-pages-router/basics/data-fetching/implement-getstaticprops)" from nextjs.org. It still uses the `getStaticProps`, which is wrong. Similarly for the [rendering documentation](https://nextjs.org/docs/pages/building-your-application/rendering/static-site-generation) who still use the `getStaticProps`.There was other frustration around some limitations of NextJS in term of specific structure but overall, it was a good experience. The best part is that I could migrate a completely different framework to NextJS in less time to update Gatsby from v3 to v5.
+
+# Learning from the Migration
+Here are few details that I learned from the migration. 
+
+1. You must set your React files into `app` folder. At work, I was using `pages` folder but it was not working. I had to move all my files into `app` folder to make it work with SSG.
+2. You must use the new routing with folder and file. The old way of using file name with the dynamic part, like `[slug].tsx` does not work. Instead, use `[slug]/page.tsx`.
+3. Use `generateStaticParams` to generate the static page and fetch inside your component. Most documentation uses `getStaticProps` and `getStaticPaths`. The current NextJS documentation also has a dedicated page for these two functions.
+4. Gatsby uses GraphQL -- it's overkill. Directly use the file system (FS) to fetch your data. It's faster and simpler.
+5. Cache your markdown files. The reason is that the `generateStaticParams` will return an array of the static page to generate. For example, `generateStaticParams` reads your markdown directory, then returns all the file names that the page component receives. The component opens the markdown file and parses it. If you have 1000 files, it will open 1000 files. Instead, open the file once and cache the result. It's faster and has less IO.
+6. I ended up using `next-mdx-remote/rsc`. The `/rsc` is important! The server side rendering must use the version in this package.
+7. Most examples tell you to `fetch` inside your page component. You can call `fs` to open the markdown file.
+8. The `generateStaticParams` returns must only return an array of key-value where the key is the dynamic part of the URL (the folder). For example, if you have a file in `[slug]/pages.tsx`, the `generateStaticParams` should return an array of objects with a `slug` key.
+9. The ecosystem has many ways to read the Markdown. I found the easiest way is to use `next-mdx-remote`. However, it requires few specfic configurations like using the `compileMDX` function and `rehypePrettyCode` plugin to get the code highlight working.
+10. The code highlight is not working out of the box. The single tick was causing the issues; the color was working on dev but not on the build. Before settling on `rehypePrettyCode`, there was a server-side issue because some alternatives use client-side rendering. Half of my time in the migration was on the code highlight.
+11. I used `next-mdx-remote/serialize` to read the date from the Markdown because it was part of the `next-mds-remote` package. But, I also needed to use `compileMDX` because I had custom components, and one generated React while the other needed to use the `MDXRemote` React component with a source. I wouldn't say I like using two functions to read the Markdown as it doubles the processing time, but so far, it's the only way I found to read the date from the markdown file.
+12. Having line numbers require CSS works event with `rehypePrettyCode`
+13. Single tick requires additional CSS, otherwise the CSS added for `rehypePrettyCode` adds the line number for inline code.
+14. You must specify in the `next.config.msj` the `output: "export"`. The configuration generates HTML, JS and CSS static files into a single folder.
+15. You must specify the assets outside your application in the `next.config.msj`.
+16. You must specify the image as `unoptimized` into the `next.config.msj`.
+
+# Conclusion
+In a future blog post, I'll write about the specifics of NextJS using the MDX file. Once you know the configuration, the experience is excellent. There are a lot of pitfalls along the road, but so far, I am happy to be leaving Gatsby behind and moving toward NextJS. Oh, and for the curious, the Github action that generated the site went from 5 minutes 16 seconds to 2 minutes 15 seconds -- a time reduction of 57%.

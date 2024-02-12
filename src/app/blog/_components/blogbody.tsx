@@ -55,13 +55,13 @@ export function BlogBody(props: BlogBodyProps) {
             </li>
           </ul>
         </nav>
-        <div>
+        <div className={styles.blogPictureContainer}>
           <Image
             className={styles.blogTopPicture}
             alt="Patrick Desjardins picture from a conference"
             src="/images/backgrounds/patrickdesjardins_conference_bw.jpeg"
-            width={1000}
-            height={300}
+            width={800}
+            height={260}
           />
         </div>
         <main className={styles.main}>{props.children}</main>

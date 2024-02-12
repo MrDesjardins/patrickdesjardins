@@ -1,8 +1,25 @@
+import { ResolvingMetadata, Metadata } from "next";
 import { MAX_POSTS_PER_PAGE } from "../../../../constants/constants";
 import { getAllPosts, getTotalPages } from "../../../../lib/api";
 import styles from "../../../layout.module.css";
 import { BlogEntry } from "../../_components/BlogEntry";
 import { BlogBody } from "../../_components/blogbody";
+type Props = {
+  params: { pageNumber: string }
+  searchParams: { [key: string]: string | string[] | undefined }
+}
+export async function generateMetadata(
+  props: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+
+
+  return {
+    title: "Patrick Desjardins Blog - Page " + String(props.params.pageNumber),
+    description: "Patrick Desjardins Blog - Page " + String(props.params.pageNumber)
+  }
+}
+
 
 export async function generateStaticParams() {
   const posts = await getAllPosts();

@@ -116,6 +116,7 @@
 }
 
 .blogTopPicture {
+  border-radius: 6px;;
 }
 
 .paginationBar {
@@ -144,4 +145,8 @@
 .paginationLinks {
   font-size: 24px;
   margin-top: 8px;
+}
+
+.blogPictureContainer{
+  overflow: hidden;
 }

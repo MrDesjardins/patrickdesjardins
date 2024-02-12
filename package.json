@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prettier": "npx prettier . --write"
   },
   "dependencies": {
     "@fontsource/open-sans": "^5.0.22",
@@ -23,7 +24,6 @@
     "react-dom": "^18",
     "rehype-pretty-code": "^0.13.0",
     "rehype-prism-plus": "^2.0.0",
-    "remark-gfm": "^3.0.1",
     "remark-rehype": "^11.1.0",
     "tm-themes": "^1.1.2"
   },

@@ -1,8 +1,26 @@
+import { ResolvingMetadata, Metadata } from "next";
 import { FIRST_YEAR, LAST_YEAR } from "../../../../constants/constants";
 import { MdxData, getAllPosts, getTotalPages } from "../../../../lib/api";
 import styles from "../../../layout.module.css";
 import { BlogEntry } from "../../_components/BlogEntry";
 import { BlogBody } from "../../_components/blogbody";
+
+type Props = {
+  params: { year: string }
+  searchParams: { [key: string]: string | string[] | undefined }
+}
+export async function generateMetadata(
+  props: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+
+
+  return {
+    title: "Patrick Desjardins Blog - Year " + String(props.params.year),
+    description: "Patrick Desjardins Blog - Page " + String(props.params.year)
+  }
+}
+
 export interface GeneratedPageContentType {
   blogPosts: MdxData[];
   year: number;

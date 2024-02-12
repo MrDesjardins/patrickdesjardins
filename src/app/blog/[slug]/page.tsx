@@ -8,6 +8,29 @@ import { YouTube } from "../_blogcomponents/YouTube";
 import { BlogBody } from "../_components/blogbody";
 import rehypePrettyCode from "rehype-pretty-code";
 import "./linenumber.css";
+import { Metadata, ResolvingMetadata } from "next";
+
+type Props = {
+  params: { slug: string }
+  searchParams: { [key: string]: string | string[] | undefined }
+}
+
+export async function generateMetadata(
+  props: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const posts = await getAllPosts();
+  const post = posts.find((post) => post.metadata.slug === props.params.slug);
+  if (post === undefined) {
+    throw new Error("Post not found");
+  }
+
+  return {
+    title: "Patrick Desjardins Blog - " + String(post.frontmatter.title),
+    description: String(post.frontmatter.title)
+  }
+}
+
 export interface GeneratedPageContentType {
   source: MdxData;
   totalPages: number;
