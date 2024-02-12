@@ -9,7 +9,7 @@ import { BlogBody } from "../_components/blogbody";
 import rehypePrettyCode from "rehype-pretty-code";
 import "./linenumber.css";
 import { Metadata, ResolvingMetadata } from "next";
-import theme from 'tm-themes/themes/github-light.json'
+
 type Props = {
   params: { slug: string }
   searchParams: { [key: string]: string | string[] | undefined }
@@ -49,7 +49,7 @@ export default async function Page(props: { params: { slug: string } }) {
   }
   const options = {
     defaultLang: "plaintext",
-    theme: theme,
+    theme: "github-light",
     keepBackground: true,
   };
   const { content, frontmatter } = await compileMDX({
