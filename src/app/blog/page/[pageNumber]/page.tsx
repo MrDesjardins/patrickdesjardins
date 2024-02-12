@@ -39,7 +39,7 @@ export async function generateStaticParams() {
 export default async function Page(props: { params: { pageNumber: string } }) {
   const posts = await getAllPosts();
   posts.sort((a, b) =>
-    new Date(a.metadata.date) > new Date(b.metadata.date) ? -1 : 1,
+    new Date(a.metadata.date) < new Date(b.metadata.date) ? -1 : 1,
   );
 
   const currentPage = Number(props.params.pageNumber);
