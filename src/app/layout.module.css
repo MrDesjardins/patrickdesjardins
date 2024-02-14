@@ -94,7 +94,7 @@
   font-family: "Oswald";
 }
 
-.blogPostContainer p code {
+.blogPostContainer code:not([class*=code-highlight]){
   color: #ff778f;
   background-color: #ececec;
   padding: 2px 4px 2px 4px;
