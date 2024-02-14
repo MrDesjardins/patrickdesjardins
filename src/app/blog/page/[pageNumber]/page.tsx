@@ -4,6 +4,7 @@ import { getAllPosts, getTotalPages } from "../../../../lib/api";
 import styles from "../../../layout.module.css";
 import { BlogEntry } from "../../_components/BlogEntry";
 import { BlogBody } from "../../_components/blogbody";
+import { sortByMetadataDateAsc, sortByMetadataDateDesc } from "../../../../_utils/list";
 type Props = {
   params: { pageNumber: string }
   searchParams: { [key: string]: string | string[] | undefined }
@@ -38,15 +39,13 @@ export async function generateStaticParams() {
 
 export default async function Page(props: { params: { pageNumber: string } }) {
   const posts = await getAllPosts();
-  posts.sort((a, b) =>
-    new Date(a.metadata.date) < new Date(b.metadata.date) ? -1 : 1,
-  );
+  posts.sort(sortByMetadataDateAsc);
 
   const currentPage = Number(props.params.pageNumber);
   const result = posts.slice(
     (currentPage - 1) * MAX_POSTS_PER_PAGE,
     currentPage * MAX_POSTS_PER_PAGE,
-  );
+  ).sort(sortByMetadataDateDesc);
   const totalPagesCount = getTotalPages(posts);
 
   return (

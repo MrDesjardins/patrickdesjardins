@@ -4,6 +4,7 @@ import { MdxData, getAllPosts, getTotalPages } from "../../../../lib/api";
 import styles from "../../../layout.module.css";
 import { BlogEntry } from "../../_components/BlogEntry";
 import { BlogBody } from "../../_components/blogbody";
+import { sortByMetadataDateDesc } from "../../../../_utils/list";
 
 type Props = {
   params: { year: string }
@@ -38,7 +39,7 @@ export default async function Page(props: { params: { year: string } }) {
   const year = Number(props.params.year);
   const posts = await getAllPosts();
   const totalPages = getTotalPages(posts);
-  const postForYear = posts.filter((file) => file.metadata.year === year);
+  const postForYear = posts.filter((file) => file.metadata.year === year).sort(sortByMetadataDateDesc);
 
   return (
     <BlogBody totalPages={totalPages} year={year}>
