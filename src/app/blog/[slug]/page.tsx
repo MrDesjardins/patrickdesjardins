@@ -6,8 +6,6 @@ import { SoundCloud } from "../_blogcomponents/SoundCloud";
 import { TocAzureContainerSeries } from "../_blogcomponents/TocAzureContainerSeries";
 import { YouTube } from "../_blogcomponents/YouTube";
 import { BlogBody } from "../_components/blogbody";
-import rehypePrettyCode from "rehype-pretty-code";
-import remarkGfm from 'remark-gfm';
 import rehypePrism from 'rehype-prism-plus';
 import "./linenumber.css";
 import "./theme.css";
