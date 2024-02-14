@@ -7,7 +7,10 @@ import { TocAzureContainerSeries } from "../_blogcomponents/TocAzureContainerSer
 import { YouTube } from "../_blogcomponents/YouTube";
 import { BlogBody } from "../_components/blogbody";
 import rehypePrettyCode from "rehype-pretty-code";
+import remarkGfm from 'remark-gfm';
+import rehypePrism from 'rehype-prism-plus';
 import "./linenumber.css";
+import "./theme.css";
 import { Metadata, ResolvingMetadata } from "next";
 
 type Props = {
@@ -56,7 +59,10 @@ export default async function Page(props: { params: { slug: string } }) {
     source: post.rawFileContent,
     options: {
       parseFrontmatter: true,
-      mdxOptions: { rehypePlugins: [[rehypePrettyCode as any, options]] },
+      mdxOptions: {
+        rehypePlugins: [[rehypePrism, { ignoreMissing: true }]]
+
+      },
     },
     components: {
       TocAzureContainerSeries: TocAzureContainerSeries,

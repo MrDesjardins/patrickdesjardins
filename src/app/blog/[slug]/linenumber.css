@@ -31,6 +31,7 @@ code[data-line-numbers-max-digits="3"] > [data-line]::before {
   width: 3rem;
 }
 
+.code-line.highlight-line,
 code > [data-highlighted-line] {
   background-color: rgb(220 236 253);
 }
@@ -44,3 +45,5 @@ figure[data-rehype-pretty-code-figure] > pre > code {
   padding: 6px;
   border-radius: 8px;
 }
+
+
