@@ -1,5 +1,6 @@
 import "@fontsource/open-sans";
 import "@fontsource/oswald";
+import '@fontsource/ubuntu-mono';
 import clsx from "clsx";
 import * as React from "react";
 import { CardWithImage } from "./CardWithImage";

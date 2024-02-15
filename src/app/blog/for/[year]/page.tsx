@@ -1,9 +1,9 @@
 import { ResolvingMetadata, Metadata } from "next";
 import { FIRST_YEAR, LAST_YEAR } from "../../../../constants/constants";
 import { MdxData, getAllPosts, getTotalPages } from "../../../../lib/api";
-import styles from "../../../layout.module.css";
+import styles from "../../_components/BlogBody.module.css";
 import { BlogEntry } from "../../_components/BlogEntry";
-import { BlogBody } from "../../_components/blogbody";
+import { BlogBody } from "../../_components/BlogBody";
 import { sortByMetadataDateDesc } from "../../../../_utils/list";
 
 type Props = {

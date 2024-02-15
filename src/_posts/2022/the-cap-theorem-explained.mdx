@@ -10,12 +10,12 @@ The CAP theorem consists of three characteristics that are pillars to distribute
 
 First, let's define a distributed system. A distributed system is a solution, software or product that span on many servers. For example, you can have a web server that communicate to a database that reside on another server.
 
-![User talks to web server which reach a database](./images/CAP_Theorem.drawio.png)
+![User talks to web server which reach a database](/images/blog/CAP_Theorem.drawio.png)
 
 The example is simple and highlights a significant flaw: it is not supporting the `P` of the CAP theorem. The Partition Tolerance, the `P`, is often the less understood of the three. It is also the one that is defaulted as one of the two that must be present -- with reason. The information travels your system without `P` but never reaches the desired final state.
 
 
-![Communicationn broken between web server and the databaes](./images/CAP_Theorem-Broken.drawio.png)
+![Communicationn broken between web server and the databaes](/images/blog/CAP_Theorem-Broken.drawio.png)
 
 # CAP Explained with a Web Server and a Database
 
@@ -35,7 +35,7 @@ The availability characteristic of the CAP theorem stipulates that every request
 
 Consistency is the freshness of the data that the user can expect from the system. In the _availability_ characteristic, we defined that we might receive information that is not the latest version for the price of constantly receiving a response. The _consistency_ is the characteristic determining how close to the newest version we want to serve the user. The higher the consistency, meaning the fresher the data is returned, the more the availability will decrease.
 
-![Communicationn broken between web server and the database](./images/CAP_Theorem-CA.drawio.png)
+![Communicationn broken between web server and the database](/images/blog/CAP_Theorem-CA.drawio.png)
 
 The consistency can be broken into three levels:
 - Weak
@@ -46,7 +46,7 @@ A weak consistency means that when a piece of data is changed, the consumer who 
 
 In a weak consistency, the same user (or another user) can request the same information and receive a different result. For example, if two users request the same information but are reaching another database node during the travel of the request. A possible scenario is that one node has been updated with the latest version while the second one is yet to be updated. The result is that one user receives the newest data while the second one gets an older version.
 
-![Two users that receive information from two different nodes](./images/CAP_Theorem-TwoUsersDifferentNode.drawio.png)
+![Two users that receive information from two different nodes](/images/blog/CAP_Theorem-TwoUsersDifferentNode.drawio.png)
 
 The eventual consistency is a step better where the _timing_ between inconsistent and consistent is reduced. Typically, you can see inconsistency in the data for less than a second. It means that, for most scenarios, to be available and have a good user experience, we pay the small price not to be 100% consistent, but most of the time, the system appears to be consistent.
 
@@ -62,7 +62,7 @@ Let's revisit the consistency, availability, and partition tolerance in a more i
 
 Imagine starting a business where people send one worker an email to order flowers for someone and a specific date. At that point, the system is barely distributed: it is all local. From the previous example, there is the email server, and there is you who read the email and write down the order of what kind of flower and at which date to deliver and from who. You can store everything in a local spreadsheet. 
 
-![Two users that receive information from two different nodes](./images/CAP_Theorem-CustomerEmailWorkerSpreadsheet.drawio.png)
+![Two users that receive information from two different nodes](/images/blog/CAP_Theorem-CustomerEmailWorkerSpreadsheet.drawio.png)
 
 In the perspective of the CAP theorem, the consistency is strong. Strong because you are the only one reading the emails, the only one to insert, update or delete entries in the spreadsheet, and the only one to perform the task to order the flower for the person at the desired date.
 
@@ -76,11 +76,11 @@ Overall, the `C` is fine at the detriment of the `A` and `P`.
 
 To increase the availability, we improve with a second worker living overseas. It allows breaking the day into two shifts of 12h each. Hence, if someone puts an order by email at 6 pm, the other person will do if you cannot read the email. 
 
-![Two users that receive information from two different nodes](./images/CAP_Theorem-TwoShifts.drawio.png)
+![Two users that receive information from two different nodes](/images/blog/CAP_Theorem-TwoShifts.drawio.png)
 
 The `A` is up, but something is still not ideal. Each person is keeping a spreadsheet. If a customer writes an email at 6 pm and then writes one at 8 am to modify the order, the person reading the email might not have the initial order in the spreadsheet. 
 
-![Two spreadsheets](./images/CAP_Theorem-TwoSpreadsheets.drawio.png)
+![Two spreadsheets](/images/blog/CAP_Theorem-TwoSpreadsheets.drawio.png)
 
 The increase of availability created a gap in the consistency where the information can be stored in two different places and never synchronized.
 
@@ -88,7 +88,7 @@ The increase of availability created a gap in the consistency where the informat
 
 To solve the consistency issue, the person who read the email also writes another email to the other. Hence, if a modification or insertion is performed in one local spreadsheet, when the other person starts a shift, can read all the emails from the other person and update its spreadsheet. 
 
-![Image with the communication between worker](./images/CAP_Theorem-SyncTwoSpreadsheets.drawio.png)
+![Image with the communication between worker](/images/blog/CAP_Theorem-SyncTwoSpreadsheets.drawio.png)
 
 The data is duplicated. With some delay, it eventually becomes consistent at the beginning of each shift. The problem with the approach is that to mark the order as completed; it has to be more than only saved in the local spreadsheet. To have an order completed, it has to be persisted in the spreadsheet, and be sure that the email is sent to the other person. The additional step of confirming that the email is sent reduces the person's availability to read another email for a new order. It takes some time to write the email and ensure it is sent. Then, there is also the problem: we are only sure that it will eventually be consistent since we do not know when the other user will read and then write to its spreadsheet. If the other user that starts its shift in the morning does not check for the updates, the data is not consistent.
 
@@ -96,7 +96,7 @@ The data is duplicated. With some delay, it eventually becomes consistent at the
 
 To ensure a high consistency, the workers communicate synchronously with each other before each beginning of a shift. The synchronization ensures an actual exchange of the order from the last active worker spreadsheet. There is an acknowledgement that they know they need and are synchronizing.
 
-![Image of the starting synchronization](./images/CAP_Theorem-SyncCall.drawio.png)
+![Image of the starting synchronization](/images/blog/CAP_Theorem-SyncCall.drawio.png)
 
 During that time, the availability might be reduced since the person on-duty to read customer emails is doing something else but overall still can fulfill the order with some delay; hence remains available. The consistency is substantial since the spreadsheet is up-to-date until the change of shift for the rest of the shift. However, a problem arises with the `P`. To be partition tolerant, the information must flow all the time. Currently, the system is partition tolerant because the information received from the email is transcribed into the spreadsheet. However, if the worker does not add the information in the local spreadsheet and order the flowers directly, the data is not written on the next synchronization. The flaw is a break of communication. Even more fatal, if one user is sick for its shift, the information is stuck in the mailbox. If the user writes for an update for the next person shift, that user will not see the initial request. The system is partially broken.
 
@@ -104,25 +104,25 @@ During that time, the availability might be reduced since the person on-duty to 
 
 To be partition tolerant, the mailbox system sends a copy to both workers all the time. When the worker is active on the shift, proceed with the information, it replies to the email saying that it has been updated in the spreadsheet. 
 
-![Adding a step where each email are sent to all employee and must be confirmed that is processed](./images/CAP_Theorem-MoreEmails.drawio.png)
+![Adding a step where each email are sent to all employee and must be confirmed that is processed](/images/blog/CAP_Theorem-MoreEmails.drawio.png)
 
 If the worker does not work on a shift, the next shift worker can backtrack which email in the mailbox has not been handled in the spreadsheet and update its local copy. The problem is the availability. During a whole shift, 12 hours, the orders were stall. Another that needed to be sent within a few hours would be a lost of business. 
 
 ## Step 6: Getting Modern
 The system appears to be available but relies on the mail server—the ordering system changes to a website. The website increases availability because the user fills a form. Hence, the workers do not need to scan a free-form email. Also, using the website instead of email, the availability increase by avoiding issues with spam filters and other challenges of the SMTP protocol. 
 
-![Migrating from an email server to a web server](./images/CAP_Theorem-WebServer.drawio.png)
+![Migrating from an email server to a web server](/images/blog/CAP_Theorem-WebServer.drawio.png)
 
 The web server saves the order into a database instead of a spreadsheet. It allows workers to extract the order and perform the actual shipping of the flowers. During the creation of the system, to ensure partition tolerance, many web servers were created in many geographical regions. Similarly, the database is replicated. The replication improves the partially tolerance characteristic.
 
-![Improving with many web servers and databases](./images/CAP_Theorem-WebServerResilient.drawio.png)
+![Improving with many web servers and databases](/images/blog/CAP_Theorem-WebServerResilient.drawio.png)
 
 Although the system looks more robust in terms of partially tolerence, the consistency is eventual at best. The system is strongly available with a website that allows the user to fill an order and edit a previously created. But, the data might be returned from a database node that has not yet been updated, returning to the user information that is not up-to-date.
 
 ## Step 7: Increase Consistency
 In an attempt to improve the consistency, we trick the user into displaying a local copy of its browser storage, and hence the user sees the latest version until the back end (databases) are consistent. The solution is not flawless since users might use another device and see an inconsistency. But, the design is eventually consistent and covers most use cases transparently. A portion of the complexity is transferred in the frontend single page application (SPA), verifying if the order data is already locally available before fetching to the web server. The SPA logics knowns that for a determined period to bring from the local storage to display the information to the user. It gives time to the backend to be consistent. Once consistent, requests are generating consistent deterministic responses.
 
-![Adding local storage](./images/CAP_Theorem-LocalStorage.png)
+![Adding local storage](/images/blog/blog/CAP_Theorem-LocalStorage.png)
 
 Another alternative could have been to ensure that the system read the information again from the write server until all the database read nodes had received the latest information. But, again, increasing the consistency involves more technical challenges and reduced availability as distributed locking mechanisms are involved.
 
@@ -130,7 +130,7 @@ Another alternative could have been to ensure that the system read the informati
 ## Step 8: Increase the Availability
 However, as the website becomes more popular, a need of backend cache is needed. A key-value solution is implemented, giving a fast access to the data. The cache is updated every time the data is persisted in the database. If an order is present in the cache, the cache returns the order instead of one of the database nodes. 
 
-![Introduction of a cache](./images/CAP_Theorem-Cache.drawio.png)
+![Introduction of a cache](/images/blog/blog/CAP_Theorem-Cache.drawio.png)
 
 The availability is faster has the response for each request is quicker. However, synchronizing the cache and the database introduce some latency.
 
@@ -143,7 +143,7 @@ There are infinite scenarios and variables to change in a distributed system. In
 
 The CAP theorem appears to be simple on the surface. However, as we tweak a system to be stronger in one characteristic, we slowly feel that it weaken another portion of it. Then, going to another characteristic starts to degrade the two others. Hence, having a system that is perfectly CAP is unreachable. Nonetheless, it is possible to navigate a solution that appears for the end-user to be responsive and has limited drawbacks. Having a highly available system, with a strong consistency while having a partition tolerance enabled is utopic.
 
-![CAP dilemma](./images/CAP_Theorem-CAP_Triangle.drawio.png)
+![CAP dilemma](/images/blog/CAP_Theorem-CAP_Triangle.drawio.png)
 
 # Conclusion
 

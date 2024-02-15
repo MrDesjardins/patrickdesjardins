@@ -1,16 +1,16 @@
 import { compileMDX } from "next-mdx-remote/rsc";
 import { MdxData, getAllPosts, getTotalPages } from "../../../lib/api";
-import styles from "../../layout.module.css";
-import { CodeSandbox } from "../_blogcomponents/CodeSandbox";
-import { SoundCloud } from "../_blogcomponents/SoundCloud";
-import { TocAzureContainerSeries } from "../_blogcomponents/TocAzureContainerSeries";
-import { YouTube } from "../_blogcomponents/YouTube";
-import { BlogBody } from "../_components/blogbody";
+import styles from "../_components/BlogBody.module.css";
+import { CodeSandbox } from "../_mdxComponents/CodeSandbox";
+import { SoundCloud } from "../_mdxComponents/SoundCloud";
+import { TocAzureContainerSeries } from "../_mdxComponents/TocAzureContainerSeries";
+import { YouTube } from "../_mdxComponents/YouTube";
+import { BlogBody } from "../_components/BlogBody";
 import rehypePrism from 'rehype-prism-plus';
 import "./linenumber.css";
 import "./theme.css";
 import { Metadata, ResolvingMetadata } from "next";
-
+import remarkGfm from "remark-gfm";
 type Props = {
   params: { slug: string }
   searchParams: { [key: string]: string | string[] | undefined }
@@ -58,7 +58,8 @@ export default async function Page(props: { params: { slug: string } }) {
     options: {
       parseFrontmatter: true,
       mdxOptions: {
-        rehypePlugins: [[rehypePrism, { ignoreMissing: true }]]
+        remarkPlugins: [remarkGfm],
+        rehypePlugins: [[rehypePrism, { ignoreMissing: true, defaultLanguage: "plaintext" }]]
 
       },
     },
@@ -72,7 +73,7 @@ export default async function Page(props: { params: { slug: string } }) {
 
   return (
     <BlogBody totalPages={totalPages}>
-      <h1>{post.frontmatter.title as string}</h1>
+      <h1 className={styles.blogPostTitle}>{post.frontmatter.title as string}</h1>
       <div className={styles.blogPostContainer}>
         <p className={styles.blogPostDate}>
           Posted on: {post.frontmatter.date as string}

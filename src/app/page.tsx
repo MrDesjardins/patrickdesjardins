@@ -1,5 +1,5 @@
 import Image from "next/image";
-import styles from "./index.module.css";
+import styles from "./layout.module.css";
 import { AboutMeSection } from "./website/AboutMeSection";
 import { AchievementsSection } from "./website/AchievementsSection";
 import { BookSection } from "./website/BookSection";

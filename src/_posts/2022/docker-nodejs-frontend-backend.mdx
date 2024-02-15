@@ -21,7 +21,7 @@ The article focus on:
 5. The production server for the frontend can use NGINX to host the static files instead of Node
 
 Here is a sketch of the frontend service with at the top the dev environment and the bottom the production environment.
-![Docker Frontend Architecture with Docker](./images/Docker-FrontendDiagram.png)
+![Docker Frontend Architecture with Docker](/images/blog/Docker-FrontendDiagram.png)
 
 If these specifications fit your need, then you are in luck! In my perspective, these requirements are pretty standard. For example, when developing, we want TypeScript to transpile the code, and we want to see the change directly. Using React or SolidJS and Docker, we can save the TypeScript file and see the result on your browser within a few seconds (\<2 seconds). Similarly, when working on the NodeJS server, adding HTTP endpoints or modifying the logic is a matter of saving the file; the developer server running in the Docker's container will see the change and be rebooted automatically. On the opposite, when it's time to publish the production code, everything should be isolated inside the Docker container. Hence, we have a specific Docker configuration to manage that case.
 

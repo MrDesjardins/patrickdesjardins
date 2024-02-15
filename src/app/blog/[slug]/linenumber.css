@@ -11,7 +11,7 @@ code {
   width: 1rem;
   margin-right: 2rem;
   text-align: right;
-  color: gray;
+  color: var(--blog-code-line-number-foreground-color);
 }
 
 code> .code-line::before {
@@ -20,7 +20,7 @@ code> .code-line::before {
 
 
 .code-line.highlight-line{
-  background-color: rgb(220 236 253);
+  background-color: var(--blog-code-highlight-line-background-color);
 }
 
 pre[class^='language-'] {

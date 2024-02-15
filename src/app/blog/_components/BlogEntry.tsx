@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./blogentry.module.css";
+import styles from "./BlogEntry.module.css";
 import { BlogCategories } from "./BlogCategories";
 import Link from "next/link";
 export interface BlogEntryProps {

@@ -1,5 +1,5 @@
 import * as React from "react";
-import styles from "./blogcategories.module.css";
+import styles from "./BlogCategories.module.css";
 export interface BlogCategoriesProps {
   categories?: string[];
 }

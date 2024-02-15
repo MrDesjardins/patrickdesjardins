@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 import { MAX_POSTS_PER_PAGE } from "../../constants/constants";
 import { getAllPosts, getTotalPages } from "../../lib/api";
-import styles from "../layout.module.css";
+import styles from "./_components/BlogBody.module.css";
 import { BlogEntry } from "./_components/BlogEntry";
-import { BlogBody } from "./_components/blogbody";
+import { BlogBody } from "./_components/BlogBody";
 
 export const metadata: Metadata = {
   title: 'Patrick Desjardins Blog',

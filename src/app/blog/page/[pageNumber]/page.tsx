@@ -1,9 +1,9 @@
 import { ResolvingMetadata, Metadata } from "next";
 import { MAX_POSTS_PER_PAGE } from "../../../../constants/constants";
 import { getAllPosts, getTotalPages } from "../../../../lib/api";
-import styles from "../../../layout.module.css";
+import styles from "../../_components/BlogBody.module.css";
 import { BlogEntry } from "../../_components/BlogEntry";
-import { BlogBody } from "../../_components/blogbody";
+import { BlogBody } from "../../_components/BlogBody";
 import { sortByMetadataDateAsc, sortByMetadataDateDesc } from "../../../../_utils/list";
 type Props = {
   params: { pageNumber: string }

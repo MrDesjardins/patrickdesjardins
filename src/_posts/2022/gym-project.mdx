@@ -10,7 +10,7 @@ categories:
 
 Last summer, I unsuccessfully moved a kid-inflated pool - it contained too much water. The mass volumic of the water tricked me! Forward to this past winter, I had the idea to create an exercise machine where the source of weight is water. Water has the characteristic to be almost free and also that it can be moved automatically with a pump. Hence, the core idea of having a machine adjust by itself depends on the exercise and the current sets.
 
-![Sketch of the machine](./images/gym_water-physical.png)
+![Sketch of the machine](/images/blog/gym_water-physical.png)
 
 The image describes how the machine operates. The human can pull from the top (tricep) or the bottom (bicep), which lifts a tank of water. The weight is calculated when the upper tank gets back on the middle platform. The delta is determined, and the water pump adds or removes water. With a small ultrasonic sensor, the user can also see the tempo by repetition on the screen.
 
@@ -19,7 +19,7 @@ I started building the software in parallel to designing the physical machine's 
 
 The software is [open-source](https://github.com/MrDesjardins/gym-water-app) and build using TypeScript, [SolidJS](https://www.solidjs.com/), WebSocket and NodeJS. The high-level architecture diagram shows how the information flows. There are sensors pushing data to Raspberry PI physical pins. The NodeJS server listened to these pins and interpreted the data to be pushed in real-time with Websocket to the user interface built using SolidJS. The SolidJS application language is TypeScript and uses Websocket and Canvas to draw the real-time movement of each repetition.
 
-![Architecture Diagram](./images/gym_water-sensors_architecture.png)
+![Architecture Diagram](/images/blog/gym_water-sensors_architecture.png)
 
 
 ## Dev Features

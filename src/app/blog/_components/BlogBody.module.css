@@ -1,0 +1,192 @@
+.container {
+  margin: auto;
+  padding-top: 30px;
+  max-width: 800px;
+}
+@media only screen and (max-width: 500px) {
+  .main {
+    width: 90%;
+    margin: auto;
+  }
+}
+.heading {
+  color: var(--blog-title-foreground-color);
+}
+.siteTitle {
+  font-size: 3rem;
+  color: var(--blog-title-foreground-color);
+  font-weight: 700;
+  margin: 0;
+}
+.navLinks {
+  display: flex;
+  list-style: none;
+  padding-left: 0;
+}
+.navLinkItem {
+  padding-right: 2rem;
+}
+.navLinkText {
+  color: var(--link-foreground-color);
+  margin-right: 10px;
+  padding: 2px 6px 2px 6px;
+  display: inline-block;
+}
+.blogPostTitle {
+  color: var(--blog-title-foreground-color);
+}
+.blogPostContainer table {
+  border:1px solid var(--blog-section-border-color);
+  border-collapse: collapse; 
+  margin-left: auto;
+  margin-right: auto;
+}
+.blogPostContainer table thead tr{
+  border-bottom:1px solid var(--blog-section-border-color);
+}
+
+.blogPostContainer p,
+.blogPostContainer th,
+.blogPostContainer td,
+.blogPostContainer ol,
+.blogPostContainer ul {
+  color: var(--blog-text-color);
+  line-height: 36px;
+  font-size: 20px;
+  margin-bottom: 24px;
+  text-align: justify;
+}
+.blogPostContainer th,
+.blogPostContainer td{
+  font-size:16px;
+}
+.blogPostContainer a {
+  color: var(--link-foreground-color);
+}
+
+.blogPostContainer blockquote p::before {
+  content: "“";
+  font-size: 3em;
+  line-height: 0.1em;
+  vertical-align: -0.4em;
+  color: var(--blog-blockquote-border-color);
+  margin-right: 16px;
+}
+
+.blogPostContainer blockquote p::after {
+  content: "”";
+  font-size: 3em;
+  line-height: 0.1em;
+  vertical-align: -0.4em;
+  color: var(--blog-blockquote-border-color);
+  margin-left: 2px;
+}
+
+.blogPostContainer blockquote p {
+  font-style: italic;
+  color: var(--blog-blockquote-text-color);
+  border-left: 10px solid var(--blog-blockquote-border-color);
+  padding-left: 10px;
+  word-break: break-all;
+}
+
+.blogPostContainer pre {
+  overflow: auto;
+}
+
+.blogPostContainer p.blogPostDate {
+  color: var(--blog-date-foreground-color);
+  font-size: 0.9em;
+  font-style: italic;
+  margin-bottom: 12px;
+}
+
+.blogPostContainer h1 {
+  color: var(--blog-title-foreground-color);
+  font-size: 30px;
+  text-decoration: underline;
+}
+
+.blogPostContainer h2 {
+  color: var(--blog-title-foreground-color);
+  font-size: 26px;
+}
+
+
+.blogPostContainer h3 {
+  color: var(--blog-title-foreground-color);
+  font-size: 22px;
+}
+
+.blogPostContainer code:not([class*="code-highlight"]) {
+  color: var(--blog-code-inline-foreground-color);
+  background-color: var(--blog-code-inline-background-color);
+  padding: 2px 4px 2px 4px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+}
+
+.blogPostContainer p:has(img) {
+  padding: 20px;
+  text-align: center;
+}
+.blogPostContainer img {
+  --distance: 16px;
+  box-shadow:
+    white var(--distance) var(--distance) 20px 0px,
+    white calc(0px - var(--distance)) var(--distance) 20px 0px,
+    white var(--distance) calc(0px - var(--distance)) 20px 0px,
+    white calc(0px - var(--distance)) calc(0px - var(--distance)) 20px 0px;
+}
+
+.blogPostContainer img,
+.blogPostContainer video {
+  max-width: 100%;
+}
+
+.blogPostContainer ul {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  list-style-type: square;
+}
+
+.blogPostContainer p + ul {
+  margin-top: -20px;
+}
+
+.blogTopPicture {
+  border-radius: 6px;
+}
+
+.paginationBar {
+  margin-top: 36px;
+}
+
+.paginationTitle {
+  padding-top: 8px;
+  border-top: 1px solid var(--blog-section-border-color);
+  color: var(--blog-title-foreground-color);
+  font-size: 24px;
+}
+
+.paginationBar a {
+  margin-left: 2px;
+  padding: 2px 6px 2px 6px;
+  font-size: 20px;
+  line-height: 30px;
+  display: inline-block;
+  color: var(--link-foreground-color);
+}
+.currentLink {
+  background-color: var(--current-link-background-color);
+  border-radius: 4px;
+}
+.paginationLinks {
+  font-size: 24px;
+  margin-top: 8px;
+}
+
+.blogPictureContainer {
+  overflow: hidden;
+}
