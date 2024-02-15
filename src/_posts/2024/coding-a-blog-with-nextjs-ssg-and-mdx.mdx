@@ -1,0 +1,186 @@
+---
+title: "Coding a Blog with NextJS SSG and MDX"
+date: "2024-02-21"
+categories:
+  - "nextjs"
+  - "ssg"
+  - "mdx"
+---
+I recently posted that I migrated from Gatsby to NextJS. I am sharing how I built my blog with NextJS, SSG, and MDX. 
+
+# Next JS SSG
+NextJS is currently one of the most popular React frameworks for building server-side logic. NextJS allows some operations to run not on the client side but on the server side. Static assets instead of dynamic ones are an excellent feature for SEO and performance. However, I am hosting my website statically on GitHub. Thus, I want to run something other than server-side logic. I want to generate my website statically. The server side is where SSG comes in at build time, not runtime. SSG stands for Static Site Generation. It allows you to generate your website statically. SSG means you can develop your website using React, build static assets, and serve them to your users without running a server to execute code. 
+
+# NextJS
+I am using the latest version of NextJS, which has a lot of parts that need to be clarified. The documentation is mixed with the older way of routing. Similarly, tutorials, documentation official or not, are mixed between the older and the newer ways of doing things. I had to spend a lot of time figuring out how to do things.
+
+# Website and Blog Page
+My website has a default loading page that briefly introduces who I am. Then, a `/blog` goes into the last ten blog posts. Then, the user can navigate to a specific year using `/blog/for/2024,` for example. Or, the user can navigate by page using `/blog/page/2`. Finally, there is a route for the blog post itself.
+
+The right way with the latest version is to use a folder for each segment of the route and a `page.tsx` for the content. 
+
+```
+src/
+  app/
+    blog/
+      page.tsx
+      for/
+        [year]/
+          page.tsx
+      page/
+        page.tsx
+      [slug]/
+        page.tsx
+```
+
+# Generating One Page Per Blog Post
+
+The trickiest part was understanding the correct pattern with NextJS 14 for static-generated pages (at build time). The pattern is quite simple once you know it. The first step is to define a function called `generateStaticParams`. The function returns an array of objects. Each object is a key-value pair. The key is the route's name, and the value is the value of the route. In my case, for the blog post, the route is `/blog/[slug]`, and the value is the slug of the blog post. In that case, this function returns over 800 objects.
+
+```tsx
+export async function generateStaticParams() {
+  const posts = await getAllPosts();
+  return posts.map((p) => ({ slug: p.metadata.slug }));
+}
+```
+
+The second part is to define the page. The property has the slug from the route, and the React component uses the value to fetch the post.
+
+
+```tsx
+export default async function Page(props: { params: { slug: string } }) {
+  const posts = await getAllPosts();
+  const post = posts.find((post) => post.metadata.slug === props.params.slug);
+  if (post === undefined) {
+    throw new Error("Post not found");
+  }
+  return <BlogPost post={post} />;
+}
+```
+
+Most online tutorials are using `getStaticProps` and `getStaticPaths`. The combination of these two functions is the old way of doing things. The new way is to use `generateStaticParams` and then use the `params` from the default function. Also, most tutorials emphasize doing an API call. You do not have to do so. The `getAllPosts` is a simple function that reads the file system and returns the content. I'm reading once at build time and storing the content in a variable for efficient reading without parsing all the files many times.
+
+
+```ts
+let getAllPostsResult: MdxData[] | undefined = undefined;
+export async function getAllPosts(): Promise<MdxData[]> {
+  if (getAllPostsResult === undefined) {
+    let post: Promise<MdxData>[] = [];
+    const postFilePaths = getAllMdxFilesWithoutContent();
+    for (const p of postFilePaths) {
+      post.push(getMdxFileContent(p.fullPathWithFileName));
+    }
+    const posts = await Promise.all(post);
+    const today = new Date();
+    getAllPostsResult = posts.filter((p) => new Date(p.metadata.date) <= today);
+  }
+  return getAllPostsResult;
+}
+export function getAllMdxFilesWithoutContent(): FileMetadata[] {
+  let files: FileMetadata[] = [];
+  for (let y = FIRST_YEAR; y <= LAST_YEAR; y++) {
+    const filePath = `${ROOT_POSTS_PATH}/${y}`;
+
+    const fules = fs
+      .readdirSync(filePath)
+      .filter((path) => /\.mdx?$/.test(path));
+    for (const f of fules) {
+      files.push({
+        year: y,
+        date: y.toString(),
+        fileName: f,
+        fullPathWithFileName: `${filePath}/${f}`,
+        slug: f.slice(0, f.lastIndexOf(".")),
+      });
+    }
+    files.push();
+  }
+  return files;
+}
+```
+
+# Year and Pagination
+
+Both pages have a similar pattern. The difference is the `generateStaticParams`. Once will return an array of possible years. I have a folder of content from 2011 up to now. The other one produces a variety of possible pages. I know I have ten blog posts per page and know the total number of blog posts, so I can calculate the number of pages I return in an array.
+
+```tsx
+export const FIRST_YEAR = 2011;
+export const LAST_YEAR = new Date().getFullYear();
+// ...
+export async function generateStaticParams() {
+  const years = [];
+  for (let year = LAST_YEAR; year >= FIRST_YEAR; year--) {
+    years.push(year);
+  }
+  return years.map((y) => ({ year: String(y) }));
+}
+
+```
+
+# Page Title (browser)
+The page title appears in the browser's tab. There are two cases to take into account. When the page title is static, like my main page, you can use the simple version:
+
+```tsx
+export const metadata: Metadata = {
+  title: 'Patrick Desjardins Blog',
+  description: 'Patrick Desjardins Blog',
+}
+```
+
+When the page title is dynamic, like each blog post, you can use:
+
+```tsx
+type Props = {
+  params: { slug: string }
+  searchParams: { [key: string]: string | string[] | undefined }
+}
+
+export async function generateMetadata(
+  props: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const posts = await getAllPosts();
+  const post = posts.find((post) => post.metadata.slug === props.params.slug);
+  if (post === undefined) {
+    throw new Error("Post not found");
+  }
+
+  return {
+    title: "Patrick Desjardins Blog - " + String(post.frontmatter.title),
+    description: String(post.frontmatter.title)
+  }
+}
+```
+As you can see, this is more work. First, the function is called for each value that the function `generateStaticParams` returns. In that example, `generateStaticParams` returns the value of the `slug` in the route. Thus the `params.slug`. Then, the logic goes into all the blog posts to find the one with the slug, opens it, and extracts the title.
+
+# MDX
+The first step is to create your MDX file in the `src` folder. I'm using a folder `src/_posts`. The underscore is for private content but it does not matter since the application will be in `src/app`. Contrary to server-side action that requires an active running server that would be in `src/pages.` 
+
+The second step is to move all images and videos into the `public` folder. The public folder serves static files in NextJS. On the contrary, NextJS does not serve the content in the `src` folder. In my case, the images were in a folder next to the MDX file. I moved them into the `public` folder and then changed the MDX file's path. The good news is that videos are working out of the box. It was a relief to see that the video was working without any change since Gatsby was a bit more complex to handle video, with a build step to transcode the video.
+
+# NextJS Configuration
+Few configurations are required to make NextJS generate a static website. The first one is `unoptimized` for the images to remain the same as their source. NextJS optimizes images when served by the server by providing the best size for the device. The second configuration is `output`. The output is set to `export`. The configuration creates HTML, JS, and CSS files. The files are created in the `out` folder. The `out` folder is the folder GitHub uses.
+
+```json
+{
+  "images": {
+    "unoptimized": true
+  },
+  "output": "export"
+}
+
+```js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    unoptimized: true,
+  },
+  output: "export",
+};
+
+export default nextConfig;
+```  
+
+# Conclusion
+Building a static website and blog using MDX is simple once you know what to use. Unfortunately, the documentation is not clear for SSG. Several ways to build web applications with NextJS increase the learning curve. The tutorials are mixed between the old and the new way of doing things. Thus, many angles tangle people to be successful using NextJS. I hope this article will help you to build your blog with NextJS, SSG, and MDX. 
+

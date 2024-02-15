@@ -50,7 +50,7 @@ export function getAllMdxFilesWithoutContent(): FileMetadata[] {
 }
 
 export async function getMdxFileContent(
-  fullPathWithFileName: string,
+  fullPathWithFileName: string
 ): Promise<MdxData> {
   const fileContent = await fs.promises.readFile(fullPathWithFileName, "utf8");
   const mdxSource = await serialize(fileContent, {
@@ -65,7 +65,7 @@ export async function getMdxFileContent(
   //   options: { parseFrontmatter: true },
   // });
   const fileName = fullPathWithFileName.slice(
-    fullPathWithFileName.lastIndexOf("/") + 1,
+    fullPathWithFileName.lastIndexOf("/") + 1
   );
   return {
     metadata: {
@@ -101,6 +101,7 @@ export async function getAllPosts(): Promise<MdxData[]> {
     }
     const posts = await Promise.all(post);
     const today = new Date();
+    today.setHours(23, 59, 59, 0);
     getAllPostsResult = posts.filter((p) => new Date(p.metadata.date) <= today);
   }
   return getAllPostsResult;

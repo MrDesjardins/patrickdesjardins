@@ -4,20 +4,7 @@ import { getAllPosts, getTotalPages } from "../../lib/api";
 import styles from "../layout.module.css";
 import { BlogEntry } from "./_components/BlogEntry";
 import { BlogBody } from "./_components/blogbody";
-// export async function getStaticProps() {
-//   const pageNumber = 1;
-//   const posts = await getAllPosts();
-//   const totalPage = getTotalPages(posts);
-//   posts.sort((a, b) => new Date(a.metadata.date) > new Date(b.metadata.date) ? -1 : 1);
-//   const pagePost = posts.slice((pageNumber - 1) * MAX_POSTS_PER_PAGE, pageNumber * MAX_POSTS_PER_PAGE);
-//   return {
-//     props: {
-//       pageNumber: pageNumber,
-//       totalPages: totalPage,
-//       posts: pagePost
-//     },
-//   }
-// }
+
 export const metadata: Metadata = {
   title: 'Patrick Desjardins Blog',
   description: 'Patrick Desjardins Blog',

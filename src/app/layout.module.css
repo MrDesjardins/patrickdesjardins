@@ -54,6 +54,7 @@
 }
 
 .blogPostContainer {
+  font-family: "Open Sans";
 }
 
 .blogPostContainer p,
@@ -95,8 +96,8 @@
 }
 
 .blogPostContainer code:not([class*=code-highlight]){
-  color: #ff778f;
-  background-color: #ececec;
+  color: #7217ff;
+  background-color: #ffe4e4;
   padding: 2px 4px 2px 4px;
   border-radius: 4px;
 }
