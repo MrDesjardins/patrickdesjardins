@@ -1,7 +1,6 @@
 import { type ResolvingMetadata, type Metadata } from "next";
 import { FIRST_YEAR, LAST_YEAR } from "../../../../constants/constants";
 import { type MdxData, getAllPosts, getTotalPages } from "../../../../lib/api";
-import styles from "../../_components/BlogBody.module.css";
 import { BlogEntry } from "../../_components/BlogEntry";
 import { BlogBody } from "../../_components/BlogBody";
 import { sortByMetadataDateDesc } from "../../../../_utils/list";
@@ -44,8 +43,7 @@ export default async function Page(props: {
     .sort(sortByMetadataDateDesc);
 
   return (
-    <BlogBody totalPages={totalPages} year={year}>
-      <h1 className={styles.heading}>Blog Posts</h1>
+    <BlogBody totalPages={totalPages} year={year} topTitle="Blog Posts">
       {(postForYear ?? []).map((node) => (
         <BlogEntry
           key={node.metadata.fileName}

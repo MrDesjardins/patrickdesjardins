@@ -1,7 +1,7 @@
 import { type Metadata, type ResolvingMetadata } from "next";
 import { type MdxData, getAllPosts, getTotalPages } from "../../../lib/api";
 import { BlogBody } from "../_components/BlogBody";
-import styles from "../_components/BlogBody.module.css";
+import styles from "./Page.module.css";
 import "./linenumber.css";
 import "./theme.css";
 interface Props {
@@ -45,10 +45,10 @@ export default async function Page(props: {
   }
 
   return (
-    <BlogBody totalPages={totalPages}>
-      <h1 className={styles.blogPostTitle}>
-        {post.frontmatter.title as string}
-      </h1>
+    <BlogBody
+      totalPages={totalPages}
+      topTitle={post.frontmatter.title as string}
+    >
       <div className={styles.blogPostContainer}>
         <p className={styles.blogPostDate}>
           Posted on: {post.frontmatter.date as string}

@@ -1,7 +1,6 @@
 import { type Metadata } from "next";
 import { MAX_POSTS_PER_PAGE } from "../../constants/constants";
 import { getAllPosts, getTotalPages } from "../../lib/api";
-import styles from "./_components/BlogBody.module.css";
 import { BlogEntry } from "./_components/BlogEntry";
 import { BlogBody } from "./_components/BlogBody";
 
@@ -29,8 +28,8 @@ export default async function Page(): Promise<React.ReactElement> {
     <BlogBody
       currentPage={Number(props.pageNumber)}
       totalPages={props.totalPages}
+      topTitle="Blog Posts"
     >
-      <h1 className={styles.heading}>Blog Posts</h1>
       {pagePost.map((node) => (
         <BlogEntry
           key={node.metadata.fileName}

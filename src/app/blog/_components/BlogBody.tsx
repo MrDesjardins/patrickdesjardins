@@ -1,6 +1,3 @@
-import "@fontsource/open-sans";
-import "@fontsource/oswald";
-import "@fontsource/ubuntu-mono";
 import styles from "./BlogBody.module.css";
 import Link from "next/link";
 import Image from "next/image";
@@ -12,6 +9,7 @@ export interface BlogBodyProps extends PropsWithChildren {
   currentPage?: number;
   year?: number;
   totalPages: number;
+  topTitle: string;
 }
 
 /**
@@ -30,7 +28,7 @@ export function BlogBody(props: BlogBodyProps): React.ReactElement {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={styles.BlogBody}>
       <header className={styles.siteTitle}>Patrick Desjardins Blog</header>
       <nav>
         <ul className={styles.navLinks}>
@@ -67,7 +65,10 @@ export function BlogBody(props: BlogBodyProps): React.ReactElement {
           height={260}
         />
       </div>
-      <main className={styles.main}>{props.children}</main>
+      <main className={styles.main}>
+        <h1 className={styles.heading}>{props.topTitle}</h1>
+        {props.children}
+      </main>
       <div className={styles.paginationBar}>
         <div className={styles.paginationTitle}>
           Chronological Blog Articles by Page

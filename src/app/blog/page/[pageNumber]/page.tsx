@@ -1,7 +1,6 @@
 import { type ResolvingMetadata, type Metadata } from "next";
 import { MAX_POSTS_PER_PAGE } from "../../../../constants/constants";
 import { getAllPosts, getTotalPages } from "../../../../lib/api";
-import styles from "../../_components/BlogBody.module.css";
 import { BlogEntry } from "../../_components/BlogEntry";
 import { BlogBody } from "../../_components/BlogBody";
 import {
@@ -59,8 +58,11 @@ export default async function Page(props: {
   const totalPagesCount = getTotalPages(posts);
 
   return (
-    <BlogBody currentPage={currentPage} totalPages={totalPagesCount}>
-      <h1 className={styles.heading}>Blog Posts</h1>
+    <BlogBody
+      currentPage={currentPage}
+      totalPages={totalPagesCount}
+      topTitle="Blog Posts"
+    >
       {(result ?? []).map((node) => (
         <BlogEntry
           key={node.metadata.fileName}
