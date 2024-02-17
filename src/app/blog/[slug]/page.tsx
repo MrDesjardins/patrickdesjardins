@@ -1,16 +1,9 @@
-import { compileMDX } from "next-mdx-remote/rsc";
+import { Metadata, ResolvingMetadata } from "next";
 import { MdxData, getAllPosts, getTotalPages } from "../../../lib/api";
-import styles from "../_components/BlogBody.module.css";
-import { CodeSandbox } from "../_mdxComponents/CodeSandbox";
-import { SoundCloud } from "../_mdxComponents/SoundCloud";
-import { TocAzureContainerSeries } from "../_mdxComponents/TocAzureContainerSeries";
-import { YouTube } from "../_mdxComponents/YouTube";
 import { BlogBody } from "../_components/BlogBody";
-import rehypePrism from 'rehype-prism-plus';
+import styles from "../_components/BlogBody.module.css";
 import "./linenumber.css";
 import "./theme.css";
-import { Metadata, ResolvingMetadata } from "next";
-import remarkGfm from "remark-gfm";
 type Props = {
   params: { slug: string }
   searchParams: { [key: string]: string | string[] | undefined }
