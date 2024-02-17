@@ -1,6 +1,4 @@
 import fs from "fs";
-import { MDXRemoteSerializeResult } from "next-mdx-remote";
-import { serialize } from "next-mdx-remote/serialize";
 import path from "path";
 import { compileMDX } from "next-mdx-remote/rsc";
 import {
@@ -8,6 +6,13 @@ import {
   LAST_YEAR,
   MAX_POSTS_PER_PAGE,
 } from "../constants/constants";
+import rehypePrism from "rehype-prism-plus";
+import remarkGfm from "remark-gfm";
+import { CodeSandbox } from "../app/blog/_mdxComponents/CodeSandbox";
+import { SoundCloud } from "../app/blog/_mdxComponents/SoundCloud";
+import { TocAzureContainerSeries } from "../app/blog/_mdxComponents/TocAzureContainerSeries";
+import { YouTube } from "../app/blog/_mdxComponents/YouTube";
+import { ReactElement, JSXElementConstructor } from "react";
 export const ROOT_POSTS_PATH = path.join(process.cwd(), "/src/_posts");
 
 export interface FileMetadata {
@@ -19,10 +24,7 @@ export interface FileMetadata {
 }
 export interface MdxData {
   metadata: FileMetadata;
-  fileContent: MDXRemoteSerializeResult<
-    Record<string, unknown>,
-    Record<string, unknown>
-  >;
+  contentReact: ReactElement<any, string | JSXElementConstructor<any>>;
   rawFileContent: string;
   frontmatter: Record<string, unknown>;
 }
@@ -53,17 +55,24 @@ export async function getMdxFileContent(
   fullPathWithFileName: string
 ): Promise<MdxData> {
   const fileContent = await fs.promises.readFile(fullPathWithFileName, "utf8");
-  const mdxSource = await serialize(fileContent, {
-    parseFrontmatter: true,
-    mdxOptions: {
-      // remarkPlugins: [[remarkGfm]],
-      // rehypePlugins: [[rehypePrism, { ignoreMissing: true }]],
+  const { content, frontmatter } = await compileMDX({
+    source: fileContent,
+    options: {
+      parseFrontmatter: true,
+      mdxOptions: {
+        remarkPlugins: [remarkGfm],
+        rehypePlugins: [
+          [rehypePrism, { ignoreMissing: true, defaultLanguage: "plaintext" }],
+        ],
+      },
+    },
+    components: {
+      TocAzureContainerSeries: TocAzureContainerSeries,
+      CodeSandbox: CodeSandbox,
+      YouTube: YouTube,
+      SoundCloud: SoundCloud,
     },
   });
-  // const { content, frontmatter } = await compileMDX({
-  //   source: fileContent,
-  //   options: { parseFrontmatter: true },
-  // });
   const fileName = fullPathWithFileName.slice(
     fullPathWithFileName.lastIndexOf("/") + 1
   );
@@ -72,12 +81,12 @@ export async function getMdxFileContent(
       fullPathWithFileName: fullPathWithFileName,
       fileName: fileName,
       slug: fileName.slice(0, fileName.lastIndexOf(".")),
-      year: Number((mdxSource.frontmatter.date as string).slice(0, 4)),
-      date: mdxSource.frontmatter.date as string,
+      year: Number((frontmatter.date as string).slice(0, 4)),
+      date: frontmatter.date as string,
     },
-    fileContent: mdxSource,
+    contentReact: content,
     rawFileContent: fileContent,
-    frontmatter: mdxSource.frontmatter,
+    frontmatter: frontmatter,
   };
 }
 

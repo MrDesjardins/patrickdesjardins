@@ -48,28 +48,6 @@ export default async function Page(props: { params: { slug: string } }) {
   if (post === undefined) {
     throw new Error("Post not found");
   }
-  const options = {
-    defaultLang: "plaintext",
-    theme: "github-light",
-    keepBackground: true,
-  };
-  const { content, frontmatter } = await compileMDX({
-    source: post.rawFileContent,
-    options: {
-      parseFrontmatter: true,
-      mdxOptions: {
-        remarkPlugins: [remarkGfm],
-        rehypePlugins: [[rehypePrism, { ignoreMissing: true, defaultLanguage: "plaintext" }]]
-
-      },
-    },
-    components: {
-      TocAzureContainerSeries: TocAzureContainerSeries,
-      CodeSandbox: CodeSandbox,
-      YouTube: YouTube,
-      SoundCloud: SoundCloud,
-    },
-  });
 
   return (
     <BlogBody totalPages={totalPages}>
@@ -78,7 +56,7 @@ export default async function Page(props: { params: { slug: string } }) {
         <p className={styles.blogPostDate}>
           Posted on: {post.frontmatter.date as string}
         </p>
-        {content}
+        {post.contentReact}
       </div>
     </BlogBody>
   );

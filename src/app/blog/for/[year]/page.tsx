@@ -18,7 +18,7 @@ export async function generateMetadata(
 
   return {
     title: "Patrick Desjardins Blog - Year " + String(props.params.year),
-    description: "Patrick Desjardins Blog - Page " + String(props.params.year)
+    description: "Patrick Desjardins Blog - Year " + String(props.params.year)
   }
 }
 

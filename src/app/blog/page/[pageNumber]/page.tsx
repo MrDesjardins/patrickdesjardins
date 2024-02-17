@@ -16,8 +16,8 @@ export async function generateMetadata(
 
 
   return {
-    title: "Patrick Desjardins Blog - Page " + String(props.params.pageNumber),
-    description: "Patrick Desjardins Blog - Page " + String(props.params.pageNumber)
+    title: "Patrick Desjardins Blog - Page number " + String(props.params.pageNumber),
+    description: "Patrick Desjardins Blog - Page number " + String(props.params.pageNumber)
   }
 }
 
