@@ -1,4 +1,4 @@
-export const TocAzureContainerSeries = (): JSX.Element => {
+export const TocAzureContainerSeries = (): React.ReactElement => {
   const currentDate = new Date();
   return (
     <div>

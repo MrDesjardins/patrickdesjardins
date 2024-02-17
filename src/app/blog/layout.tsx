@@ -1,10 +1,8 @@
-import styles from "./layout.module.css"
+import styles from "./layout.module.css";
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
-  return (
-    <div className={styles.bodystyle}>{children}</div>
-  );
+}>): React.ReactElement {
+  return <div className={styles.bodystyle}>{children}</div>;
 }

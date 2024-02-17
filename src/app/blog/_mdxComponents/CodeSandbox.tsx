@@ -1,7 +1,7 @@
 export interface CodeSandboxProps {
   codeSandboxId: string;
 }
-export const CodeSandbox = (props: CodeSandboxProps): JSX.Element => {
+export const CodeSandbox = (props: CodeSandboxProps): React.ReactElement => {
   return (
     <iframe
       src={`https://codesandbox.io/embed/${props.codeSandboxId}`}

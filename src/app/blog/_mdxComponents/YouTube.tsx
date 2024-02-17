@@ -1,7 +1,7 @@
 export interface YouTubeProps {
   youTubeId: string;
 }
-export const YouTube = (props: YouTubeProps): JSX.Element => {
+export const YouTube = (props: YouTubeProps): React.ReactElement => {
   return (
     <iframe
       style={{

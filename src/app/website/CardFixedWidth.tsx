@@ -5,7 +5,9 @@ export interface CardFixedWidthProps {
   link: string;
   image: JSX.Element;
 }
-export const CardFixedWidth = (props: CardFixedWidthProps): JSX.Element => {
+export const CardFixedWidth = (
+  props: CardFixedWidthProps,
+): React.ReactElement => {
   return (
     <div className={styles.sectionFixedWitdhContent}>
       <h5>{props.title}</h5>

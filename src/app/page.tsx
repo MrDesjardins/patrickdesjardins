@@ -14,13 +14,13 @@ import { StatisticsSection } from "./website/StatisticsSection";
 import { TechnologiesSection } from "./website/TechnologiesSection";
 import { WorkSection } from "./website/WorkSection";
 import Link from "next/link";
-import { Metadata } from 'next'
+import { type Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Patrick Desjardins Website and Blog',
-  description: 'Patrick Desjardins Website and Blog',
-}
-export default function Index() {
+  title: "Patrick Desjardins Website and Blog",
+  description: "Patrick Desjardins Website and Blog",
+};
+export default function Index(): React.ReactElement {
   return (
     <div className={styles.container}>
       <main>

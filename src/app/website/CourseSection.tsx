@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { CardFixedWidth } from "./CardFixedWidth";
 import styles from "./website.module.css";
 import Image from "next/image";
-export const CourseSection = (): JSX.Element => {
+export const CourseSection = (): React.ReactElement => {
   return (
     <section
       id="course"

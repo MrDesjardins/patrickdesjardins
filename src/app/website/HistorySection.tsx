@@ -1,8 +1,7 @@
 import clsx from "clsx";
-import * as React from "react";
 import styles from "./website.module.css";
 import styles2 from "./HistorySection.module.css";
-export const HistorySection = (): JSX.Element => {
+export const HistorySection = (): React.ReactElement => {
   return (
     <section
       id="past"

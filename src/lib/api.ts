@@ -12,7 +12,8 @@ import { CodeSandbox } from "../app/blog/_mdxComponents/CodeSandbox";
 import { SoundCloud } from "../app/blog/_mdxComponents/SoundCloud";
 import { TocAzureContainerSeries } from "../app/blog/_mdxComponents/TocAzureContainerSeries";
 import { YouTube } from "../app/blog/_mdxComponents/YouTube";
-import { ReactElement, JSXElementConstructor } from "react";
+import { type ReactElement, type JSXElementConstructor } from "react";
+
 export const ROOT_POSTS_PATH = path.join(process.cwd(), "/src/_posts");
 
 export interface FileMetadata {
@@ -24,13 +25,13 @@ export interface FileMetadata {
 }
 export interface MdxData {
   metadata: FileMetadata;
-  contentReact: ReactElement<any, string | JSXElementConstructor<any>>;
+  contentReact: ReactElement<unknown, string | JSXElementConstructor<unknown>>;
   rawFileContent: string;
   frontmatter: Record<string, unknown>;
 }
 
 export function getAllMdxFilesWithoutContent(): FileMetadata[] {
-  let files: FileMetadata[] = [];
+  const files: FileMetadata[] = [];
   for (let y = FIRST_YEAR; y <= LAST_YEAR; y++) {
     const filePath = `${ROOT_POSTS_PATH}/${y}`;
 
@@ -46,13 +47,12 @@ export function getAllMdxFilesWithoutContent(): FileMetadata[] {
         slug: f.slice(0, f.lastIndexOf(".")),
       });
     }
-    files.push();
   }
   return files;
 }
 
 export async function getMdxFileContent(
-  fullPathWithFileName: string
+  fullPathWithFileName: string,
 ): Promise<MdxData> {
   const fileContent = await fs.promises.readFile(fullPathWithFileName, "utf8");
   const { content, frontmatter } = await compileMDX({
@@ -73,15 +73,15 @@ export async function getMdxFileContent(
       SoundCloud: SoundCloud,
     },
   });
-  const fileName = fullPathWithFileName.slice(
-    fullPathWithFileName.lastIndexOf("/") + 1
-  );
+  const fileName = extractFileFromFullFilePath(fullPathWithFileName);
+  const slug = extractSlugFromFileName(fileName);
+  const year = extractYearFromStringDate(frontmatter.date as string);
   return {
     metadata: {
       fullPathWithFileName: fullPathWithFileName,
       fileName: fileName,
-      slug: fileName.slice(0, fileName.lastIndexOf(".")),
-      year: Number((frontmatter.date as string).slice(0, 4)),
+      slug: slug,
+      year: year,
       date: frontmatter.date as string,
     },
     contentReact: content,
@@ -90,9 +90,16 @@ export async function getMdxFileContent(
   };
 }
 
-export async function getTotalPagesCount(): Promise<number> {
-  const allPosts = await getAllPosts();
-  return getTotalPages(allPosts);
+export function extractFileFromFullFilePath(
+  fullPathWithFileName: string,
+): string {
+  return fullPathWithFileName.slice(fullPathWithFileName.lastIndexOf("/") + 1);
+}
+export function extractSlugFromFileName(fileName: string): string {
+  return fileName.slice(0, fileName.lastIndexOf("."));
+}
+export function extractYearFromStringDate(date: string): number {
+  return Number(date.slice(0, 4));
 }
 export function getTotalPages(posts: MdxData[]): number {
   const allPostCount = posts.length;
@@ -100,10 +107,10 @@ export function getTotalPages(posts: MdxData[]): number {
   return totalPages;
 }
 
-let getAllPostsResult: MdxData[] | undefined = undefined;
+let getAllPostsResult: MdxData[] | undefined;
 export async function getAllPosts(): Promise<MdxData[]> {
   if (getAllPostsResult === undefined) {
-    let post: Promise<MdxData>[] = [];
+    const post: Array<Promise<MdxData>> = [];
     const postFilePaths = getAllMdxFilesWithoutContent();
     for (const p of postFilePaths) {
       post.push(getMdxFileContent(p.fullPathWithFileName));

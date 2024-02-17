@@ -36,13 +36,13 @@
   color: var(--blog-title-foreground-color);
 }
 .blogPostContainer table {
-  border:1px solid var(--blog-section-border-color);
-  border-collapse: collapse; 
+  border: 1px solid var(--blog-section-border-color);
+  border-collapse: collapse;
   margin-left: auto;
   margin-right: auto;
 }
-.blogPostContainer table thead tr{
-  border-bottom:1px solid var(--blog-section-border-color);
+.blogPostContainer table thead tr {
+  border-bottom: 1px solid var(--blog-section-border-color);
 }
 
 .blogPostContainer p,
@@ -57,8 +57,8 @@
   text-align: justify;
 }
 .blogPostContainer th,
-.blogPostContainer td{
-  font-size:16px;
+.blogPostContainer td {
+  font-size: 16px;
 }
 .blogPostContainer a {
   color: var(--link-foreground-color);
@@ -111,7 +111,6 @@
   color: var(--blog-title-foreground-color);
   font-size: 26px;
 }
-
 
 .blogPostContainer h3 {
   color: var(--blog-title-foreground-color);

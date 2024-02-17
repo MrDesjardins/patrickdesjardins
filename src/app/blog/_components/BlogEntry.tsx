@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "./BlogEntry.module.css";
 import { BlogCategories } from "./BlogCategories";
 import Link from "next/link";
@@ -9,7 +8,7 @@ export interface BlogEntryProps {
   date: string;
   slug: string;
 }
-export const BlogEntry = (props: BlogEntryProps): JSX.Element => {
+export const BlogEntry = (props: BlogEntryProps): React.ReactElement => {
   return (
     <article className={styles.blogEntry} key={props.id}>
       <h2 className={styles.blogEntryArticleTitle}>

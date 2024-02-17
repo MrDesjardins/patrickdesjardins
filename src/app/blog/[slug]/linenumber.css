@@ -14,17 +14,15 @@ code {
   color: var(--blog-code-line-number-foreground-color);
 }
 
-code> .code-line::before {
+code > .code-line::before {
   width: 2rem;
 }
 
-
-.code-line.highlight-line{
+.code-line.highlight-line {
   background-color: var(--blog-code-highlight-line-background-color);
 }
 
-pre[class^='language-'] {
+pre[class^="language-"] {
   margin: 10px 0px;
   border-radius: 8px;
 }
-

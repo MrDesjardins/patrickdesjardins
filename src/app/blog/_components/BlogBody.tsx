@@ -1,12 +1,12 @@
 import "@fontsource/open-sans";
 import "@fontsource/oswald";
-import '@fontsource/ubuntu-mono';
+import "@fontsource/ubuntu-mono";
 import styles from "./BlogBody.module.css";
 import Link from "next/link";
 import Image from "next/image";
 import clsx from "clsx";
 import { FIRST_YEAR, LAST_YEAR } from "../../../constants/constants";
-import { PropsWithChildren } from "react";
+import { type PropsWithChildren } from "react";
 
 export interface BlogBodyProps extends PropsWithChildren {
   currentPage?: number;
@@ -19,7 +19,7 @@ export interface BlogBodyProps extends PropsWithChildren {
  * that are from ALL the pages. The layout, when at the root of the blog, does no receive the
  * dynamic parameters of pages under its hierarchy.
  */
-export function BlogBody(props: BlogBodyProps) {
+export function BlogBody(props: BlogBodyProps): React.ReactElement {
   const years = [];
   for (let i = LAST_YEAR; i >= FIRST_YEAR; i--) {
     years.push(i);

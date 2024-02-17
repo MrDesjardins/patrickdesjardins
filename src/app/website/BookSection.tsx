@@ -1,9 +1,8 @@
 import clsx from "clsx";
 import styles from "./website.module.css";
 import Image from "next/image";
-import * as React from "react";
 import { CardFixedWidth } from "./CardFixedWidth";
-export const BookSection = (): JSX.Element => {
+export const BookSection = (): React.ReactElement => {
   return (
     <section
       id="book"

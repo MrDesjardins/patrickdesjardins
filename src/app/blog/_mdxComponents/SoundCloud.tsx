@@ -1,4 +1,6 @@
-export const SoundCloud = (props: { soundCloudLink: string }): JSX.Element => {
+export const SoundCloud = (props: {
+  soundCloudLink: string;
+}): React.ReactElement => {
   return (
     <iframe
       width="100%"

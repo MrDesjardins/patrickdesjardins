@@ -1,9 +1,8 @@
 import clsx from "clsx";
-import * as React from "react";
 import styles from "./website.module.css";
 import Image from "next/image";
 import { CardFixedWidth } from "./CardFixedWidth";
-export const OpenSourceSection = (): JSX.Element => {
+export const OpenSourceSection = (): React.ReactElement => {
   return (
     <section
       id="open-source"

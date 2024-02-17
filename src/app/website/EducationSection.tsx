@@ -6,7 +6,7 @@ import {
   faGraduationCap,
   faCertificate,
 } from "@fortawesome/free-solid-svg-icons";
-export const EducationSection = (): JSX.Element => {
+export const EducationSection = (): React.ReactElement => {
   return (
     <section
       id="education"

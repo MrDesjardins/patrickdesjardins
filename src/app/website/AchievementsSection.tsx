@@ -148,6 +148,7 @@ export const AchievementsSection = (): JSX.Element => {
                     href="https://github.com/MrDesjardins"
                     target="_blank"
                     style={{ fill: "rgb(255, 255, 255)" }}
+                    rel="noreferrer"
                   >
                     MrDesjardins
                   </a>
@@ -215,6 +216,7 @@ export const AchievementsSection = (): JSX.Element => {
                     href="http://patrickdesjardins.com"
                     target="_blank"
                     style={{ color: "rgb(255, 255, 255)" }}
+                    rel="noreferrer"
                   >
                     Blog / Website
                   </a>

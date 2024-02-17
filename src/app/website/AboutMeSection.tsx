@@ -1,8 +1,7 @@
 import clsx from "clsx";
-import * as React from "react";
 import styles from "./website.module.css";
 import styles2 from "./AboutMeSection.module.css";
-export const AboutMeSection = (): JSX.Element => {
+export const AboutMeSection = (): React.ReactElement => {
   return (
     <section
       id="about-me"

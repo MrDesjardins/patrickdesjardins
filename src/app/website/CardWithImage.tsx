@@ -7,7 +7,9 @@ export interface CardWithImageProps {
   description: string;
   image: JSX.Element;
 }
-export const CardWithImage = (props: CardWithImageProps): JSX.Element => {
+export const CardWithImage = (
+  props: CardWithImageProps,
+): React.ReactElement => {
   return (
     <div className={styles2.cardWithImageContainer}>
       <div className={styles2.cardWithImageContainerImage}>

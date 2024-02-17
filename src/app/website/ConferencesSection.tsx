@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import styles from "./website.module.css";
 import styles2 from "./Conference.module.css";
-export const ConferencesSection = (): JSX.Element => {
+export const ConferencesSection = (): React.ReactElement => {
   return (
     <section
       id="conferences"

@@ -8,15 +8,15 @@
   --link-foreground-color: #ca8bfd;
   --current-link-background-color: #362446;
   --blog-text-color: #a1a1aacc;
-  
+
   --blog-code-inline-foreground-color: #f775ff;
   --blog-code-inline-background-color: #4c3e5b;
   --blog-code-highlight-line-background-color: #54286f;
   --blog-code-line-number-foreground-color: #f775ff;
 
   --blog-section-border-color: #777777;
-  --blog-background-color1: #2a2338 ;
-  --blog-background-color2: #0a080e ;
+  --blog-background-color1: #2a2338;
+  --blog-background-color2: #0a080e;
 
   --blog-blockquote-text-color: #777777;
   --blog-blockquote-border-color: #f775ff;

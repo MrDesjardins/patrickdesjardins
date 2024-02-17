@@ -2,7 +2,7 @@ import clsx from "clsx";
 import styles from "./website.module.css";
 import styles2 from "./StatisticsSection.module.css";
 import Image from "next/image";
-export const StatisticsSection = (): JSX.Element => {
+export const StatisticsSection = (): React.ReactElement => {
   return (
     <section
       id="experiences"
