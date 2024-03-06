@@ -1,0 +1,63 @@
+---
+title: "TypeScript and Jest to Mock a Module Function"
+date: "2024-03-08"
+categories:
+  - "typescript"
+  - "jest"
+  - "unit test"
+---
+
+# Mocking with Jest a Module Function using Jest.Mock
+
+The use case is this one: you have a function that live directly into a TypeScript (.ts) file. The function returns an array using a service. The service does an HTTP request and use crypto hashing function from an old library not compatible with Jest. In any case, you do not want to perform the HTTP query, nor having to handle the crypto function. However, you have unit tests to do that call that function. What you need is to mock this problematic function. Not only it will be faster to avoid making HTTP calls, it will remove Jest to import the problematic import and the test is tailor toward the real tested function and not the functions that this one uses. Finally, mocking help consistency as we control the exact output of the dependency.
+
+![](/images/blog/testandmockfunctionmodule.png]
+
+The first step is to mock the direct dependency, the one that perform the HTTP request.
+
+```ts
+jest.mock('../../service/entities', () => ({
+  getEntities: jest.fn().mockReturnValue([]),
+}));
+```
+This command can be at the top of your `test.ts` file. For every invocation to the `getEntities` function in the `service/entities` file the function will return an empty array. However, this file has a dependency on the problematic library. While, this might not be the case of yo and you can skip this step, for others it requires an additional mock. The solution is to mock the import that the `service/entities` file has to the other dependency file.
+
+```ts
+jest.mock('../otherpath/otherfile', () => ({
+  functionThatCallCryptoLibrary: jest.fn().mockReturnValue({}),
+}));
+```
+
+In that case, the `getEntities` was using the `functionThatCallCryptoLibrary` from `../otherpath/otherfile.ts` which was using the old unsupported file with old import syntax.
+
+A small detail before moving forward, the `jest.mock` does not specify the extension of the file.
+
+# How to make mockReturnValue Returns Different values
+At the moment, the `mockReturnValue` returns for every invocation `[]`. An intuitive but wrong idea might be to call the mocking return value function into a `describe` that describe a different scenario. For example:
+
+```ts
+describe('when the server as many entities', () => {
+    (getEntities as jest.Mock).mockReturnValue([{},{},{}]);
+
+    it("returns three entities", ()=>{
+        // Test here
+    });
+});
+
+The issue is that the value will be set once and will remain set for every other tests in the test file. The clean and right way is to invoke the `mockReturnValue` using the `beforeEach`.
+
+```ts
+describe('when the server as many entities', () => {
+    beforeEach(() => {
+        (getEntities as jest.Mock).mockReturnValue([{},{},{}]);
+    });
+
+    it("returns three entities", ()=>{
+        // Test here
+    });
+});
+```
+
+In that case, every new test (`it`) will perform the mock. Thus, having several `beforeEach` in the file that return different output does not conflict or share values.
+
+# Conclusion

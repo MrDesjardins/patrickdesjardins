@@ -1,0 +1,45 @@
+---
+title: "How to Debug a Kubernetes Pod"
+date: "2024-03-13"
+categories:
+  - "kubernetes"
+  - "k8s"
+---
+
+# Two Ways to Help Debugging a Kubernetes Pod
+
+Your code is working locally and then you push into your testing environment, or worse your production environment and it does not. How can you debug the code running into your Kubernetes pod? Two ways to get insight are: reading the console log from the pod or to get access using a terminal to the pod and perform some commands like reading log files.
+
+# Console Output
+There is some situation where the system may output information into the console. For example, if you are running a Node project, there might be use of `console.log` which might give information. Similarly, `console.error`. One send text to the `stdout` and the other to the `stderr`. At the end, both are giving additional information that might be useful to determine the cause of the issue.
+
+The first step is to connect to the pod. If you are running a cluster of pods, it might get tricky and you may need to connect to several pods if the issue is not globally (yet) appearing on all pods. Nevertheless, the first step after login is to get into your context and namespace.
+
+```sh
+kubectl config use-context my-prod-env
+kubectl config set-context --current --namespace=ns-my-team-namespace
+```
+
+These two commands let you then perform commands to find the exact pod you want to connect. There are a variety of ways to find a pod. It varies depends on what is the naming convention in your organization.
+
+```sh
+$POD_NAME=kubectl get pods | awk '{print $1}' | grep release-13123-instance-1-frontend
+```
+Here is an example where each release number gets into the name. The command returns all pods and then search for a specific name. The output should be a single name.
+
+Then you can start streaming the terminal outputs using:
+
+```sh 
+kubectl logs -f $POD_NAME
+```
+
+# Connecting to the Pod using a Shell (Terminal)
+
+All the previous step are relevant beside the streaming of the terminal's outputs. Instead the `it` for interactive is required.
+
+```sh
+kubectl exec -it $POD_NAME -- sh
+```
+
+The commands will start a shell (`sh`) on the pod found.
+

@@ -1,11 +1,13 @@
 === Draft Started
-✍️ 2023-02-07: 
+✍️ 2024-03-13: How to Debug a Kubernetes Pod
+✍️ 2024-03-08: TypeScript and Jest to Mock a Module Function
 
 === Completed waiting
-⏲️ 2024-02-21: Coding a Blog with NextJS SSG and MDX
+⏲️ 
 
 
 === Published
+✅ 2024-02-21: Coding a Blog with NextJS SSG and MDX
 ✅ 2024-02-16: Migrating my Static Blog from Gatsby to NextJS
 ✅ 2024-02-07: Display Git Pull Request Status on the Steelseries APEX 7 TKL keyboard OLED
 ✅ 2024-01-30: Merge and Rebase with Auto Stash to Accelerate Pulling
