@@ -1,10 +1,10 @@
 === Draft Started
-✍️ 2024-03-13: How to Debug a Kubernetes Pod
-✍️ 2024-03-08: TypeScript and Jest to Mock a Module Function
+✍️ 2024-03-21: 
 
 === Completed waiting
-⏲️ 
-
+⏲️ 2024-03-21: How to Silence Bash Commands
+⏲️ 2024-03-13: How to Debug a Kubernetes Pod
+⏲️ 2024-03-08: TypeScript and Jest to Mock a Module Function
 
 === Published
 ✅ 2024-02-21: Coding a Blog with NextJS SSG and MDX

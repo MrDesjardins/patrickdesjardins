@@ -1,0 +1,77 @@
+---
+title: "How to Silence Bash Commands"
+date: "2024-03-21"
+categories:
+  - "bash"
+  - "terminal"
+  - "shell"
+  - "sh"
+---
+
+There are ways to redirect the outputs of a terminal's command if the output is not desirable.
+
+Before getting into the _how_, let's describe the concept of "File Descriptor" or `fd`. Using a terminal, you have three `fd`. The first one is the input. The terminal refers to the input file descriptor as `fd 0`. The second `fd` is the standard output, also known as `stdout` and `fd 1`. Finally, the third is the file descriptor for error, the `stderr` or `fd 2`.
+
+|FD Number|File StreamName|Description|
+|---|---|---|
+|0|stdin|What the user typed as argument of the command|
+|1|stdout|Output of the command that is not error|
+|2|stderr|Error of the command|
+
+To silence the `stdout` you redirect the output using the `>` into the _void_ using the destination `/dev/null`.
+
+The following command:
+
+```sh
+ls 1> /dev/null
+```
+Redirect the `stdout` into the _void_, thus nothing appear in the terminal. 
+
+The following command using the file descriptor 2, the `stderr`, redirect error, which mean that you still see the output of the directories and files
+
+```sh
+ls 2> /dev/null
+```
+
+But deleting an non-existing file does not show the error:
+
+```sh
+rm testme.test 2> /dev/null
+```
+
+If you want to have both, the `stdout` and `stderr` silenced, then you can use:
+
+```sh
+ls 1> /dev/null 2> /dev/null
+```
+
+Or it's more compact form:
+
+```sh
+ls 1> /dev/null 2>& 1
+```
+The `& 1` (note the space) means that the output of the file descriptor 2 goes into the file descriptor 1. The file descriptor 1 goes to `/dev/null` thus everything is silenced.
+
+The `1>` has a short form `>`. While less explicit, it reduces a character and is somewhat well known that the default is the `stdout`.
+
+```sh
+ls > /dev/null 2>& 1
+```
+There is also a shorter form to the common task of silencing "everything" which is to use `&>` without any file descriptor.
+
+```sh
+ls &> /dev/null
+```
+
+Instead of using `ls`, use `rm` on a file that does not exist.
+
+```sh
+> rm testme.test
+rm: testme.test: No such file or directory
+```
+And then:
+
+```sh
+rm testme.test &> /dev/null
+```
+No error!

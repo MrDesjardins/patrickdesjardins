@@ -68,3 +68,9 @@
 .blogPictureContainer {
   overflow: hidden;
 }
+
+.BlogBody td,
+.BlogBody th {
+  border: 1px solid var(--blog-section-border-color);
+  padding: 4px;
+}
