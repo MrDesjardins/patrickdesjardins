@@ -43,7 +43,7 @@ describe('when the server as many entities', () => {
         // Test here
     });
 });
-
+```
 The issue is that the value will be set once and will remain set for every other tests in the test file. The clean and right way is to invoke the `mockReturnValue` using the `beforeEach`.
 
 ```ts

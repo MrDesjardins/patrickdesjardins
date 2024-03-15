@@ -1,12 +1,14 @@
 === Draft Started
-✍️ 2024-03-21: 
+✍️ 2024-04-14: NextJS 14 Authentication and Middleware
 
 === Completed waiting
-⏲️ 2024-03-21: How to Silence Bash Commands
-⏲️ 2024-03-13: How to Debug a Kubernetes Pod
-⏲️ 2024-03-08: TypeScript and Jest to Mock a Module Function
+⏲️ 2024-04-01: Adding Console and Network Logs in Playwright
+
 
 === Published
+✅ 2024-03-21: How to Silence Bash Commands
+✅ 2024-03-13: How to Debug a Kubernetes Pod
+✅ 2024-03-08: TypeScript and Jest to Mock a Module Function
 ✅ 2024-02-21: Coding a Blog with NextJS SSG and MDX
 ✅ 2024-02-16: Migrating my Static Blog from Gatsby to NextJS
 ✅ 2024-02-07: Display Git Pull Request Status on the Steelseries APEX 7 TKL keyboard OLED

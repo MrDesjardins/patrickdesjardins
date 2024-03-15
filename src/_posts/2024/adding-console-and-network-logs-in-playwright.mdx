@@ -1,0 +1,75 @@
+---
+title: "Adding Console and Network Logs in Playwright"
+date: "2024-04-01"
+categories:
+  - "playwright"
+  - "test"
+---
+I will show you how to add console and network logs in Playwright. Logs are helpful when you have tests working locally but not on a CI/CD pipeline. You can use these logs to debug and understand what's happening.
+
+The first step is to add the logs to the test. You can use the `page.on('console')` and `page.on('request')` functions to listen to the logs. To avoid repetitive code, you can add these logs into a fixture. A test fixture sets up the environment for the tests.
+
+
+```ts
+import { test, expect } from '@playwright/test';
+
+test('my test', async ({ page }) => {
+  page.on('console', (msg) => {
+    console.log('PAGE LOG:', msg.text());
+  });
+  page.on('request', (request) => {
+    console.log('REQUEST:', request.url());
+  });
+  await page.goto('https://playwright.dev/');
+  const title = page.locator('.navbar__title');
+  await expect(title).toHaveText('Playwright');
+});
+```
+
+```ts
+export const wrapper = ()=>{
+  const consoleLines:string[]=[];
+
+  const test = base.extend<MyFixtures>({
+    workerStorageState:[
+      async ({browser}, use):Promise<void>=>{
+        const page = await browser.newPage();
+        page.on('console', (msg) => {
+          consoleLines.push(msg.text());
+        });
+
+        page.on('request', async(request) => {
+          consoleLines.push(request.url());
+          if(request.failure()){
+            consoleLines.push(request.failure().errorText);
+          }
+        });
+      },
+    ],
+    
+  });
+  test.beforeEach(async()=>{
+    consoleLines.lenght=0;
+  });
+  test.afterEach(async({page})=>{
+    if(test.info().status !== test.info().expectedStatus){
+      console.log("Output of console logs for: " + test.info().title);
+      console.log(consoleLines.join("\n");
+    }
+  });
+  return test;
+};
+```
+
+The code above is a simplification of the potential. The goal is to extend the base test and return a test containing the event that collects the logs into an array. If one of the tests fails, the wrapper prints the log in the console.
+
+```ts
+const test = wrapper();
+test('my test', async ({ page }) => {
+  await page.goto('https://playwright.dev/');
+  const title = page.locator('.navbar__title');
+  await expect(title).toHaveText('Playwright');
+});
+```
+
+Like the original test, the wrapper returns a function but has the events listening. The tests execute normally, but the logs are printed to the console if they fail. You can use the logs in a CI/CD pipeline to understand what's happening.
