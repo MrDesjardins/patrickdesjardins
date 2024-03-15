@@ -2,7 +2,10 @@ import clsx from "clsx";
 import styles from "./website.module.css";
 import styles2 from "./StatisticsSection.module.css";
 import Image from "next/image";
+import { countBlogArticles } from "../../_utils/file";
+import Link from "next/link";
 export const StatisticsSection = (): React.ReactElement => {
+  const blogCount = countBlogArticles();
   return (
     <section
       id="experiences"
@@ -34,7 +37,9 @@ export const StatisticsSection = (): React.ReactElement => {
             />
           </div>
           <div className="counterup-content">
-            <h5 className="count-number">{new Date().getFullYear() - 2004}</h5>
+            <h5 className="count-number">
+              {new Date().getFullYear() - 2004 + 1}
+            </h5>
             <h6>Years of programming</h6>
           </div>
         </div>
@@ -64,9 +69,9 @@ export const StatisticsSection = (): React.ReactElement => {
             />
           </div>
           <div className="counterup-content">
-            <h5 className="count-number">766</h5>
+            <h5 className="count-number">{blogCount}</h5>
             <h6>
-              <a href="http://patrickdesjardins.com/blog/">Blog</a> Articles
+              <Link href="/blog">Blog</Link>&nbsp; Articles
             </h6>
           </div>
         </div>
