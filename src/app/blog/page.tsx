@@ -8,11 +8,11 @@ export default async function Page(): Promise<React.ReactElement> {
   const posts = await getAllPosts();
   const totalPage = getTotalPages(posts);
   posts.sort((a, b) =>
-    new Date(a.metadata.date) > new Date(b.metadata.date) ? -1 : 1,
+    new Date(a.metadata.date) > new Date(b.metadata.date) ? -1 : 1
   );
   const pagePost = posts.slice(
     (pageNumber - 1) * MAX_POSTS_PER_PAGE,
-    pageNumber * MAX_POSTS_PER_PAGE,
+    pageNumber * MAX_POSTS_PER_PAGE
   );
   const computedBlogProps = {
     pageNumber: pageNumber,
@@ -22,7 +22,7 @@ export default async function Page(): Promise<React.ReactElement> {
   return (
     <BlogBody
       currentPage={Number(computedBlogProps.pageNumber)}
-      totalPages={computedBlogProps.totalPages}npm 
+      totalPages={computedBlogProps.totalPages}
       topTitle="Blog Posts"
     >
       {pagePost.map((node) => (
