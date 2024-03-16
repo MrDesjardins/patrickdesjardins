@@ -1,13 +1,8 @@
-import { type Metadata } from "next";
 import { MAX_POSTS_PER_PAGE } from "../../constants/constants";
 import { getAllPosts, getTotalPages } from "../../lib/api";
 import { BlogEntry } from "./_components/BlogEntry";
 import { BlogBody } from "./_components/BlogBody";
 
-export const metadata: Metadata = {
-  title: "Patrick Desjardins Blog",
-  description: "Patrick Desjardins Blog",
-};
 export default async function Page(): Promise<React.ReactElement> {
   const pageNumber = 1;
   const posts = await getAllPosts();
@@ -19,15 +14,15 @@ export default async function Page(): Promise<React.ReactElement> {
     (pageNumber - 1) * MAX_POSTS_PER_PAGE,
     pageNumber * MAX_POSTS_PER_PAGE,
   );
-  const props = {
+  const computedBlogProps = {
     pageNumber: pageNumber,
     totalPages: totalPage,
     posts: pagePost,
   };
   return (
     <BlogBody
-      currentPage={Number(props.pageNumber)}
-      totalPages={props.totalPages}
+      currentPage={Number(computedBlogProps.pageNumber)}
+      totalPages={computedBlogProps.totalPages}npm 
       topTitle="Blog Posts"
     >
       {pagePost.map((node) => (
