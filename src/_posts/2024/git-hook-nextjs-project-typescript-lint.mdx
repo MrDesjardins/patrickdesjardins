@@ -1,0 +1,83 @@
+---
+title: "Git Hook in a NextJS Project using TypeScript and Lint"
+date: "2024-04-24"
+categories:
+  - "git"
+  - "typescript"
+  - "nextjs"
+  - "lint"
+---
+
+Git Hooks are scripts that run automatically before or after a Git command. They help enforce coding standards, run tests, and perform other tasks. In this article, we will create a pre-commit Git Hook in a NextJS project using TypeScript and Lint.
+
+# Pre-Requisites
+
+The first step is to install Husky and Lint-Staged. Husky is a tool that makes it easy to use Git Hooks in your project. Lint-Staged runs linters on files that are staged in Git.
+
+```sh
+npm install --save-dev husky lint-staged shell-quote
+```
+
+I added the `shell-quote` package to avoid issues with the command line arguments.
+
+# Configuration
+
+Husky does not need much else than ensuring the developer runs the `husky` command one time. 
+
+The bulk of the work is with lint-staged. But first, Huksy needs to call lint-staged. In the `./husky/pre-commit` file, add `npm run lint:staged`. It entails that in the `package.json`, there is a script.
+
+```json
+"scripts": {
+  "lint:staged": "lint-staged -c lint-staged.config.msj -p false"
+}
+```
+
+The configuration is in JavaScript, allowing some task manipulation to be accomplished. Thus, Husky relies on Git's hooks, which call the `lint-staged` command. The command runs the linters only on the staged files. It provides excellent optimization for large projects. In this article, we can leverage to run Prettier and EsLint on a NextJS by only limiting the execution of the commands on the staged files.
+
+# Lint-Staged Configuration
+
+The lint-staged gives an entry point by specifying a glob pattern. The pattern is a regular expression that matches the files. 
+
+```js
+import {quote} from "shell-quote";
+import {EsLint} from "eslint";
+
+const eslint = new ESLint()
+
+module.exports = {
+  '**/*.{ts,tsx,css}': (filenames) => {
+    const escapedFileNames = filenames
+      .map((filename) => escape([filename]))
+      .join(' ')
+    return [
+      `prettier --ignore-path --write ${escapedFileNames}`,
+      `next lint --no-ignore --fix ${filenames
+        .filter((file) => !eslint.isPathIgnored(file))
+        .map((f) => `"${f}"`)
+        .join(' ')}`,
+    ]
+  },
+  '**/*.ts?(x)': () => {
+    return [`tsc -p tsconfig.json --noEmit`]
+  },
+}
+
+function escape(str) {
+  const escaped = quote(str)
+  return escaped.replace(/\\@/g, '@')
+}
+```
+In this example, there is an entry for TypeScript, TypeScript React and CSS file that runs Prettier and NextJS lint. There is a second entry for TypeScript/React files run the TypeScript compiler.
+
+# How it Works?
+
+The execution of the Git Hook is simple. When the developer runs `git commit`, Husky intercepts the command and runs the `lint-staged` command. The command runs the linters only on the staged files. If the linters find any issues, the commit is aborted.
+
+# What if I want to Bypass the Git Hook?
+
+There are several options. The first one is to run `git commit—-no-verify`. The `--no-verify` or `-n` flag bypasses the pre-commit Git Hook. 
+
+A second option is to set the environment variable `HUSKY` to `0`. It disables Husky and by consequence the Git Hooks.
+
+# Conclusion
+The reason for a Git hook is to help the developer not get easily fixable errors on their machine instead of waiting for the code to reach the continuous integration (CI) system. As long as the Git hook code is fast, it is more convenient than a nuisance. The optimization with lint-staged is a great way to run linters on the staged files only. The TypeScript one is less optimal and runs on all TypeScript files. You can remove the TypeScript entry for `tsc` depending on your situation.
