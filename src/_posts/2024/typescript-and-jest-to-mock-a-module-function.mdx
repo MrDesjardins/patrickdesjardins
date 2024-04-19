@@ -11,7 +11,7 @@ categories:
 
 The use case is this one: you have a function that live directly into a TypeScript (.ts) file. The function returns an array using a service. The service does an HTTP request and use crypto hashing function from an old library not compatible with Jest. In any case, you do not want to perform the HTTP query, nor having to handle the crypto function. However, you have unit tests to do that call that function. What you need is to mock this problematic function. Not only it will be faster to avoid making HTTP calls, it will remove Jest to import the problematic import and the test is tailor toward the real tested function and not the functions that this one uses. Finally, mocking help consistency as we control the exact output of the dependency.
 
-![](/images/blog/testandmockfunctionmodule.png]
+![](/images/blog/testandmockfunctionmodule.png)
 
 The first step is to mock the direct dependency, the one that perform the HTTP request.
 

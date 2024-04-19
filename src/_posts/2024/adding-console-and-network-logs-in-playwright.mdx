@@ -7,7 +7,7 @@ categories:
 ---
 I will show you how to add console and network logs in Playwright. Logs are helpful when you have tests working locally but not on a CI/CD pipeline. You can use these logs to debug and understand what's happening.
 
-The first step is to add the logs to the test. You can use the `page.on('console')` and `page.on('request')` functions to listen to the logs. To avoid repetitive code, you can add these logs into a fixture. A test fixture sets up the environment for the tests.
+The first step is to add the logs to the test. You can use the `page.on('console')` and `page.on('request')` functions to listen to the logs.
 
 
 ```ts
@@ -25,6 +25,9 @@ test('my test', async ({ page }) => {
   await expect(title).toHaveText('Playwright');
 });
 ```
+
+To avoid repetitive code, you can add these logs into a fixture. A test fixture sets up the environment for the tests.
+
 
 ```ts
 export const wrapper = ()=>{

@@ -1,0 +1,36 @@
+---
+title: "TypeScript 5.4 NoInfer Utility Type"
+date: "2024-05-09"
+categories:
+  - "typescript"
+  - "jest"
+---
+
+The latest TypeScript version, 5.4, brings a new utility type. The type `NoInfer` is a utility type that helps to prevent the inference of a type variable in a generic function. This utility type is proper when using generic types in a function, but TypeScript doesn't want to infer the type.
+
+## Why Use NoInfer?
+
+The `NoInfer` is a utility type that narrowly scopes the type inference. The use case is when a generic has many options, and a second argument needs to be part of the first type.
+
+For example, let's have two functions: `countBefore` and `count`. Both functions take an array and a value to count. The `countBefore` function uses `T[]` and `T`. The `count` function uses `T[]` and `NoInfer<T>`. The `NoInfer` utility type prevents TypeScript from inferring the type of `T`. Meanwhing that the second argument must be a subset of the first argument and not inferring that it can be _any_ type of the first argument. In the example below, the `count()` does not compile.
+
+```typescript
+type SetValue = 1|2|3|4|5;
+
+function countBefore<T extends SetValue>(s:T[], p:T): void{
+ console.log(s.filter(f=>f ===p).length);
+}
+
+function count<T extends SetValue>(s:T[], p:NoInfer<T>): void{
+ console.log(s.filter(f=>f ===p).length);
+}
+
+count([1,2,3], 5);
+countBefore([1,2,3], 5);
+```
+
+The reason is that `count` has the `NoInfer`, which tells TypeScript to be wiser. The `NoInfer` sets the type of the second argument to be a subset of the first argument. In this case, `5` is not part of the array `[1,2,3]` and TypeScript complains.
+Before, the second argument type would be the same as the first one, which allows `1|2|3|4|5`. However, with `NoInfer` the type is `1|2|3`.
+
+## Conclusion
+The `NoInfer` utility type prevents cases where options are selected that are not part of a whole type. It is the case for a union of types or types extending a larger type. The `NoInfer` tells the transpiler to analyze the type.

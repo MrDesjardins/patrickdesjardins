@@ -1,12 +1,14 @@
 === Draft Started
-✍️ 2024-04-24: Git Hook in a NextJS Project using TypeScript and Lint
+✍️ 2024-04-24: 
 
 === Completed waiting
-⏲️ 2024-04-14: NextJS 14 Authentication and Middleware
-⏲️ 2024-04-01: Adding Console and Network Logs in Playwright
+⏲️ 2024-05-09: TypeScript 5.4 NoInfer Utility Type
 
 
 === Published
+✅ 2024-04-24: Git Hook in a NextJS Project using TypeScript and Lint
+✅ 2024-04-14: NextJS 14 Authentication and Middleware
+✅ 2024-04-01: Adding Console and Network Logs in Playwright
 ✅ 2024-03-21: How to Silence Bash Commands
 ✅ 2024-03-13: How to Debug a Kubernetes Pod
 ✅ 2024-03-08: TypeScript and Jest to Mock a Module Function
