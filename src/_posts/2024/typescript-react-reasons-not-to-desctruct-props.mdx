@@ -231,6 +231,69 @@ Another point about developer experience is renaming. If you rename a variable i
 
 Each time you are destructuring an object, you create a variable and an object. The variables go into the heap and then are released later. That is not needed. Similarly, suppose you pass down the property to a child component. In that case, every render of the parent component creates variables losing the reference, and thus, the child component needs to evaluate the object each time. The creation of objects is not a big deal, React handles that case well, but it is not needed.
 
+# Reason 8: Union
+
+If you have a React component with a property that is a union, using a discriminator is a good pattern to identify which type of union is the active one. Destructuring a property with a discriminator removes the possibility of accessing a unique property of a type in the union and will not compile.
+
+```tsx {14-17}
+export type MyComponentProps = {
+  kind: "TypeA",
+  configuration: string;
+  metadata: boolean;
+} | 
+{
+  kind: "TypeB",
+  state: State;
+  title: string;
+};
+
+export function MyComponent({
+  kind,
+  configuration, // Error
+  metadata, // Error
+  state, // Error
+  title, // Error
+}: MyComponentProps): ReactElement {
+  return (
+    <div>
+      <h1>{title}</h1>
+    </div>
+  );
+}
+```
+
+However, by not destructuring, TypeScript can access the right property:
+
+``` 
+export type MyComponentProps = {
+  kind: "TypeA",
+  configuration: string;
+  metadata: boolean;
+} |
+{
+  kind: "TypeB",
+  state: string;
+  title: string;
+};
+
+export function MyComponent(props: MyComponentProps): ReactElement {
+  if (kind === "TypeA") {
+    // Can access configuration and metadata
+    return (
+      <div>
+        <h1>{props.configuration}</h1>
+      </div>
+    );
+  }
+  // TypeB from here: Can access state, title
+  return (
+    <div>
+      <h1>{props.title}</h1>
+    </div>
+  );
+}
+```
+
 # Conclusion
 
 This article has TypeScript in the title because I understand, coming from a typeless language, that destructuring the object is a way to get what property the object offers. In TypeScript, the type is already known and destructuring the object does not give this benefit. Assigning default value is an argument that favors destructuring, but its optional property can be handled gracefully inside the component. For example, in the deep nestling of property, we saw how the React component shows `No title` without polluting the component signature. The component signature should be simple and straightforward.
