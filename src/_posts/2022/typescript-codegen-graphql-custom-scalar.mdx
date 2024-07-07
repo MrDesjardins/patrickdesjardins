@@ -79,7 +79,8 @@ generates:
             maybeValue: T | undefined
             preResolveTypes: true
             avoidOptionals: true
-            scalar Long
+            scalars: 
+                Long: BitInt
         plugins:
             - typescript
             - typescript-operations
@@ -137,7 +138,8 @@ generates:
             maybeValue: T | undefined
             preResolveTypes: true
             avoidOptionals: true
-            scalar Long
+            scalars: 
+                Long: BitInt
             scalarTypePolicies:
                 Long: "../scalarPolicies/longBigIntPolicy#longBigIntPolicy"
         plugins:
