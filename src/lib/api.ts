@@ -117,7 +117,7 @@ export async function getAllPosts(): Promise<MdxData[]> {
     }
     const posts = await Promise.all(post);
     const today = new Date();
-    today.setHours(23, 59, 59, 0);
+    today.setUTCHours(23, 59, 59, 999);
     getAllPostsResult = posts.filter((p) => new Date(p.metadata.date) <= today);
   }
   return getAllPostsResult;

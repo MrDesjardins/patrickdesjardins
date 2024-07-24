@@ -2,10 +2,12 @@
 ✍️ 2024-04-24: 
 
 === Completed waiting
-⏲️ 2024-05-09: TypeScript 5.4 NoInfer Utility Type
+⏲️ 2024-05-09: 
 
 
 === Published
+✅ 2024-07-25: NextJS API Pipe And Filter Pattern
+✅ 2024-05-09: TypeScript 5.4 NoInfer Utility Type
 ✅ 2024-04-24: Git Hook in a NextJS Project using TypeScript and Lint
 ✅ 2024-04-14: NextJS 14 Authentication and Middleware
 ✅ 2024-04-01: Adding Console and Network Logs in Playwright

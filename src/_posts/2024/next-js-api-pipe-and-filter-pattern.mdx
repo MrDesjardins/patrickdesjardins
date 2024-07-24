@@ -1,0 +1,147 @@
+---
+title: "NextJS API Pipe And Filter Pattern"
+date: "2024-07-25"
+categories:
+  - "nextjs"
+  - "typescript" 
+  - "api"
+  - "pattern"
+---
+
+Every endpoint of an API service has different steps, such as receiving the request and sending a response. Every step can fail, requiring stopping the flow of operation and sending an HTTP response with an error code, message, and other information. Without an established pattern, the code becomes repetitive with many try/catch blocks and if/else statements. The pipe and filter pattern is a way to organize the code in a more readable and maintainable way.
+
+# Pipe and Filter Concept
+The concept sits on having a pipe with many filters. The pipe defines all the sequential filters that must be executed in order. Upon a failure, the pipe stops and sends a response. The code is clean because each task is separated in a filter. The code is maintainable because adding a new filter is easy and does not require changing the existing code. 
+
+# Creation of the Pipe
+
+The pipe contains a list of filters. Each filter has a strongly typed input and output, and the pipe strongly types each of them to ensure that the output of a filter is the input of the next filter. The pipe is a class that contains a list of filters. The pipe has a method `execute` that runs all the filters in order. The pipe has a method `addFilter` that adds a filter to the list of filters.
+
+```typescript
+export interface NextRequest {} // Use the real NextRequest from NextJS
+
+export interface PipeOptions<TInitial> {
+  name: string;
+  request: NextRequest;
+  data?: TInitial;
+}
+
+export interface FilterOptions {
+  request: NextRequest;
+  name: string;
+}
+
+// Get the type from one filter to another
+export type FilterFunction<T extends any[], R = any> = T extends [
+  infer TFunction,
+  ...infer TRestArguments
+]
+  ? TFunction extends (...args: any[]) => infer TReturnType
+    ? FilterFunction<TRestArguments, TReturnType>
+    : never
+  : R;
+
+export class Pipe<TInitial = any, TFilters extends any[] = []> {
+  private options: PipeOptions<TInitial>;
+  private readonly filters: [...TFilters] = [] as unknown as TFilters;
+  public constructor(options: PipeOptions<TInitial>) {
+    this.options = options;
+  }
+
+  public addFilter<
+    TFunction extends (
+      options: FilterOptions,
+      arg: Awaited<FilterFunction<TFilters, TInitial>>
+    ) => any
+  >(filter: TFunction): Pipe<TInitial, [...TFilters, TFunction]> {
+    this.filters.push(filter);
+    return this as unknown as Pipe<TInitial, [...TFilters, TFunction]>;
+  }
+}
+
+```
+
+With the following `addFilter,` each addition ensures that the filter receives the last return filter. Here are some little unit tests that show how to use the pipe.
+
+```typescript
+import { Pipe, FilterOptions, NextRequest } from "./pipe";
+
+const fakeRequest: NextRequest = {} as NextRequest;
+
+function filter1(options: FilterOptions, arg: number): number {
+  return arg + 1;
+}
+function filter2(options: FilterOptions, arg: number): string {
+  return arg.toString();
+}
+function filter3(options: FilterOptions, arg: string): boolean {
+  return arg === "";
+}
+
+describe(Pipe.name, () => {
+  describe("addFilter", () => {
+    it("should add a filter", () => {
+      const pipe = new Pipe({ name: "test", request: fakeRequest, data: 1 });
+      pipe.addFilter(filter1).addFilter(filter2).addFilter(filter3);
+    });
+  });
+});
+
+```
+The initial `data` is `1`, a number, and the `filter1` function receives a number as an argument. It compiles. The function `filter1` returns a `string`, so the `filter2` receives a string as an argument. It compiles. The function `filter2` returns a `boolean`, so the `filter3` receives a boolean as an argument. It compiles. The pipe is a way to ensure that the data is transformed from one filter to another.
+
+In the above test, changing the code of `pipe.addFilter(filter1).addFilter(filter2).addFilter(filter3);` for `pipe.addFilter(filter1).addFilter(filter2).addFilter(filter2);` does not compile because filter2 returns a string, and filter2 expects a number. 
+
+# Execution of the Pipe
+Once the setup of each step is defined for a pipe, we need to execute it. It is common for the filters to have an asynchronous function. The pipe must be able to handle this. The pipe has a method, `execute,` that runs all the filters in order by awaiting the list of filters. We must await because if there is a failure, the pipe must stop and send a response.
+
+```typescript
+ public async execute(): Promise<FilterFunction<TFilters> | PipeError> {
+ const options: FilterOptions = {
+      name: this.options.name,
+      request: this.options.request,
+    };
+    let value: FilterFunction<TFilters> = this.options
+      .data as unknown as FilterFunction<TFilters>;
+
+    for (const func of this.filters) {
+ try {
+        // Same initial options but pass latest filter value
+        value = await func(options, value);
+      } catch (error) {
+ return new PipeError(error);
+      }
+    }
+
+    return value;
+ }
+```
+
+The function iterates the list and handles the error. If an error occurs, the function returns a `PipeError` object. The `PipeError` object is a class that contains the error and the name of the filter that failed. In a real-life scenario, handling error would add telemetry, logging, and sending a response to the richer client, like an error code, reading the type of error, and managing a generic response for the client. The key point is always to take the output and use it as input for the next filter (function). Here are two unit tests that show how to use the pipe in a successful and error case:
+
+```typescript
+describe(Pipe.name, () => {
+  describe("addFilter", () => {
+    it("should add a filter", () => {
+      const pipe = new Pipe({ name: "test", request: fakeRequest, data: 1 });
+      pipe.addFilter(filter1).addFilter(filter2).addFilter(filter3);
+    });
+  });
+  describe("execute", () => {
+    it("returns the last filter value", async () => {
+      const pipe = new Pipe({ name: "test", request: fakeRequest, data: 1 });
+      const value = await pipe
+        .addFilter(filter1)
+        .addFilter(filter2Error)
+        .addFilter(filter3)
+        .execute();
+      expect(value).toBeInstanceOf(PipeError);
+    });
+  });
+});
+```
+
+# Conclusion
+The pattern is helpful in many ways. It handles exceptions in a single place, the execute function. The code is simplified in all API endpoint functions by creating the pipe and adding filters. Each filter can be unit-tested separately. Some filters might even be reusable. Because we are passing the HTTP Request, we could have a filter that checks the authentication, another that checks the authorization, another that checks the input, and another that checks the output. The pipe and filter pattern is a way to organize the code in a more readable and maintainable way. Also, the pattern works outside NextJS framework. The HttpRequest can be any type like Express or other framework!
+
+Here is a [CodeSandbox](https://codesandbox.io/s/pipe-and-filter-pattern-7zv7z) with the code.
