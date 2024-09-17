@@ -1,0 +1,74 @@
+---
+title: "Hosting a Discord Bot on a Raspberry PI"
+date: "2024-09-21"
+categories:
+  - "python"
+  - "Raspberry"
+  - "discord"
+---
+
+I recently worked on a Discord bot that allows the user of the guild (Discord server) to react to an emoji for a specific time of the day. The bot posts a single message daily and lets people vote when they will be active. Once the code was written, I was looking for a place to host the script. I chose to write the bot in Python instead of TypeScript for the fun of using Python again. It does not require much memory but requires saving data on disk (for logs and for some caching).
+
+I was surprised to find a few options available for free. The bot does not generate any source of income, so I was looking for a cheap hosting solution. At first, I tried [PythonAnywhere](https://www.pythonanywhere.com/), but the free tier does not allow a live connection to Discord on port 443. Then, decided to give a shot to [Azure Web App](https://azure.microsoft.com/en-us/products/app-service) but the "always on" feature is not on the free tier which is required for the bot to always be available.
+
+My solution was to use an old Raspberry PI that I had, plug it into my house router, which has a UPS in case of an electric outage, and install the script. I rely on systemctl to run the script as a service. The Python script starts on boot, which takes a few seconds. I have a script that fetches the latest code and restarts the service, which simplifies the release. Here is a list of steps after assigning a fixed IP to the Raspberry PI on my Internet router.
+
+
+1. SSH into the Raspberry Pi
+```sh
+ssh pi@10.0.0.192
+```
+2. Clone the repository
+```sh
+git clone https://github.com/MrDesjardins/python-discord-scheduler-bot.git
+```
+3. Create the Python environment 
+```sh
+python3 -m venv .venv
+``` 
+4. Activate the Python environment 
+```sh
+source .venv/bin/activate
+```
+5. Install the dependencies 
+```sh
+python3 -m pip install -r requirements.txt
+```
+6. Edit the environment variables file to setup Discord key and environment
+```sh
+sudo nano /etc/environment
+ENV=prod
+BOT_TOKEN=<bot token>
+```
+7. Configure systemctl
+```sh
+sudo cp /home/pi/python-discord-scheduler-bot/systemd/gametimescheduler.service /etc/systemd/system/gametimescheduler.service
+sudo systemctl enable gametimescheduler.service
+sudo systemctl start gametimescheduler.service
+```
+
+The systemctl configuration waits for dependencies like the network and some delay to avoid starting issues:
+
+```
+[Unit]
+Description=Discord Scheduler Bot
+After=network.target
+Requires=network.target
+Requires=local-fs.target
+After=local-fs.target
+
+[Service]
+WorkingDirectory=/home/pi/python-discord-scheduler-bot
+EnvironmentFile=/etc/environment
+ExecStart=/home/pi/python-discord-scheduler-bot/.venv/bin/python3 /home/pi/python-discord-scheduler-bot/bot.py
+ExecStartPre=/bin/sleep 10
+Restart=on-failure
+RestartSec=10
+User=pi
+Group=pi
+
+[Install]
+WantedBy=multi-user.target
+```
+
+The solution is not very resilient and does not scale, but it was an easy one at a very low cost. Since I intend to keep the bot private to a single guild, the solution might be the final. Another alternative could be a cheap VPS (virtual private server) or even a shared hosting environment.
