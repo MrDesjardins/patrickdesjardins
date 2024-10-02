@@ -1,11 +1,11 @@
 === Draft Started
-✍️ 2024-04-24: 
-
+✍️ 2024-09-06: 
 === Completed waiting
 ⏲️ 2024-05-09: 
 
 
 === Published
+✅ 2024-09-06: How to create MacOS notification for Pull Request Code Review?
 ✅ 2024-07-25: NextJS API Pipe And Filter Pattern
 ✅ 2024-05-09: TypeScript 5.4 NoInfer Utility Type
 ✅ 2024-04-24: Git Hook in a NextJS Project using TypeScript and Lint
@@ -18,7 +18,7 @@
 ✅ 2024-02-16: Migrating my Static Blog from Gatsby to NextJS
 ✅ 2024-02-07: Display Git Pull Request Status on the Steelseries APEX 7 TKL keyboard OLED
 ✅ 2024-01-30: Merge and Rebase with Auto Stash to Accelerate Pulling
-✅ 2023-01-26: Reasons for not using Property Desctruction in React when using TypeScript
+✅ 2023-01-26: Reasons for not using Property Destruction in React when using TypeScript
 
 === Draft Started but frozen
 🥶 2122-09-14: How to Access your Web Application on Kubernetes Azure with Ingress

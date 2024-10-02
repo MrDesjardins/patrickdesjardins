@@ -1,0 +1,209 @@
+---
+title: "How to create MacOS notification for Pull Request Code Review?"
+date: "2024-09-06"
+categories:
+  - "git"
+  - "api"
+---
+
+Depending on your situation, you may be limited in receiving notifications when it is time for you to review a pull request. Depending on your seniority and role, you may quickly provide code feedback to keep the pull request flowing into the development branch. Thus, having a notification on your screen might be a useful tool. You may rely on Slack bot, but that might not be possible in some workplaces. However, your organization might still have the Git API available. This article will leverage Python, the native MacOS notification utility, and the Git API to get a notification when you need to write feedback or accept/reject a pull request.
+
+![](/images/blog/macosnotificationgitreview.png)
+
+# Configurations
+The minimum configuration is the Git token that allows access to your private Git repository. You need to [generate a token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) in the developer setting under your profile photo and setting. Once you have it, save it under a `.env` file which will keep it outside your code repository.  Once you have it, save it in a `.env` file, which will keep it outside your code repository. Also, once you share your Python script, you can have anyone use their own token without modifying the code.
+
+Another configuration is the Git username you want to receive notifications for. I keep this configuration optional as I lead the team and want to be notified of all pull requests regardless of whether I am assigned to them. 
+
+In addition to the environment variables, there are a few options that you can tweak with constants in your code, like the frequency of pulling the information from Git. The script we will create does not have a push notification from Git but instead pulls the active pull requests.
+
+```python
+load_dotenv()
+GIT_TOKEN = os.getenv("GIT_TOKEN")
+GIT_USERNAME = os.getenv("GIT_USERNAME")
+allPr = os.getenv("GIT_ALL_PR_FROM_TEAM")
+GIT_ALL_PR_FROM_TEAM = False if allPr is None else allPr
+MINUTE_BETWEEN_CHECK = 5
+REQUEST_TIMEOUT = 10
+REPO_BASE_URL = "<redacted>"
+
+if GIT_TOKEN == None:
+    print("GIT_TOKEN is not set")
+    exit()
+
+if GIT_USERNAME == None:
+    print("GIT_USERNAME is not set")
+    exit()
+``` 
+
+# Connections
+
+The code will perform many HTTP requests and in case of failure, we want the code to retry. I am using the HTTPAdapter library to provide this capability:
+
+```python 
+from requests.adapters import HTTPAdapter
+retry_strategy = Retry(
+    total=4,  # Maximum number of retries
+    backoff_factor=2,  # Exponential backoff factor (1,2,4,8 seconds)
+)
+adapter = HTTPAdapter(max_retries=retry_strategy)
+```
+
+The HTTP request will use `adapter` later when performing the request.
+
+# HTTP Request
+
+The heart of the system fetches information from Git. It requires more than a single HTTP request because some information is in the pull requests endpoint and others in the review endpoint. The first part of the function prepares the HTTP headers and session information to perform the request to get the pull request:
+
+```python
+    url = f"{REPO_BASE_URL}/pulls"
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "Authorization": f"Bearer {GIT_TOKEN}",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+    try:
+        session = requests.Session()
+        session.mount('http://', adapter)
+        session.mount('https://', adapter)
+        r = session.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
+        responseJson = r.json()
+    except requests.RequestException as e:
+        print(f"RequestException Pull Request Error: {e}")
+        responseJson = []
+```
+# Analyzing the pull requests
+
+The next step is looping the pull request and filtering what is relevant. For example, you can skip a particular pull request with specific keywords and use the `GIT_USERNAME` to filter to the pull request assigned to your name. The following code removes pull requests not only keywords but also any pull request with the `draft` attribute to `true` as the pull request is not yet ready for feedback. We also check to ensure the pull request creator is not you, the `GIT_USERNAME`, as you should not review your pull request.
+
+```python 
+ignoreTitleStrings = ["(dnr)", "do not review"]
+for pr in responseJson:
+	skip = False
+	pullRequestTitle = pr["title"].lower()
+	for s in ignoreTitleStrings:
+		if pullRequestTitle.find(s) >= 0:
+			skip = True
+			continue
+	if pr["draft"] == True:
+		skip = True
+	if skip:
+		continue
+	
+	if pr["user"]["login"] != GIT_USERNAME: # Check that you are not the creator
+		if GIT_ALL_PR_FROM_TEAM or GIT_USERNAME in pr["requested_reviewers"]: # Will handle if you want every member of your team or just the PR assigned to you
+			# TODO here 
+return filtered_list
+```
+
+At this step, the logic about determining if you need to dive into the pull request is not yet there. The only thing we know is that this pull request is relevant for you. The next step is determining if you already have commented or approved the pull request.
+
+```python
+from string import Template
+urlTemplatePullRequest = Template(
+	f"{BASE_URL}/pulls/$number/reviews"
+)
+url = urlTemplatePullRequest.substitute(number=pr["number"])
+try:
+	session = requests.Session()
+	session.mount('http://', adapter)
+	session.mount('https://', adapter)
+	r = session.get(url, headers=headers, timeout=REQUEST_TIMEOUT)
+	responseJson2 = r.json()
+except requests.RequestException as e:
+	print(
+		f"{current_time}: RequestException Review Error: {e}")
+	responseJson2 = []
+
+hasApproved = False
+hasCommented = False
+for review in responseJson2:
+	if review["user"]["login"] == GIT_USERNAME:
+		if review["state"] == "APPROVED":
+			hasApproved = True
+		if review["state"] == "COMMENTED":
+			hasCommented = True
+
+filtered_list.append(
+	{
+		"number": pr["number"],
+		"title": pr["title"],
+		"url": pr["url"],
+		"hasApproved": hasApproved,
+		"hasCommented": hasCommented,
+		"needReview": not (hasApproved or hasCommented),
+	}
+)
+```
+The result is a list that contains the pull request number, title, full URL, and whether it needs your attention. We also specify what attention is needed between commenting on the pull request and approving it.
+
+# Creating the Message
+
+The next function executes the fetching function and acts on the list of pull requests. The function counts the amount of review and creates a `text` variable. The function calls `sendEvent` that will create the popup. The text contains two rows. One is about the need to review, and the other is for approval.
+
+```python 
+def create_message():
+    try:
+        prs = fetchGitHub()
+    except Exception as e:
+        print(repr(e))
+        return
+    countNeedReview = len(list(filter(lambda pr: pr["needReview"], prs)))
+    lstApprovedRequired2 = list(filter(lambda pr: pr["hasApproved"] == False, prs))
+    countNeedApproval = len(lstApprovedRequired2)
+    strApprovalIds = ""
+    strCommentIds = ""
+
+    for pr in lstApprovedRequired2:
+        if pr["needReview"] == True:
+            strCommentIds += f"#{pr['number']}, "
+        if pr["hasApproved"] == False:
+            strApprovalIds += f"#{pr['number']}, "
+    if len(strApprovalIds) > 2:
+        strApprovalIds = f"({strApprovalIds[:-2]})"
+    if len(strCommentIds) > 2:
+        strCommentIds = f"({strCommentIds[:-2]})"
+
+    text = ""
+    if (countNeedReview > 0):
+        text += f"{countNeedReview} to review {strCommentIds}"
+    if (countNeedApproval > 0):
+        if len(text) > 0:
+            text += "\n"
+        text += f"{countNeedApproval} to approve {strApprovalIds}"
+
+    if countNeedReview > 0 or countNeedApproval > 0:
+        sendEvent("Pull Request Review", text)
+```
+
+# Notification
+
+The sendEvent is what uses the macOS native notification system:
+
+```python
+def sendEvent(title, text):
+    os.system(
+        """
+              osascript -e 'display notification "{}" with title "{}"'
+              """.format(
+            text, title
+        )
+    )
+```
+
+The notification function could use any other mechanism if this one is unsuitable for your needs.
+
+# Scheduling the pulls
+
+The last part is executing the code every few minutes. You can import `schedule` and set a time to pull the reviews.
+
+```python 
+schedule.every(8).minutes.do(create_message)
+while True:
+    schedule.run_pending()
+    time.sleep(10)
+
+```
+# Conclusion
+
+With less than 200 lines of Python code, you can get notifications about new pull requests directly on your MacOS from Git regardless if the repository is on GitHub or a private one. The solution does not require privileges on Slack or other tools besides having access to the Git repository and the ability to create a developer access token. The script helps give you and your team real-time insight into what should be tackled to unblock your teammates.
