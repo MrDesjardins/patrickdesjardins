@@ -277,7 +277,7 @@ export type MyComponentProps = {
 };
 
 export function MyComponent(props: MyComponentProps): ReactElement {
-  if (kind === "TypeA") {
+  if (props.kind === "TypeA") {
     // Can access configuration and metadata
     return (
       <div>
