@@ -1,4 +1,10 @@
+.htmlstyle {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 .bodystyle {
+  flex: 1;
   margin: 0;
   font-family: "Oswald";
 

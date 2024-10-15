@@ -7,5 +7,5 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>): React.ReactElement {
-  return <div className={styles.bodystyle}>{children}</div>;
+  return <div className={styles.blogbodystyle}>{children}</div>;
 }

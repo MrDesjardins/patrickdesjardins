@@ -1,5 +1,6 @@
-.bodystyle {
+.blogbodystyle {
   margin: 0;
+  height: 100%;
   font-family: "Oswald";
   --blog-title-foreground-color: #e2d0ff;
   --blog-date-foreground-color: #858585;

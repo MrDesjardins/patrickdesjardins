@@ -8,7 +8,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>): React.ReactElement {
   return (
-    <html lang="en">
+    <html lang="en" className={styles.htmlstyle}>
       <body className={styles.bodystyle}>{children}</body>
     </html>
   );
