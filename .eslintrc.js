@@ -10,7 +10,7 @@ module.exports = {
     "plugin:react-hooks/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended",
-    "plugin:prettier/recommended",
+    "prettier",
   ],
   parserOptions: {
     ecmaVersion: "latest",
