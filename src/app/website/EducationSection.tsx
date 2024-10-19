@@ -43,7 +43,7 @@ export const EducationSection = (): React.ReactElement => {
           </li>
           <li>
             <FontAwesomeIcon icon={faCertificate} />
-            <p>10 Microsoft Certificaftions</p>
+            <p>10 Microsoft Certifications</p>
           </li>
         </ul>
       </div>
