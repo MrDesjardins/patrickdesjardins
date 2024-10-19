@@ -2,6 +2,8 @@ import clsx from "clsx";
 import styles from "./website.module.css";
 import styles2 from "./AchievementsSection.module.css";
 import Image from "next/image";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCopyright } from "@fortawesome/free-solid-svg-icons";
 export const AchievementsSection = (): JSX.Element => {
   return (
     <section
@@ -9,7 +11,7 @@ export const AchievementsSection = (): JSX.Element => {
       className={clsx(
         styles.sectionMainpage,
         styles.sectionVisualTwo,
-        styles2.achievementContainerBackground,
+        styles2.achievementContainerBackground
       )}
     >
       <div className={styles2.achievementOverlay}>
@@ -49,7 +51,7 @@ export const AchievementsSection = (): JSX.Element => {
             </div>
             <br />
             <br />
-            <div style={{ margin: "auto", width: 250 }}>
+            <div style={{ margin: "auto", width: 150 }}>
               <iframe
                 id="twitter-widget-0"
                 scrolling="no"
@@ -236,7 +238,7 @@ export const AchievementsSection = (): JSX.Element => {
                   width={32}
                   height={32}
                 />
-                Author of 11 books
+                <span>Author of 12 books</span>
               </a>
             </div>
             <br />
@@ -255,8 +257,11 @@ export const AchievementsSection = (): JSX.Element => {
             <br />
             <div className={styles2.patentFlair}>
               <a href="#">
-                <i className="fa fa-copyright" style={{ margin: 7 }}></i> 6 Sole
-                Inventor Pending Patents
+                <FontAwesomeIcon
+                  icon={faCopyright}
+                  style={{ width: 14, marginRight: 6 }}
+                />
+                6 Sole Inventor Pending Patents
               </a>
               <div style={{ color: "black" }}>
                 Online Available:

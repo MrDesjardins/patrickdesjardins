@@ -11,6 +11,20 @@ export const OpenSourceSection = (): React.ReactElement => {
       <header>Open Source</header>
       <div className={styles.sectionFixedWitdh}>
         <CardFixedWidth
+          title="Python Discord Schedule Bot"
+          description="Main maintainer. Creation of a Discord bot that ask who will be available to play on a daily basis. The bot generates statistics about who play with whom, handle timezone, provides audio messages when people join the voice channel and more."
+          link="https://github.com/MrDesjardins/python-discord-scheduler-bot"
+          image={
+            <Image
+              className={styles.cardFixedWidthImageImg}
+              alt="Screenshot of the Discord bot"
+              src="/images/portfolio/DiscordBot.png"
+              width={350}
+              height={350}
+            />
+          }
+        />
+        <CardFixedWidth
           title="TypeScript Real Time Pixel"
           description="Main maintainer. Docker containers of a SolidJS frontend server and a NodeJS Socker.IO server for a small realtime pixel game where users place pixel to create image."
           link="https://github.com/MrDesjardins/realtimepixel"

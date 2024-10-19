@@ -56,6 +56,14 @@
   margin: auto;
 }
 
+.amazonFlair > a {
+  display: inline-block;
+}
+
+.amazonFlair > a > * {
+  vertical-align: middle;
+}
+
 .mvpFlair {
   margin: auto;
   width: 200px;

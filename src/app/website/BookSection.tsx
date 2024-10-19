@@ -11,6 +11,20 @@ export const BookSection = (): React.ReactElement => {
       <header>Books</header>
       <div className={styles.sectionFixedWitdh}>
         <CardFixedWidth
+          title="W3H, What, Why, How - Full Stack Distributed System Design"
+          description="A +800 pages book about distributed system design"
+          link="#"
+          image={
+            <Image
+              className={styles.cardFixedWidthImageImg}
+              alt="Screenshot of the W3H, What, Why, How Distributed System Book"
+              src="/images/books/w3h_200width.png"
+              width={200}
+              height={250}
+            />
+          }
+        />
+        <CardFixedWidth
           title="Holistic TypeScript Second Edition (TS 4.0)"
           description="A book that cover every features of TypeScript up to TypeScript 4.0."
           link="http://typescriptbook.com/"
