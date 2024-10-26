@@ -60,7 +60,7 @@ export function BlogBody(props: BlogBodyProps): React.ReactElement {
         <Image
           className={styles.blogTopPicture}
           alt="Patrick Desjardins picture from a conference"
-          src="/images/backgrounds/patrickdesjardins_conference_bw.jpeg"
+          src="/images/backgrounds/patrickdesjardins_conference_bw.webp"
           width={800}
           height={260}
         />

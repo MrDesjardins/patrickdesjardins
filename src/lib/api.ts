@@ -108,6 +108,12 @@ export function getTotalPages(posts: MdxData[]): number {
 }
 
 let getAllPostsResult: MdxData[] | undefined;
+/**
+ * Get all MDX files content and metadata.
+ * Optimized to do the I/O only once.
+ * Only return the posts that are not in the future.
+ * @returns
+ */
 export async function getAllPosts(): Promise<MdxData[]> {
   if (getAllPostsResult === undefined) {
     const post: Array<Promise<MdxData>> = [];

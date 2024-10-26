@@ -9,6 +9,12 @@ interface Props {
   searchParams: Record<string, string | string[] | undefined>;
 }
 
+/**
+ * Dynamically generate the metadata for the page like the title for the browser tab.
+ * @param props
+ * @param parent
+ * @returns
+ */
 export async function generateMetadata(
   props: Props,
   parent: ResolvingMetadata,

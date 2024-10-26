@@ -49,12 +49,16 @@
 }
 
 .paginationBar a {
-  margin-left: 2px;
-  padding: 2px 6px 2px 6px;
+  margin-left: 4px;
+  padding: 4px 10px;
   font-size: 20px;
   line-height: 30px;
   display: inline-block;
   color: var(--link-foreground-color);
+}
+.paginationBar a:hover {
+  background-color: var(--blog-title-foreground-color);
+  border-radius: 4px;
 }
 .currentLink {
   background-color: var(--current-link-background-color);

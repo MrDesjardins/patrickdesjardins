@@ -1,0 +1,2 @@
+/*Cache for 30 days static assets*/
+Cache-Control: max-age=2592000
