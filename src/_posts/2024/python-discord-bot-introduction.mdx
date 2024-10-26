@@ -1,0 +1,107 @@
+---
+title: "An Overview of the Creation of a Discord Bot Using Python"
+date: "2024-10-26"
+categories:
+  - "python"
+  - "discord"
+  - "bot"
+---
+
+I have been playing video games sporadically for a few months and have a small group of people with whom I enjoy playing. However, we needed help finding a way to communicate in advance who would be online after work to play. After a quick search in Discord's marketplace, I couldn't find a simple way to acknowledge an hour of the day when I would be online and see who else would be. What I had in mind is exactly what I built, which you can see in the following image.
+
+![Discord Bot](/images/blog/discord_bot_daily_message.png)
+
+# Technology
+I am mostly writing professionally using TypeScript and only using Python when I was studying machine learning a few years ago. Thus, I decided to give Python a try to create the bot. My desire to find a more efficient way to run the bot on a very low-end server motivated the choice. The performance requirement was reasonable because I used a Raspberry Pi hook-up on my battery backup. Thus, running Python versus Node is less demanding. 
+
+![Raspberry Pi](/images/blog/discord_bot_raspberry_pi.png)
+
+# Discord.py Framework
+Discord relies on REST API and event-driven calls using socket. Most popular languages have a framework that abstracts calls and allows one to focus on building bots instead of focusing on the details of APIs. Discord.py is a popular framework that is easy to onboard, especially for someone with zero knowledge about Discord or its bot capability.
+
+# Discord Developer Portal
+The Discord website allows anyone to create a bot or many of them. I have two now! One for the production and one for testing. They share the same code and only vary by their secret token. So I can develop safely on a private Discord channel and have the production one run on the ready Discord server (a.k.a. guild).
+
+![Discord UI](/images/blog/discord_ui_portal.png)
+
+# The Bot Requirements
+The bot started with the essential requirement of sending a single message to a particular channel asking who will play. The message contains reactions for the hour of the day. Users click the emoji corresponding to the hour of the day they plan to play. Rapidly the need to aggregate into a message was important instead of looking at each emoji. Thus, hooking on the emoji event to update the daily message to generate a text was a natural improvement.
+
+# Bot Configuration
+The bot needs configuration to avoid hardcoding channel ID and server (guild) ID. Thus, some bot commands that only administrators can use are available. For example, once the bot is installed, an administrator can set the channel to which the bot sends its daily message.
+
+![Discord Admin Commands](/images/blog/discord_commands.png)
+
+Many users have a recurrent schedule. These days, having to manually click a couple of emojis is repetitive. Another command that every user can use is setting their schedule. It relies on Discord UI capability, where a dropdown with multiple choices appears, and the user can check the day of the week and the hours. The system registers the information for the user. Every day, when the bot sends the message, it looks at the user's schedule and automatically adds the information to the message. The user can override the time using the emoji.
+
+![Discord User Schedule](/images/blog/discord_command_add_schedule.png)
+
+Persistence was required in case the bot crashed or got an update. Keeping that information in memory was not a long-term solution. I ended up using a simple SQL Lite database. The database is easy to install and works well for situations where only a single instance writes to it. It allows you to query easily, and Python has a small and easy SQL Lite library. The total size file after two months is under 100kb.
+
+# Discord Rate Limiter
+The Discord Python library performs several requests and the Discord developer API limits the number of request. The number of request is very limited (under 5 requests per second). Few bot events don't have all the information of a user or about the guild. Thus, caching in memory was required to avoid hitting the rate limiter. The cache is a simple dictionary that stores the user and guild information. The bot code calls a _data access_ layer which check the cache. If the information is not present, the function calls the Discord API and stores the information in the cache.
+
+# User Role
+As the bot grew and evolve I wanted to provide more visual information to the user. For example, showing their maximum rank (level) at the game. I added emoji representing each level and the bot can prefix the emoji to the user name. You can see on the daily message image (above) the colorful icon before each name. The role is part of the user information that is stored in cache.
+
+# Bot as a Service
+I covered in a previous [blog article](/hosting-a-discord-bot-on-raspberry-pi) how I hosted the bot on a Raspberry Pi. The bot is running 24/7 and is connected on a battery backup that can keep the bot online for over 4 to 24 hours in case of a power outage. The variance depends if I am using other peripheral since my main computer is also connected to the battery backup. 
+
+# Bot Additional Requirements
+While the bot is useful for some, it is also not something that everyone takes time to participate in. Thus, if a user gets into one of the voice channels, the bot will automatically add the user to the current hour. This way, people can see the activity in the guild and might motivate them to participate. Relying on the voice channel event was an excellent way to avoid having to poll the Discord API every minute to see who is online. That discovery leads to the bot capturing who gets into a voice channel and who leaves.
+
+This led to many possibilities, like tracking who plays when, how long, and with whom. Also, the first person who joins the channel is alone and might not have checked the schedule. Thus, a new requirement was to have the bot join the voice channel only in the first person and talk to the user, telling the upcoming list of users who are about to join to entice the user to stay.
+
+As we play, we were asking every time who is from which timezone to determine the best server to play on. Thus, the bot now has a command that allows the user to set their timezone or let an administrator set it for them. Then, everyone can ask to get the timezone for a whole voice channel.
+
+![Discord User Timezone](/images/blog/discord_bot_timezone.png)
+
+## Telemetry
+
+On the telemetry side, a lot of interesting information can be gathered for the moderator to help foster a better community. For example, the admin can see who is the most active, which people play the most together, which day of the week folks are more active, and who is slowly not participating anymore. All that information allows the moderator to reach out directly to people, see if they are okay, and see if they are still interested in the community.
+
+Here are few graphs that can be generated using the admin tool and some using directly a Discord Admin command.
+
+### 2D Community Graph
+The graph draws a line between users who played together. The thicker the line, the more they played together. The graph is generated using the Python library NetworkX and Matplotlib. The node colors are determined by the Community Louvain algorithm. The graph helps find the core folks who keep the community alive and together and also identifies the outliers who might be left out. The people in the middle are the heart of the community, and at the edge are the people who might need more attention.
+
+![Discord Telemetry](/images/blog/discord_bot_community_2d.png)
+
+### Duo Time Bar Graph
+The graph checks the time two users played in the same guild and the same voice channel at the same time. It calculates the delta of time and sums it. The graph helps see who plays the most together and identifies a good duo matching others.
+
+![Discord Telemetry](/images/blog/discord_bot_duo_time.png)
+
+### Time in Voice Channels
+The graph indicates who is active the most. It helps to see who can be a good moderator or who can be a good leader to help others.
+
+![Discord Telemetry](/images/blog/discord_bot_total_voice.png)
+
+### Inactive Users
+The graph shows who is slowly not participating anymore. It helps to reach out to those users and see if they are okay or if they are still interested in the community.
+
+![Discord Telemetry](/images/blog/discord_bot_users_inactive.png)
+
+### User Day of Weeks
+The graph shows which day of the week folks are more active. It helps to plan events or to see if the community is more active on a specific day.
+
+![Discord Telemetry](/images/blog/discord_bot_days_of_week.png)
+
+### User Hours Per Month
+The graph shows which hours of the day folks are more active. It helps to see month by month who is slowly drifting away or who is more active.
+
+![Discord Telemetry](/images/blog/discord_bot_time_months.png)
+
+### Timeline of Users Voice Activities
+The graph shows the time in the voice channel for each user by week. It helps seeing who is getting more active or less active.
+
+![Discord Telemetry](/images/blog/discord_bot_timeline_week_user_voice.png)
+
+# Bot Admin
+As the code grew and features increased, it was obvious that some tasks were recurrent. For example, running tests, deploying the bot, getting statistics/telemetry, downloading the SQL Lite database locally, etc. I created a Python Admin Bot command with a menu that allows one to run those tasks without memorizing the commands. The Admin tool is available for development and also on the Raspberry PI for production tasks.
+
+<video src="/videos/blog/discord_bot_admin_menu.mp4" controls/>
+
+# Conclusion
+I will go in further detail in few of the implementation of the Discord bot in future blog articles. I hope this article gives you an overview of what is possible with a Discord bot and how it can help you foster a better community. If you have any questions or want to know more about a specific feature, please let me know in the comments below.
+

@@ -100,6 +100,7 @@
     white calc(0px - var(--distance)) var(--distance) 20px 0px,
     white var(--distance) calc(0px - var(--distance)) 20px 0px,
     white calc(0px - var(--distance)) calc(0px - var(--distance)) 20px 0px;
+    margin: var(--distance) 0;
 }
 
 .blogPostContainer img,
