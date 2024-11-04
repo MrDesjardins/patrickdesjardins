@@ -18,9 +18,9 @@ I am still a novice with the Rust language and ecosystem but I enjoy learning by
 # Configuration Files
 Instead of using a `package.json` you have a `cargo.toml`. Very similar, with one difference: you do not have all the scripts that you use. Only the metadata of your application (name, version, author, etc.) and dependencies on other packages.
 
-I'm using the `readme.md` to document the command that I often use like generating a build, test, coverage, etc. 
+I'm using the `readme.md` to document the commands that I often use like generating a build, test, coverage, etc. 
 
-Outside the `cargo.toml`, a small file name `rust-toolchain.tom` specify which version of Rust you are using. All my projects have:
+Outside the `cargo.toml`, a small file name `rust-toolchain.tom` specifies which version of Rust you are using. All my projects have:
 
 ```yaml
 [toolchain]
@@ -36,7 +36,7 @@ rm coverage*.profraw
 rm default*.profraw
 ```
 
-At first, I was confused about how to install a library since I rely on `npm install <lib here>`. In Rust, you can use a command, but writing in the `cargo.toml` is enough. Then, VsCode will know that the file changed and get the Intellisence. And the library downloads during the build step.
+At first, I was confused about how to install a library since I rely on `npm install <lib here>`. In Rust, you can use a command, but writing in the `cargo.toml` is enough. Then, VsCode will know that the file has changed and get the Intellisence. And the library downloads during the build step.
 
 # Main and Lib
 
@@ -52,7 +52,7 @@ rg --help
 
 # Mod, Pub Mod, and Use
 
-A confusing aspect is the use of `mod`. There is a deprecated way and a new way to manage files and modules with Rust. In short, you should not have to rely on a file named `mod.rs` anymore. 
+A confusing aspect is the use of `mod`. There is a new and deprecated way to manage files and modules with Rust. In short, you should no longer rely on a file named `mod.rs` anymore. 
 
 ## Mod
 
@@ -74,7 +74,7 @@ A simple way to understand `mod` is to see the instruction has a way of declarin
 
 ## Pub Mod
 
-In that example, the `utils.rs` defines the module (`mod utils`), which module is available for the lib.rs and main.rs by making it public (`pub mod`) outside the folder with `pub`. Coming from TypeScript/JavaScript is similar to having an `index.ts` that export a collection of functions, classes, and interfaces.
+In that example, the `utils.rs` defines the module (`mod utils`), which module is available for the lib.rs and main.rs by making it public (`pub mod`) outside the folder with `pub`. Coming from TypeScript/JavaScript is similar to having an `index.ts` that exports a collection of functions, classes, and interfaces.
 
 For example, in the utils.rs:
 
@@ -125,13 +125,13 @@ Testing has some benefits and inconveniences. First, you do not need to struggle
 Here is an example of code that is executed if you execute `cargo test`
 ![](/images/blog/rust-unit-test-in-comment-syntax-highlight-missing.png)
 
-Debugging works until it does not. So far with Visual Studio Code, testing worked well, but I had few evenings where it stopped working without much explanation. Is the issue VsCode, Rust, lldb or because I'm working in wsl? Too many layers of potential failure. Howver, debugging a NodeJS in TypeScript can be painful. I have a project with half a dozen launch configurations depending on the year it was working with a specific testing framework. Rust relies on `lldb`, so you need to install something beside Rust. It would be great if it were slightly more in-the-box. However, no mapping issue or breakpoint that cannot be hit once everything is working.
+Debugging works until it does not. So far with Visual Studio Code, testing worked well, but I had few evenings where it stopped working without much explanation. Is the issue VsCode, Rust, lldb or because I'm working in wsl? Too many layers of potential failure. However, debugging a NodeJS in TypeScript can be painful. I have a project with half a dozen launch configurations depending on the year it was working with a specific testing framework. Rust relies on `lldb`, so you need to install something besides Rust. It would be great if it were slightly more in-the-box. However, no mapping issue or breakpoint that cannot be hit once everything is working.
 
 Running unit tests is slow in Rust. Also, I have not found a native way to run failing tests (watch mode), making the process even slower. Code coverage code is more integrated as well.
 
 On the negative side, my tests are more organized in TypeScript or other languages because, in Rust, you cannot nest your test, leaving them flat per file. For example, in TypeScript (with Jest) you can have many levels of `describe`, which help with organizing per categorie.
 
-Mocking a structure is impossible if you want to mock only a portion. Moreover, coming from other langauges, it seems not intuitive.
+Mocking a structure is impossible if you want to mock only a portion. Moreover, coming from other languages, it does not seem intuitiv.
 
 # Documentation
 
@@ -148,7 +148,7 @@ Similar to NPM in the JavaScript ecosystem. You can see the one generated for th
 
 The package management is well integrated, and so far, I have no concerns.
 
-Packages quality is similar to every open-source projects, which mean it is hit or miss. I found that Rust has fewer options and sometimes it is hard to understand which package is the right one. For example, managing thread/async is a whole different story that seem to converge with more mature language into more defined patterns.
+Package quality is similar to every open-source project, which means it is hit or miss. I found that Rust has fewer options and sometimes it is hard to understand which package is the right one. For example, managing thread/async is a whole different story that seem to converge with more mature language into more defined patterns.
 
 # Tooling
 Github has actions for everything that you want. 
@@ -194,4 +194,4 @@ Type in Rust is significant. While Rust can infer, you need to think twice about
 The Rust documentation is a good start. I was pleased to start my journey with well-defined documentation. However, midway I noticed that the detail needed to be shorter and shorter, with more links toward incomplete or non-existent content. It looks like it started strong and was mostly abandoned. There are still many resources online, but a fraction of what you can find with TypeScript/JavaScript.
 
 # Conclusion
-I am still interested and will continue my journey of learning Rust on the side. I'm on Rust slowly as I am not actively professionally working with Rust. Rust is in a peculiar situation where Java monopolize a considerable part of the market for backend application with C# for a company that are more Microsoft-centric and C++ for the high-performance situation. Where go Rust remains a good question. I see potential when you do not want to install a heavy virtual machine that Java requires while remaining cross-platform. Rust is also a good replacement for C++ as it helps avoid memory issues. However, as of 2023, many high-performance jobs already have a set of skilled C++ developers and for more business-oriented backend have strong Java developers who like popular frameworks like Spring. The steep learning curves do not have the advantage of developing Node backend (using TypeScript/JavaScript), which also happens to have the benefit of sharing code between the front-end and backend. Thus, Rust remains interesting, but its place is undefined from my perspective.
+I am still interested and will continue my journey of learning Rust on the side. I'm on Rust slowly as I am not actively professionally working with Rust. Rust is in a peculiar situation where Java monopolizes a considerable part of the market for backend applications with C# for a company that is more Microsoft-centric and C++ for the high-performance situation. Where go Rust remains a good question. I see potential when you want to avoid installing a heavy virtual machine that Java requires while remaining cross-platform. Rust is also a good replacement for C++ as it helps avoid memory issues. However, as of 2023, many high-performance jobs already have a set of skilled C++ developers and for more business-oriented backend have strong Java developers who like popular frameworks like Spring. The steep learning curves do not have the advantage of developing Node backend (using TypeScript/JavaScript), which also happens to have the benefit of sharing code between the front-end and backend. Thus, Rust remains interesting, but its place is undefined from my perspective.
