@@ -13,7 +13,7 @@ export const BookSection = (): React.ReactElement => {
         <CardFixedWidth
           title="W3H, What, Why, How - Full Stack Distributed System Design"
           description="A +800 pages book about distributed system design"
-          link="#"
+          link="https://www.amazon.com/dp/B0DKFJJT53"
           image={
             <Image
               className={styles.cardFixedWidthImageImg}
