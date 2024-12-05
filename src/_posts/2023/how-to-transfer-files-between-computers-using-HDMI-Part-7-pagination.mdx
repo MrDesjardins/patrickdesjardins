@@ -80,7 +80,7 @@ The ultimate test is to generate the video on a remote machine, play the video a
 The first test was with a size of 2 using a zip file encoded at 30fps. With the new pagination mechanism, if FFmpeg cannot read at 30fps all frames (some are skipped), the whole sequence would be there within a few loops. I let the FFmpeg loops about 5 times and the result was a video of about 80 megs. However, the code that is reading the video was breaking after two frames.
 
 
-````rust {12}
+```rust {12}
 pub fn video_to_frames(extract_options: &ExtractOptions) -> Vec<VideoFrame> {
     let mut video = VideoCapture::from_file(&extract_options.video_file_path, CAP_ANY)
         .expect("Could not open video path");
