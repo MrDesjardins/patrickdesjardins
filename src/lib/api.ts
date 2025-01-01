@@ -34,7 +34,10 @@ export function getAllMdxFilesWithoutContent(): FileMetadata[] {
   const files: FileMetadata[] = [];
   for (let y = FIRST_YEAR; y <= LAST_YEAR; y++) {
     const filePath = `${ROOT_POSTS_PATH}/${y}`;
-
+    // Ensure that the directory exists (might not have any article for the year yet, especially on the change of year)
+    if (!fs.existsSync(filePath)) {
+      continue;
+    }
     const fules = fs
       .readdirSync(filePath)
       .filter((path) => /\.mdx?$/.test(path));
