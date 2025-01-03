@@ -1,0 +1,191 @@
+---
+title: "The Evolution of my Gaming Discord Bot Using Python"
+date: "2025-01-03"
+categories:
+  - "python"
+  - "discord"
+  - "bot"
+---
+
+I have been coding a Discord bot for about 6 months now in Python (see this introduction [here](./blog/python-discord-bot-introduction)). I have learned a lot about the Discord API, Python, and how to manage a bot. I wanted to share my experience with you. This post will cover the following topics:
+
+1) The Evolution of the Bot
+2) The Technical Stack
+
+# The Discord Bot Evolution
+
+## Inception
+The bot's initial goal was to send a daily message and have people vote on the time they expected to play. For example, early every day, the bot creates a new message with one emoji per time, and users, throughout the day, vote for the hours they are available. 
+
+## The First Iteration: Automate the User Schedule
+Soon, I realized that many people do not plan, but I wanted to channel all the posts to reflect the server activity. Thus, I added a feature that checks the voice channels, collects who is playing, and automatically adds them to the time frame.
+
+![Discord Bot](/images/blog/discord_bot_daily_message.png)
+
+The feature relies mostly on the Discord API, which allows for recurrent tasks.
+
+```python
+HOUR_SEND_DAILY_MESSAGE = 7
+local_tz = pytz.timezone("America/Los_Angeles")
+time_send_daily_message = time(hour=HOUR_SEND_DAILY_MESSAGE, minute=0, second=0, tzinfo=local_tz)
+#...
+@tasks.loop(time=time_send_daily_message)
+async def send_daily_question_to_all_guild_task(self):
+    """
+ Send only once every day the question for each guild who has the bot
+ """
+    print_log(f"Sending daily schedule message, current time {datetime.now()}")
+    for guild in self.bot.guilds:
+        await send_daily_question_to_a_guild(self.bot, guild)
+```
+Using the `@task.loop` removes a lot of headaches of managing recurrent tasks instead of using another asynchronous library.
+
+## Getting Statistic
+The next natural step was to get a sense of who was playing, who was reducing their time, and other statistical information. I could understand better who to reach out to get some news or understand some dynamics in the group better. It was especially useful once the group reached above 100 members. I started saving the information into a SQLite database. Then, using Panda, I could load the data from a data range and start computing some statistics. 
+
+Most of the code looks like this one:
+
+```python
+# Some fetching code:
+data_user_activity: list[UserActivity] = fetch_all_user_activities(from_day, to_day)
+data_user_id_name: Dict[int, UserInfo] = fetch_user_info()
+users_by_weekday_dict: Dict[int, list[UserInfoWithCount]] = users_by_weekday(data_user_activity, data_user_id_name)
+# Some matplotlib code here:
+# ...
+```
+
+## Admin Tools
+Getting the latest database from the Raspberry PI to my local machine or updating the service running on my Raspberry PI was a pain. I added a few commands to the bot to help me with that. Then, the unit tests, coverage, and integration tests required other commands. Then, more statistic visualization required more commands. Thus, I created this admin tool that I could use to manage the bot.
+
+<video src="/videos/blog/discord_bot_admin_menu.mp4" controls/>
+
+The admin tool relies on a third-party library called `simple_term_menu`. There are many menus available that allow you to dive deep into options. For example, the admin tool starts asking if you are running the command in the Raspberry PI (prod) or in your local machine (dev). Then, the options are different. In production, when updating the code, the admin tool stops the service, fetches the latest code, installs the dependencies, and starts the service again. In development, options for visualization, tests, or fetching the latest production data are all available.
+
+```python
+def main():
+    """First menu"""
+ options = ["[1] Raspberry PI", "[2] Local", "[q] Exit"]
+ terminal_menu = TerminalMenu(options, title="Environment", show_shortcut_hints=True)
+ menu_entry_index = terminal_menu.show()
+    if menu_entry_index == 0:
+        raspberry_pi_menu()
+    elif menu_entry_index == 1:
+        local_menu()
+    elif menu_entry_index == 2:
+ sys.exit(0)
+    main()
+``` 
+
+## Voice Message Channel
+On my journey of adding features, I wanted to let people know they are not alone when joining a voice channel. There is always a first one to join. I added a feature that the bot would join the voice channel and play a dynamically generated message using the user name and then the schedule. The bot was mentioning out loud who was playing in the current hours, and if no one was, it would say the upcoming hour's schedule. This feature is temporarily disabled as it was making the false impression that a human had joined the channel.
+
+The feature relies on the `gtts` library that converts text to speech. The library is easy to use, and the code looks like this:
+```python
+# Convert text to speech using gTTS
+tts = gTTS(text_message, lang="en")
+tts.save("welcome.mp3")
+
+# Connect to the voice channel
+if member.guild.voice_client is None:  # Bot isn't already in a channel
+ voice_client = await voice_channel.connect()
+else:
+ voice_client = member.guild.voice_client
+
+# Play the audio
+audio_source = Discord.FFmpegPCMAudio("welcome.mp3")
+voice_client.play(audio_source)
+
+# Wait for the audio to finish playing
+while voice_client.is_playing():
+    await discord.utils.sleep_until(datetime.now() + timedelta(seconds=1))
+
+# Disconnect after playing the audio
+await voice_client.disconnect()
+
+# Clean up the saved audio file
+os.remove("welcome.mp3")
+```
+
+The `FFmpegPCMAudio` plays the audio like if the bot was talking into a microphone.
+
+## Organizing Voice Channel
+The more people joined, the more organization was required. The game is Siege, and it is a 5v5 game. I added a feature that user, with a command, could set up their account by saying their in-game user name and, using an API on a third-party service, could figure out some statistics about the user, like their maximum rank. Then, the bot can assign a role that opens access to the different voice channels.
+
+The feature relies on a UI, called "View" for Discord. It has a text box for the user to enter their in-game user name and a dropdown to select a time zone.
+
+## Getting Player Statistics
+By touching the API, I found out that it could also give information about the matches. However, the API was not free and required special permission, which was denied (I suspect my bot is too little). I had to rely on the website and scrap the data. I could re-use the session by connecting once and directly accessing the data via a REST API. Then, by hooking the voice channel event, I can see if a user is leaving. In that case, I wait a few minutes to ensure the latest data is available and query the website. I get the last 12 hours' match data and create an aggregation.
+
+![Discord Bot Gaming Session](/images/blog/discord_bot_user_gaming_session.png)
+
+The feature is one of the more popular ones, as it gives a quick overview of everyone's performance without having to leave the server.
+
+Technically, it was challenging because of the many security steps in place to avoid having people scrape. I have contacted the API owner, but the communication was very broken, and I received a denial without any explanation. So, upon disconnect, I accumulate people's names. That is a good way to get a list instead of going one by one since we need to actually open a browser. And the website detects a headless browser. Thus, we need a real browser! So, on the disconnect event, the user id is persisted in the memory cache. Then, a Discord task that runs every 5 minutes check if there is any user to query. The task opens a browser and does its job. Using Python context manager, the code is clean:
+
+```python
+try:
+    with BrowserContextManager() as context:
+        for user in users:
+            try:
+ matches: List[UserMatchInfo] = context.download_matches(user.user_info.ubisoft_username_active) # <------ HERE it downloads the data
+ all_users_matches.append(UserWithUserMatchInfo(user, matches))
+                if len(users) > 1:
+                    await asyncio.sleep(random.uniform(0.5, 2))  # Sleep 0.5 to 2 seconds between each request
+            except Exception as e:
+                print_error_log(
+                    f"post_queued_user_stats: Error getting the user ({user.user_info.display_name}) stats from R6 tracker: {e}"
+                )
+                continue  # Skip to the next user
+except Exception as e:
+    print_error_log(f"post_queued_user_stats: Error opening the browser context: {e}")
+```
+
+The `BrowserContextManager` uses `selenium` and with `xvfb` open Chrome. The code works locally (WSL on Windows) and on the Raspberry PI.
+
+```python
+def _config_browser(self) -> None:
+    """Configure the browser for headers and to receive a cookie to call future API endpoints"""
+ options = uc.ChromeOptions()
+ options.add_argument("--no-sandbox")
+ options.add_argument("--disable-dev-shm-usage")
+ options.add_argument("--disable-blink-features=AutomationControlled")
+ options.add_argument("--disable-gpu")
+ options.add_argument("--start-maximized")
+ options.add_argument("--disable-extensions")
+ options.add_argument("--disable-background-networking")
+ options.add_argument("--disable-sync")
+ options.add_argument(
+        "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.93 Safari/537.36"
+    )
+
+ environment_var = os.getenv("ENV")
+
+    if environment_var == "prod":
+ options.binary_location = "/usr/bin/chromium-browser"
+ driver_path = "/usr/bin/chromedriver"
+        self.driver = uc.Chrome(options=options, driver_executable_path=driver_path)
+    else:
+ service = Service()
+ options.binary_location = "/usr/bin/google-chrome"
+ options = webdriver.ChromeOptions()
+        self.driver = webdriver.Chrome(service=service, options=options)
+    print_log(f"_config_browser: Using binary location: {options.binary_location}")
+``` 
+
+The `download_match` uses `BeautifulSoup` to parse the data using the REST API endpoint while the configuration method uses `selenium` to open the browser and connect to the login page to get a proper session.
+
+## Asking for Teammate and Information
+The usage of `@here` is not recommended as the community grows as it spams everyone. I added a command where it looks at who is in the voice channel and calculates the number of people needed (e.g., if two people are in the voice, the command will ask for three). Another command was introduced, which gives the timezone of the users in the voice channel, which helps determine the best host.
+
+## Auto-Requesting Teammate
+I noticed that Discord shows the game you are playing but also provides some additional details, like if you are in a game or in the main menu. So, the bot can capture the change of event and, with a state machine, figure out if the group is missing a teammate and ready for a new match. The bot will then ask for a teammate only if needed, allowing the user to not have to ask for a teammate.
+
+## Tournament
+One member wanted to create a 1-1 tournament. I added a tournament command to create, join, and report a loss. The bot randomly assigns people in a single elimination bracket. Upon reporting a loss, the bot figures out the tournament and match of the user and adjusts the bracket.
+
+<video src="/videos/blog/discord_bot_tournament_creation_report_lost.mp4" controls/>
+
+The most technical aspect was to generate the bracket image. I used `pillow` to draw the bracket. The code is quite simple compared to my first attempt using `matplotlib`.
+
+# Conclusion
+I have a lot of fun using Python and the Discord API. The more I use the bot, the more I find ways to improve it. Being a user helps, receiving feedback helps, and seeing the excitement of the user when a new feature is added is motivating. 
