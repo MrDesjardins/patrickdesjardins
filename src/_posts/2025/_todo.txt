@@ -1,11 +1,13 @@
 === Draft Started
 ✍️ 2024-09-06: 
+
 === Completed waiting
 ⏲️ 2024-05-09: 
 
 
 === Published
-✅ 2024-09-06: 
+✅ 2025-01-14: 10 Points to Increase Software Quality
+✅ 2025-01-02: The Evolution of my Gaming Discord Bot Using Python
 
 === Draft Started but frozen
 🥶 2122-09-14: How to Access your Web Application on Kubernetes Azure with Ingress
