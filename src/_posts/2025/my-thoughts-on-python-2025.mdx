@@ -1,0 +1,84 @@
+---
+title: "My thoughts on Python (2025)"
+date: "2025-01-31"
+categories:
+  - "python"
+---
+
+My first hands with Python was between 2018 and 2021 when I studied machine learning master degree. Last year, I started building a Discord Bot which increased in side in the last few months. Here are my thoughts.
+
+# Typing Is Very Weak
+
+Python introduced types in 2015, in Python 3.5. During my assignments I never used them. Mostly because we had the requirement to use Python 2. As I developed more and more features in my personal project, I found myself to forget exactly which type was some parameters or variables and added types. Now, the whole code is fully typed. Still, I have many runtime issues. Coming from a similar experience where JavaScript wasn't typed and TypeScript added type I was surprised to see that typing the code does not provide much defense against bad code. Python's type is mainly a documentation and helps the code editor. 
+```python
+def get_reactions() -> List[str]:
+    """
+    Returns a list of all the emojis that can be used to vote.
+    """
+    return EMOJI_TO_TIME # Good code is: return list(EMOJI_TO_TIME.keys())
+```
+
+I understand that Python does not have a compilation step, thus cannot raise issue before runtime. However, I am surprise that VsCode with the official Python extension does not mark invocation of a function with wrong parameter types as an issue. As I am refactoring and moving code around, I found myself in situation that I was failing. Fortunately, I have several unit tests that mitigate most of the issues. But, the issue with testing was that the tests were failing not because of assertion but because the pytest tool couldn't run the tests in some situation because dependencies were broken. In other cases, the unit tests would fail before hitting the assertion because a function received a wrong object and properties were missing.
+
+# Unit Tests and Mocking are great
+In the last few years, TypeScript and Jest made testing a lot easier than previous framework. However, I still to this day have struggle in some situation where part of a file needs few mocks while the other not. For example, if File1.ts has two functions and you want f1 to mock f2 because f2 should not be invoked for some specific tests then it is challenging. With Python and PyTest it is a breeze and testing any functions can mock any others regardless of where lives the function.
+
+Another pitfall with type is asynchronous functions. Missing an `await` generates an exception instead of automatically give the developer a hint that this does not work.
+
+# Python Package Management is Fine
+I'm using `pip` and virtual environment (`.venv`). Similar to NPM, your fetch your package and have a `requirements.txt` that contains the list of dependencies. I am running the code in production which ensure to fetch using pip all the dependencies and run the code. It works. But, it can get confusing if you use Conda (or Anaconda) because it allows to have _compiled_ version of libraries. I recall doing all my school work using Conda but in hindsight I could have use only `pip`. Someone could argue that JavaScript/TypeScript also has many package managers like NPM, Yarn, pnpm and that is true. In that category, the best experience seems to be Rust using `cargo`: single place, and easy to upload and download package.
+
+```sh
+# Create Environment
+python3 -m venv .venv
+
+# Activate Environment
+source .venv/bin/activate
+
+# Update PIP
+python3 -m pip install --upgrade pip
+
+# Install Requirements
+python3 -m pip install -r requirements.txt
+```
+
+The only issue I had was that I wanted to develop on a second computer and for some reasons the dependencies of some dependencies were failing to install. The version wasn't available. I had to call pip on all dependencies and have a slightly different list of versions.
+
+# Python Coding Style
+
+Indeed, I have a strong bias toward languages like TypeScript, Java and .Net since I created most code in my life using these language. However, my past with PHP helps me appreciate Python. I enjoy few syntactic short-cut like _list comprehension_ but found that there are some illogical directions in the way to write.
+For example, in JavaScript (or similar language), to get the lenght of an array you need to go into the object and find the functionality. It is _logical_ and you have a great sense of discovery.
+
+```
+const size = myArray.length(); // JavaScript
+size = len(myArray) // Python
+```
+
+Similarly if you want to do something to each entry of an array.
+
+```
+const double = myArray.map(d=>d*2); // JavaScript
+double = list(map(lambda x: x * 2, a)) // Python
+```
+
+The Python version returns an iterable which require to use `list` to build a new list. Also, the `map` function needs anonymous function that take the transformation first, then the original array. It is the reverse order of JavaScript.
+
+
+# Import 
+I haven't yet figure out but VsCode can find that a type or function is in your project and can suggestion an import. Great! However, in my project, VsCode never adds the first folder. For example, reusable logics in my codes are inside `deps` folders for inner dependencies and VsCode will automatically adds:
+
+```diff
+- from tournament_data_class import Tournament
++ from deps.tournament_data_class import Tournament
+```
+
+# Simple Development and Runtime
+
+Getting started, developing and releasing is very smooth. It is the opposite to Java. I enjoy that most computer already have Python and creating a virtual environment is a single command. Running in production Python as a service is very few commands. Similarly, using VsCode was quick and a single extension. Debugging the project was without issue which is not always the case with TypeScript project.
+
+# Good Third-Party libraries
+
+Python has a large third-party libraries pool. Using `NumPy` and `Pandas` for data manipulation that leverage fast C++ libraries is well documented. Creating images or plots with `MathPlotlib` is popular online with many examples. Performing call to processes outside the main application, like ffmpeg.
+
+# Conclusion
+Overall, the typing situation looks problematic as a project grow, especially if you have not wrote a part (or don't remember). The project is only about 7,000 lines of code and I feel some pains and hesitations when refactoring. With a stronger typing system, moving files from a folder to another would let the code editor to manage the reference automatically. Similarly when breaking down functions and types into multiple ones there would be a way to ensure that the code remains valid without having to run unit tests and then having runtime exceptions. I'm not saying Python cannot be used for big project because it was but receiving quicker feedback if you are passing the wrong object type or parameter count should be few milliseconds (the editor should tells). Similarly, a large code base with thousands of unit tests is slow to run and having to go back-and-forth until it compiles and run successfully can be improved by a compilation steps (or could be a good linting that does not compile to an output). I still enjoy coding in Python and will keep this project in Python but similar to my transition from JavaScript to TypeScript (10 years ago!) I believe that strongly typed languages ease the development.
