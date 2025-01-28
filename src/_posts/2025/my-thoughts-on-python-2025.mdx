@@ -6,7 +6,7 @@ categories:
   - "type"
 ---
 
-My first hand with Python was between 2018 and 2021 when I studied machine learning master's degree. Last year, I started building a Discord Bot which increased in side in the last few months. Here are my thoughts.
+My first hand with Python was between 2018 and 2021 when I studied machine learning master's degree. Last year, I started building a Discord Bot which increased in size in the last few months. Here are my thoughts.
 
 # Typing Is Very Weak
 
@@ -16,12 +16,14 @@ def get_reactions() -> List[str]:
 """
 Returns a list of all the emojis that can be used to vote.
 """
-    return EMOJI_TO_TIME # Good code is: return list(EMOJI_TO_TIME.keys())
+    return EMOJI_TO_TIME # Good code is: return list(EMOJI_TO_TIME.keys())
 ```
 
-I understand that Python does not have a compilation step and, thus, cannot raise the issue before runtime. However, I am surprised that VsCode with the official Python extension does not mark the invocation of a function with wrong parameter types as an issue. As I was refactoring and moving code around, I found myself in a situation where I was failing. Fortunately, I have several unit tests that mitigate most of the issues. However, the problem with testing was that the tests were failing not because of assertion but because the PyTest tool couldn't run the tests in some situations because the refactoring broken dependencies. In other cases, the unit tests would fail before hitting the assertion because a function received a wrong object and properties were missing.
+I understand that Python does not have a compilation step and, thus, cannot raise the issue before runtime. However, I am surprised that VsCode with the official Python extension does not mark the invocation of a function with wrong parameter types as an issue. As I was refactoring and moving code around, I found myself in a situation where I was failing. Fortunately, I have several unit tests that mitigate most of the issues. However, the problem with testing was that the tests were failing not because of assertion but because the PyTest tool couldn't run the tests in some situations because of the refactoring of broken dependencies. In other cases, the unit tests would fail before hitting the assertion because a function received a wrong object and properties were missing.
 
 Another pitfall with type is asynchronous functions. Missing an `await` generates an exception instead of automatically giving the developer a hint that this does not work.
+
+In the end, the problem is that once it works, it works but nothing prevents someone from modifying the return of a function and still having the code looking fine until at runtime it fails. While unit tests might mitigate some issues, there are many scenarios where it continues to be precarious. Going back to the change of the return type, the unit tests of the modified function might fail and will require changes but every place where the code invokes the function is now failing. In the advent that one caller of the function does not have a test that invokes the function then it won't be visible that the developer needs to modify the code. Furthermore, if the function was mocked then the mocked return continues returning the wrong type and the tests that call the now modified function will not fail.
 
 # Unit Tests and Mocking are great
 In the last few years, TypeScript and Jest have made testing much easier than in previous frameworks. However, I still struggle in some situations where one part of a file needs a few mocks while the other does not. For example, it is challenging if `File1.ts` has two functions and you want `f1` to mock `f2` because `f2` should not be invoked for some specific tests. With Python and PyTest, it is a breeze, and testing any function can mock any others regardless of where the function lives.
@@ -83,11 +85,11 @@ const double = myArray.map(d=>d*2); // JavaScript
 double = list(map(lambda x: x * 2, a)) // Python
 ```
 
-The Python version returns an iterable, which requires using `list` to build a new list. Also, the `map` function needs an anonymous function that takes the transformation first, then the original array. This is the reverse order of JavaScript. While it is more a matter of preference, I found myself having to search more in the documentation or search on the web to find the right function to accomplish the task instead of relying on the autocomplete when using other languages.
+The Python version returns an iterable, which requires using `list` to build a new list. Also, the `map` function needs an anonymous function that takes the transformation first, then the original array. This is the reverse order of JavaScript. While it is more a matter of preference, I found myself having to search more in the documentation or search on the web to find the right function to accomplish the task instead of relying on autocomplete when using other languages.
 
 
 # Import Automation
-I haven't yet figured out, but VsCode can find that a type or function is in your project and can suggest an import. Great! However, in my project, VsCode never adds the first folder. For example, reusable logic in my codes are inside `deps` folders for inner dependencies, and VsCode will automatically add:
+I haven't yet figured it out, but VsCode can find that a type or function is in your project and can suggest an import. Great! However, in my project, VsCode never adds the first folder. For example, reusable logic in my codes are inside `deps` folders for inner dependencies, and VsCode will automatically add:
 
 ```diff
 - from tournament_data_class import Tournament
@@ -105,4 +107,4 @@ Getting started, developing, and releasing is very smooth. It is the opposite of
 Python has a large third-party library pool. Using `NumPy` and `Pandas` for data manipulation that leverages fast C++ libraries is well documented. Creating images or plots with `MatPlotlib` is popular online with many examples. Performing calls to processes outside the main application, like FFmpeg. The large amount of example online and the combination with AI tools make using Python a breeze to learn.
 
 # Conclusion
-Overall, the typing situation looks problematic as a project grows, especially if you have not written a part (or don't remember). The project is only about 7,000 lines of code, and I feel some pain and hesitation when refactoring. With a stronger typing system, moving files from one folder to another would let the code editor manage the reference automatically. Similarly, when breaking down functions and types into multiple ones, there would be a way to ensure that the code remains valid without running unit tests and then having runtime exceptions. I'm not saying Python cannot be used for big projects because it was, but receiving quicker feedback if you are passing the wrong object type or parameter count should be a few milliseconds (the editor should tell). Similarly, a large code base with thousands of unit tests is slow to run, and having to go back and forth until it compiles and runs successfully can be improved by compilation steps (or could be a good linting that does not compile to an output). I still enjoy coding in Python and will keep this project in Python, similar to my transition from JavaScript to TypeScript (10 years ago!) I believe that strongly typed languages ease development by increasing the speed of understanding a piece of unknown (or forgotten) code but also ease how easy it is to modify code with a certainty of the impact.
+Overall, the typing situation looks problematic as a project grows, especially if you have not written a part (or don't remember). The project is only about 7,000 lines of code, and I feel some pain and hesitation when refactoring. With a stronger typing system, moving files from one folder to another would let the code editor manage the reference automatically. Similarly, when breaking down functions and types into multiple ones, there would be a way to ensure that the code remains valid without running unit tests and then having runtime exceptions. I'm not saying Python cannot be used for big projects because it was, but receiving quicker feedback if you are passing the wrong object type or parameter count should be a few milliseconds (the editor should tell). Similarly, a large code base with thousands of unit tests is slow to run, and having to go back and forth until it compiles and runs successfully can be improved by compilation steps (or could be a good linting that does not compile to an output). I still enjoy coding in Python and will keep this project in Python, similar to my transition from JavaScript to TypeScript (10 years ago!) I believe that strongly typed languages ease development by increasing the speed of understanding a piece of unknown (or forgotten) code but also ease how easy it is to modify code with certainty of the impact.
