@@ -15,7 +15,7 @@
 .blogPostContainer ul {
   color: var(--blog-text-color);
   line-height: 36px;
-  font-size: 20px;
+  font-size: 24px;
   margin-bottom: 24px;
   text-align: justify;
 }
@@ -59,7 +59,7 @@
 
 .blogPostContainer p.blogPostDate {
   color: var(--blog-date-foreground-color);
-  font-size: 0.9em;
+  font-size: 18px;
   font-style: italic;
   margin-bottom: 12px;
 }
@@ -100,7 +100,7 @@
     white calc(0px - var(--distance)) var(--distance) 20px 0px,
     white var(--distance) calc(0px - var(--distance)) 20px 0px,
     white calc(0px - var(--distance)) calc(0px - var(--distance)) 20px 0px;
-    margin: var(--distance) 0;
+  margin: var(--distance) 0;
 }
 
 .blogPostContainer img,

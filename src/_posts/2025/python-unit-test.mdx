@@ -1,0 +1,138 @@
+---
+title: "Python Automated Test"
+date: "2025-03-05"
+categories:
+ - "unit test"
+ - "python"
+---
+
+I wrote about 200 automated (unit and integration) tests in the last few months in my [Python Discord Bot](https://github.com/MrDesjardins/python-discord-scheduler-bot), and I am delighted by the experience. The best is the extremely low friction to mock using `pytest` and `unit test.mock`.
+
+# Mocking Function
+Mocking a function is as simple as using `@patch.object` and the module (file) that contains the function to mock. The `__name__` is used to get the function's name to mock and it helps when renaming using the refactoring tool of your editor. Here is an example that mocks two functions of the module `bet_functions`:
+
+
+```Python
+@patch.object(bet_functions, bet_functions.data_access_create_bet_user_wallet_for_tournament.__name__)
+@patch.object(bet_functions, bet_functions.data_access_get_bet_user_wallet_for_tournament.__name__)
+def test_get_wallet_for_tournament_no_wallet_create_one(mock_get_user_wallet_for_tournament, mock_create_bet):
+    """
+ Test the user scenario that a user does not have a wallet
+ """
+    # Arrange
+ tournament = BetUserTournament(67, 44, 12, 100)
+ mock_get_user_wallet_for_tournament.side_effect = [None, tournament]
+ mock_create_bet.return_value = tournament
+
+    # Act
+    get_bet_user_wallet_for_tournament(44, 12)
+
+    # Assert
+ mock_create_bet.assert_called_once_with(44, 12, DEFAULT_MONEY)
+ mock_get_user_wallet_for_tournament.assert_called()
+    assert (
+ mock_get_user_wallet_for_tournament.call_count == 2
+ )  # One time for the None and one time for the created wallet
+``` 
+Each `@patch.object` decorator injects an object into the test function. You can use `side_effect` to specify the result for each invocation. 
+
+```Python 
+mock_get_user_wallet_for_tournament.side_effect = [None, tournament]
+```
+The mock of the _get user waller_ returns `None` the first time and `tournament` the second time. The assertion on the mock is also simple by calling the mock one of the many assertion methods. The test above calls three different assertions.
+
+# Mocking Time
+Time is always tricky to test. I found along my journey as a developer that if you can have a wrapper around a function that returns the time, it simplifies testing. However, you can easily mock the date or datetime module using Python.
+
+The format is different, but use the same idea that you specified for the module. This time, you can do it directly inside the test and use the `with` statement to make sure that the mock is only for the test. Here is an example that mocks the `datetime` module. Then, within the test you specify the value you want to return. For example, I was using the `now` of the `datetime` module to get the current time. I can replace the value from a test to another by creating an instance of `datetime` and setting the value I want to return. The following test mocks the time used by two different functions with different times.
+
+```Python
+async def test_daily_registration_message_tournament_available_but_no_space():
+    """
+ Create few tournaments and make sure the command to retrieve the registration works
+ """
+ register_date_start = datetime(2024, 11, 1, 12, 30, 0, tzinfo=timezone.utc)
+ date_start = datetime(2024, 11, 2, 10, 30, 0, tzinfo=timezone.utc)
+ date_end = datetime(2024, 11, 3, 20, 30, 0, tzinfo=timezone.utc)
+ tournament_id = data_access_insert_tournament(
+        GUILD_ID,
+        "My Tournament",
+ register_date_start,
+ date_start,
+ date_end,
+        9,
+        2,
+        "villa,clubhouse,consulate,chalet,oregon,coastline,border",
+    )
+
+    with patch("deps.tournaments.tournament_data_access.datetime") as mock_datetime:
+        with patch("deps.tournaments.tournament_functions.datetime") as mock_datetime2:
+ mock_datetime.now.return_value = register_date_start
+ mock_datetime2.now.return_value = register_date_start
+
+            # Act
+            # ... 
+            # Assert 
+            # ...
+```
+# Running and Debugging
+Always a struggle using TypeScript with Node because of the transpilation and sometimes the breakpoint cannot be hit. With Python and VsCode, I had no issue since few months. Here is my VsCode configuration (settings.json):
+
+```json
+{
+  "python.analysis.extraPaths": [
+    "./deps"
+ ],
+  "python.testing.unittestArgs": [
+    "-v",
+    "-s",
+    "./tests",
+    "-p",
+    "*test.py"
+ ],
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": [
+    "tests"
+ ]
+}
+```
+
+I can run all unit tests with :
+
+```bash
+pytest -v -s ./tests/*_unit_test.py
+```
+All integration tests with: 
+
+```bash
+pytest -v -s ./tests/*_integration_test.py
+```
+Get code coverage with:
+
+```bash
+coverage run --omit="./tests/*" -m pytest -v -s ./tests/*unit_test.py && coverage html
+```
+And debug is clicking the green triangle next to the function. It can run or debug to step in. The low friction makes the creation of the test easy and actually encourages the creation.
+
+# Database (system-test)
+Few tests require the database because they integrate functions that load and save in the database. These tests are in a file with the suffix `_integration_test.py`. The database is a SQLite database that is created and destroyed for each test. The database could be in memory, but it is not. The reason is it is easier to debug in case of failure by inspecting what is in the database. Each integration test file has a `setup_and_teardown` fixture that sets the manager to the test copy database and a function to delete the database context. The database is created by the `pytest` fixture `db` that is used in the test.
+
+```Python
+
+@pytest.fixture(autouse=True)
+def setup_and_teardown():
+    """Setup and Teardown for the test"""
+    # Setup
+ database_manager.set_database_name(DATABASE_NAME_TEST)
+    delete_all_tables()
+
+    # Yield control to the test functions
+    yield
+
+    # Teardown
+ database_manager.set_database_name(DATABASE_NAME)
+```
+
+# Conclusion
+Working with Python has its pros and cons. The typing is far from excellent, but the ecosystem, large community, and testing are excellent.

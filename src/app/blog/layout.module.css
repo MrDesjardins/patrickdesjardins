@@ -2,6 +2,7 @@
   margin: 0;
   height: 100%;
   font-family: "Oswald";
+  font-size: 20px;
   --blog-title-foreground-color: #e2d0ff;
   --blog-date-foreground-color: #858585;
   --blogcategory-foreground-color: #c6b2ff;

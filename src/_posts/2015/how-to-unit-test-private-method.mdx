@@ -11,31 +11,59 @@ I think an example is better before continuing about how to divide code to help 
 
 
 ```csharp
- public class ShoppingBasket { public List<Item> Items { get; set; }
+public class ShoppingBasket { 
+  public List<Item> Items { get; set; }
 
-public List<Item> Purchase() { var canBeBought = new List<Item>(); foreach (var item in Items) { bool canBuy = true; if (item.Money < 0 || item.Money > 100) { canBuy = false; }
+  public List<Item> Purchase() { 
+    var canBeBought = new List<Item>(); 
+    foreach (var item in Items) { 
+      bool canBuy = true; 
+      if (item.Money < 0 || item.Money > 100) { 
+        canBuy = false; 
+      }
 
-if (item.IsDiscontinued) { canBuy = false; }
+      if (item.IsDiscontinued) { 
+        canBuy = false; 
+      }
 
-if (!this.IsUnique(item.Id)) { canBuy = false; }
+      if (!this.IsUnique(item.Id)) { 
+        canBuy = false; 
+      }
 
-if (this.IsShoppingBasketFull()) { canBuy = false; }
+      if (this.IsShoppingBasketFull()) { 
+        canBuy = false; 
+      }
 
-if (this.HasReachMaximumAmountPerOrder(canBeBought)) { canBuy = false;
+      if (this.HasReachMaximumAmountPerOrder(canBeBought)) { 
+        canBuy = false; 
+      }
 
-} if (canBuy) { canBeBought.Add(item); } } return canBeBought; }
+      if (canBuy) { 
+        canBeBought.Add(item); 
+      } 
+    return canBeBought; 
+  }
 
-private bool IsUnique(int id) { return this.Items.Count(d => d.Id == id) > 1; }
+  private bool IsUnique(int id) { 
+    return this.Items.Count(d => d.Id == id) > 1; 
+  }
 
-private bool IsShoppingBasketFull() { return this.Items.Count >= 5; }
+  private bool IsShoppingBasketFull() { 
+    return this.Items.Count >= 5; 
+  }
 
-private bool HasReachMaximumAmountPerOrder(List<Item> canBeBought) { return canBeBought.Sum(d=>d.Money) > 50; } }
+  private bool HasReachMaximumAmountPerOrder(List<Item> canBeBought) { 
+    return canBeBought.Sum(d => d.Money) > 50; 
+  }
 
-public class Item { public int Id { get; set; }
+  public class Item { 
+    public int Id { get; set; }
 
-public double Money { get; set; }
+    public double Money { get; set; }
 
-public bool IsDiscontinued { get; set; } } 
+    public bool IsDiscontinued { get; set; } 
+  }
+}
 ```
 
 If you want to test if the Lambda expression is well formed for the _IsUnique_ method, you will have to create a list of items and pass it to the _ShoppingBasket_ class. So far, this is fine. However, you cannot call the method IsUnique because this one is private. You have two choices. You break the encapsulation of the _ShoppingBasket_ by changing the visibility from private to public or you refactor your class to something more testable, more cohesive and more object oriented. Changing the encapsulation is fine. In fact, in that case it does not really matter because it does not disrupt the system. Someone could call _IsUnique_ any time and it does not change any operational flow. However, is it really the responsability of the _ShoppingBasket_ to handle the unique?
@@ -44,11 +72,21 @@ Let's start trying to unit test this actual code to illustrate how it is not a g
 
 
 ```csharp
- [TestMethod] public void TestIfIsUniqueMethodWorksWhenListHasNotUniqueItem() { // Arrange var shoppingBasket = new ShoppingBasket(); var item1 = new Item() {Id = 1, IsDiscontinued = false, Money = 5}; var item2 = new Item() {Id = 2, IsDiscontinued = false, Money = 10}; var item3 = new Item() {Id = 3, IsDiscontinued = false, Money = 50}; var item4 = new Item() {Id = 1, IsDiscontinued = false, Money = 5}; shoppingBasket.Items = new List<Item> {item1, item2, item3, item4};
+[TestMethod] public void TestIfIsUniqueMethodWorksWhenListHasNotUniqueItem() { 
+  // Arrange 
+  var shoppingBasket = new ShoppingBasket(); 
+  var item1 = new Item() {Id = 1, IsDiscontinued = false, Money = 5}; 
+  var item2 = new Item() {Id = 2, IsDiscontinued = false, Money = 10}; 
+  var item3 = new Item() {Id = 3, IsDiscontinued = false, Money = 50}; 
+  var item4 = new Item() {Id = 1, IsDiscontinued = false, Money = 5}; 
+  shoppingBasket.Items = new List<Item> {item1, item2, item3, item4};
 
-// Act var itemThatWeCanPurchase = shoppingBasket.Purchase();
+  // Act 
+  var itemThatWeCanPurchase = shoppingBasket.Purchase();
 
-// Assert Assert.AreEqual(2, itemThatWeCanPurchase.Count); } 
+  // Assert 
+  Assert.AreEqual(2, itemThatWeCanPurchase.Count); 
+} 
 ```
 
 You will tell me that this is fine. In fact, it is. In that case the problem is not the amount of preparation. It is often the case, but not that time. The problem is that if tomorrow the threshold of 50$ go down to 10$ that this unit test will fail. Right now, the item id 2 and 3 are returned but if this limit goes from 50$ to 10$ than the id 2 is out which will return only one item. The unit test about unique fail because of the maximum amount per order. This is wrong.
@@ -65,36 +103,57 @@ The first question make sense. Maybe depending of the type of shopping basket th
 
 
 ```csharp
- public class Item { public int Id { get; set; }
+public class Item { 
+  public int Id { get; set; }
 
-public double Money { get; set; }
+  public double Money { get; set; }
 
-public bool IsDiscontinued { get; set; }
+  public bool IsDiscontinued { get; set; }
 
-public bool IsPriceLegitForPurchase() { return this.Money < 0 || this.Money > 100; } } 
+  public bool IsPriceLegitForPurchase() { 
+    return this.Money < 0 || this.Money > 100; 
+  } 
+} 
 ```
 
 The second condition is checking if the item is discontinued. The call is already on the item which is great. However, already have a condition on the item done one line above since our last refactoring on the price.
 
 
 ```csharp
- foreach (var item in Items) { bool canBuy = true; if (!item.IsPriceLegitForPurchase()) { canBuy = false; }
+foreach (var item in Items) {
+  bool canBuy = true; 
+  if (!item.IsPriceLegitForPurchase()) { 
+    canBuy = false; 
+  }
 
-if (item.IsDiscontinued) { canBuy = false; } // ... 
+if (item.IsDiscontinued) { 
+  canBuy = false; 
+} // ... 
 ```
 
 Instead of calling twice the item we should think. These two operations has something in common: it validates the item for purchase. We should have a method in the item that does that for us. Not only it will self-document what it is going on but that logic could be reused later without having to duplicate both calls. We end up having a single validation method for purchase in item. 
 
 ```csharp
- public bool IsValidForPurchase() { if (!this.IsPriceLegitForPurchase()) { return false; }
+public bool IsValidForPurchase() { 
+  if (!this.IsPriceLegitForPurchase()) {
+     return false; 
+  }
 
-if (this.IsDiscontinued) { return false; } return true; } 
+  if (this.IsDiscontinued) { 
+    return false; 
+  } 
+  return true; 
+} 
 ``` 
 
 The test is also clearer. 
 
 ```csharp
- //... if(!item.IsValidForPurchase()) { canBuy = false; } //... 
+//... 
+if(!item.IsValidForPurchase()) { 
+  canBuy = false; 
+} 
+//... 
 ```
 
 The third condition was to check if the shopping basket is full. The logic belong to the basket because this one is the one who know its size, which is 5. The problem is that when we will test that logic, we do not want to have to create items that necessary pass condition for "IsValidForPurchase" method. We just want to create a list of item and test the count. That said, this is a perfect case that this method should be public.
@@ -103,62 +162,130 @@ The next condition is about if the list of item that is valid to purchase has st
 
 
 ```csharp
- public class ItemValidToPurchase : List<Item> { public bool HasReachMaximumAmountPerOrder() { return this.Sum(d => d.Money) > 50; } } 
+public class ItemValidToPurchase : List<Item> { 
+  public bool HasReachMaximumAmountPerOrder() { 
+    return this.Sum(d => d.Money) > 50; 
+  } 
+} 
 ```
 
 The condition in the Shopping Basket is just to call the method.
 
 
 ```csharp
- if (canBeBought.HasReachMaximumAmountPerOrder()) { canBuy = false; } 
+if (canBeBought.HasReachMaximumAmountPerOrder()) { 
+  canBuy = false; 
+} 
 ```
 
 So the final code looks like this for the test **about unique**. 
 
 ```csharp
-private ShoppingBasket GetShoppingBasket() { var shoppingBasket = new ShoppingBasket(); var item1 = new Item() {Id = 1, IsDiscontinued = false, Money = 5}; var item2 = new Item() {Id = 2, IsDiscontinued = false, Money = 10}; var item3 = new Item() {Id = 3, IsDiscontinued = false, Money = 20}; var item4 = new Item() {Id = 1, IsDiscontinued = false, Money = 5}; shoppingBasket.Items = new List<Item> {item1, item2, item3, item4}; return shoppingBasket; }
+private ShoppingBasket GetShoppingBasket() { 
+  var shoppingBasket = new ShoppingBasket(); 
+  var item1 = new Item() {Id = 1, IsDiscontinued = false, Money = 5}; 
+  var item2 = new Item() {Id = 2, IsDiscontinued = false, Money = 10}; 
+  var item3 = new Item() {Id = 3, IsDiscontinued = false, Money = 20}; 
+  var item4 = new Item() {Id = 1, IsDiscontinued = false, Money = 5}; 
+  shoppingBasket.Items = new List<Item> {item1, item2, item3, item4}; 
+  return shoppingBasket; 
+}
 
-[TestMethod] public void TestIfIsUniqueMethodWorksWhenListHasNotUniqueItem() { // Arrange var shoppingBasket = this.GetShoppingBasket();
+[TestMethod] 
+public void TestIfIsUniqueMethodWorksWhenListHasNotUniqueItem() { 
+  // Arrange 
+  var shoppingBasket = this.GetShoppingBasket();
 
-// Act var isUnique = shoppingBasket.IsUnique(1);
+  // Act 
+  var isUnique = shoppingBasket.IsUnique(1);
 
-// Assert Assert.IsFalse(isUnique); }
+  // Assert 
+  Assert.IsFalse(isUnique); 
+}
 
-[TestMethod] public void TestIfIsUniqueMethodWorksWhenListHasUniqueItem() { // Arrange var shoppingBasket = this.GetShoppingBasket();
+[TestMethod] 
+public void TestIfIsUniqueMethodWorksWhenListHasUniqueItem() { 
+  // Arrange 
+  var shoppingBasket = this.GetShoppingBasket();
 
-// Act var isUnique = shoppingBasket.IsUnique(2);
+  // Act
+  var isUnique = shoppingBasket.IsUnique(2);
 
-// Assert Assert.IsTrue(isUnique); } 
+  //Assert
+  Assert.IsTrue(isUnique); 
+} 
 ```
 
 And the classes code look. 
 
 ```csharp
- public class Item { public int Id { get; set; }
+public class Item { 
+  public int Id { get; set; }
 
-public double Money { get; set; }
+  public double Money { get; set; }
 
-public bool IsDiscontinued { get; set; }
+  public bool IsDiscontinued { get; set; }
 
-public bool IsPriceLegitForPurchase() { return this.Money < 0 || this.Money > 100; }
+  public bool IsPriceLegitForPurchase() { 
+    return this.Money < 0 || this.Money > 100;
+  }
 
-public bool IsValidForPurchase() { if (!this.IsPriceLegitForPurchase()) { return false; }
+  public bool IsValidForPurchase() { 
+    if (!this.IsPriceLegitForPurchase()) { 
+      return false; 
+    }
 
-if (this.IsDiscontinued) { return false; } return true; } } public class ItemValidToPurchase : List<Item> { public bool HasReachMaximumAmountPerOrder() { return this.Sum(d => d.Money) > 50; } } public class ShoppingBasket { public List<Item> Items { get; set; }
+    if (this.IsDiscontinued) { 
+      return false; 
+    } 
+    return true; 
+  } 
+} 
 
-public ItemValidToPurchase Purchase() { var canBeBought = new ItemValidToPurchase(); foreach (var item in Items) { bool canBuy = true; if(!item.IsValidForPurchase()) { canBuy = false; }
+public class ItemValidToPurchase : List<Item> { 
+  public bool HasReachMaximumAmountPerOrder() { 
+    return this.Sum(d => d.Money) > 50; 
+  } 
+} 
 
-if (!this.IsUnique(item.Id)) { canBuy = false; }
+public class ShoppingBasket { 
+  public List<Item> Items { get; set; }
 
-if (this.IsShoppingBasketFull()) { canBuy = false; }
+  public ItemValidToPurchase Purchase() { 
+    var canBeBought = new ItemValidToPurchase(); 
+    foreach (var item in Items) { 
+      bool canBuy = true; 
+      if(!item.IsValidForPurchase()) { 
+        canBuy = false; 
+      }
 
-if (canBeBought.HasReachMaximumAmountPerOrder()) { canBuy = false; }
+      if (!this.IsUnique(item.Id)) { 
+        canBuy = false; 
+      }
 
-if (canBuy) { canBeBought.Add(item); } } return canBeBought; }
+      if (this.IsShoppingBasketFull()) { 
+        canBuy = false; 
+      }
 
-public bool IsUnique(int id) { return this.Items.Count(d => d.Id == id) == 1; }
+      if (canBeBought.HasReachMaximumAmountPerOrder()) { 
+        canBuy = false; 
+      }
 
-public bool IsShoppingBasketFull() { return this.Items.Count >= 5; } } 
+      if (canBuy) { 
+        canBeBought.Add(item); 
+      } 
+    } 
+  return canBeBought; 
+  }
+
+  public bool IsUnique(int id) { 
+    return this.Items.Count(d => d.Id == id) == 1; 
+  }
+
+  public bool IsShoppingBasketFull() { 
+    return this.Items.Count >= 5; 
+  } 
+} 
 ```
 
 As you can see, the condition has changed on the IsUnique method. Because and error was present and only could have been detected with a valid set of unit test on that method. We could go even further by refactoring even more this code. I'll write a second post about what we could have done with a more flexible code that allow to have dynamic validation using other design pattern.

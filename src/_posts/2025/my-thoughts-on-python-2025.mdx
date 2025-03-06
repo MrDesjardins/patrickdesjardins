@@ -25,6 +25,9 @@ Another pitfall with type is asynchronous functions. Missing an `await` generate
 
 In the end, the problem is that once it works, it works but nothing prevents someone from modifying the return of a function and still having the code looking fine until at runtime it fails. While unit tests might mitigate some issues, there are many scenarios where it continues to be precarious. Going back to the change of the return type, the unit tests of the modified function might fail and will require changes but every place where the code invokes the function is now failing. In the advent that one caller of the function does not have a test that invokes the function then it won't be visible that the developer needs to modify the code. Furthermore, if the function was mocked then the mocked return continues returning the wrong type and the tests that call the now modified function will not fail.
 
+** Edit (March, 5th 2025) **
+After writing this article, I took more time looking for tools and found [myPy](https://mypy.readthedocs.io/). MyPy is a static type checker, and it helped me immensely to improve the quality of my project. However, you are out of luck if a package does not have a type. The experience is similar to the early days of TypeScript when JavaScript libraries did not have type definitions.
+
 # Unit Tests and Mocking are great
 In the last few years, TypeScript and Jest have made testing much easier than in previous frameworks. However, I still struggle in some situations where one part of a file needs a few mocks while the other does not. For example, it is challenging if `File1.ts` has two functions and you want `f1` to mock `f2` because `f2` should not be invoked for some specific tests. With Python and PyTest, it is a breeze, and testing any function can mock any others regardless of where the function lives.
 
