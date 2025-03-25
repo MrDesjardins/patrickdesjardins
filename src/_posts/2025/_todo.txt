@@ -6,6 +6,7 @@
 
 
 === Published
+✅ 2025-03-25: Starting to Learn Go
 ✅ 2025-03-05: Python Automated Test
 ✅ 2025-01-31: 2024-01-31: My thoughts on Python (2025) 
 ✅ 2025-01-24: The Curse of the Overloaded People
