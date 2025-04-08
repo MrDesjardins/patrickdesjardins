@@ -1,0 +1,365 @@
+---
+title: "Unit Testing with Go Shaped How to Design my Functions"
+date: "2025-04-07"
+categories:
+ - "unit test"
+ - "go"
+ - "golang"
+---
+
+# Working Code but not Testable
+
+I have developed in many ways throughout the years from a very strict object-oriented approach with Java and C# to a more functional approach using JavaScript, TypeScript, and Python. In the first project, I started using Go, and I was in the mindset of creating a function that takes an object as a parameter and returns a new modified object. The application worked well until I wanted to add unit tests.
+
+The issue with creating new unit tests was that I wanted to know if a part of a function was executed (or not) and fake the execution of some dependent functions. 
+
+```
+//example that serviceA.Function2 would be mocked to return a specific mocked value
+┌──────────────────────────────┐
+│ Function1                    │
+│   Line 1                     │
+│   XYZ = serviceA.Function2   │
+│   Line 2 using XYZ           │
+└──────────────────────────────┘
+```
+
+Having recently worked in Python, I would have to mock one of the imports the logic I test uses and in the test code checks if the function got called. 
+
+```Python
+@patch("deps.tournaments.tournament_functions.datetime")
+@patch.object(tournament_functions, tournament_functions.register_user_for_tournament.__name__)
+@patch.object(tournament_functions, tournament_functions.can_register_to_tournament.__name__)
+def test_register_for_tournament_only_register_when_cannot_register(
+    mock_can_register_to_tournament, mock_register_user_for_tournament, mock_datetime
+) -> None:
+    """Test to check if we return the reason of the can_register and dont call register"""
+    # Arrange
+ mock_can_register_to_tournament.return_value = Reason(False, "Reason from can_register")
+ mock_register_user_for_tournament.return_value = None
+ mock_datetime.now.return_value = t2
+    # Act
+ reason: Reason = register_for_tournament(1, 2)
+    # Assert
+ mock_register_user_for_tournament.assert_not_called()
+    assert reason.is_successful is False
+    assert reason.text == "Reason from can_register"
+```
+
+In Go, I could not find something similar. In JavaScript, you can push a stub dynamically on any function, even private, and verify on the stub whether the function was called. Again, this is not possible in Go.
+
+# Modifying the Code
+
+Doing a quick research showed me that I needed to step back toward what I used to do in Java and C#. I needed to create an interface for dependency and pass it down to the function. In the Python code above, I would need the `register_user_for_tournament` and `can_register_to_tournament` to be passed as a parameter to the function as they are both dependencies and called from the function being tested. Their implementation should not be executed during the unit test of the registration for the tournament.
+
+In my project, the first unit test to change was the one between the Go Rest API and the Go Data Access. There is a Go Service that acts as a bridge between the two. It offers the possibility to communicate with many data access functions, perform some business logic, perform caching, and, in all cases, abstract how the data access is done. The service class is simple and a good example of this blog post.
+
+The function originally looked like this:
+
+```go
+func GetRandomStockFromPersistence() []model.StockPublic {
+  syms := stockDataAccess.GetUniqueStockSymbols()
+  symbol := GetRandomStock(syms)
+  stocks := stockDataAccess.GetPricesForStock(symbol)
+  return stocks
+}
+```
+The first line gets the data from the database using the `stockDataAccess` object. The package defines the object. The second line calls a function inside the same package. The third line calls the data access again to get the prices for the stock. The function is not testable as it is. I cannot mock the `stockDataAccess` object as it is defined in the package and not passed as a parameter. I also cannot mock the `GetRandomStock` function as it is also defined in the package.
+
+The code has to inject a reference to the `stockDataAccess` object and the `GetRandomStock` function. The code now looks like this:
+
+```go
+func (s *StockServiceImpl) GetRandomStockFromPersistence() []model.StockPublic {
+  syms := s.StockDataAccess.GetUniqueStockSymbols()
+  symbol := s.GetRandomStock(syms)
+  stocks := s.StockDataAccess.GetPricesForStock(symbol)
+  return stocks
+}
+```
+
+The change adds `(s *StockServiceImpl)` after the `func` keyword. It means that it will hook the function to the pointer of the `StockServiceImpl` object.
+
+```go
+type StockServiceImpl struct {
+  StockService StockService
+  StockDataAccess dataaccess.StockDataAccess
+}
+```
+The object is a structure with two objects, meaning we should use this new implementation in the real application and the test. We can inject different implementations of the `StockDataAccess` object during the test. The `GetRandomStock` function is now a method of the `StockServiceImpl` object. It means that we can mock it in the test. The main application and the tests use the `StockServiceImpl`. The test can now passes a mock implementation of the `StockDataAccess` interface.
+
+Theoretically, you must define a mocked implementation with hard-coded expected values. For example, the data access functions would return a hard-coded list of stocks without getting into the database. Using the current implementation, the test file would look like this:
+
+```go
+type StockDataAccessMock interface {
+  GetPricesForStock(symbol string) []model.StockPublic
+  GetUniqueStockSymbols() []string
+  GetPricesForStockInTimeRange(symbol string, startDate string, endDate string) []model.Stock
+  GetStocksAfterDate(symbol string, afterDate string) []model.Stock
+  GetStocksBeforeEqualDate(symbol string, beforeDate string) []model.Stock
+  GetStockInfo(symbolUUID string) model.StockInfo
+}
+type StockDataAccessMockImpl struct {
+ StockDataAccessMock
+}
+
+func (s *StockDataAccessMockImpl) GetUniqueStockSymbols() []string {
+  return []string{"AAPL", "GOOGL"}
+}
+
+func (s *StockDataAccessMockImpl) GetPricesForStock(stock string) []model.StockPublic {
+  return []model.StockPublic{
+ {SymbolUUID: "AAPL", Volume: 1000, Date: "2023-01-01", Open: 100, High: 110, Low: 90, Close: 105, AdjClose: 1233},
+ {SymbolUUID: "AAPL", Volume: 2000, Date: "2023-01-02", Open: 101, High: 111, Low: 89, Close: 107, AdjClose: 1550},
+ }
+}
+
+func TestGetRandomStockFromPersistence(t *testing.T) {
+  // Create a mockDataAccess object with a function GetUniqueStockSymbols that return fake symboles
+  mockDataAccess := &StockDataAccessMockImpl{}
+  mockService := NewStockService(mockDataAccess)
+  stocks := mockService.GetRandomStockFromPersistence()
+  if len(stocks) != 2 {
+    t.Errorf("Expected the same amount of stock found in the database but found %d", len(stocks))
+ }
+}
+```
+
+The issue is that you must create another interface for every test requiring a different set of values. Instead, you can use a MockImplementation where the body of each function is defined inside each test. Also, the benefit of only implementing the one you need to mock.
+
+```go 
+
+type StockDataAccessMockImpl struct {
+  GetPricesForStockFunc            func(symbol string) []model.StockPublic
+  GetUniqueStockSymbolsFunc        func() []string
+  GetPricesForStockInTimeRangeFunc func(symbol, startDate, endDate string) []model.Stock
+  GetStocksAfterDateFunc           func(symbol, afterDate string) []model.Stock
+  GetStocksBeforeEqualDateFunc     func(symbol, beforeDate string) []model.Stock
+  GetStockInfoFunc                 func(symbolUUID string) model.StockInfo
+}
+
+func (m *StockDataAccessMockImpl) GetPricesForStock(symbol string) []model.StockPublic {
+  if m.GetPricesForStockFunc != nil {
+    return m.GetPricesForStockFunc(symbol)
+ }
+  return nil
+}
+
+func (m *StockDataAccessMockImpl) GetUniqueStockSymbols() []string {
+  if m.GetUniqueStockSymbolsFunc != nil {
+    return m.GetUniqueStockSymbolsFunc()
+ }
+  return nil
+}
+
+func (m *StockDataAccessMockImpl) GetPricesForStockInTimeRange(symbol, startDate, endDate string) []model.Stock {
+  if m.GetPricesForStockInTimeRangeFunc != nil {
+    return m.GetPricesForStockInTimeRangeFunc(symbol, startDate, endDate)
+ }
+  return nil
+}
+
+func (m *StockDataAccessMockImpl) GetStocksAfterDate(symbol, afterDate string) []model.Stock {
+  if m.GetStocksAfterDateFunc != nil {
+    return m.GetStocksAfterDateFunc(symbol, afterDate)
+ }
+  return nil
+}
+
+func (m *StockDataAccessMockImpl) GetStocksBeforeEqualDate(symbol, beforeDate string) []model.Stock {
+  if m.GetStocksBeforeEqualDateFunc != nil {
+    return m.GetStocksBeforeEqualDateFunc(symbol, beforeDate)
+ }
+  return nil
+}
+
+func (m *StockDataAccessMockImpl) GetStockInfo(symbolUUID string) model.StockInfo {
+  if m.GetStockInfoFunc != nil {
+    return m.GetStockInfoFunc(symbolUUID)
+ }
+  return model.StockInfo{}
+}
+
+func TestGetRandomStockFromPersistence(t *testing.T) {
+  // Create a mockDataAccess object with a function GetUniqueStockSymbols that return fake symbols
+  mockDataAccess := &StockDataAccessMockImpl{
+    GetUniqueStockSymbolsFunc: func() []string {
+      return []string{"AAPL", "GOOGL"}
+ },
+    GetPricesForStockFunc: func(symbol string) []model.StockPublic {
+      return []model.StockPublic{
+ {SymbolUUID: "AAPL", Volume: 1000, Date: "2023-01-01", Open: 100, High: 110, Low: 90, Close: 105, AdjClose: 1233},
+ {SymbolUUID: "AAPL", Volume: 2000, Date: "2023-01-02", Open: 101, High: 111, Low: 89, Close: 107, AdjClose: 1550},
+ }
+ },
+ }
+  mockService := NewStockService(mockDataAccess)
+  stocks := mockService.GetRandomStockFromPersistence()
+  if len(stocks) != 2 {
+    t.Errorf("Expected the same amount of stock found in the database but found %d", len(stocks))
+ }
+}
+```
+It is quite a bit of code but it gives flexibility.
+
+# Internal Package Function
+
+The example still has one issue: the function tested of the struct calls another function of the same struct. The function `GetRandomStock` is a function part of the `StockServiceImpl` struct. It is not possible to mock it as it is not an interface. The solution is to create a function field in the struct. The function field is a function that can be passed as a parameter to the struct. Instead of having 
+
+```go
+type StockServiceImpl struct {
+  StockService StockService
+  StockDataAccess dataaccess.StockDataAccess
+}
+
+func (s *StockServiceImpl) GetRandomStockFromPersistence() []model.StockPublic {
+  syms := s.StockDataAccess.GetUniqueStockSymbols()
+  symbol := s.GetRandomStock(syms)
+  stocks := s.StockDataAccess.GetPricesForStock(symbol)
+  return stocks
+}
+```
+
+You add a function field to the struct:
+
+```go
+type StockServiceImpl struct {
+  StockService StockService
+  StockDataAccess dataaccess.StockDataAccess
+  MockGetRandomStockFunc  func([]string) string // <---- Does not need to be the same name as the function
+}
+```
+
+And the ``GetRandomStockFromPersistence`` function now looks like this:
+
+```go
+
+func (s *StockServiceImpl) GetRandomStockFromPersistence() []model.StockPublic {
+  syms := s.StockDataAccess.GetUniqueStockSymbols()
+
+  var symbol string
+  if s.MockGetRandomStockFunc != nil {
+    symbol = s.MockGetRandomStockFunc(syms)
+ } else {
+    symbol = s.GetRandomStock(syms) // fallback to actual implementation
+ }
+
+  stocks := s.StockDataAccess.GetPricesForStock(symbol)
+  return stocks
+}
+
+func (s *StockServiceImpl) GetRandomStock(symbol []string) string {
+  index := rand.IntN(len(symbol))
+  return symbol[index]
+}
+```
+
+The test is modified to inject the string to this function field.
+
+```go
+func TestGetRandomStockFromPersistence(t *testing.T) {
+  // Create a mockDataAccess object with a function GetUniqueStockSymbols that return fake symbols
+  mockDataAccess := &StockDataAccessMockImpl{
+    GetUniqueStockSymbolsFunc: func() []string {
+      return []string{"AAPL", "GOOGL"}
+ },
+    GetPricesForStockFunc: func(symbol string) []model.StockPublic {
+      return []model.StockPublic{
+ {SymbolUUID: "AAPL", Volume: 1000, Date: "2023-01-01", Open: 100, High: 110, Low: 90, Close: 105, AdjClose: 1233},
+ {SymbolUUID: "AAPL", Volume: 2000, Date: "2023-01-02", Open: 101, High: 111, Low: 89, Close: 107, AdjClose: 1550},
+ }
+ },
+ }
+  mockService := &StockServiceImpl{
+    StockDataAccess: mockDataAccess,
+    RandomStockFunc: func(symbols []string) string {
+      return "AAPL"
+ },
+ }
+  stocks := mockService.GetRandomStockFromPersistence()
+  if len(stocks) != 2 {
+    t.Errorf("Expected the same amount of stock found in the database but found %d", len(stocks))
+ }
+}
+```
+
+# The Real Code
+
+The Go Rest API that call the service continues to be very similar from the beginning but pass the data access object to the service.
+
+```go
+stockDataAccess := dataaccess.NewStockDataAccess()
+
+stockService := &service.StockServiceImpl{
+  StockDataAccess: stockDataAccess,
+}
+```
+
+The code does not know the intricate details of the mocking. However, it needs to build the dependency tree. For example, the REST API code must pass the service's data access. 
+
+# Spy count
+
+Another feature many testing frameworks have is the ability to count how many times a function was called. The Go code does not have this feature. However, it is possible to add a counter to the mock implementation.
+
+```go
+type StockDataAccessMockImpl struct {
+  GetPricesForStockFunc            func(symbol string) []model.StockPublic
+  GetUniqueStockSymbolsFunc        func() []string
+  GetUniqueStockSymbolsFuncCall    int // <---- counter
+  GetPricesForStockInTimeRangeFunc func(symbol, startDate, endDate string) []model.Stock
+  GetStocksAfterDateFunc           func(symbol, afterDate string) []model.Stock
+  GetStocksBeforeEqualDateFunc     func(symbol, beforeDate string) []model.Stock
+  GetStockInfoFunc                 func(symbolUUID string) model.StockInfo
+}
+```
+
+Then, inside the function of the mock implementation, you can increment the counter.
+
+```go
+func (m *StockDataAccessMockImpl) GetUniqueStockSymbols() []string {
+  if m.GetUniqueStockSymbolsFunc != nil {
+    m.GetUniqueStockSymbolsFuncCall++
+    return m.GetUniqueStockSymbolsFunc()
+ }
+  return nil
+}
+```
+The test can then check the counter.
+
+```go
+func TestGetRandomStockFromPersistence(t *testing.T) {
+  // Create a mockDataAccess object with a function GetUniqueStockSymbols that return fake symbols
+  mockDataAccess := &StockDataAccessMockImpl{
+    GetUniqueStockSymbolsFunc: func() []string {
+      return []string{"AAPL", "GOOGL"}
+ },
+    GetPricesForStockFunc: func(symbol string) []model.StockPublic {
+      return []model.StockPublic{
+ {SymbolUUID: "AAPL", Volume: 1000, Date: "2023-01-01", Open: 100, High: 110, Low: 90, Close: 105, AdjClose: 1233},
+ {SymbolUUID: "AAPL", Volume: 2000, Date: "2023-01-02", Open: 101, High: 111, Low: 89, Close: 107, AdjClose: 1550},
+ }
+ },
+ }
+  mockService := &StockServiceImpl{
+    StockDataAccess: mockDataAccess,
+    MockGetRandomStockFunc: func(symbols []string) string {
+      return "AAPL"
+ },
+ }
+  stocks := mockService.GetRandomStockFromPersistence()
+  if len(stocks) != 2 {
+    t.Errorf("Expected the same amount of stock found in the database but found %d", len(stocks))
+ }
+  if mockDataAccess.GetUniqueStockSymbolsFuncCall != 1 { // <---- Check the counter
+    t.Errorf("Expected to call GetUniqueStockSymbols once but called %d times", mockDataAccess.GetUniqueStockSymbolsFuncCall)
+ }
+}
+```
+
+
+# Conclusion
+
+The design pattern is neat in terms of the dependency of injection. However, it is verbose and increases the number of codes by creating all the functions that are repeated in the test file. The code defines a unique implementation of any functions for each test. However, it also pollute the real implementation with field functions for every internal function of your struct. Lastly, the tradeoff is having into the actual struct a condition to determine if we use the real implementation (structure function) or the mock implementation (field function).
+
+The final observation is in terms of code coverage. Because there is a condition inside the real implementation, the code coverage is not 100%. The test will not cover the case where the mock function is not set. It is a tradeoff between code coverage and testability. The code coverage will be lower, but the testability will be higher.
+
+I am still learning Go, and I have briefly touched the surface. I'll continue to write about my discovery and amend it in future posts if there is a better solution. Meanwhile, this post will help you to understand how to write testable code in Go.
+
