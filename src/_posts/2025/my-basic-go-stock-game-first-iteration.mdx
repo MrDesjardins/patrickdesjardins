@@ -1,0 +1,77 @@
+---
+title: "My Basic Go Stock Game First Iteration "
+date: "2025-04-22"
+categories:
+ - "system design"
+ - "go"
+ - "golang"
+---
+
+# Context
+
+Last month, I started learning the programming language Go (golang). Anytime I am learning, I always do two things: write about it and start projects. Writing helps me write my thoughts, what I've learned, but also it always opens my mind to other ideas and questions to further my comprehension. Doing projects ensures that I really understand! I found that the ideal situation is a project that can grow slowly, as it sets you in a position of maintenance and a harder real-life situation.
+
+# Introduction to the Project
+
+With Go, I started a quick Stock Game. The game is available on [Github](https://github.com/MrDesjardins/stockgame). The Stock Game consists of a Web User Interface (UI) that shows a few candlesticks from historical real stocks. The user does not know the time period, nor the company name. The user has to guess what the next few days. The system scores the user depending on a few criteria like the accuracy, direction, etc.
+
+While the project focuses on the backend, using Go, a small portion of the UI relies on ViteJs and TypeScript. The first iteration is not optimized but works. The system design consists of a Go server that is the API and a static web site (1 HTML, 1 JS, and 1 CSS file). The static website runs locally on its own, but once released, the Go server hosts the static files.
+
+# System Design
+
+The design is basic: 1 server. However, the historical data I have is about 50 megabytes of CSV. To query the data to show the user and to validate the accuracy, the server must check the value in the data. Parsing the CSV every time is inconvenient. Furthermore, the data in the CSV is inconsistent and contains situations where the stock has price gaps. Thus, there is a need to clean the data and to offer a better querying experience. Additionally, the data sent to the browser must not contain any stock symbols or clues. There is a need to send the data with a unique identifier that allows the user to submit the guess back to the server and the server to fetch the next few prices and compare.
+
+The first iteration has a few tentative: one with SQLite, one with DuckDB, and the final one with PostgreSQL. SQLite was fine, but single threaded, which is less desirable for a web project. It worked but was showing some flaws in performance, especially when the database was locked. Our situation does not have many writes once the CSV files are in the database, but in the future, it will cause issues if we store scores. DuckDB was easy to switch to, but I had a similar experience and actually worse, since I couldn't use the database to query using the DuckDB command line while the server had an open read connection. While there might be some workarounds, I decided to go safe and use PostgreSQL which would support the future needs as well.
+
+So, the system design consists of actually two parts: Go Server for the API and hosting the static files, and a PostgreSQL database.
+
+# Loading the data
+Loading the data was quick using SQLite using the `copy` command. With some optimization, I was able to get the thousands of files (24.19 million prices) under 2 minutes. Similar result with DuckDB. Using threading and Go routine, I could achieve an even better result with PostgreSQL in about 60 seconds. The database has two tables: the stock price and one with the company information. To obfuscate the stock symbol, there is a UUID identifier created for each company. Also, each entry has an auto-increment ID.
+
+```go
+type Stock struct {
+   Id       int     `json:"id"`
+   Symbol   string  `json:"symbol"`
+   Date     string  `json:"date"`
+   Open     float64 `json:"open"`
+   High     float64 `json:"high"`
+   Low      float64 `json:"low"`
+   Close    float64 `json:"close"`
+   AdjClose float64 `json:"adj_close"`
+   Volume   int     `json:"volume"`
+}
+
+
+type StockInfo struct {
+   Symbol     string `json:"symbol"`
+   Name       string `json:"name"`
+   SymbolUUID string `json:"symbol_uuid"`
+}
+```
+
+During the loading operation, the CSV is not directly inserted into the database, the code parses the data into a clean entry that has no price or missing any fields. Also, the CSV does not contain the symbol, it is in the file name. So, some minor manipulation is required. For more information about how to preprocess and insert, you can check the [main.go of this loading utility](https://github.com/MrDesjardins/stockgame/blob/main/cmd/data-loader/main.go).
+
+# Using the data
+Once the static HTML, JS, and CSS are loaded, the UI performs an HTTP Api call to get a new partial stock price. Indeed, loading this initial from the server would be faster, but for this initial version, it simplifies the code. Also, even in the event of providing initial data for the first guess, using NextJS or another framework would be overkill. Potentially, having a data island (inserting into the HTML a `<script>` with the data) would be the simplest way.
+
+The API finds a random stock by fetching all unique symbols from the database and select a random one from the list. It ensures there is enough volume to get something with some volatility and ensures we have enough data looking forward in the future. The code loads all the prices for a stock and then chooses a random index and slices for the number of days we want to display for the user. This is not ideal since we are loading more into memory than needed. That said, the code executes in less than 50 ms.
+
+# Validating
+The validation is optimized as the user drags their mouse, which results in potentially many pixels. We average per day, and the payload is the average price per day. Thus, if the user dragged the cursor slowly and had 540 x,y coordinates that it would result in only 10 data points if the number to guess is set to 10. The API receives the payload with the UUID and the date and time of the last known price. Then, the API compares and returns a response with a score. The SQL database is convenient, as with two simple queries, we can get the price before and after the data point given. The before is important to calculate stock indicators (like the Bollinger Bands), which is one criterion for the score.
+
+
+# Backend and Frontend Constants
+I am using a `MakeFile`, and the `release` and `dev` commands call a third Go application that reads the `constants.go` file and creates a TypeScript file with the same variables and values. This allows me to share common values easily without having to manually copy them.
+
+Thus, the system has three Go applications: the Web/API Server, the data loader, and the utility that generates the constants. The three applications access common code using the `internal` pattern, which has underneath a `data access`, `database`, `logic`, `model`, and `service` folder.
+
+# Follow-up
+I am still early in learning Go, and I see a few potential improvements for the next iterations.
+
+1. Load the initial data into the HTML to avoid the initial HTTP query to the API
+2. Load only the needed data instead of all the prices for the stock to return only a small subset
+3. How to avoid accessing the database: can we cache the generated game in advance (with solution) in memory
+
+The user interface could be improved, but the focus remains on Go, thus, the focus of attention will be more backend-oriented.
+
+Finally, one point of consideration is the cost. While it works on my machine with Go running on WSL and PostgreSQL in a Docker container, releasing will be more complex. The goal is to keep the cost as low as possible. Adding caching capability might increase the cost, and finding the right deployment solution to keep the cost low will impact the second iteration design.
