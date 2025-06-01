@@ -1,7 +1,0 @@
-{
-  "pnpm": {
-    "overrides": {
-      "onnxruntime-node": "file:./noop-onnxruntime-node"
-    }
-  }
-}
