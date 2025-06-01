@@ -1,10 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { type FeatureExtractionPipeline, pipeline } from "@xenova/transformers";
+import {
+  type FeatureExtractionPipeline,
+  pipeline,
+  env,
+} from "@xenova/transformers";
 import { BlogBody } from "../_components/BlogBody";
 import styles from "./page.module.css";
 import { BlogSearchEntry } from "../_components/BlogSearchEntry";
+
 interface Post {
   path: string;
   filename: string;
@@ -36,7 +41,8 @@ export default function Page(): React.ReactElement {
 
       setIndex(indexData as Post[]);
       setEmbeddings(embData as number[][]);
-
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      env.backends.onnx = "wasm" as any;
       const extractor = await pipeline(
         "feature-extraction", // https://huggingface.co/docs/transformers.js/api/pipelines#module_pipelines.FeatureExtractionPipeline
         "Xenova/all-MiniLM-L6-v2", // Must match the Python embedding model
