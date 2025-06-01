@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { pipeline } from "@xenova/transformers";
+import { type FeatureExtractionPipeline, pipeline } from "@xenova/transformers";
 import { BlogBody } from "../_components/BlogBody";
 import styles from "./page.module.css";
 import { BlogSearchEntry } from "../_components/BlogSearchEntry";
@@ -18,7 +18,9 @@ export default function Page(): React.ReactElement {
   );
   const [index, setIndex] = useState<Post[]>([]);
   const [embeddings, setEmbeddings] = useState<number[][]>([]);
-  const [embedder, setEmbedder] = useState<any>(null);
+  const [embedder, setEmbedder] = useState<FeatureExtractionPipeline | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
 
   // Load index, embeddings, and model
