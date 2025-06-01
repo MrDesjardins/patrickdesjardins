@@ -8,7 +8,7 @@ import { type PropsWithChildren } from "react";
 export interface BlogBodyProps extends PropsWithChildren {
   currentPage?: number;
   year?: number;
-  totalPages: number;
+  totalPages?: number;
   topTitle: string;
 }
 
@@ -23,8 +23,10 @@ export function BlogBody(props: BlogBodyProps): React.ReactElement {
     years.push(i);
   }
   const pages = [];
-  for (let i = 1; i <= props.totalPages; i++) {
-    pages.push(i);
+  if (props.totalPages !== undefined && props.totalPages > 0) {
+    for (let i = 1; i <= props.totalPages; i++) {
+      pages.push(i);
+    }
   }
 
   return (
@@ -39,6 +41,7 @@ export function BlogBody(props: BlogBodyProps): React.ReactElement {
             <Link className={styles.navLinkText} href="/blog">
               Blog
             </Link>
+            <Link className={styles.navLinkText} href="/blog/search">Search</Link>
             {years.map((y) => {
               return (
                 <Link
@@ -69,26 +72,28 @@ export function BlogBody(props: BlogBodyProps): React.ReactElement {
         <h1 className={styles.heading}>{props.topTitle}</h1>
         {props.children}
       </main>
-      <div className={styles.paginationBar}>
-        <div className={styles.paginationTitle}>
-          Chronological Blog Articles by Page
+      {pages.length > 0 ? (
+        <div className={styles.paginationBar}>
+          <div className={styles.paginationTitle}>
+            Chronological Blog Articles by Page
+          </div>
+          <div className={styles.paginationLinks}>
+            {pages.map((page) => {
+              return (
+                <Link
+                  key={page}
+                  className={clsx({
+                    [styles.currentLink]: page === props.currentPage,
+                  })}
+                  href={`/blog/page/${page}`}
+                >
+                  {page}
+                </Link>
+              );
+            })}
+          </div>
         </div>
-        <div className={styles.paginationLinks}>
-          {pages.map((page) => {
-            return (
-              <Link
-                key={page}
-                className={clsx({
-                  [styles.currentLink]: page === props.currentPage,
-                })}
-                href={`/blog/page/${page}`}
-              >
-                {page}
-              </Link>
-            );
-          })}
-        </div>
-      </div>
+      ) : null}
     </div>
   );
 }

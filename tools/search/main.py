@@ -7,7 +7,8 @@ import numpy as np
 
 BLOG_POSTS_DIR = "../../src/_posts/"
 MODEL = "all-MiniLM-L6-v2"
-OUTPUT_DIR = "output"
+OUTPUT_DIR_CLI = "output"
+OUTPUT_WEBSITE = "../../public/output"
 
 
 def generate_index():
@@ -34,28 +35,38 @@ def generate_index():
                     })
                     embeddings.append(embedding)
 
-    if not os.path.exists(OUTPUT_DIR):
-        os.makedirs(OUTPUT_DIR)
+    # Output for the CLI to do search
+    if not os.path.exists(OUTPUT_DIR_CLI):
+        os.makedirs(OUTPUT_DIR_CLI)
 
-    with open(OUTPUT_DIR + '/index.json', 'w', encoding='utf-8') as f:
+    with open(OUTPUT_DIR_CLI + '/index.json', 'w', encoding='utf-8') as f:
         json.dump(index, f)
 
     embedding_matrix = np.array([embedding.cpu().numpy() for embedding in embeddings])
     # Save the embeddings to a .npy file
-    with open(OUTPUT_DIR + '/embeddings.npy', 'wb') as f:
+    with open(OUTPUT_DIR_CLI + '/embeddings.npy', 'wb') as f:
         np.save(f, embedding_matrix)
+
+    # Output for the website
+    if not os.path.exists(OUTPUT_WEBSITE):
+        os.makedirs(OUTPUT_WEBSITE)
+    with open(OUTPUT_WEBSITE + '/index.json', 'w', encoding='utf-8') as f:
+        json.dump(index, f)
+    with open(OUTPUT_WEBSITE + '/embeddings.json', 'w') as f:
+        json.dump(embedding_matrix.tolist(), f)
+        
     print(f"Index generated successfully on {counter} files.")
 
 
 def search(query):
-    if not os.path.exists(OUTPUT_DIR + '/index.json'):
+    if not os.path.exists(OUTPUT_DIR_CLI + '/index.json'):
         print("Index not found. Please generate the index first.")
         return
 
-    with open(OUTPUT_DIR + '/index.json', 'r', encoding='utf-8') as f:
+    with open(OUTPUT_DIR_CLI + '/index.json', 'r', encoding='utf-8') as f:
         index = json.load(f)
 
-    embeddings_path = OUTPUT_DIR + '/embeddings.npy'
+    embeddings_path = OUTPUT_DIR_CLI + '/embeddings.npy'
     embeddings = np.load(embeddings_path, allow_pickle=True)
 
     model = SentenceTransformer(MODEL)

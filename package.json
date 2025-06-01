@@ -19,6 +19,7 @@
     "@fortawesome/free-brands-svg-icons": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
+    "@xenova/transformers": "2.17.2",
     "clsx": "^2.1.1",
     "next": "^14.2.15",
     "next-mdx-remote": "^4.4.1",

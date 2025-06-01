@@ -1,0 +1,33 @@
+.blogSearchEntry {
+  margin-bottom: 20px;
+}
+.blogSearchEntryArticleTitle {
+  margin-bottom: 4px;
+  font-size: 20px;
+}
+
+.blogEntryDate {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  color: var(--blog-date-foreground-color);
+  font-size: 18px;
+  font-style: italic;
+}
+
+.blogEntryDetails {
+  display: flex;
+  align-items: center;
+  line-height: 20px;
+}
+
+.blogSearchEntry a {
+  color: var(--link-foreground-color);
+}
+
+.blogSearchEntry a:visited {
+  color: var(--link-foreground-color);
+}
+
+.blogSearchEntry a:hover {
+  color: var(--link-foreground-color);
+}
