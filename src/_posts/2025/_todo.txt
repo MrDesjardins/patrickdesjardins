@@ -1,12 +1,13 @@
 === Draft Started
-✍️ 
+✍️ 2025-06-01: 
 
 === Completed waiting
 ⏲️ 
 
 
 === Published
-✅ 2024-04-22: My Basic Go Stock Game First Iteration 
+✅ 2025-06-01: Adding an Embedded Vector Search in my Next JS SSG blog
+✅ 2025-04-22: My Basic Go Stock Game First Iteration 
 ✅ 2025-04-07: Unit Testing with Go Shaped How to Design my Functions
 ✅ 2025-03-25: Starting to Learn Go
 ✅ 2025-03-05: Python Automated Test
