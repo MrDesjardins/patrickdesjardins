@@ -27,6 +27,7 @@ export default function Page(): React.ReactElement {
     null,
   );
   const [loading, setLoading] = useState(true);
+  const [timetoRun, setTimetoRun] = useState(0);
 
   // Load index, embeddings, and model
   useEffect(() => {
@@ -68,6 +69,7 @@ export default function Page(): React.ReactElement {
       return;
     }
 
+    const startTime = performance.now();
     // Create embeddings for the query
     const output = await embedder(query, {
       pooling: "mean",
@@ -84,6 +86,8 @@ export default function Page(): React.ReactElement {
 
     // Descending sort by score and take top 10
     scoredResults.sort((a, b) => b.score - a.score);
+    const endTime = performance.now();
+    setTimetoRun(endTime - startTime);
     setResults(scoredResults.slice(0, 10));
   }, [embedder, embeddings, index, query]);
 
@@ -95,10 +99,11 @@ export default function Page(): React.ReactElement {
     <BlogBody topTitle="Search Posts">
       <div className={styles.searchContainer}>
         {loading ? (
-          <p className="loading">Initializing Search</p>
+          <p className={styles.loading}>Initializing Search Engine...</p>
         ) : (
           <div className={styles.inputs}>
             <input
+              maxLength={100}
               className={styles.textbox}
               placeholder="Enter search query"
               value={query}
@@ -137,6 +142,11 @@ export default function Page(): React.ReactElement {
           ))}
         </ul>
       ) : null}
+      <p className={styles.searchPerformance}>
+        {results.length > 0
+          ? `Search completed in ${timetoRun.toFixed(2)} ms`
+          : "No results found."}
+      </p>
     </BlogBody>
   );
 }

@@ -9,10 +9,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  color: var(--blog-text-color);
 }
 
 .inputs {
+  font-family: "Oswald";
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -28,6 +29,12 @@
   font-size: 16px;
   padding-left: 10px;
   background-color: var(--blog-date-foreground-color);
+  border-radius: 5px;
+}
+.textbox::placeholder {
+  color: var(--current-link-background-color);
+  font-style: italic;
+  opacity: 1; /* Firefox */
 }
 
 .button {
@@ -35,8 +42,20 @@
   height: 40px;
   line-height: 40px;
   font-size: 16px;
+  background-color: var(--current-link-background-color);
+  color: var(--blog-title-foreground-color);
+}
+
+.button:hover {
+  cursor: pointer;
 }
 
 .searchinfo {
   color: var(--blog-date-foreground-color);
+}
+
+.searchPerformance {
+  color: var(--blog-date-foreground-color);
+  font-size: 12px;
+  text-align: center;
 }

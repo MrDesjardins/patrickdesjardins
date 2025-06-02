@@ -163,9 +163,12 @@ The `null-loader` is used to ignore the `.node` files that are not compatible wi
 ```js
 export default {};
 ```
+
+# Automating with GitHub Actions
+
+When I wrote this blog article, I had not modified the Github Action because I had an amazing 1 minute 40 seconds build time. I was foreseeing that the vector search would add a significant amount of time. Not because the execution is slow but because the Python code needs to run and the model needs to be downloaded. I was surprised that the build time was only 2 minutes 30 seconds. The Python code takes approximately 50 seconds to run, but it includes 90 seconds of download and installation time for the Python dependencies. I decided to keep the GitHub Action since it does everything in 4 minutes and 10 seconds, which is a reasonable time for a personal website.
+
+![Screenshot of Github action with the time for each steps](/images/blog/GithubActionBlogWithEmbeddedSteps.png)
+
 # Conclusion
-While the search adds a few megs, it is limited to the user who clicks "search". From there, the browser caches the JSON files. Returning to the page is quick. The initial cost allows a fast search experience. Each key press generates a search that is under 1 ms.
-
-# Future Work
-
-Currently, I do not generate the two JSON files on each build. The reason is that I have a build time of about 100-110 seconds. Adding the generation of the index and embeddings would add 12 seconds to the build time. While not large, the issue is that installing Python, its dependencies, and the model would add about 90 seconds on top of the 12 seconds. Doubling the build time is something I would rather avoid. However, I might consider generating the files on a timer once every 24 hours in the future.
+While the search adds a few megs, it is limited to the user who clicks "search". From there, the browser caches the JSON files. Returning to the page is quick. The initial cost allows a fast search experience. Each key press generates a search that is under 20 ms.
