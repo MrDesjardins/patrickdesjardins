@@ -1,8 +1,33 @@
-# Activate Python Virtual Environment
+# Prerequisites
+
+Install the Python Environment (Python version) and Virtual Environment (dependencies)
 
 ```sh
-source venv/bin/activate
+brew install pyenv-virtualenv
 ```
+
+Add in ~/.zshrc for auto-switching
+
+```sh
+eval "$(pyenv init --path)"
+eval "$(pyenv virtualenv-init -)"
+```
+
+Update terminal
+
+```sh
+source ~/.zshrc
+```
+
+Install version of Python
+
+```sh
+pyenv install 3.10.13
+pyenv virtualenv 3.10.13 venv
+pyenv local venv
+
+```
+
 # Install Dependencies
 
 ```sh
