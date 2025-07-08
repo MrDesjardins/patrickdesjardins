@@ -23,8 +23,8 @@ Install version of Python
 
 ```sh
 pyenv install 3.10.13
-pyenv virtualenv 3.10.13 venv
-pyenv local venv
+pyenv virtualenv 3.10.13
+pyenv local 3.10.13
 
 ```
 
