@@ -1,11 +1,13 @@
 === Draft Started
-✍️ 2025-06-01: 
+✍️ 2025-07-15: Discord Bot that Use LLM to Access User Statistics
 
 === Completed waiting
 ⏲️ 
 
 
 === Published
+✅ 2025-07-18: Electronic Water Bottle 3D Printed Machine 
+✅ 2025-07-15: Discord Bot that Use LLM to Access User Statistics
 ✅ 2025-06-01: Adding an Embedded Vector Search in my Next JS SSG blog
 ✅ 2025-04-22: My Basic Go Stock Game First Iteration 
 ✅ 2025-04-07: Unit Testing with Go Shaped How to Design my Functions
