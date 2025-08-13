@@ -10,6 +10,7 @@ export interface BlogBodyProps extends PropsWithChildren {
   year?: number;
   totalPages?: number;
   topTitle: string;
+  totalBlogPost?: number;
 }
 
 /**
@@ -41,7 +42,9 @@ export function BlogBody(props: BlogBodyProps): React.ReactElement {
             <Link className={styles.navLinkText} href="/blog">
               Blog
             </Link>
-            <Link className={styles.navLinkText} href="/blog/search">Search</Link>
+            <Link className={styles.navLinkText} href="/blog/search">
+              Search
+            </Link>
             {years.map((y) => {
               return (
                 <Link
@@ -94,6 +97,11 @@ export function BlogBody(props: BlogBodyProps): React.ReactElement {
           </div>
         </div>
       ) : null}
+      {props.totalBlogPost === undefined ? null : (
+        <div className={styles.totalBlogPost}>
+          Total Blog Posts: {props.totalBlogPost}
+        </div>
+      )}
     </div>
   );
 }

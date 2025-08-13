@@ -25,11 +25,13 @@ export default async function Page(): Promise<React.ReactElement> {
     totalPages: totalPage,
     posts: pagePost,
   };
+  const totalBlogPost = posts.length;
   return (
     <BlogBody
       currentPage={Number(computedBlogProps.pageNumber)}
       totalPages={computedBlogProps.totalPages}
       topTitle="Blog Posts"
+      totalBlogPost={totalBlogPost}
     >
       {pagePost.map((node) => (
         <BlogEntry

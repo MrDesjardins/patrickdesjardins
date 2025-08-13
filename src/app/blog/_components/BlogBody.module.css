@@ -78,3 +78,11 @@
   border: 1px solid var(--blog-section-border-color);
   padding: 4px;
 }
+
+.totalBlogPost {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  color: var(--blog-date-foreground-color);
+  font-size: 18px;
+  font-style: italic;
+}

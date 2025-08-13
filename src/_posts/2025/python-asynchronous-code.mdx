@@ -1,0 +1,65 @@
+---
+title: "Python Asynchronous Code"
+date: "2025-08-13"
+categories:
+ - "asynchronous"
+ - "python"
+---
+
+# Python and Asynchronous Code
+
+Python offers various methods for handling code that executes in a non-sequential manner. Python can use asynchronous programming, threading (threading module), and multiprocessing (multiprocessing module) to achieve concurrency. 
+In this article, we will focus on the library called asyncio, which is very similar to JavaScript's async/await syntax (promise). Multiprocessing starts a new process and thus executes code in a different GIL (Global Interpreter Lock). The asyncio and threading operate under a single process, a single GIL. The system performs concurrency by yielding control to some functions. 
+
+# Asyncio Library
+
+The asyncio library uses the async/await syntax to wait for I/O (input and output operations) without blocking the main thread. Imagine the main thread as a loop and keep running. In a synchronous code, if there is a long operation, such as waiting for a database response or a network response, the loop waits, blocking any other operations. Using `await` would let the loop continue. In terms of code flow, you do not see the loop like in the `while` or `for` loop -- it is just there. Once the code being awaited returns, the main loop continues the execution. See the main loop as someone asking the awaited function, "Are you done?" If the awaited function says "Not yet," then it continues to listen to other events or running code.
+
+# Simple Use Case: Gather
+
+The library offers a `gather` function that waits for the execution of an awaited function to be completed before continuing. It is the equivalent of `Promise.all(...)` in JavaScript. An asynchronous function in the world of Python and asyncio is called a "coroutine".
+
+```Python
+import asyncio
+
+WAIT_SECOND = 1
+
+async def long_task(id: int):
+    print(f"Sub Task #1 for Task id {id}")
+    await asyncio.sleep(WAIT_SECOND)
+    print(f"Sub Task #2 for Task id {id}")
+    await asyncio.sleep(WAIT_SECOND)
+
+async def main():
+    await asyncio.gather(long_task(1), long_task(2), long_task(3))
+
+if __name__ == "__main__":
+ asyncio.run(main())
+```
+
+The code above starts the main function asynchronously using `asynio.run`. The function is required for Python version 3.1x, as Python modules are synchronous by default. The `main` function starts concurrently with three functions called `long_task`. The function simulates a task such as a network, file read, or database call.
+
+Without using `asyncio.gather`, these three functions would run synchronously, one after the other. Because it takes 2 seconds each, the total time would be 6 seconds. However, because they are all starting at the same time and await, Python runs the first function, prints the first statement, and then stops because of the `asyncio.sleep`. When stopping the function, it tells the Python's interpreter that there is nothing yet to do, allowing Python to run the second function. Similarly, it quickly prints and stops. Moving to the third. After a second elapses, the first function is completed, yield back to the main thread, print the second statement, and stop again. Similarly, the system awakens the second function and the third.
+
+The output is: 
+```sh
+Sub Task #1 for Task id 1
+Sub Task #1 for Task id 2
+Sub Task #1 for Task id 3
+Sub Task #2 for Task id 1
+Sub Task #2 for Task id 2
+Sub Task #2 for Task id 3
+```
+
+There is a 1-second delay between "Sub Task #1" and "Sub Task #2".
+
+
+# Async/Await
+The code does not use `await` because it would have made the three functions synchronous. `await` is interesting when other parts of the system can invoke functions by events. For example, a web server that receives requests will have many calls to the endpoint functions, which can await some functions in their flow. Similarly, if you are building a Discord bot that receives events from tasks and commands. It may take a while to consult other services and databases. Thus, awaiting these long-running I/O operations allows the system to continue to operate, like receiving other requests, while letting the computer process the I/O until reading to continue to proceed with the result of these I/O.
+
+# Conclusion
+In this article, we discuss how to start asynchronous code using `asyncio.run` and wait for multiple coroutines to complete using the `asyncio.gather` function. We briefly saw that using `asyncio.sleep` allows the system to wait.
+
+Concurrency in Python is complex because of the different parts, but once each of them is well understood, it becomes easier to navigate the options to make your code efficient. I will conclude by saying that today we saw that we can `await` a coroutine, a function that uses `async` and not a conventional function. However, Python allows for await to be used more than just in a coroutine. Python can await coroutines, [tasks](https://docs.python.org/3/library/asyncio-task.html#asyncio.Task), and [futures](https://docs.python.org/3/library/asyncio-future.html#asyncio.Future).
+
+Source code available on [Github](https://github.com/MrDesjardins/python-async-exercises/blob/master/01-gather.py).
