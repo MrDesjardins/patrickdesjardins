@@ -1,7 +1,8 @@
 === Draft Started
-✍️ 2025-07-15: Discord Bot that Use LLM to Access User Statistics
+✍️ 2025-07-15: 
 
 === Completed waiting
+⏲️ 2025-08-26: Python Modulo
 ⏲️ 2025-08-19: 3D Printed a Race Lap Counte
 ⏲️ 2025-08-15: Python Asynchronous Queue
 

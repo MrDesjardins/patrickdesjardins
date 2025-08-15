@@ -1,0 +1,48 @@
+---
+title: "Python Modulo"
+date: "2025-08-26"
+categories:
+ - "python"
+---
+
+I was writing code in Python that required a modulo. The code worked until the number was negative.
+
+```Python
+-321 % 10
+```
+
+Applying a modulo 10 to a number is an easy way to get the last digit. 321 modulo 10 is 1. I was expecting -321 modulo 10 to be 1. That is the case in JavaScript, not in Python. In Python, -321 modulo 10 is 9.
+
+
+# Down to Infinity
+
+In Python, the operator % follows this formula:
+
+```python
+a % b == a - b * math.floor(a / b)
+```
+
+Using our formal example:
+
+```Python
+-321 % 10 == -321 - 10 * math.floor(-321/10)
+          == -321 - 10 * math.floor(-32.1)
+          == -321 - 10 * -33
+          == -321 - -330
+          == -321 + 330
+          == 9
+```
+The reason is that the divisor (the number 10) is positive, thus the answer will lean toward a positive number instead of `-1`.
+
+To get the same behavior as JavaScript, who lean toward zero instead of negative infinity in that case, you need to use the `math` library:
+
+```Python
+1 === math.remainder(-321, 10)
+```
+
+# Conclusion
+
+JavaScript's way is used by C++, Java, C#, Rust, GO and PHP. These are all languages I am familiar with, thus I assumed it was always acting that way.
+
+Python's approach is shared with languages I have never coded with, such as Haskell, Erlang, and OCaml.
+
