@@ -3,10 +3,11 @@
 
 === Completed waiting
 ⏲️ 2025-08-26: Python Modulo
-⏲️ 2025-08-19: 3D Printed a Race Lap Counte
-⏲️ 2025-08-15: Python Asynchronous Queue
+
 
 === Published
+✅ 2025-08-19: 3D Printed a Race Lap Counter
+✅ 2025-08-15: Python Asynchronous Queue
 ✅ 2025-08-13: Python Asynchronous Code
 ✅ 2025-07-18: Electronic Water Bottle 3D Printed Machine 
 ✅ 2025-07-15: Discord Bot that Use LLM to Access User Statistics
@@ -22,4 +23,4 @@
 
 === Draft Started but frozen
 🥶 2122-09-14: How to Access your Web Application on Kubernetes Azure with Ingress
-🥶 2122-10-01: How to Add HTTPS to your Kubernetes Ingress
+🥶 2122-10-01: How to Add HTTPS to your Kubernetes IngressF
