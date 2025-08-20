@@ -71,3 +71,20 @@ Here is a video with the altered flag, which is smaller, addressing issues where
   frameborder="0" 
   allowfullscreen>
 </iframe>
+
+
+# Edit (August 19th)
+
+The reed was set in place with hot glue. For some reason, one side started malfunctioning. Upon rotating the flap, the magnet did not activate the reed every time (skipping over 90% of the time). I hypothesize that I damaged the reed during the permanent installation. To fix the issue, I removed the glue and the reed switch, then reinstalled it with less glue and more slack in the wires. It has been working well so far.
+
+I added a female connector in the box of the ESP. It gets the power from a wall adapter that has a male part. The female redirects the 6V/2A into the track, but also into a buck converter to get 4.9V to power the ESP32. That is great because the Carrera power supply is 35$ and the lap counter is 99$. The total of $134 is a lot higher than the cost of the wall adapter ($5), the buck converter ($4), the ESP ($5), the LCD ($5), a few materials, and PLA ($10). So, for about $30, I have a lot more and customized it exactly the way I want. But the most important thing: I learned CAD design, using LCD and ESP to create something that my son is very impressed with, as it came from a roll of plastic.
+
+
+Carrera's electric plug has a proprietary input. However, using the secondary power supply, the battery, is not an issue. I will solder the solution soon.
+![](/images/blog/RaceTrackBatteryHack.jpg) 
+
+I am glad I had kept a more "freestyle" form inside the box with additional space allowing the buck converter to sit next to the ESP32.
+![](/images/blog/RaceTrackBuckConverted.jpg) 
+
+Here is the cheap DC wall plug that has a 5.5*2.1mm male part that connects into a 2.1mm female part.
+![](/images/blog/RaceTrackDCPlug.jpg)
