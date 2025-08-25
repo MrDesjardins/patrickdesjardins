@@ -1,5 +1,5 @@
 === Draft Started
-✍️ 2025-07-15: 
+✍️ 2025-10-22: How to customize Linux Mint keyboard to feel like MacOS
 
 === Completed waiting
 ⏲️ 2025-08-26: Python Modulo
