@@ -39,3 +39,5 @@ Thumbs.db
 
 /tools/search/.venv
 /tools/search/output
+
+.env

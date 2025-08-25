@@ -13,6 +13,7 @@ import { SoundCloud } from "../app/blog/_mdxComponents/SoundCloud";
 import { TocAzureContainerSeries } from "../app/blog/_mdxComponents/TocAzureContainerSeries";
 import { YouTube } from "../app/blog/_mdxComponents/YouTube";
 import { type ReactElement, type JSXElementConstructor } from "react";
+import { isDevelopment } from "../_utils/env";
 
 export const ROOT_POSTS_PATH = path.join(process.cwd(), "/src/_posts");
 
@@ -126,8 +127,9 @@ export async function getAllPosts(): Promise<MdxData[]> {
     }
     const posts = await Promise.all(post);
     const today = new Date();
-    today.setUTCHours(23, 59, 59, 999);
-    getAllPostsResult = posts.filter((p) => new Date(p.metadata.date) <= today);
+    const blogUntil = isDevelopment()? new Date(today.getFullYear()+1, today.getMonth(), today.getDate()):today;
+    blogUntil.setUTCHours(23, 59, 59, 999);
+    getAllPostsResult = posts.filter((p) => new Date(p.metadata.date) <= blogUntil);
   }
   return getAllPostsResult;
 }
