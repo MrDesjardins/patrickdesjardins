@@ -1,0 +1,84 @@
+---
+title: "Python Asynchronous with to_thread"
+date: "2025-08-28"
+categories:
+ - "asynchronous"
+ - "python"
+---
+
+Up to recently, I was using an older style to invoke a synchronous function in Python that required using a worker pool. However, there is a more elegant way, more concise and straightforward possibility using Python 3.9+. The new function is part of async.io and is named `to_thread`.
+
+# Before Version 3.9
+
+Before Python version 3.9, the way to invoke synchronous code in a thread to avoid blocking the main thread was to use the `get_event_loop` and the `run_in_executor`. The first function serves as a means to initiate the main loop. Once you have a reference to the main loop, you can then invoke the `run_in_executor` from the loop. Here is a small example:
+
+```python
+loop = asyncio.get_event_loop()
+f1 = loop.run_in_executor(executor, long_function, "1")
+```
+
+The example retrieves the main event loop, stores the reference in the `loop` function, and then calls the `run_in_executor` method. The `run_in_executor` returns a Future that is awaitable.
+
+A full example demonstrates that you can call `run_in_executor` multiple times. Each `run_in_executor` is not blocking because the code is not awaiting. In that case, we rely on `gather`. The function will wait for all _awaitable function_.
+
+```Python
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+import random
+import time
+
+
+def long_function(id:str):
+ time.sleep(random.randint(1, 4)) 
+    print(f"Long function with id {id} completed")
+
+executor = ThreadPoolExecutor(max_workers=3)
+
+async def main():
+ loop = asyncio.get_event_loop()
+ f1 = loop.run_in_executor(executor, long_function, "1")
+ f2 = loop.run_in_executor(executor, long_function, "2")
+ f3 = loop.run_in_executor(executor, long_function, "3")
+ f4 = loop.run_in_executor(executor, long_function, "4")
+
+ results = await asyncio.gather(f1, f2, f3, f4)
+    print("Done")
+
+if __name__ == "__main__":
+ asyncio.run(main())
+```
+
+# Post Version 3.9
+
+While the executor pattern works, it requires defining a `ThreadPoolExecutor`, getting the event loop, and calling the run function. These three steps can be merged into a single one using `to_thread`.
+
+The previous example can be summarized in this smaller version using `to_thread`.
+
+```Python
+import asyncio
+import random
+import time
+
+
+def long_function(id:str):
+ time.sleep(random.randint(1, 4)) 
+    print(f"Long function with id {id} completed")
+
+async def main():
+ f1 = asyncio.to_thread(long_function, "1")
+ f2 = asyncio.to_thread(long_function, "2")
+ f3 = asyncio.to_thread(long_function, "3")
+ f4 = asyncio.to_thread(long_function, "4")
+
+ results = await asyncio.gather(f1, f2, f3, f4)
+    print("Done")
+
+if __name__ == "__main__":
+ asyncio.run(main())
+```
+
+The new syntax does not require defining a pool or getting the event loop. Instead, calling `to_thread` returns a coroutine, an awaitable object that `gather` and other awaitable functions can use.
+
+# Conclusion
+
+In most scenarios, when no fine-tuning of the number of workers, the `to_thread` is faster and cleaner. It remains compatible with existing functions that work with awaitable and is easy to read.

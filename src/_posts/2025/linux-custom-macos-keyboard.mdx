@@ -1,0 +1,72 @@
+---
+title: "How to customize Linux Mint keyboard to feel like MacOS"
+date: "2025-08-22"
+categories:
+ - "linux"
+ - "os"
+ - "keyboard"
+---
+
+# Hold key
+xset r on
+xset r rate 250 40
+
+
+# Reset and Set keyboard layout
+
+```sh
+setxkbmap -layout ca -variant fr 
+```
+
+# xev
+
+Tool to type and see the key code. Useful to know the code of specific key for future remap
+
+# xmodmap
+Allows to remap a key code to a specific other key
+
+Command to show existing mapping:
+
+```sh
+xmodmap
+xmodmap -pke
+``` 
+
+# Paste without weird symbol in Zsh
+
+Add this to `~/.zshrc`:
+
+```sh
+autoload -Uz bracketed-paste-magic
+zle -N bracketed-paste bracketed-paste-magic
+```
+Then do: `exec zsh`
+
+# Create a xmodmap file
+
+The file will be loaded at startup.
+
+```sh
+killall xbindkeys
+xbindkeys
+```
+
+# At startup
+
+```
+setxkbmap -layout ca -variant fr && ~/.xmodmap_mac && xbindkeys
+```
+
+
+# Resources
+
+https://unix.stackexchange.com/questions/429835/advanced-key-mappings-in-linux
+
+# Resolution
+
+4k with 150% zoom
+
+```sh
+gsettings set org.cinnamon.muffin experimental-features "['scale-monitor-framebuffer']"
+gsettings set org.cinnamon.desktop.interface text-scaling-factor 0.75
+`` 

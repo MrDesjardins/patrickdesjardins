@@ -3,7 +3,7 @@
 
 === Completed waiting
 ⏲️ 2025-08-26: Python Modulo
-
+⏲️ 2025-08-28: Python Asynchronous with to_thread
 
 === Published
 ✅ 2025-08-19: 3D Printed a Race Lap Counter
