@@ -1,0 +1,68 @@
+---
+title: "Python Coroutine vs Future"
+date: "2025-09-04"
+categories:
+ - "asynchronous"
+ - "python"
+---
+
+Most of my day, I use TypeScript and JavaScript. The concept of asynchronous programming is relatively straightforward, involving async functions that must be awaited. 
+
+# TypeScript
+
+To set everything in perspective for a TypeScript developer, here is a simple code:
+
+```TypeScript
+function mySyncFunction(): string {
+  return "Test from sync function";
+}
+
+async function myAsyncFunction(): Promise<string> {
+  return Promise.resolve(mySyncFunction());
+}
+const p1 = myAsyncFunction();
+const str = await(p1);
+console.log(p1);
+``` 
+
+The first function is synchronous and returns a string. The second function is asynchronous, and for this example, returns the content of the synchronous function. The bridge between sync and async is established by resolving the promise immediately. In a real-life scenario, there would be something that takes time to complete before returning. Then, the example calls the asynchronous function. Calling an async without awaiting executes the function and returns immediately a promise. The `await` keyword (among others) waits for the code to be completed before returning its result. In that case, we do not really wait, as we resolve the function immediately using `Promise.resolve`. 
+
+# Python
+
+So far, we have in TypeScript the following flow:
+
+1. Invoke an asynchronous function
+2. Get an object that has not yet having the final response
+3. Once awaited, we get the final response
+
+In Python, it is similar but has an extra step. In Python, the flow is:
+
+1. Call the asynchronous function without executing the code, but get a coroutine
+2. Execute a coroutine, which calls the logic of the function and returns a Future
+3. The future object might take a while to get a response
+4. The future is awaited, and we get the final response
+
+In Python, a `Future` object represents a part of the TypeScript's promise. The main difference is that in TypeScript, the `Promise` object combines the "coroutine + Future". In TypeScript, calling the asynchronous function **executes** the code and gives an object that will contain the final value. In Python, calling the asynchronous function returns a coroutine. There is no code execution. Then, a Python _task_ takes the coroutine and executes it. The execution of the coroutine is similar to TypeScript's promise, and it returns an object that contains the final value once the logic is completed. Meanwhile, it is a `Future` object, similar to the `Promise`.
+
+```Python
+import asyncio
+
+
+def my_sync_function() -> str:
+    return "Test from sync function"
+
+async def my_async_function() -> str:
+    return my_sync_function()
+
+async def main():
+ coroutine1 = my_async_function()
+ future1 = asyncio.create_task(coroutine1)
+ result = await future1
+    print("Result:", result)
+
+asyncio.run(main())
+```
+
+The example above shows the additional step. Indeed, we can streamline the writing by not having the `future1` into a variable and do: `result = await asyncio.create_task(coroutine1)`.
+
+Ultimately, it is very similar. Both allow executing several asynchronous functions in parallel. TypeScript can use `Promise.all` and Python `asyncio.gather`, or, like in the example of this article, use the `await` keyword to wait for a single asynchronous function. The syntax for both is convenient and clean. In Python, you have more control over when the execution occurs at the cost of more complexity.
