@@ -71,7 +71,7 @@ The trap with React props is the number of renderings. Here is a small example t
 
 If you open the _Console_ of the CodeSandbox you see many renders.
 
-```
+```typescript
 // Initial render (mounting)
 App Render 
 UserContextProvider Render 
@@ -124,7 +124,7 @@ return <UserContext.Provider value={value}>{fn()}</UserContext.Provider>;
 
 The reason is that the function passed down is the same but not the _output_ of the function. Hence, only `useMemo` is memoizing the `children` property, in that example, the `Layout`. The final output is now: 
 
-```
+```typescript
 // Initial render (mounting)
 App Render 
 UserContextProvider Render 

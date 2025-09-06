@@ -1,6 +1,6 @@
 ---
 title: "How to customize Linux Mint keyboard to feel like MacOS"
-date: "2025-10-22"
+date: "2035-10-22"
 categories:
  - "linux"
  - "os"
@@ -40,6 +40,9 @@ Add this to `~/.zshrc`:
 autoload -Uz bracketed-paste-magic
 zle -N bracketed-paste bracketed-paste-magic
 ```
+
+It must be placed above other plugins or it will not work.
+
 Then do: `exec zsh`
 
 # Create a xmodmap file

@@ -1,12 +1,13 @@
 === Draft Started
-✍️ 2025-10-22: How to customize Linux Mint keyboard to feel like MacOS
+✍️ 2035-10-22: How to customize Linux Mint keyboard to feel like MacOS
 
 === Completed waiting
-⏲️ 2025-08-26: Python Modulo
-⏲️ 2025-08-28: Python Asynchronous with to_thread
-⏲️ 2025-09-04: Python Coroutine vs Future
+⏲️ 2025-08-26: 
 
 === Published
+✅ 2025-08-26: Python Modulo
+✅ 2025-08-28: Python Asynchronous with to_thread
+✅ 2025-09-04: Python Coroutine vs Future
 ✅ 2025-08-19: 3D Printed a Race Lap Counter
 ✅ 2025-08-15: Python Asynchronous Queue
 ✅ 2025-08-13: Python Asynchronous Code
