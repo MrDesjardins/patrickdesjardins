@@ -1,6 +1,6 @@
 ---
 title: "SSE Streaming using HTTP Post?"
-date: "2025-10-013"
+date: "2025-10-13"
 categories:
  - "react"
  - "http"
