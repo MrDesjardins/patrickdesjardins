@@ -1,0 +1,207 @@
+---
+title: "TypeScript Injection of Value Using Decorator"
+date: "2025-10-21"
+categories:
+ - "typescript"
+ - "decorator"
+ - "di"
+ - "dependency-injection"
+---
+
+TypeScript is a great language for writing code that is type-safe and easy to read. However, sometimes you need to inject a value into a class or function. This can be done using a decorator.
+
+In this article, we will see how we can inject from a single source of truth values into a class. We will also ensure we can know when the value are done injecting. The goal is that the injection might be asynchronous.
+
+```typescript
+async function main(): Promise<void> {
+    const t1 = new T();
+    console.log("t1 before", ...t1.debug());
+    await t1.injected;
+    console.log("t1 after", ...t1.debug());
+}
+main();
+```
+
+# Property Decorator
+
+The first step is to create a property decorator that will inject the value on specific property of a class. In our example, we will use the `@injectProp` with will take 1 parameter. The parameter is the key (unique identifier) to the object/value we want to inject into a property. We will talk about the first parameter later.
+
+```typescript
+const injectProp = locatorDecoratorFactory(loc);
+```
+
+The decorator logic resides in the `locatorDecoratorFactory` function. It will return a function that will be used as a decorator. The function will take 3 parameters. The first one is the target which is the class prototype. The second one is the property key. The third one is the descriptor. Because we want to specify the key, the decorator wraps the function with three parameters with a function that takes an `id` which is the unique identifier of the object/value we want to inject into a property. 
+
+```typescript
+function locatorDecoratorFactory<LocatorMap>(locator: Locator<LocatorMap>) {
+    return function <ID extends LocatorID<LocatorMap>>(id: NoUnion<ID>) {
+        return function(_target: undefined, context: ClassFieldDecoratorContext<unknown, LocatorMap[ID] | undefined>): void {
+            const { metadata, name, access, addInitializer } = context;
+
+            addInitializer(function () {
+              // Will be implemented later
+            })
+        }
+    }
+}
+```
+
+The `id` is not a raw `string`because it has to be from a key of the locator map (dictionary of key to object to inject). So, we have these utility types:
+
+
+```typescript
+type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
+type NoUnion<Key> = [Key] extends [UnionToIntersection<Key>] ? Key : never;
+type LocatorID<LocatorMapType> = keyof LocatorMapType & string;
+type Constructor<T = any> = new (...args: any[]) => T;
+```
+
+The injection of the value into the property is done in the `addInitializer` function. This function is called when the class is instantiated, it sees the decorator, call the function to set the value.
+
+```typescript
+function locatorDecoratorFactory<LocatorMap>(locator: Locator<LocatorMap>) {
+    return function <ID extends LocatorID<LocatorMap>>(id: NoUnion<ID>) {
+        return function(_target: undefined, context: ClassFieldDecoratorContext<unknown, LocatorMap[ID] | undefined>): void {
+            const { metadata, name, access, addInitializer } = context;
+
+            // The addInitializer function is used to add the initializer for the property.
+            addInitializer(function () {
+                // The class will keep track of all injected properties into its metadata. The goal: know when all injected properties are completed (async)
+                const instancesMap = (metadata.decoratorInjectionPromise ??= new WeakMap()) as WeakMap<object, unknown>;
+                // Get the dictionary that will keep the property->promise mapping for the instance
+                const meta = getInstanceMeta(instancesMap, this);
+                // Create a promise to resolve when the value is injected for this particular property
+                const { resolve, promise } = Promise.withResolvers<void>();
+                // Store the promise in the metadata for the instance. In case of many injections with the decorator, the instance will have more than one promise to resolve.
+                meta[name] = promise;
+                // Get the value from the locator. This is THE part that set the value into a single decorated property
+                locator.get(id as NoUnion<ID>).then((result: LocatorMap[ID]) => {
+                    // Access is the property, we set the value into the property
+                    access.set(this, result);
+                    resolve(); // Mark as completed, that way we can know if all the injected property are completed
+                });
+            })
+        }
+    }
+}
+```
+
+The function aboves retrieve information using the `context` parameter. The `metadata` is used to store the metadata for the instance. The `name` is the name of the property. The `access` is used to set the value of the property. The `addInitializer` is used to add the initializer for the property.
+
+The `getInstanceMeta` function is used to get the metadata for the promise. It is a function that return a record of the promises for the instance. The goal is to have a single promise for the instance and not one promise for each property.
+
+```typescript 
+function getInstanceMeta(keyValuePromise: WeakMap<object, unknown>, instance: unknown): Record<string | symbol, Promise<void>> {
+    const thisKey = instance as object;
+    const metaValue = keyValuePromise.get(thisKey) as Record<string | symbol, Promise<void>>;
+    const meta = metaValue ?? {};
+    if (!metaValue) {
+        keyValuePromise.set(thisKey, meta);
+    }
+    return meta;
+}
+```
+# Locator
+The locator role is to store the objects/values and to provide them when requested. In our example, we will use a simple locator that will store the objects/values in a map. In reality, you would use a dependency injection container to store the objects/values and to provide them when requested.
+
+```typescript
+class Locator<M> {
+    constructor(private map: M) {}
+    async get<ID extends LocatorID<M>>(id: NoUnion<ID>): Promise<M[ID]> {
+        await new Promise(resolve => setTimeout(resolve, 100)); // Simulate a delay to simulate real scenarios
+        return this.map[id]; // In our case, we return the already instantiated value from the map
+    }
+}
+``` 
+
+# Class Decorator
+
+A feature we are adding, which is optional but useful, is to have a class decorator that will wait for all the injected properties to be completed. This is useful when you have a class that has many injected properties and you want to wait for all of them to be completed before doing something.
+
+```typescript 
+function injectable() {
+    return function (target: Constructor, context: ClassDecoratorContext): Constructor {
+        return class extends (target as any) {
+            readonly injected = Promise.all(Object.values(getInstanceMeta(context.metadata.decoratorInjectionPromise as WeakMap<object, unknown>, this)));
+        }
+    }
+}
+```
+
+The class decorator is called `injectable` and add to the class a property `injected` that is a promise that will resolve when all the injected properties are completed. We can see that the `injected` property gets all `instances` from the metadata. The `instances` was injected in the property decorator using `const instancesMap = (metadata.instances ??= new WeakMap()) as WeakMap<object, unknown>;`.
+
+# Testing utility
+
+To simplify the testing, we can create a utility class `Injectable` that will declare the `injected` property. This way, we can use the `untilInjected` function to wait for all the injected properties to be completed.
+
+```typescript
+abstract class InjectableDecorators {
+    declare readonly injected: Promise<void>;
+}
+
+function waitUntilAllInjected<T = unknown>(target: T): Promise<void> {
+    const injected = (target as InjectableDecorators).injected;
+    return typeof (injected as Promise<void>)?.then === "function" ? injected : Promise.resolve();
+}
+```
+
+# Test
+
+Creating few classes and a fake dependency injection container, we can test the scenario.
+```typescript
+class A {
+    readonly id = "A";
+}
+class B {
+    readonly id = "B";
+}
+
+interface LocatorMap {
+    A: A;
+    B: B;
+}
+// This is the variable we pass to the creation of the locator.
+const loc: Locator<LocatorMap> = new Locator<LocatorMap>({
+    A: new A(),
+    B: new B()
+});
+```
+
+Testing is a matter of using the decorators.
+
+```typescript
+@injectable()
+class T {
+    @injectProp("A") 
+    private _a?: A;
+    @injectProp("B") 
+    private _b?: B;
+    json() {
+        return {"_a": this._a, "_b": this._b};
+    }
+}
+
+async function main(): Promise<void> {
+    const t1 = new T();
+    console.log("Before", t1.json());
+    await waitUntilAllInjected(t1);
+    console.log("After", t1.json());
+}
+void main();
+```
+
+The properties are all undefined before the injection. After the injection, the properties are set to the values from the locator. We know exactly when the values are injected because we are using the `untilInjected` function.
+
+```sh
+[LOG]: " t1 before injection",  "_a:",  undefined,  "_b:",  undefined 
+[LOG]: " t1 after injection",  "_a:",  A: {
+  "id": "A"
+},  "_b:",  B: {
+  "id": "B"
+} 
+```
+
+# Conclusion
+This blog shows that we can inject from a dictionary that contain instances of objects/values into a class. We added a delay which simulate that the locator might not have the value already instanciated when creating the dictionary and could resolve it in a later stage (lazy loading). The delay make the code asynchronous and could be a performance improvement for heavy object that require several other objects to be injected. It is not rare to see a cascade of dependencies that could result to a complex initialization process. The decorator on the class allows to wait before proceeding. Waiting for a whole object to be injected is crucial when an object depends on other objects to be injected.
+
+You can play with the code [here](https://www.typescriptlang.org/play/?ts=5.7.3#code/C4TwDgpgBAqgdgSwPZwCpIJJ2BATgZwgGNhk4AeGAPigF4oAKGKCADxzgBN8oBDOEFAD8jANYAuWAEo6NAG5IEnKJLgQ5eGWw7cxkhHABmeKBhm15i5SIwqoajbgDcAKFCQoAOSTwy5ANIQIDT0ANqBIAC6LOwQXDyhvijoWDgExKQoAUFU0SIRdg54ru7QADJIRLzASLgYACLkFVU1uACyvGCo4BAhUKJBSIZQzdW1HV09UABkUPjAuAYA5iVTAMIo87gAriS15Kh0fAJ9agDujAB017y4S-iS-CChkeY0qK4uBmmGvETQAGUQABbABGSAANhs4Ftdq0oABvFxQFFQXAQXicFAQwTAiDATHVXiSbaIACO22g+BB4IhrgAvi4XEQIbx8DxRq1yG0aEjUVAiJsFnDagwwIs5NVoMDOpI2jIEVBGfy2SA4EQoEt8eQGjEdBzKmM6o0eVQGEpJN4khQGlQpJIAAq4JDAhCEbmhBqRXnI-mo3hnXgIYD2CAXJ0ut0QBjo-CQjSyOb41AIPFIbbAGMQOMQjQAGigAEYAAzFqRSVx+1Ho4DbXBwKDAAAWbsuMrAoSUkUrqMZjJchlJJDImvxWHm-H+bXxvAYAxAADVeBDKRHXYRJAB1DGiCbkJCggBWGQLpNEcCQZzgVALBgn6ogJLg58vcHtUAASsRapxyFtllAAA+cw0pCBZrlG5AKEoVA+vygowiGzZugU9B3gSD58DwB7HiQPYogh8xQHiBJLiu0D0POZGrs664QJcWqZsh+ARDIbKft+uC-v+cBLEBIFgmBUAQe60GcLB+ECkKxEzkcJG8NR0BCCICL0pJCDDAwACE8mKQqvpVlRy40ZGhCXIQTEtixQQFvJFYGUqDk1nWDbyQyTKDuqmQNhChqtPUnFGgAYn8rQgE0fnjJ0Zq+S0tSSJy+yJe00X6fyzn1lAnnDigUA6vUepxLoyUNBFcUpWAsHmpwlo+IgWS2mlVZoviLlZUO3mMAA+gSdz4k+nAQIYBgQJwBYITg7CSGsrLskFCAQBCnABYKuBGtCk3AOQZ4XleBbJRMnr1NEwGkoNw1qOJ75iYiDnNVJiGIjJBKcESBZwLweIFn8-zst9nCcFgwYIMuCAAF4mPSRwTdokn3ZigOIKQoMQ7gDDZZ1DBNfdVaESG6GTtmExHAw8mvQSlyDatRpYLh3kiUpQj0OcUDbrwu6dFjbE8GzHNgPuR4nlAO2vlQcM4wR0nyUcjHjhhU4zuaiGE-gEwFsx9kS1WEL4i1OYaJIDCSuRkg3cBDNlAgAxQVYdqJmJ4sS3jUDiqZFGhuGtGQWJZpZvgby3VrOOxvG7uxo7OP0lId1a-JoQfXi0T0K7dGfEH-KxUaDH4tVWFeHVfiNZczZxAwfvbBCwAJZFFVHa8iZ8unVY-dm+DmTnzEFrGFfAJrTd+iHubRn3TdRxH-JRzHKLKr2Lj9hjI4GHTvCgjrWOB9WrWZQvuUML1jHTUKOx7Lg40oJt02zfgK21Ot5-aO+0KwifG9VhlDYsmyPDaEVPB77cjE85PGxsHDEWI4A4igEvDIo0jgM0uMuCEDAADygsSCXGNpSfADBZbKwfNOAkDAYbsDbDOcmvBKaBVaLTDIZAGZ515nuHCQsRZXhvI2Ky5YR5+hntPOeTIV5bFCgKK+pg4DL1XhAG+a1Wg8EbiiKmrJ0QtUxNiQQ0CSCjUdF7UStt3IDg6iOQMwZ4CkAhAAQQhBCGhmjfyHHoKw68-8+pVygKgd8DMbYwVfg9IiGicDKHoM4wB7EbEEkkdIo0-tLj+NGpJd+jYehDEYLE5Q7FPE+ykEIYuTY4h0FoPQAARDvOAhThBQPETA5Q2i3aXEHhoLG+jP7sigOYnx6JVEQPUYEqAhTzGFPcs0ngAAhdpYC1FQJ6YU4ZAz+FfGwHgX4-wRg12JvI1pkhzGSWGZIYZgzpKxWruVMqRoJinDDCs45B1ooMHWeY1QFzzFYzzA5HZHsoDDKxnPeyzt-ERjAEcTO-kqG1BCifEADBYr2RcAAAX8SvNe0chluJ8XCypJB-kMD6YUmQDlxQIElDgKAXVeBCE2ZJNFdNMXTJxVAPFEopTEtBGSj5klDxxjgOvdZ6Ut4NgRIUklhTJDMUuCSgsArQRCo4a2LqoI1IOT7AI6k6p2peRHDKAwWMal0S8eJHxztgCFiOCzVAjSHKEUhPRXySwsXDKGrUCAhT1aFkuOylAXNJIBiDCGYxwBTEIAsVYsJo096Fm4RanWlxrVYvMYYNITrGwurdZy8s7kboapTU4IAA).

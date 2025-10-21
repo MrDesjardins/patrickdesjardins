@@ -2,9 +2,10 @@
 ✍️ 2035-10-22: How to customize Linux Mint keyboard to feel like MacOS
 
 === Completed waiting
-⏲️ 2025-08-26: 
+⏲️ 2025-10-22: 
 
 === Published
+✅ 2025-10-22: TypeScript Injection of Value Using Decorator 
 ✅ 2025-10-13: SSE Streaming using HTTP Post?
 ✅ 2025-08-26: Python Modulo
 ✅ 2025-08-28: Python Asynchronous with to_thread
