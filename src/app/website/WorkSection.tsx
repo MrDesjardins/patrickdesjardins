@@ -17,6 +17,21 @@ export const WorkSection = (): JSX.Element => {
       <h3>Professional Application</h3>
       <div className={styles.sectionFixedWitdh}>
         <CardFixedWidth
+          title="Roblox"
+          description="Driving technical excellence and strategic innovation across Roblox core operations. Lead the development of high-impact internal products that empower teams and shape the future of how Roblox operate. "
+          link="https://www.roblox.com/"
+          image={
+            <Image
+              className={styles.cardFixedWidthImageImg}
+              alt="Screenshot of Roblox"
+              src="/images/portfolio/Roblox_Tilt_Black.svg"
+              width={350}
+              height={350}
+            />
+          }
+        />
+
+        <CardFixedWidth
           title="Adobe - Adobe Express"
           description="Leading the content production engineering themes, which include smarter content experiences and scale external creator base for Adobe Express"
           link="https://www.adobe.com/express/"
