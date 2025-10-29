@@ -5,6 +5,7 @@
 ⏲️ 2025-10-22: 
 
 === Published
+✅ 2025-10-29: Software Engineering and Remote Work
 ✅ 2025-10-22: TypeScript Injection of Value Using Decorator 
 ✅ 2025-10-13: SSE Streaming using HTTP Post?
 ✅ 2025-08-26: Python Modulo
