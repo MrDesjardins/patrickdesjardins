@@ -2,9 +2,10 @@
 ✍️ 2035-10-22: How to customize Linux Mint keyboard to feel like MacOS
 
 === Completed waiting
-⏲️ 2025-10-22: 
+⏲️ 2025-11-06: 
 
 === Published
+✅ 2025-11-06: Python Retirement Simulator using past Sp500 performance 
 ✅ 2025-10-29: Software Engineering and Remote Work
 ✅ 2025-10-22: TypeScript Injection of Value Using Decorator 
 ✅ 2025-10-13: SSE Streaming using HTTP Post?
