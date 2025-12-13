@@ -5,6 +5,7 @@
 ⏲️ 2025-11-06: 
 
 === Published
+✅ 2025-12-12: Trilium Note Taking with Mini-PC server host
 ✅ 2025-11-06: Python Retirement Simulator using past Sp500 performance 
 ✅ 2025-10-29: Software Engineering and Remote Work
 ✅ 2025-10-22: TypeScript Injection of Value Using Decorator 
