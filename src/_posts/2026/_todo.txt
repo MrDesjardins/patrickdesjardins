@@ -1,0 +1,12 @@
+=== Draft Started
+✍️ 2035-10-22: How to customize Linux Mint keyboard to feel like MacOS
+
+=== Completed waiting
+⏲️ 2026-11-06: 
+
+=== Published
+✅ 2026-
+
+=== Draft Started but frozen
+🥶 2122-09-14: How to Access your Web Application on Kubernetes Azure with Ingress
+🥶 2122-10-01: How to Add HTTPS to your Kubernetes IngressF
