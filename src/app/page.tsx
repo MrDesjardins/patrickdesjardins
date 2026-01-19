@@ -68,9 +68,9 @@ export default function Index(): React.ReactElement {
                 Patrick<strong>Desjardins</strong>
               </h1>
               <p className={styles.homeContentTitles}>
-                Adobe Staff Software Engineer
+                Roblox Principal Software Engineer
                 <br />
-                Formerly Netflix/Microsoft Senior Software Engineer
+                Formerly Netflix/Jump Trading/Microsoft/Adobe
               </p>
             </div>
           </div>
