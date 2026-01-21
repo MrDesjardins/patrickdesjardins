@@ -1,8 +1,8 @@
 === Draft Started
-✍️ 2026-01-28: YouTube Streaming Radio with Auto AI Summary
+✍️ 2026-01-28: 
 
 === Completed waiting
-⏲️ 2026-11-06: 
+⏲️ 2026-01-30: YouTube Streaming Radio with Auto AI Summary
 
 === Published
 ✅ 2026-01-22: Audiobook Machine Version 2 with ESP-32
