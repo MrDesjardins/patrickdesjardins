@@ -1,11 +1,11 @@
 === Draft Started
-✍️ 2026-02-06: Audiobook Machine Version 2 with ESP-32
 ✍️ 2026-01-28: YouTube Streaming Radio with Auto AI Summary
 
 === Completed waiting
 ⏲️ 2026-11-06: 
 
 === Published
+✅ 2026-01-22: Audiobook Machine Version 2 with ESP-32
 ✅ 2026-01-19 Trilium RAG Search with AI Prompting Feature
 
 === Draft Started but frozen
