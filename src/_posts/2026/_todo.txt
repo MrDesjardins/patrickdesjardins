@@ -2,9 +2,10 @@
 ✍️ 2026-01-28: 
 
 === Completed waiting
-⏲️ 2026-01-30: YouTube Streaming Radio with Auto AI Summary
+⏲️ 2026-02-05: YouTube Streaming Radio with more AI
 
 === Published
+✅ 2026-01-30: YouTube Streaming Radio with Auto AI Summary
 ✅ 2026-01-22: Audiobook Machine Version 2 with ESP-32
 ✅ 2026-01-19 Trilium RAG Search with AI Prompting Feature
 
