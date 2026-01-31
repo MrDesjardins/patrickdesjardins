@@ -11,32 +11,57 @@ categories:
 
 # The Context
 
-I recently built a [web application](/blog/youtube-streaming-radio-with-auto-ai-summary) that allows me to queue YouTube videos from my phone and then have only the audio streamed back to me. I've been using it during my commute for over 2 weeks now. I improved several parts, like having AI suggest other videos to queue based on the last few tracks I listened to, and also the capability of generating a summary of all audiobooks I listened to and creating an audio summary to listen back.
+I recently built a [web application](/blog/youtube-streaming-radio-with-auto-ai-summary) that allows me to queue YouTube videos from my phone and stream only the audio back to me. I've been using it during my commute for over two weeks now.
 
-![](/images/blog/Todo.png)
+I've since improved several parts of the system, such as having AI suggest other videos to queue based on the last few tracks I listened to. I also added the ability to generate a summary of all the audiobooks I listened to and create an audio summary that I can listen back to.
 
+<video src="/videos/blog/AudiobookQueingTheme.mp4" controls/>
 
 # Streaming vs Downloading
-One technical improvement I made in the project was modifying how I handled audio. Previously, I was relying on FFmpeg to stream the audio to the browser, which caused many issues. If the connection was unstable (e.g., moving from Wifi to 5G), it would cut out even with a retry mechanism. The scrubber (the line that shows the time) was never the full line. Also, using speed-ups like 1.2x was messing up the buffering and adding complexity to the workaround. Instead, I now download the whole MP3 on the server and then download it completely to the mobile device. The size averages 15-20 megs, and it fixes all issues. When in a queue, I pre-download the MP3 so the wait time is not about downloading and converting into MP3, but only transferring from my mini-pc (server) to my phone. I keep a copy of the MP3s for the last 15 tracks so I can also quickly go back to a previous audiobook if needed.
+
+One technical improvement I made was changing how audio is handled. Previously, I relied on FFmpeg to stream audio directly to the browser, which caused multiple issues. If the connection was unstable (for example, switching from Wi-Fi to 5G), playback would cut out even with a retry mechanism. The scrubber (the timeline showing playback progress) never displayed the full duration. Speed changes, such as 1.2×, also interfered with buffering and added significant complexity to the workaround.
+
+Instead, I now download the full MP3 on the server and then download it completely to the mobile device. The file size averages 15–20 MB, and this approach fixes all of the above issues. When tracks are queued, I pre-download the MP3s so the wait time is no longer about downloading and converting the audio, but only about transferring it from my mini-PC (the server) to my phone.
+
+I also keep a local copy of the MP3s for the last 15 tracks, which allows me to quickly go back to a previous audiobook if needed.
+
+This change was a good learning experience. I am using Claude as part of an experiment with assisted LLM development, and it initially stored cached downloads in `/tmp/`, which does not persist files after a reboot. I had to change the storage location to something more permanent and manually remove older MP3s when needed.
 
 # Suggestions
+Sometimes I'm on the run and don't have time to manually select a YouTube video to listen to. To address this, I added a button that sends a request to the server to fetch the last 10 audiobook summaries from Trilium (my note-taking app, where I store one note per audiobook summarized with AI).
 
-Sometimes, I am on the run and I do not have time to select a video from YouTube that I would like to listen to. Thus, I added a button that sends a request to the server to open the last 10 audiobook summaries from Trilium (my note-taking app where I submit one note per audio to summarize with AI). With the 10 summaries, I ask AI to generate a one-sentence theme that I use to search YouTube, giving me a list that I filter by removing the tracks I already listened to. The whole process takes about 1 minute, which is perfect to click, get in the car, and just hit play to start the queue.
+Using those 10 summaries, I ask AI to generate a one-sentence theme. That theme is then used to search YouTube, producing a list of candidate videos. I filter out tracks I've already listened to and queue the rest. The entire process takes about one minute, which is perfect for tapping the button, getting in the car, and hitting play.
+
+![](/images/blog/AudiobookSmartSuggestions.png)
 
 # Summary of Summaries
 
-Every audiobook has one note in my Trilium note app. It works well, but because I use the application a lot, I end up having about 20 new notes per week. So, even going through my summaries is taking time. I added a background job at the end of the week that summarizes the last 7 days of summaries and creates a new note. Then, I use the ElevenLabs API to generate an audio file (MP3) of the summary and queue it. A whole week can be summarized into 6-8 minutes of audio.
+Each audiobook has a corresponding note in my Trilium app. This works well, but because I use the application frequently, I end up with around 20 new notes per week. Even reviewing summaries starts to take time.
 
-# UI Improvement
+To solve this, I added a background job that runs at the end of the week. It summarizes the last seven days of summaries into a single new note. I then use the ElevenLabs API to generate an MP3 of that weekly summary and automatically queue it. An entire week of listening can be condensed into 6–8 minutes of audio.
 
-I added a few improvements, like having a light theme and a dark theme. Light is better when driving during the day.
+![](/images/blog/AudiobookSummaryOfSummary.png)
 
-I modified the speed to be 1.0x, 1.1x, 1.2x, and 1.4x. I used to have bigger spacing, but beyond 1.5x I couldn't drive, listen, and think clearly.
+# UI Improvements
 
-The summary of the week has a section where I can easily access and play the audio or read from the phone.
+I added several UI improvements, including both light and dark themes. The light theme is better when driving during the day.
+
+I also adjusted playback speeds to 1.0×, 1.1×, 1.2×, and 1.4×. I previously experimented with higher speeds, but beyond 1.5× I found it difficult to drive, listen, and think clearly at the same time.
+
+The weekly summary view includes a dedicated section where I can easily play the audio summary or read it directly from my phone.
 
 # Code and Claude
 
-The project is an experiment with Claude Code. I have had mixed results, but it works with some looping. The confidence of Claude is high, but it produces repeated code, code that does not work (e.g., APIs with Trilium that do not exist), and creates a lot of solutions that aren't the best. For example, it kept calling AI for steps that could cache the result in a workflow to avoid unnecessary costs. Claude is challenging with the PRO setting. The window of 5 hours in the PRO ($20/month) is actually 45 minutes of active work. I ended up doing more manual coding than expected because of it. To avoid burning all of Claude's tokens, I also rely on Gemini, Google, or documentation. However, with infinite tokens, I would not. I also noticed that looping with Claude will fix the code, but it does not mean it will adapt the unit tests. A lot of mocking that relied on the name of the function to mock were not ported, causing failed tests. Also, Claude will not necessarily delete a function once told that it should do something else. Instead, it keeps the old function, calls it deprecated, and has it calling the new one. I could see a lot of technical debt accumulating if someone is not carefully reviewing the output. Last point, Claude does not have a holistic view of what it built; some features would require a natural adaptation when adding a new one, but it does not seem to always make the connection, adding more human interaction than potentially needed. That said, in the future, I can see that Claude and other alternatives will become quite powerful.
+This project is also an experiment with Claude Code. The results have been mixed. Claude's confidence is high, but it often produces duplicated code, non-working code (for example, calling Trilium APIs that do not exist), or solutions that are not optimal.
 
-On that note, I am running an LLM locally on my 5080 graphics card. The model is `QWEN3.0-8B` and it is pretty fast but only good for very specific functions. Claude is 50 times better.
+One recurring issue was that Claude repeatedly called AI for steps where results could have been cached in a workflow to avoid unnecessary costs. Claude is particularly challenging with the PRO tier. The advertised 5-hour window in PRO ($20/month) translates to roughly 45 minutes of active work. Because of this, I ended up doing more manual coding than expected.
+
+To avoid burning through Claude's tokens, I frequently rely on Gemini, Google, or direct documentation instead. With unlimited tokens, I probably wouldn't.
+
+I also noticed that while looping with Claude often fixes the code, it does not reliably update unit tests. In several cases, mocks that depended on function names were not updated, causing tests to fail. Additionally, when asked to change behavior, Claude often keeps the old function, marks it as deprecated, and has it call the new one instead of removing it. Without careful review, this can quickly lead to accumulating technical debt.
+
+Finally, Claude does not always maintain a holistic view of the system it has built. Some features require natural adjustments when new ones are added, but Claude does not consistently make those connections, resulting in more required human intervention than expected.
+
+That said, I can clearly see how Claude and other alternatives will become significantly more powerful in the future.
+
+On that note, I am also running an LLM locally on my RTX 5080. The model is `QWEN3.0-8B`. It is very fast but only suitable for narrow, specific tasks. Claude, overall, is still about 50× better.
