@@ -46,9 +46,13 @@ To solve this, I added a background job that runs at the end of the week. It sum
 
 I added several UI improvements, including both light and dark themes. The light theme is better when driving during the day.
 
-I also adjusted playback speeds to 1.0×, 1.1×, 1.2×, and 1.4×. I previously experimented with higher speeds, but beyond 1.5× I found it difficult to drive, listen, and think clearly at the same time.
+I also adjusted playback speeds to 1.0×, 1.1×, 1.2×, and 1.3×. I previously experimented with higher speeds, but beyond 1.5× I found it difficult to drive, listen, and think clearly at the same time.
 
 The weekly summary view includes a dedicated section where I can easily play the audio summary or read it directly from my phone.
+
+# Token Stats
+
+I added token cost estimation to the system. Every request sent to the LLM records both input and output token counts. A dedicated page displays the cost per model. The system stores this data in a SQLite table, making it easy to query and analyze.
 
 # Code and Claude
 
