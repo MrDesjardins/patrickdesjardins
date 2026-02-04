@@ -1,0 +1,678 @@
+---
+title: "Running Local LLM on a Nvidia 5080 for Coding"
+date: "2026-02-09"
+categories:
+ - "mobile"
+ - "python"
+ - "project"
+---
+
+# Goal
+
+Few weekends ago, I wanted to see what would be the best model of coding that I could run locally on my Intel 9 with 32 gig of ram and my Nvidia 5080 with 8gig of vram. The idea was to run [Open Code](https://opencode.ai/) to QWEN 3.0 to have a local Claude. The result was impressive in term of how fast the response occured but the final product wasn't the quality of Claude.
+
+# How to do it?
+
+I started with QWEN 2.5 and the result was horrible in term of connection with tools like simply reading and writing files. It was fine with general question but that wasn't the goal.
+
+Moving to Qwen3-8B-AWQ did the job but with some tweaking, otherwise it was crashing or returning response too slow.
+
+Installation:
+
+```
+sh
+nvidia-smi
+pip install --upgrade pip
+pip install torch torchvision torchaudio \
+  --index-url https://download.pytorch.org/whl/cu121
+pip install vllm
+pip install autoawq
+pip install huggingface_hub
+huggingface-cli login
+```
+
+
+Everytime to use:
+
+```sh
+cd ~/llm/llm
+pyenv activate vllm
+
+unset VLLM_ATTENTION_BACKEND
+unset VLLM_USE_FLASHINFER_SAMPLER
+
+pkill -f vllm
+
+vllm serve \
+  Qwen/Qwen3-8B-AWQ \
+  --quantization awq \
+  --dtype float16 \
+  --gpu-memory-utilization 0.9 \
+  --max-model-len 32768 \
+  --port 7555 \
+  --api-key "opencode_local" \
+  --enable-auto-tool-choice \
+  --tool-call-parser hermes \
+  --reasoning-parser qwen3
+```
+
+Loading everything takes less than 30 seconds:
+
+```
+(EngineCore_DP0 pid=36318) INFO 02-03 19:53:24 [default_loader.py:291] Loading weights took 4.14 seconds
+(EngineCore_DP0 pid=36318) INFO 02-03 19:53:24 [gpu_model_runner.py:3905] Model loading took 5.71 GiB memory and 5.326229 seconds
+(EngineCore_DP0 pid=36318) INFO 02-03 19:53:30 [backends.py:644] Using cache directory: /home/miste/.cache/vllm/torch_compile_cache/252055f4c9/rank_0_0/backbone for vLLM's torch.compile
+(EngineCore_DP0 pid=36318) INFO 02-03 19:53:30 [backends.py:704] Dynamo bytecode transform time: 5.01 s
+(EngineCore_DP0 pid=36318) INFO 02-03 19:53:35 [backends.py:226] Directly load the compiled graph(s) for compile range (1, 2048) from the cache, took 1.098 s
+(EngineCore_DP0 pid=36318) INFO 02-03 19:53:35 [monitor.py:34] torch.compile takes 6.11 s in total
+(EngineCore_DP0 pid=36318) INFO 02-03 19:53:36 [gpu_worker.py:358] Available KV cache memory: 7.19 GiB
+(EngineCore_DP0 pid=36318) INFO 02-03 19:53:36 [kv_cache_utils.py:1305] GPU KV cache size: 52,368 tokens
+(EngineCore_DP0 pid=36318) INFO 02-03 19:53:36 [kv_cache_utils.py:1310] Maximum concurrency for 32,768 tokens per request: 1.60x
+(EngineCore_DP0 pid=36318) 2026-02-03 19:53:36,340 - INFO - autotuner.py:256 - flashinfer.jit: [Autotuner]: Autotuning process starts ...
+(EngineCore_DP0 pid=36318) 2026-02-03 19:53:36,363 - INFO - autotuner.py:262 - flashinfer.jit: [Autotuner]: Autotuning process ends
+Capturing CUDA graphs (mixed prefill-decode, PIECEWISE): 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 51/51 [00:07<00:00,  6.51it/s]
+Capturing CUDA graphs (decode, FULL): 100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 35/35 [00:05<00:00,  6.77it/s]
+(EngineCore_DP0 pid=36318) INFO 02-03 19:53:49 [gpu_model_runner.py:4856] Graph capturing finished in 13 secs, took 0.00 GiB
+(EngineCore_DP0 pid=36318) INFO 02-03 19:53:49 [core.py:273] init engine (profile, create kv cache, warmup model) took 25.12 seconds
+(EngineCore_DP0 pid=36318) INFO 02-03 19:53:51 [vllm.py:630] Asynchronous scheduling is enabled.
+(APIServer pid=36148) INFO 02-03 19:53:51 [api_server.py:1014] Supported tasks: ['generate']
+(APIServer pid=36148) WARNING 02-03 19:53:51 [model.py:1358] Default sampling parameters have been overridden by the model's Hugging Face generation config recommended from the model creator. If this is not intended, please relaunch vLLM instance with `--generation-config vllm`.
+(APIServer pid=36148) INFO 02-03 19:53:51 [serving_responses.py:224] Using default chat sampling params from model: {'temperature': 0.6, 'top_k': 20, 'top_p': 0.95}
+(APIServer pid=36148) INFO 02-03 19:53:51 [serving_engine.py:271] "auto" tool choice has been enabled.
+(APIServer pid=36148) INFO 02-03 19:53:51 [serving_engine.py:271] "auto" tool choice has been enabled.
+(APIServer pid=36148) INFO 02-03 19:53:51 [serving_chat.py:146] Using default chat sampling params from model: {'temperature': 0.6, 'top_k': 20, 'top_p': 0.95}
+(APIServer pid=36148) INFO 02-03 19:53:51 [serving_chat.py:182] Warming up chat template processing...
+(APIServer pid=36148) INFO 02-03 19:53:52 [chat_utils.py:599] Detected the chat template content format to be 'string'. You can set `--chat-template-content-format` to override this.
+(APIServer pid=36148) INFO 02-03 19:53:52 [serving_chat.py:218] Chat template warmup completed in 1254.3ms
+(APIServer pid=36148) INFO 02-03 19:53:53 [serving_completion.py:78] Using default completion sampling params from model: {'temperature': 0.6, 'top_k': 20, 'top_p': 0.95}
+(APIServer pid=36148) INFO 02-03 19:53:53 [serving_engine.py:271] "auto" tool choice has been enabled.
+(APIServer pid=36148) INFO 02-03 19:53:53 [serving_chat.py:146] Using default chat sampling params from model: {'temperature': 0.6, 'top_k': 20, 'top_p': 0.95}
+(APIServer pid=36148) INFO 02-03 19:53:53 [api_server.py:1346] Starting vLLM API server 0 on http://0.0.0.0:7555
+```
+
+Configuring OpenCode:
+```
+nano ~/.config/opencode/config.json
+```
+
+By copying: 
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "vllm_local": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "vLLM (local)",
+      "options": {
+        "baseURL": "http://127.0.0.1:7555/v1",
+        "apiKey": "opencode_local"
+      },
+      "models": {
+        "Qwen/Qwen3-8B-AWQ": {
+          "name": "Qwen 3.0 (8B Agent)",
+          "tools": {
+            "write": true,
+            "bash": true,
+            "read": true,
+            "edit": true
+          },
+          "limit": {
+            "context": 32768,
+            "output": 4096
+          },
+          "supportsToolCalling": true,
+          "supportsReasoning": true
+        }
+      }
+    }
+  }
+}
+```
+
+The OpenCode configuration required a lot of trial and error. Even ChatGPT could not find the right configuration. Moving to QWEN 3.0 and explicitly enabling tools helped move things forward.
+
+Then, running OpenCode. Here is a command that asks how many unit tests are in the repository.
+
+<video src="/videos/blog/LocalLLM.mp4" controls/>
+
+The full answer took 2 minutes and 22 seconds.
+
+Here is the full transcript:
+```md
+
+## User
+
+How many tests in this repository?
+
+---
+
+## Assistant (Build · Qwen/Qwen3-8B-AWQ · 100.8s)
+
+_Thinking:_
+
+
+Okay, the user is asking how many tests are in the repository. Let me think about how to approach this.
+
+First, I remember that the project is a FastAPI application, and the documentation mentions testing. In the CLAUDE.md file, there are sections about testing, including commands to run tests and requirements for test coverage. 
+
+The user probably wants to know the total number of tests, maybe to check if they meet the coverage requirements mentioned (minimum 76%). The test commands listed include using `uv run pytest` with options for coverage and speed. 
+
+I need to find a way to count the tests. The `pytest` command can give a summary when run with the `-v` flag, but maybe there's a better way. Alternatively, the `pytest` command with `--help` might show options related to counting tests. Wait, the `uv run pytest` command is mentioned, so maybe running `uv run pytest --help` could show options. But the user might not have pytest installed, but since the project uses `uv` (uvicorn), it's likely that pytest is installed as a dependency.
+
+Wait, the user is asking for the number of tests, not to run them. So maybe the best approach is to check the test files. The project structure includes a `tests` directory, as mentioned in the CLAUDE.md under "Development Commands". The `tests/services` directory is mentioned, and there are specific test files like `test_database.py`.
+
+But how to count them without running the tests? The user might not have the environment set up, so I can't run the tests directly. However, the `pytest` tool can list the tests when run with `--help` or `--collect-only`, but that might not be straightforward. Alternatively, the `pytest` command can be used with `--help` to see available options.
+
+Wait, the user might be looking for the number of test files or test cases. The `pytest` command can count test cases using `--count` or other flags. Let me check the pytest documentation. Oh, right, `pytest` has a `--count` option to count the number of tests. But I need to confirm if that's available.
+
+Alternatively, the `pytest` command can be run with `--help` to see available options. So, the steps would be:
+
+1. Check if `pytest` is installed. Since the project uses `uv` and the `uv run pytest` command is mentioned, it's likely installed.
+2. Run `uv run pytest --help` to see available options.
+3. Use the `--count` option to get the number of tests.
+
+But the user might not have the environment set up, so maybe the best approach is to suggest running the test commands provided in the documentation. However, the user is asking for the number, not to run them. 
+
+Alternatively, the `pytest` command can be run with `--help` to see if there's an option to count tests. If not, maybe the `pytest` command can be used with `--collect-only` to list all test files, which can then be counted. 
+
+But without running the tests, it's hard to get the exact number. The user might need to run the tests to get the count. However, the answer should be based on the information provided in the CLAUDE.md. The documentation mentions that the test suite is run with `uv run pytest`, and there are specific test files mentioned like `tests/services/test_database.py`. 
+
+Wait, the user is asking for the number of tests, but the CLAUDE.md doesn't specify the exact count. So, the answer would be that the number of tests can be determined by running `uv run pytest --count` or similar command. However, without actual execution, I can't provide the exact number. 
+
+But the user might be expecting a specific number based on the project structure. The `tests/services` directory has multiple test files, but the exact count isn't given. Therefore, the correct approach is to inform the user that they need to run the test command to get the count, or check the test files. 
+
+Alternatively, if the user is in a Git repository, they could use `git ls-files tests/` to list test files and count them. But that's not reliable as some tests might be in subdirectories. 
+
+In conclusion, the answer should guide the user to run the test command to get the count, as the exact number isn't provided in the documentation.
+
+
+
+**Tool: bash**
+
+**Input:**
+json
+{
+  "command": "uv run pytest --help",
+  "description": "Check pytest options for test counting"
+}
+
+
+**Output:**
+
+usage: pytest [options] [file_or_dir] [file_or_dir] [...]
+
+positional arguments:
+  file_or_dir
+
+general:
+  -k EXPRESSION         Only run tests which match the given substring
+                        expression. An expression is a Python evaluable
+                        expression where all names are substring-matched against
+                        test names and their parent classes. Example: -k
+                        'test_method or test_other' matches all test functions
+                        and classes whose name contains 'test_method' or
+                        'test_other', while -k 'not test_method' matches those
+                        that don't contain 'test_method' in their names. -k 'not
+                        test_method and not test_other' will eliminate the
+                        matches. Additionally keywords are matched to classes
+                        and functions containing extra names in their
+                        'extra_keyword_matches' set, as well as functions which
+                        have names assigned directly to them. The matching is
+                        case-insensitive.
+  -m MARKEXPR           Only run tests matching given mark expression. For
+                        example: -m 'mark1 and not mark2'.
+  --markers             show markers (builtin, plugin and per-project ones).
+  -x, --exitfirst       Exit instantly on first error or failed test
+  --maxfail=num         Exit after first num failures or errors
+  --strict-config       Enables the strict_config option
+  --strict-markers      Enables the strict_markers option
+  --strict              Enables the strict option
+  --fixtures, --funcargs
+                        Show available fixtures, sorted by plugin appearance
+                        (fixtures with leading '_' are only shown with '-v')
+  --fixtures-per-test   Show fixtures per test
+  --pdb                 Start the interactive Python debugger on errors or
+                        KeyboardInterrupt
+  --pdbcls=modulename:classname
+                        Specify a custom interactive Python debugger for use
+                        with --pdb.For example:
+                        --pdbcls=IPython.terminal.debugger:TerminalPdb
+  --trace               Immediately break when running each test
+  --capture=method      Per-test capturing method: one of fd|sys|no|tee-sys
+  -s                    Shortcut for --capture=no
+  --runxfail            Report the results of xfail tests as if they were not
+                        marked
+  --lf, --last-failed   Rerun only the tests that failed at the last run (or all
+                        if none failed)
+  --ff, --failed-first  Run all tests, but run the last failures first. This may
+                        re-order tests and thus lead to repeated fixture
+                        setup/teardown.
+  --nf, --new-first     Run tests from new files first, then the rest of the
+                        tests sorted by file mtime
+  --cache-show=[CACHESHOW]
+                        Show cache contents, don't perform collection or tests.
+                        Optional argument: glob (default: '*').
+  --cache-clear         Remove all cache contents at start of test run
+  --lfnf={all,none}, --last-failed-no-failures={all,none}
+                        With ``--lf``, determines whether to execute tests when
+                        there are no previously (known) failures or when no
+                        cached ``lastfailed`` data was found. ``all`` (the
+                        default) runs the full test suite again. ``none`` just
+                        emits a message about no known failures and exits
+                        successfully.
+  --sw, --stepwise      Exit on test failure and continue from last failing test
+                        next time
+  --sw-skip, --stepwise-skip
+                        Ignore the first failing test but stop on the next
+                        failing test. Implicitly enables --stepwise.
+  --sw-reset, --stepwise-reset
+                        Resets stepwise state, restarting the stepwise workflow.
+                        Implicitly enables --stepwise.
+
+Reporting:
+  --durations=N         Show N slowest setup/test durations (N=0 for all)
+  --durations-min=N     Minimal duration in seconds for inclusion in slowest
+                        list. Default: 0.005 (or 0.0 if -vv is given).
+  -v, --verbose         Increase verbosity
+  --no-header           Disable header
+  --no-summary          Disable summary
+  --no-fold-skipped     Do not fold skipped tests in short summary.
+  --force-short-summary
+                        Force condensed summary output regardless of verbosity
+                        level.
+  -q, --quiet           Decrease verbosity
+  --verbosity=VERBOSE   Set verbosity. Default: 0.
+  -r chars              Show extra test summary info as specified by chars:
+                        (f)ailed, (E)rror, (s)kipped, (x)failed, (X)passed,
+                        (p)assed, (P)assed with output, (a)ll except passed
+                        (p/P), or (A)ll. (w)arnings are enabled by default (see
+                        --disable-warnings), 'N' can be used to reset the list.
+                        (default: 'fE').
+  --disable-warnings, --disable-pytest-warnings
+                        Disable warnings summary
+  -l, --showlocals      Show locals in tracebacks (disabled by default)
+  --no-showlocals       Hide locals in tracebacks (negate --showlocals passed
+                        through addopts)
+  --tb=style            Traceback print mode (auto/long/short/line/native/no)
+  --xfail-tb            Show tracebacks for xfail (as long as --tb != no)
+  --show-capture={no,stdout,stderr,log,all}
+                        Controls how captured stdout/stderr/log is shown on
+                        failed tests. Default: all.
+  --full-trace          Don't cut any tracebacks (default is to cut)
+  --color=color         Color terminal output (yes/no/auto)
+  --code-highlight={yes,no}
+                        Whether code should be highlighted (only if --color is
+                        also enabled). Default: yes.
+  --pastebin=mode       Send failed|all info to bpaste.net pastebin service
+  --junit-xml=path      Create junit-xml style report file at given path
+  --junit-prefix=str    Prepend prefix to classnames in junit-xml output
+
+pytest-warnings:
+  -W PYTHONWARNINGS, --pythonwarnings=PYTHONWARNINGS
+                        Set which warnings to report, see -W option of Python
+                        itself
+
+collection:
+  --collect-only, --co  Only collect tests, don't execute them
+  --pyargs              Try to interpret all arguments as Python packages
+  --ignore=path         Ignore path during collection (multi-allowed)
+  --ignore-glob=path    Ignore path pattern during collection (multi-allowed)
+  --deselect=nodeid_prefix
+                        Deselect item (via node id prefix) during collection
+                        (multi-allowed)
+  --confcutdir=dir      Only load conftest.py's relative to specified dir
+  --noconftest          Don't load any conftest.py files
+  --keep-duplicates     Keep duplicate tests
+  --collect-in-virtualenv
+                        Don't ignore tests in a local virtualenv directory
+  --continue-on-collection-errors
+                        Force test execution even if collection errors occur
+  --import-mode={prepend,append,importlib}
+                        Prepend/append to sys.path when importing test modules
+                        and conftest files. Default: prepend.
+  --doctest-modules     Run doctests in all .py modules
+  --doctest-report={none,cdiff,ndiff,udiff,only_first_failure}
+                        Choose another output format for diffs on doctest
+                        failure
+  --doctest-glob=pat    Doctests file matching pattern, default: test*.txt
+  --doctest-ignore-import-errors
+                        Ignore doctest collection errors
+  --doctest-continue-on-failure
+                        For a given doctest, continue to run after the first
+                        failure
+
+test session debugging and configuration:
+  -c FILE, --config-file=FILE
+                        Load configuration from `FILE` instead of trying to
+                        locate one of the implicit configuration files.
+  --rootdir=ROOTDIR     Define root directory for tests. Can be relative path:
+                        'root_dir', './root_dir', 'root_dir/another_dir/';
+                        absolute path: '/home/user/root_dir'; path with
+                        variables: '$HOME/root_dir'.
+  --basetemp=dir        Base temporary directory for this test run. (Warning:
+                        this directory is removed if it exists.)
+  -V, --version         Display pytest version and information about plugins.
+                        When given twice, also display information about
+                        plugins.
+  -h, --help            Show help message and configuration info
+  -p name               Early-load given plugin module name or entry point
+                        (multi-allowed). To avoid loading of plugins, use the
+                        `no:` prefix, e.g. `no:doctest`. See also --disable-
+                        plugin-autoload.
+  --disable-plugin-autoload
+                        Disable plugin auto-loading through entry point
+                        packaging metadata. Only plugins explicitly specified in
+                        -p or env var PYTEST_PLUGINS will be loaded.
+  --trace-config        Trace considerations of conftest.py files
+  --debug=[DEBUG_FILE_NAME]
+                        Store internal tracing debug information in this log
+                        file. This file is opened with 'w' and truncated as a
+                        result, care advised. Default: pytestdebug.log.
+  -o OVERRIDE_INI, --override-ini=OVERRIDE_INI
+                        Override configuration option with "option=value" style,
+                        e.g. `-o strict_xfail=True -o cache_dir=cache`.
+  --assert=MODE         Control assertion debugging tools.
+                        'plain' performs no assertion debugging.
+                        'rewrite' (the default) rewrites assert statements in
+                        test modules on import to provide assert expression
+                        information.
+  --setup-only          Only setup fixtures, do not execute tests
+  --setup-show          Show setup of fixtures while executing tests
+  --setup-plan          Show what fixtures and tests would be executed but don't
+                        execute anything
+
+logging:
+  --log-level=LEVEL     Level of messages to catch/display. Not set by default,
+                        so it depends on the root/parent log handler's effective
+                        level, where it is "WARNING" by default.
+  --log-format=LOG_FORMAT
+                        Log format used by the logging module
+  --log-date-format=LOG_DATE_FORMAT
+                        Log date format used by the logging module
+  --log-cli-level=LOG_CLI_LEVEL
+                        CLI logging level
+  --log-cli-format=LOG_CLI_FORMAT
+                        Log format used by the logging module
+  --log-cli-date-format=LOG_CLI_DATE_FORMAT
+                        Log date format used by the logging module
+  --log-file=LOG_FILE   Path to a file when logging will be written to
+  --log-file-mode={w,a}
+                        Log file open mode
+  --log-file-level=LOG_FILE_LEVEL
+                        Log file logging level
+  --log-file-format=LOG_FILE_FORMAT
+                        Log format used by the logging module
+  --log-file-date-format=LOG_FILE_DATE_FORMAT
+                        Log date format used by the logging module
+  --log-auto-indent=LOG_AUTO_INDENT
+                        Auto-indent multiline messages passed to the logging
+                        module. Accepts true|on, false|off or an integer.
+  --log-disable=LOGGER_DISABLE
+                        Disable a logger by name. Can be passed multiple times.
+
+asyncio:
+  --asyncio-mode=MODE   'auto' - for automatically handling all async functions
+                        by the plugin
+                        'strict' - for autoprocessing disabling (useful if
+                        different async frameworks should be tested together,
+                        e.g. both pytest-asyncio and pytest-trio are used in the
+                        same project)
+  --asyncio-debug       enable asyncio debug mode for the default event loop
+
+coverage reporting with distributed testing support:
+  --cov=[SOURCE]        Path or package name to measure during execution (multi-
+                        allowed). Use --cov= to not do any source filtering and
+                        record everything.
+  --cov-reset           Reset cov sources accumulated in options so far.
+  --cov-report=TYPE     Type of report to generate: term, term-missing,
+                        annotate, html, xml, json, markdown, markdown-append,
+                        lcov (multi-allowed). term, term-missing may be followed
+                        by ":skip-covered". annotate, html, xml, json, markdown,
+                        markdown-append and lcov may be followed by ":DEST"
+                        where DEST specifies the output location. Use --cov-
+                        report= to not generate any output.
+  --cov-config=PATH     Config file for coverage. Default: .coveragerc
+  --no-cov-on-fail      Do not report coverage if test run fails. Default: False
+  --no-cov              Disable coverage report completely (useful for
+                        debuggers). Default: False
+  --cov-fail-under=MIN  Fail if the total coverage is less than MIN.
+  --cov-append          Do not delete coverage but append to current. Default:
+                        False
+  --cov-branch          Enable branch coverage.
+  --cov-precision=COV_PRECISION
+                        Override the reporting precision.
+  --cov-context=CONTEXT
+                        Dynamic contexts to use. "test" for now.
+
+[pytest] configuration options in the first pytest.toml|pytest.ini|tox.ini|setup.cfg|pyproject.toml file found:
+
+  markers (linelist):   Register new markers for test functions
+  empty_parameter_set_mark (string):
+                        Default marker for empty parametersets
+  strict_config (bool): Any warnings encountered while parsing the `pytest`
+                        section of the configuration file raise errors
+  strict_markers (bool):
+                        Markers not registered in the `markers` section of the
+                        configuration file raise errors
+  strict (bool):        Enables all strictness options, currently:
+                        strict_config, strict_markers, strict_xfail,
+                        strict_parametrization_ids
+  filterwarnings (linelist):
+                        Each line specifies a pattern for
+                        warnings.filterwarnings. Processed after
+                        -W/--pythonwarnings.
+  norecursedirs (args): Directory patterns to avoid for recursion
+  testpaths (args):     Directories to search for tests when no files or
+                        directories are given on the command line
+  collect_imported_tests (bool):
+                        Whether to collect tests in imported modules outside
+                        `testpaths`
+  consider_namespace_packages (bool):
+                        Consider namespace packages when resolving module names
+                        during import
+  usefixtures (args):   List of default fixtures to be used with this project
+  python_files (args):  Glob-style file patterns for Python test module
+                        discovery
+  python_classes (args):
+                        Prefixes or glob names for Python test class discovery
+  python_functions (args):
+                        Prefixes or glob names for Python test function and
+                        method discovery
+  disable_test_id_escaping_and_forfeit_all_rights_to_community_support (bool):
+                        Disable string escape non-ASCII characters, might cause
+                        unwanted side effects(use at your own risk)
+  strict_parametrization_ids (bool):
+                        Emit an error if non-unique parameter set IDs are
+                        detected
+  console_output_style (string):
+                        Console output: "classic", or with additional progress
+                        information ("progress" (percentage) | "count" |
+                        "progress-even-when-capture-no" (forces progress even
+                        when capture=no)
+  verbosity_test_cases (string):
+                        Specify a verbosity level for test case execution,
+                        overriding the main level. Higher levels will provide
+                        more detailed information about each test case executed.
+  strict_xfail (bool):  Default for the strict parameter of xfail markers when
+                        not given explicitly (default: False) (alias:
+                        xfail_strict)
+  tmp_path_retention_count (string):
+                        How many sessions should we keep the `tmp_path`
+                        directories, according to `tmp_path_retention_policy`.
+  tmp_path_retention_policy (string):
+                        Controls which directories created by the `tmp_path`
+                        fixture are kept around, based on test outcome.
+                        (all/failed/none)
+  enable_assertion_pass_hook (bool):
+                        Enables the pytest_assertion_pass hook. Make sure to
+                        delete any previously generated pyc cache files.
+  truncation_limit_lines (string):
+                        Set threshold of LINES after which truncation will take
+                        effect
+  truncation_limit_chars (string):
+                        Set threshold of CHARS after which truncation will take
+                        effect
+  verbosity_assertions (string):
+                        Specify a verbosity level for assertions, overriding the
+                        main level. Higher levels will provide more detailed
+                        explanation when an assertion fails.
+  junit_suite_name (string):
+                        Test suite name for JUnit report
+  junit_logging (string):
+                        Write captured log messages to JUnit report: one of
+                        no|log|system-out|system-err|out-err|all
+  junit_log_passing_tests (bool):
+                        Capture log information for passing tests to JUnit
+                        report:
+  junit_duration_report (string):
+                        Duration time to report: one of total|call
+  junit_family (string):
+                        Emit XML for schema: one of legacy|xunit1|xunit2
+  doctest_optionflags (args):
+                        Option flags for doctests
+  doctest_encoding (string):
+                        Encoding used for doctest files
+  cache_dir (string):   Cache directory path
+  log_level (string):   Default value for --log-level
+  log_format (string):  Default value for --log-format
+  log_date_format (string):
+                        Default value for --log-date-format
+  log_cli (bool):       Enable log display during test run (also known as "live
+                        logging")
+  log_cli_level (string):
+                        Default value for --log-cli-level
+  log_cli_format (string):
+                        Default value for --log-cli-format
+  log_cli_date_format (string):
+                        Default value for --log-cli-date-format
+  log_file (string):    Default value for --log-file
+  log_file_mode (string):
+                        Default value for --log-file-mode
+  log_file_level (string):
+                        Default value for --log-file-level
+  log_file_format (string):
+                        Default value for --log-file-format
+  log_file_date_format (string):
+                        Default value for --log-file-date-format
+  log_auto_indent (string):
+                        Default value for --log-auto-indent
+  faulthandler_timeout (string):
+                        Dump the traceback of all threads if a test takes more
+                        than TIMEOUT seconds to finish
+  faulthandler_exit_on_timeout (bool):
+                        Exit the test process if a test takes more than
+                        faulthandler_timeout seconds to finish
+  verbosity_subtests (string):
+                        Specify verbosity level for subtests. Higher levels will
+                        generate output for passed subtests. Failed subtests are
+                        always reported.
+  addopts (args):       Extra command line options
+  minversion (string):  Minimally required pytest version
+  pythonpath (paths):   Add paths to sys.path
+  required_plugins (args):
+                        Plugins that must be present for pytest to run
+  anyio_mode (string):  AnyIO plugin mode (either "strict" or "auto")
+  mock_traceback_monkeypatch (string):
+                        Monkeypatch the mock library to improve reporting of the
+                        assert_called_... methods
+  mock_use_standalone_module (string):
+                        Use standalone "mock" (from PyPI) instead of builtin
+                        "unittest.mock" on Python 3
+  asyncio_mode (string):
+                        default value for --asyncio-mode
+  asyncio_debug (bool): enable asyncio debug mode for the default event loop
+  asyncio_default_fixture_loop_scope (string):
+                        default scope of the asyncio event loop used to execute
+                        async fixtures
+  asyncio_default_test_loop_scope (string):
+                        default scope of the asyncio event loop used to execute
+                        tests
+
+Environment variables:
+  CI                       When set to a non-empty value, pytest knows it is running in a CI process and does not truncate summary info
+  BUILD_NUMBER             Equivalent to CI
+  PYTEST_ADDOPTS           Extra command line options
+  PYTEST_PLUGINS           Comma-separated plugins to load during startup
+  PYTEST_DISABLE_PLUGIN_AUTOLOAD Set to disable plugin auto-loading
+  PYTEST_DEBUG             Set to enable debug tracing of pytest's internals
+  PYTEST_DEBUG_TEMPROOT    Override the system temporary directory
+  PYTEST_THEME             The Pygments style to use for code output
+  PYTEST_THEME_MODE        Set the PYTEST_THEME to be either 'dark' or 'light'
+
+
+to see available markers type: pytest --markers
+to see available fixtures type: pytest --fixtures
+(shown according to specified file_or_dir or current dir if not specified; fixtures with leading '_' are only shown with the '-v' option
+
+
+
+---
+
+## Assistant (Build · Qwen/Qwen3-8B-AWQ · 29.8s)
+
+<think>
+Okay, the user wants to know how many tests are in the repository. Let me check the information provided.
+
+In the CLAUDE.md file, there's a section about testing. It mentions running tests with `uv run pytest` and specifies that the test suite has a minimum coverage of 76%. There's also a note about running specific test files, like `tests/services/test_database.py`.
+
+The user's question is about the number of tests. The documentation doesn't explicitly state the count, but it does mention that tests are run with `uv run pytest`. To find the number of tests, I should check the test files. The `tests` directory likely contains multiple test files. For example, `test_database.py` is mentioned, and there might be others like `test_queue.py` or `test_streaming.py` based on the project structure.
+
+Since the user can't run the tests directly, I can infer that the number of tests is determined by the number of test files in the `tests` directory. The exact count isn't provided, but the answer should guide the user to check the test files or run the test command to get the count. However, the user might need to run `uv run pytest --count` or use a tool like `find` to count the test files. Alternatively, the answer could be that the number of tests is determined by the test files in the `tests` directory, and the exact count can be found by listing those files.
+</think>
+
+**Tool: bash**
+
+**Input:**
+json
+{
+  "command": "find tests/ -name \"test_*.py\" | wc -l",
+  "description": "Count test files in tests directory"
+}
+
+
+**Output:**
+
+20
+
+---
+
+## Assistant (Build · Qwen/Qwen3-8B-AWQ · 12.1s)
+
+<think>
+Okay, the user asked how many tests are in the repository. I first checked the pytest help to see if there was a way to count tests directly, but that didn't give the exact number. Then I decided to count the test files in the `tests` directory. Using the `find` command, I located all files matching `test_*.py` and counted them. The result was 20 files. So, there are 20 test files in the repository. The answer is 20.
+</think>
+
+There are **20 test files** in the repository, matching the pattern `test_*.py` in the `tests/` directory.
+
+---
+```
+
+The problem is how verbose the model is and how inaccurate the initial answer was, since I wanted to know the number of tests, not the number of test files. Adding a second prompt specifying the total number of tests inside those files resulted in the model trying a few approaches using pytest.
+
+It took three prompts, with me explicitly telling the model that files starting with `test_` are test files and that inside those files there are many test functions also starting with `test_`. From there, I finally got `427` tests, which is a good answer.
+
+
+# Speed
+
+Here is a copy of the logs of the LLM during the previous talk with OpenCode:
+
+```
+(APIServer pid=21042) INFO:     127.0.0.1:38596 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=21042) INFO 02-03 20:23:46 [loggers.py:257] Engine 000: Avg prompt throughput: 1682.8 tokens/s, Avg generation throughput: 9.4 tokens/s, Running: 1 reqs, Waiting: 0 reqs, GPU KV cache usage: 48.4%, Prefix cache hit rate: 0.0%
+(APIServer pid=21042) INFO 02-03 20:23:56 [loggers.py:257] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 11.3 tokens/s, Running: 1 reqs, Waiting: 0 reqs, GPU KV cache usage: 48.7%, Prefix cache hit rate: 0.0%
+(APIServer pid=21042) INFO 02-03 20:24:07 [loggers.py:257] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 8.5 tokens/s, Running: 1 reqs, Waiting: 0 reqs, GPU KV cache usage: 49.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=21042) INFO 02-03 20:24:17 [loggers.py:257] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 7.0 tokens/s, Running: 1 reqs, Waiting: 0 reqs, GPU KV cache usage: 49.2%, Prefix cache hit rate: 0.0%
+(APIServer pid=21042) INFO 02-03 20:24:27 [loggers.py:257] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 9.8 tokens/s, Running: 1 reqs, Waiting: 0 reqs, GPU KV cache usage: 49.5%, Prefix cache hit rate: 0.0%
+(APIServer pid=21042) INFO 02-03 20:24:37 [loggers.py:257] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 10.2 tokens/s, Running: 1 reqs, Waiting: 0 reqs, GPU KV cache usage: 49.7%, Prefix cache hit rate: 0.0%
+(APIServer pid=21042) INFO 02-03 20:24:47 [loggers.py:257] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 11.8 tokens/s, Running: 1 reqs, Waiting: 0 reqs, GPU KV cache usage: 50.1%, Prefix cache hit rate: 0.0%
+(APIServer pid=21042) INFO 02-03 20:24:57 [loggers.py:257] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 11.6 tokens/s, Running: 1 reqs, Waiting: 0 reqs, GPU KV cache usage: 50.4%, Prefix cache hit rate: 0.0%
+(APIServer pid=21042) INFO 02-03 20:25:07 [loggers.py:257] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 11.6 tokens/s, Running: 1 reqs, Waiting: 0 reqs, GPU KV cache usage: 50.8%, Prefix cache hit rate: 0.0%
+(APIServer pid=21042) INFO:     127.0.0.1:38596 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+```
+The 10 tokens per second is slow but not terrible. I was surprise to get such good result on my machine.
+
+# Conclusion
+QWEN 3.0 is a good model, but 8B parameters is not ideal. That said, it runs at $0, understands me, and can interact with the source code like Claude. While not extremely useful yet, having a local specialized model running is very interesting.
+
+I could see having a financial model, a coding model, and other specialized models that we can plug and play locally for specific tasks, which would help quite a lot in reducing costs in the long term.
