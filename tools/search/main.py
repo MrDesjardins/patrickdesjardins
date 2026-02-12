@@ -1,108 +1,131 @@
 import os
+import re
 import sys
 import json
+import yaml
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 
-BLOG_POSTS_DIR = "../../src/_posts/"
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+BLOG_POSTS_DIR = os.path.join(SCRIPT_DIR, "../../src/_posts/")
 MODEL = "all-MiniLM-L6-v2"
-OUTPUT_DIR_CLI = "output"
-OUTPUT_WEBSITE = "../../public/output"
+OUTPUT_DIR_CLI = os.path.join(SCRIPT_DIR, "output")
+OUTPUT_WEBSITE = os.path.join(SCRIPT_DIR, "../../public/output")
+
+
+def strip_frontmatter_and_syntax(content):
+    """Remove YAML frontmatter, markdown syntax, and code blocks to keep only prose."""
+    # Remove YAML frontmatter
+    body = re.sub(r'^---\n.*?\n---\n', '', content, count=1, flags=re.DOTALL)
+    # Remove fenced code blocks
+    body = re.sub(r'```[\s\S]*?```', '', body)
+    # Remove inline code
+    body = re.sub(r'`[^`]+`', '', body)
+    # Remove images
+    body = re.sub(r'!\[.*?\]\(.*?\)', '', body)
+    # Remove links but keep text
+    body = re.sub(r'\[([^\]]+)\]\(.*?\)', r'\1', body)
+    # Remove heading markers
+    body = re.sub(r'^#{1,6}\s+', '', body, flags=re.MULTILINE)
+    # Remove import/export statements
+    body = re.sub(r'^(import|export)\s+.*$', '', body, flags=re.MULTILINE)
+    # Collapse multiple blank lines
+    body = re.sub(r'\n{3,}', '\n\n', body)
+    return body.strip()
+
+
+def parse_title(content):
+    """Extract title from YAML frontmatter."""
+    match = re.match(r'^---\n(.*?\n)---\n', content, flags=re.DOTALL)
+    if match:
+        frontmatter = yaml.safe_load(match.group(1))
+        if isinstance(frontmatter, dict) and "title" in frontmatter:
+            return frontmatter["title"]
+    return "Untitled"
+
+
+def save_outputs(index, embedding_matrix):
+    """Write index and embeddings to both CLI and website output directories."""
+    for output_dir, embed_format in [(OUTPUT_DIR_CLI, "npy"), (OUTPUT_WEBSITE, "json")]:
+        os.makedirs(output_dir, exist_ok=True)
+        with open(os.path.join(output_dir, 'index.json'), 'w', encoding='utf-8') as f:
+            json.dump(index, f)
+        if embed_format == "npy":
+            with open(os.path.join(output_dir, 'embeddings.npy'), 'wb') as f:
+                np.save(f, embedding_matrix)
+        else:
+            with open(os.path.join(output_dir, 'embeddings.json'), 'w') as f:
+                json.dump(embedding_matrix.tolist(), f)
 
 
 def generate_index():
     model = SentenceTransformer(MODEL)
     index = []
-    embeddings = []
-    counter = 0
-    # Display the blog directory full path
+    contents = []
     print(f"Blog posts directory: {os.path.abspath(BLOG_POSTS_DIR)}")
     for root, _, filenames in os.walk(BLOG_POSTS_DIR):
         print(f"Processing directory: {root}")
         for filename in filenames:
             if filename.endswith(".mdx"):
-                counter += 1
                 path = os.path.join(root, filename)
                 with open(path, 'r', encoding='utf-8') as file:
                     content = file.read()
-                    #title = content.split('\n')[0].replace('# ', '').strip()
-                    embedding = model.encode(content, convert_to_tensor=True)
                     index.append({
-                        "path":path,
+                        "path": path,
                         "filename": filename,
-                        "title": content.split('\n')[1].replace('title: ', '').replace("\"","").strip()
+                        "title": parse_title(content),
                     })
-                    embeddings.append(embedding)
+                    contents.append(strip_frontmatter_and_syntax(content))
 
-    # Output for the CLI to do search
-    if not os.path.exists(OUTPUT_DIR_CLI):
-        os.makedirs(OUTPUT_DIR_CLI)
-
-    with open(OUTPUT_DIR_CLI + '/index.json', 'w', encoding='utf-8') as f:
-        json.dump(index, f)
-
-    embedding_matrix = np.array([embedding.cpu().numpy() for embedding in embeddings])
-    # Save the embeddings to a .npy file
-    with open(OUTPUT_DIR_CLI + '/embeddings.npy', 'wb') as f:
-        np.save(f, embedding_matrix)
-
-    # Output for the website
-    if not os.path.exists(OUTPUT_WEBSITE):
-        os.makedirs(OUTPUT_WEBSITE)
-    with open(OUTPUT_WEBSITE + '/index.json', 'w', encoding='utf-8') as f:
-        json.dump(index, f)
-    with open(OUTPUT_WEBSITE + '/embeddings.json', 'w') as f:
-        json.dump(embedding_matrix.tolist(), f)
-        
-    print(f"Index generated successfully on {counter} files.")
+    embeddings = model.encode(contents, convert_to_tensor=True)
+    embedding_matrix = np.array(embeddings.cpu().numpy())
+    save_outputs(index, embedding_matrix)
+    print(f"Index generated successfully on {len(index)} files.")
 
 
 def search(query):
-    if not os.path.exists(OUTPUT_DIR_CLI + '/index.json'):
+    index_path = os.path.join(OUTPUT_DIR_CLI, 'index.json')
+    if not os.path.exists(index_path):
         print("Index not found. Please generate the index first.")
         return
 
-    with open(OUTPUT_DIR_CLI + '/index.json', 'r', encoding='utf-8') as f:
+    with open(index_path, 'r', encoding='utf-8') as f:
         index = json.load(f)
 
-    embeddings_path = OUTPUT_DIR_CLI + '/embeddings.npy'
-    embeddings = np.load(embeddings_path, allow_pickle=True)
+    embeddings = np.load(os.path.join(OUTPUT_DIR_CLI, 'embeddings.npy'))
 
     model = SentenceTransformer(MODEL)
-    query_embedding = model.encode(query, convert_to_tensor=True)
+    query_embedding = model.encode(query, convert_to_tensor=True).cpu().numpy()
 
-    similarities = {}
-    for i, item in enumerate(index):
-        embedding = embeddings[i]
-        similarity = cosine_similarity([query_embedding.cpu().numpy()], [embedding])[0][0]
-        similarities[i] = similarity
-    # Sort results by similarity score
-    if not similarities:
+    similarities = cosine_similarity([query_embedding], embeddings)[0]
+
+    if len(similarities) == 0:
         print("No results found.")
         return
 
-    sorted_results = sorted(similarities.items(), key=lambda item: item[1], reverse=True)
+    top_indices = np.argsort(similarities)[::-1][:10]
 
     print("Search results:")
-    for i, score in sorted_results[:10]:  # Display top 10 results
-        print(f'{index[i]["title"]} ({index[i]["filename"]}): {score:.4f}')
+    for i in top_indices:
+        print(f'{index[i]["title"]} ({index[i]["filename"]}): {similarities[i]:.4f}')
 
 
-if len(sys.argv) < 2:
-    print("Usage: python main.py <query>")
-    sys.exit(1)
-
-command = sys.argv[1]
-
-if command == "generate":
-    generate_index()
-elif command == "search":
-    if len(sys.argv) < 3:
-        print("Usage: python main.py search <query>")
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print("Usage: python main.py <query>")
         sys.exit(1)
-    query = sys.argv[2]
-    search(query)
-else:
-    print(f"Unknown command: {command}")
-    sys.exit(1)
+
+    command = sys.argv[1]
+
+    if command == "generate":
+        generate_index()
+    elif command == "search":
+        if len(sys.argv) < 3:
+            print("Usage: python main.py search <query>")
+            sys.exit(1)
+        query = sys.argv[2]
+        search(query)
+    else:
+        print(f"Unknown command: {command}")
+        sys.exit(1)
