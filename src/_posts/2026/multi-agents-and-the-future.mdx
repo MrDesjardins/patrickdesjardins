@@ -1,0 +1,27 @@
+---
+title: "Multi-Agents and the Future"
+date: "2026-02-19"
+categories:
+ - "ai"
+ - "agent"
+ - "llm"
+---
+
+
+I joined Roblox few months ago. My job description contained this paragraph:
+
+>  Driving technical excellence and strategic innovation across Roblox's core operations. Lead the development of high-impact internal products that empower teams and shape the future of how Roblox operates. Use AI to transform the way Roblox operates, explore, and integrate cutting-edge solutions that help Roblox run 10 times more efficiently.
+
+I've been making several improvements across teams in terms of organization and leveraging people's skills. Since the beginning of the year, I have started to dive deeper to find ways to improve the efficiency of all the roles included in each team. These roles include PMs, EMs, engineers, designers, and others. I cannot disclose too much, but while using AI is trendy, after working with Claude on projects like [Trilium RAG](/blog/trilium-rag-ai-prompt), [my Youtube Radio with Auto-Summary](/blog/youtube-streaming-radio-with-auto-ai-summary) and my simple [SystemD Multi-Windows](/blog/making-systemd-journal-dashboard), I learned several lessons that convinced me the future of coding may not be about knowing the exact code being generated.
+
+For a while, I believed we would "babysit" the code. However, I realized that in many places people did not truly master TypeScript or did not learn Entity Framework deeply enough. Almost everywhere, there are long functions that are not tested, weak architecture, or no architecture at all. The issue is often the rush to generate features, and over time people’s motivation to focus on engineering quality declines. Perhaps AI is not necessarily better overall, but simply different. AI can provide broad coverage, even if it sometimes repeats logic or requires several back-and-forth iterations. In the end, the code often ends up in a similar state to what happens when humans rush to ship features.
+
+During my "vibe coding" sessions on these three projects, I realized I was becoming less inclined to modify the code directly. I suddenly feared introducing errors or pushing the system in a direction the LLM would not understand. While I knew I could change the code and rely on Claude to fix it, I could also just describe what I wanted, review the result, and move on instead of writing the code myself.
+
+The downside is that, during reviews, I often saw decisions that produced the expected result but were inefficient, such as repeating logic or making two LLM calls instead of improving the initial prompt. The same happened with the database, where multiple queries were used instead of better-structured ones. Nonetheless, when I asked for fixes, they were implemented. Similarly, it took about five iterations to get my YouTube Radio to work with the Tesla infotainment system, but it eventually worked, and I never had to dive into the details of how the JavaScript media library handled its tricky duration behavior.
+
+That said, one aspect of vibe coding is clear: you need to iterate. It is time-consuming because you revisit the system every two to five minutes. My realization is that if you have many agents, all working like humans across specialized teams and communicating in a structured way, they could converge toward a solid final solution.
+
+I am convinced that repetition and multi-agent setups, where agents monitor each other, are key at our current stage and for the foreseeable future. A quick loop after asking Claude to "Check if there are any issues with the code" or "Analyze the code and suggest improvements" often surfaces surprising "critical" issues. This shows that having validation loops is very important, even with highly detailed prompts.
+
+So here I am, convinced that the future of software development is to embrace AI, automate steps, and gradually move away from implementation details. Instead, we should focus on building resilient orchestration mechanisms that rely on specialized agents to perform tasks. The goal is to design a flow where you ask for something and eventually receive a result. Even if it takes a few hours, if the flow is self-healing, you become extremely effective. With parallelism, you could spawn an army of agents working around the clock, coding, reviewing, validating, finding bugs, and continuously improving the collection of AI in the system.
