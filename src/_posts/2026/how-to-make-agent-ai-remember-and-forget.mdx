@@ -1,0 +1,53 @@
+---
+title: "How to make your AI agents remember and forget?"
+date: "2026-02-25"
+categories:
+ - "ai"
+ - "agent"
+ - "llm"
+---
+
+Like humans, an agent interacting with a large language model has memory constraints. Similarly, some models have larger capacity to retain information and act upon it.
+
+The LLM receives a limited number of tokens describing the memory it can use to reason and generate accurate responses. This capacity is called the context. As of early 2026, it typically ranges from roughly 200,000 to 1 million tokens. What you provide is critical for the precision and relevance of the agent's output.
+
+The context can be broken down as follows:
+
+1) System Prompt
+2) Tools available
+3) Task state
+4) Last few history of discussions (dialog between user and agent)
+5) Summary (compaction) of long discussion
+6) Other documents and informations
+
+![](/images/blog/AgentLLMMemoryStructure.png)
+
+# System Prompt
+
+The system prompt varies depending on the information the agent needs to operate effectively. It is essentially the agent’s autobiography: its purpose, rules, beliefs, and identity. It defines its ethos and the core values it brings to the system. This is why I strongly advocate breaking agents into specialized entities, much like human experts: software engineers, designers, managers, painters, electricians, and so on. Specialization allows the agent to operate with clarity and depth in its domain.
+
+# Tools Available
+
+The potential tools for an agent can be vast. Some are generic, some highly specialized. Dividing agents into specialized roles helps constrain the tools each carries to only those relevant to the task. This is analogous to a construction worker bringing a drill to a job but leaving the jackhammer behind. Each tool should include a name, description, and guidance on when and how to use it. Limiting the toolset is critical when hundreds or thousands of options exist; otherwise, the LLM can become confused. For instance, knowledge of SQL tools is unnecessary when writing React code.
+
+# Task State
+
+Users communicate with a fleet of agents because they have one or more tasks to accomplish. The initial conversation defines the primary goal. Ideally, this task state is rich in information; if not, the agent can fall back to historical context.
+
+# History of Discussions
+
+The size of retained history depends on the LLM’s capacity, but you cannot carry hundreds of messages. The most recent messages are the most critical, as they capture the freshest details, similar to human memory.
+
+# Summary (Compaction) of Discussions
+
+As dozens of messages accumulate, the agent must synthesize their meaning. Like a human taking notes in a meeting and producing a summary, the agent creates a compact representation that preserves the essential information while discarding minor details. This allows the LLM to maintain task context without exceeding its capacity.
+
+# Other Documents and Information
+
+This is the agent’s long-term memory: documentation and other information relevant over extended periods. Humans retain information because it is crucial to a project’s arc or because they reference notes and resources. Similarly, an agent draws on this memory to inform ongoing tasks. For example, when developing a stock market system, this section might contain stock data, historical ranges, or API schemas. Retrieving relevant information efficiently often requires reasoning and experimentation. Large code bases, RAG pipelines, and intelligent search mechanisms can enhance an agent’s ability to access and use this long-term context.
+
+# Remember and Forget
+
+As the title suggests, agents must remember and forget. In practice, agents have zero persistent memory; they are bootstrapped each time they interact with the LLM. "Remembering" means ensuring that all relevant information, whether recently received or from long ago, is included in the context for the current task. "Forgetting" means filtering out irrelevant information, guided by both time and task-specific relevance.
+
+What I observe in successful agent deployments mirrors human behavior: break the task into manageable chunks, focus on each, complete it, and move to the next. Large, unwieldy tasks overwhelm both humans and agents, causing details to be lost or conflated. Agents must divide and conquer, orchestrate subtasks, merge results, and surface insights in a structured manner.

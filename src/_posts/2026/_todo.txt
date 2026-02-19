@@ -2,9 +2,12 @@
 ✍️ 2026-01-28: 
 
 === Completed waiting
-⏲️ 2026-02-19: Multi-Agents and the Future
+
+⏲️ 2026-02-26: How to make your AI agents remember and forget?
+⏲️ 2026-02-23: Code Quality in 2026 with AI
 
 === Published
+✅ 2026-02-19: Multi-Agents and the Future
 ✅ 2026-02-12: Making a Systemd journal dashboard
 ✅ 2026-02-09: Running Local LLM on a Nvidia 5080 for Coding
 ✅ 2026-02-05: YouTube Streaming Radio with more AI
