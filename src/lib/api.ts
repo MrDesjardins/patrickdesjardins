@@ -116,7 +116,7 @@ export async function getPostBySlug(slug: string): Promise<MdxData | undefined> 
     for (const ext of [".mdx", ".md"]) {
       const filePath = `${ROOT_POSTS_PATH}/${y}/${slug}${ext}`;
       if (fs.existsSync(filePath)) {
-        return getMdxFileContent(filePath);
+        return await getMdxFileContent(filePath);
       }
     }
   }

@@ -4,6 +4,7 @@ import {
   extractYearFromStringDate,
   getTotalPages,
   getAllMdxFilesWithoutContent,
+  type MdxData,
 } from "./api";
 
 describe("extractSlugFromFileName", () => {
@@ -39,22 +40,22 @@ describe("extractYearFromStringDate", () => {
 
 describe("getTotalPages", () => {
   it("returns 1 when there are fewer posts than the page size", () => {
-    const posts = Array(5).fill({} as never);
+    const posts = Array.from<MdxData>({ length: 5 });
     expect(getTotalPages(posts)).toBe(1);
   });
 
   it("returns 1 when posts exactly fill one page", () => {
-    const posts = Array(10).fill({} as never);
+    const posts = Array.from<MdxData>({ length: 10 });
     expect(getTotalPages(posts)).toBe(1);
   });
 
   it("returns 2 when posts exceed one page by one", () => {
-    const posts = Array(11).fill({} as never);
+    const posts = Array.from<MdxData>({ length: 11 });
     expect(getTotalPages(posts)).toBe(2);
   });
 
   it("returns correct pages for a large number of posts", () => {
-    const posts = Array(800).fill({} as never);
+    const posts = Array.from<MdxData>({ length: 800 });
     expect(getTotalPages(posts)).toBe(80);
   });
 
