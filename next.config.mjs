@@ -11,8 +11,6 @@ const nextConfig = {
   },
   output: "export",
   webpack: (config, { dev, isServer }) => {
-    console.log("Webpack build, isServer =", isServer);
-
     // Always null-loader .node files (especially sharp native bindings)
     config.module.rules.unshift({
       test: /\.node$/,
@@ -34,6 +32,19 @@ const nextConfig = {
       });
     }
 
+    if (dev && isServer) {
+      // Register _posts as a context dependency so webpack invalidates the
+      // compilation whenever any MDX file is added, removed, or changed.
+      config.plugins.push({
+        apply(compiler) {
+          compiler.hooks.thisCompilation.tap("MDXWatcher", (compilation) => {
+            const postsDir = path.resolve(__dirname, "src/_posts");
+            compilation.contextDependencies.add(postsDir);
+          });
+        },
+      });
+    }
+
     if (dev && !isServer) {
       config.watchOptions = {
         followSymlinks: false,
@@ -41,12 +52,10 @@ const nextConfig = {
           "**/.git/**",
           "**/node_modules/**",
           "**/.next/**",
-          "**/src/_posts/**",
           "**/public/**",
           "**/.DS_Store",
-          "**/*.md",
         ],
-        poll: 5000,
+        poll: 1500,
         aggregateTimeout: 600,
       };
     }

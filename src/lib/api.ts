@@ -111,6 +111,18 @@ export function getTotalPages(posts: MdxData[]): number {
   return totalPages;
 }
 
+export async function getPostBySlug(slug: string): Promise<MdxData | undefined> {
+  for (let y = LAST_YEAR; y >= FIRST_YEAR; y--) {
+    for (const ext of [".mdx", ".md"]) {
+      const filePath = `${ROOT_POSTS_PATH}/${y}/${slug}${ext}`;
+      if (fs.existsSync(filePath)) {
+        return getMdxFileContent(filePath);
+      }
+    }
+  }
+  return undefined;
+}
+
 let getAllPostsResult: MdxData[] | undefined;
 /**
  * Get all MDX files content and metadata.

@@ -1,5 +1,5 @@
 import { type Metadata, type ResolvingMetadata } from "next";
-import { type MdxData, getAllPosts, getTotalPages } from "../../../lib/api";
+import { type MdxData, getAllPosts, getPostBySlug, getTotalPages } from "../../../lib/api";
 import { BlogBody } from "../_components/BlogBody";
 import styles from "./Page.module.css";
 import "./linenumber.css";
@@ -19,8 +19,7 @@ export async function generateMetadata(
   props: Props,
   parent: ResolvingMetadata,
 ): Promise<Metadata> {
-  const posts = await getAllPosts();
-  const post = posts.find((post) => post.metadata.slug === props.params.slug);
+  const post = await getPostBySlug(props.params.slug);
   if (post === undefined) {
     throw new Error("Post not found");
   }
@@ -45,7 +44,7 @@ export default async function Page(props: {
 }): Promise<React.ReactElement> {
   const posts = await getAllPosts();
   const totalPages = getTotalPages(posts);
-  const post = posts.find((post) => post.metadata.slug === props.params.slug);
+  const post = await getPostBySlug(props.params.slug);
   if (post === undefined) {
     throw new Error("Post not found");
   }
