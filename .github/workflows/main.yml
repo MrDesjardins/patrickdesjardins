@@ -16,23 +16,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: '3.11'
+          enable-caching: true
 
       - name: Install Python dependencies
-        run: pip install -r requirements.txt
-        working-directory: tools/search
+        run: uv sync
+        working-directory: tools
 
       - name: Run generation script
-        run: python main.py generate
-        working-directory: tools/search
-
-      # - name: Copy generated files
-      #   run: |
-      #     mkdir -p public/output
-      #     cp tools/search/output/* public/output/
+        run: uv run python search/main.py generate
+        working-directory: tools
 
       - name: Commit generated output
         run: |
@@ -66,3 +61,13 @@ jobs:
           publish_branch: gh-pages
           publish_dir: ./out
           cname: patrickdesjardins.com
+
+      - name: Post new article to LinkedIn
+        if: success()
+        continue-on-error: true
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_PERSON_ID: ${{ secrets.LINKEDIN_PERSON_ID }}
+        run: uv run python linkedin/post.py
+        working-directory: tools
