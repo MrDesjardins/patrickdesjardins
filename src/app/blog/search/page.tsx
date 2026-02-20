@@ -1,4 +1,5 @@
 import dynamic from "next/dynamic";
+import { SearchErrorBoundary } from "./SearchErrorBoundary";
 
 // Only rendered client-side — never during `next build`
 const SearchClient = dynamic(async () => await import("./SearchClient"), {
@@ -6,5 +7,9 @@ const SearchClient = dynamic(async () => await import("./SearchClient"), {
 });
 
 export default function Page(): React.ReactElement {
-  return <SearchClient />;
+  return (
+    <SearchErrorBoundary>
+      <SearchClient />
+    </SearchErrorBoundary>
+  );
 }

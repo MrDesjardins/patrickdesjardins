@@ -37,13 +37,15 @@ export default function Page(): React.ReactElement {
         fetch("/output/embeddings.json"),
       ]);
 
-      const indexData = await indexRes.json();
-      const embData = await embRes.json();
+      const indexData: unknown = await indexRes.json();
+      const embData: unknown = await embRes.json();
 
+      if (!Array.isArray(indexData)) throw new Error("Invalid index data format");
+      if (!Array.isArray(embData)) throw new Error("Invalid embeddings data format");
       setIndex(indexData as Post[]);
       setEmbeddings(embData as number[][]);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      env.backends.onnx = "wasm" as any;
+      // @ts-expect-error — onnx backend type does not expose 'wasm' variant in library types
+      env.backends.onnx = "wasm";
       const extractor = await pipeline(
         "feature-extraction", // https://huggingface.co/docs/transformers.js/api/pipelines#module_pipelines.FeatureExtractionPipeline
         "Xenova/all-MiniLM-L6-v2", // Must match the Python embedding model

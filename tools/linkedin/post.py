@@ -21,12 +21,24 @@ def strip_mdx(content):
     body = re.sub(r'\[([^\]]+)\]\(.*?\)', r'\1', body)
     body = re.sub(r'^#{1,6}\s+', '', body, flags=re.MULTILINE)
     body = re.sub(r'^(import|export)\s+.*$', '', body, flags=re.MULTILINE)
+    # Strip JSX self-closing tags: <Alert />, <YouTube id="..." />
+    body = re.sub(r'<[A-Z][A-Za-z]*[^>]*/>', '', body)
+    # Strip JSX block tags: <Alert>...</Alert>
+    body = re.sub(r'<[A-Z][A-Za-z]*[^>]*>.*?</[A-Z][A-Za-z]*>', '', body, flags=re.DOTALL)
+    # Strip MDX interpolations: {variable}
+    body = re.sub(r'\{[^}]*\}', '', body)
+    # Strip blockquotes: > text
+    body = re.sub(r'^>\s*', '', body, flags=re.MULTILINE)
+    # Strip unordered list markers: - item, * item
+    body = re.sub(r'^[-*]\s+', '', body, flags=re.MULTILINE)
+    # Strip ordered list markers: 1. item
+    body = re.sub(r'^\d+\.\s+', '', body, flags=re.MULTILINE)
     body = re.sub(r'\n{3,}', '\n\n', body)
     return body.strip()
 
 
 def find_todays_post():
-    today = datetime.date.today().isoformat()  # "YYYY-MM-DD"
+    today = datetime.datetime.now(datetime.timezone.utc).date().isoformat()  # "YYYY-MM-DD"
     for root, _, files in os.walk(BLOG_POSTS_DIR):
         for fname in files:
             if not fname.endswith(('.mdx', '.md')):
@@ -92,6 +104,12 @@ def post_to_linkedin(text, title, slug):
 
 
 if __name__ == "__main__":
+    required_vars = ['GEMINI_API_KEY', 'LINKEDIN_ACCESS_TOKEN', 'LINKEDIN_PERSON_ID']
+    missing = [v for v in required_vars if not os.environ.get(v)]
+    if missing:
+        print(f"Error: Missing required environment variables: {', '.join(missing)}")
+        sys.exit(1)
+
     title, slug, content = find_todays_post()
     if not title:
         print("No post with today's date found. Skipping.")
@@ -100,4 +118,11 @@ if __name__ == "__main__":
     body = strip_mdx(content)
     linkedin_text = generate_linkedin_text(title, body)
     print("Generated LinkedIn text:\n", linkedin_text)
-    post_to_linkedin(linkedin_text, title, slug)
+    try:
+        post_to_linkedin(linkedin_text, title, slug)
+    except requests.HTTPError as e:
+        if e.response.status_code == 401:
+            print("LinkedIn token expired — rotate LINKEDIN_ACCESS_TOKEN")
+        else:
+            print(f"LinkedIn API error {e.response.status_code}: {e.response.text}")
+        sys.exit(1)

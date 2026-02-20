@@ -38,9 +38,9 @@ export default async function Page(): Promise<React.ReactElement> {
           key={node.metadata.fileName}
           id={node.metadata.fileName}
           slug={node.metadata.slug}
-          title={node.frontmatter.title as string}
-          date={node.frontmatter.date as string}
-          categories={node.frontmatter.categories as string[]}
+          title={typeof node.frontmatter.title === "string" ? node.frontmatter.title : ""}
+          date={typeof node.frontmatter.date === "string" ? node.frontmatter.date : ""}
+          categories={Array.isArray(node.frontmatter.categories) ? node.frontmatter.categories.filter((c): c is string => typeof c === "string") : []}
         />
       ))}
     </BlogBody>
