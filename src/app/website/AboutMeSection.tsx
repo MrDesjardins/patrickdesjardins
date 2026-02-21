@@ -7,7 +7,7 @@ export const AboutMeSection = (): React.ReactElement => {
       id="about-me"
       className={clsx(styles.sectionMainpage, styles.sectionVisualTwo)}
     >
-      <header>About Me</header>
+      <h2>About Me</h2>
       <div className={styles2.sectionAboutMeContainer}>
         <div className={styles2.sectionAboutMeContainerContent}>
           <h5>Polyvalent</h5>

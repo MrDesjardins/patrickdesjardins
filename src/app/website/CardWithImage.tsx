@@ -5,7 +5,7 @@ export interface CardWithImageProps {
   title: string;
   subtitle: string;
   description: string;
-  image: JSX.Element;
+  image: React.ReactElement;
 }
 export const CardWithImage = (
   props: CardWithImageProps,

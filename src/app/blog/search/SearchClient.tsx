@@ -16,6 +16,20 @@ interface Post {
   title: string;
 }
 
+function cosineSimilarity(a: number[], b: number[]): number {
+  const dot = a.reduce((sum, val, i) => sum + val * b[i], 0);
+  const normA = Math.sqrt(a.reduce((sum, val) => sum + val * val, 0));
+  const normB = Math.sqrt(b.reduce((sum, val) => sum + val * val, 0));
+  return dot / (normA * normB);
+}
+
+function slugTransform(filename: string): string {
+  return filename
+    .replace(/\.mdx?$/, "")
+    .replace(/_/g, "-")
+    .toLowerCase();
+}
+
 export default function Page(): React.ReactElement {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Array<{ post: Post; score: number }>>(
@@ -56,14 +70,6 @@ export default function Page(): React.ReactElement {
 
     void loadAll();
   }, []);
-
-  // Cosine similarity
-  const cosineSimilarity = (a: number[], b: number[]): number => {
-    const dot = a.reduce((sum, val, i) => sum + val * b[i], 0);
-    const normA = Math.sqrt(a.reduce((sum, val) => sum + val * val, 0));
-    const normB = Math.sqrt(b.reduce((sum, val) => sum + val * val, 0));
-    return dot / (normA * normB);
-  };
 
   // Perform search
   const handleSearch = useCallback(async (): Promise<void> => {
@@ -130,7 +136,7 @@ export default function Page(): React.ReactElement {
         )}
       </div>
       {results.length > 0 ? (
-        <ul className={styles.container_results}>
+        <ul className={styles.resultsContainer}>
           <p className={styles.searchinfo}> Top 10 results for "{query}"</p>
           {results.map(({ post, score }, i) => (
             <BlogSearchEntry
@@ -151,12 +157,4 @@ export default function Page(): React.ReactElement {
       </p>
     </BlogBody>
   );
-}
-
-function slugTransform(filename: string): string {
-  // Convert filename to slug format
-  return filename
-    .replace(/\.mdx?$/, "") // Remove .md or .mdx extension
-    .replace(/_/g, "-") // Replace underscores with hyphens
-    .toLowerCase(); // Convert to lowercase
 }

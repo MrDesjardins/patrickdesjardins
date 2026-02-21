@@ -17,14 +17,14 @@ const nextConfig = {
       use: "null-loader",
     });
 
+    // Always alias sharp to noop — native bindings are never needed in a Next.js static export
+    config.resolve.alias["sharp"] = path.resolve("./noop-sharp/index.js");
+
     if (!isServer) {
       // Alias 'onnxruntime-node' to noop in client bundle
       config.resolve.alias["onnxruntime-node"] = path.resolve(
         "./noop-onnxruntime-node/index.js",
       );
-
-      // Alias sharp to noop in client bundle
-      config.resolve.alias["sharp"] = path.resolve("./noop-sharp/index.js");
     } else {
       // Mark onnxruntime-node as external on server bundle
       config.externals.push({

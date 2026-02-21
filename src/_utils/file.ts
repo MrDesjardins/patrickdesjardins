@@ -5,7 +5,9 @@ export function countBlogArticles(): number {
   let counter: number = 0;
   for (let y = FIRST_YEAR; y <= LAST_YEAR; y++) {
     const filePath = `${ROOT_POSTS_PATH}/${y}`;
-
+    if (!fs.existsSync(filePath)) {
+      continue;
+    }
     const fules = fs
       .readdirSync(filePath)
       .filter((path) => /\.mdx?$/.test(path));

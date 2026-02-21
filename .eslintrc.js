@@ -9,7 +9,6 @@ module.exports = {
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended",
     "prettier",
   ],
   parserOptions: {
@@ -22,7 +21,7 @@ module.exports = {
       env: {
         node: true,
       },
-      files: ["**/*.ts, **/*.tsx"],
+      files: ["**/*.ts", "**/*.tsx"],
       excludedFiles: ["**/*.js"],
       parserOptions: {
         sourceType: "script",

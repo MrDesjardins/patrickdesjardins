@@ -15,7 +15,7 @@ import {
   faAmazon,
   faYoutube,
 } from "@fortawesome/free-brands-svg-icons";
-export const ContactSection = (): JSX.Element => {
+export const ContactSection = (): React.ReactElement => {
   return (
     <section
       id="contact"
@@ -25,12 +25,14 @@ export const ContactSection = (): JSX.Element => {
         styles2.contactSection,
       )}
     >
-      <header>Contact</header>
+      <h2>Contact</h2>
       <h3>You can contact me directly by email or use social media</h3>
       <div className={styles2.contactContainer}>
         <div className={styles2.contactDetail}>
           <FontAwesomeIcon icon={faPaperPlane} />
-          <h5>mrdesjardins@gmail.com</h5>
+          <h5>
+            <a href="mailto:mrdesjardins@gmail.com">mrdesjardins@gmail.com</a>
+          </h5>
         </div>
 
         <div className={styles2.contactDetail}>

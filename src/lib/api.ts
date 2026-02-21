@@ -17,6 +17,12 @@ import { isDevelopment } from "../_utils/env";
 
 export const ROOT_POSTS_PATH = path.join(process.cwd(), "/src/_posts");
 
+export interface Frontmatter {
+  title: string;
+  date: string;
+  categories: string[];
+}
+
 export interface FileMetadata {
   year: number;
   date: string;
@@ -28,7 +34,7 @@ export interface MdxData {
   metadata: FileMetadata;
   contentReact: ReactElement<unknown, string | JSXElementConstructor<unknown>>;
   rawFileContent: string;
-  frontmatter: Record<string, unknown>;
+  frontmatter: Frontmatter;
 }
 
 export function getAllMdxFilesWithoutContent(): FileMetadata[] {
@@ -59,7 +65,7 @@ export async function getMdxFileContent(
   fullPathWithFileName: string,
 ): Promise<MdxData> {
   const fileContent = await fs.promises.readFile(fullPathWithFileName, "utf8");
-  const { content, frontmatter } = await compileMDX({
+  const { content, frontmatter: rawFm } = await compileMDX({
     source: fileContent,
     options: {
       parseFrontmatter: true,
@@ -77,16 +83,23 @@ export async function getMdxFileContent(
       SoundCloud: SoundCloud,
     },
   });
+  const frontmatter: Frontmatter = {
+    title: typeof rawFm.title === "string" ? rawFm.title : "",
+    date: typeof rawFm.date === "string" ? rawFm.date : "",
+    categories: Array.isArray(rawFm.categories)
+      ? rawFm.categories.filter((c): c is string => typeof c === "string")
+      : [],
+  };
   const fileName = extractFileFromFullFilePath(fullPathWithFileName);
   const slug = extractSlugFromFileName(fileName);
-  const year = extractYearFromStringDate(frontmatter.date as string);
+  const year = extractYearFromStringDate(frontmatter.date);
   return {
     metadata: {
       fullPathWithFileName: fullPathWithFileName,
       fileName: fileName,
       slug: slug,
       year: year,
-      date: frontmatter.date as string,
+      date: frontmatter.date,
     },
     contentReact: content,
     rawFileContent: fileContent,
@@ -128,6 +141,7 @@ let getAllPostsResult: MdxData[] | undefined;
  * Get all MDX files content and metadata.
  * Optimized to do the I/O only once.
  * Only return the posts that are not in the future.
+ * Returns a copy of the cached array so callers cannot mutate the cache.
  * @returns
  */
 export async function getAllPosts(): Promise<MdxData[]> {
@@ -143,5 +157,5 @@ export async function getAllPosts(): Promise<MdxData[]> {
     blogUntil.setUTCHours(23, 59, 59, 999);
     getAllPostsResult = posts.filter((p) => new Date(p.metadata.date) <= blogUntil);
   }
-  return getAllPostsResult;
+  return [...getAllPostsResult];
 }

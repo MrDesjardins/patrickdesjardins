@@ -8,7 +8,7 @@ export const BookSection = (): React.ReactElement => {
       id="book"
       className={clsx(styles.sectionMainpage, styles.sectionVisualOne)}
     >
-      <header>Books</header>
+      <h2>Books</h2>
       <div className={styles.sectionFixedWitdh}>
         <CardFixedWidth
           title="W3H, What, Why, How - Full Stack Distributed System Design"
@@ -27,7 +27,7 @@ export const BookSection = (): React.ReactElement => {
         <CardFixedWidth
           title="Holistic TypeScript Second Edition (TS 4.0)"
           description="A book that cover every features of TypeScript up to TypeScript 4.0."
-          link="http://typescriptbook.com/"
+          link="https://typescriptbook.com/"
           image={
             <Image
               className={styles.cardFixedWidthImageImg}
@@ -57,7 +57,7 @@ export const BookSection = (): React.ReactElement => {
         <CardFixedWidth
           title="Holistic TypeScript First Edition (TS 2.8)"
           description="A book that cover every features of TypeScript up to TypeScript 2.8."
-          link="http://typescriptbook.com/"
+          link="https://typescriptbook.com/"
           image={
             <Image
               className={styles.cardFixedWidthImageImg}
@@ -117,7 +117,7 @@ export const BookSection = (): React.ReactElement => {
         <CardFixedWidth
           title=".Net Knowledge Book Volume 3: Web Development with Asp.Net MVC and Entity Framework"
           description="This book is a melting pot of several articles about Asp.Net MVC, Entity Framework, JavaScript, CSS, C# and SQL. They are scenarios that happen in the everyday work of developers who use these technologies."
-          link="https://patrickdesjardins.com//"
+          link="https://patrickdesjardins.com/"
           image={
             <Image
               className={styles.cardFixedWidthImageImg}

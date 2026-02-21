@@ -1,5 +1,5 @@
-import { type Metadata, type ResolvingMetadata } from "next";
-import { type MdxData, getAllPosts, getPostBySlug, getTotalPages } from "../../../lib/api";
+import { type Metadata } from "next";
+import { getAllPosts, getPostBySlug, getTotalPages } from "../../../lib/api";
 import { BlogBody } from "../_components/BlogBody";
 import styles from "./Page.module.css";
 import "./linenumber.css";
@@ -12,12 +12,10 @@ interface Props {
 /**
  * Dynamically generate the metadata for the page like the title for the browser tab.
  * @param props
- * @param parent
  * @returns
  */
 export async function generateMetadata(
   props: Props,
-  parent: ResolvingMetadata,
 ): Promise<Metadata> {
   const post = await getPostBySlug(props.params.slug);
   if (post === undefined) {
@@ -25,15 +23,11 @@ export async function generateMetadata(
   }
 
   return {
-    title: "Patrick Desjardins Blog - " + String(post.frontmatter.title),
-    description: String(post.frontmatter.title),
+    title: "Patrick Desjardins Blog - " + post.frontmatter.title,
+    description: post.frontmatter.title,
   };
 }
 
-export interface GeneratedPageContentType {
-  source: MdxData;
-  totalPages: number;
-}
 export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
   const posts = await getAllPosts();
   return posts.map((p) => ({ slug: p.metadata.slug }));
@@ -44,7 +38,7 @@ export default async function Page(props: {
 }): Promise<React.ReactElement> {
   const posts = await getAllPosts();
   const totalPages = getTotalPages(posts);
-  const post = await getPostBySlug(props.params.slug);
+  const post = posts.find((p) => p.metadata.slug === props.params.slug);
   if (post === undefined) {
     throw new Error("Post not found");
   }
@@ -52,11 +46,11 @@ export default async function Page(props: {
   return (
     <BlogBody
       totalPages={totalPages}
-      topTitle={post.frontmatter.title as string}
+      topTitle={post.frontmatter.title}
     >
       <div className={styles.blogPostContainer}>
         <p className={styles.blogPostDate}>
-          Posted on: {post.frontmatter.date as string}
+          Posted on: {post.frontmatter.date}
         </p>
         {post.contentReact}
       </div>

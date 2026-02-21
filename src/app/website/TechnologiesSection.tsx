@@ -4,14 +4,14 @@ import { CardWithImage } from "./CardWithImage";
 import styles from "./website.module.css";
 import styles2 from "./TechnologiesSection.module.css";
 import Image from "next/image";
-export const TechnologiesSection = (): JSX.Element => {
+export const TechnologiesSection = (): React.ReactElement => {
   const imageSize = 110;
   return (
     <section
       id="technologies"
       className={clsx(styles.sectionMainpage, styles.sectionVisualTwo)}
     >
-      <header>Technologies</header>
+      <h2>Technologies</h2>
       <div className={styles2.technologiesColumn}>
         <CardWithImage
           title="Web Framework"

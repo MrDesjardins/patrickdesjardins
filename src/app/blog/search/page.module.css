@@ -59,3 +59,9 @@
   font-size: 12px;
   text-align: center;
 }
+
+.resultsContainer {
+  list-style: none;
+  padding-left: 0;
+  width: 100%;
+}

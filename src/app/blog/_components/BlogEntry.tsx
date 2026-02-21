@@ -10,7 +10,7 @@ export interface BlogEntryProps {
 }
 export const BlogEntry = (props: BlogEntryProps): React.ReactElement => {
   return (
-    <article className={styles.blogEntry} key={props.id}>
+    <article className={styles.blogEntry}>
       <h2 className={styles.blogEntryArticleTitle}>
         <Link href={`/blog/${props.slug}`}>{props.title}</Link>
       </h2>

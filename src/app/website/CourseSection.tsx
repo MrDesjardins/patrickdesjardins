@@ -8,7 +8,7 @@ export const CourseSection = (): React.ReactElement => {
       id="course"
       className={clsx(styles.sectionMainpage, styles.sectionVisualOne)}
     >
-      <header>Courses</header>
+      <h2>Courses</h2>
       <div className={styles.sectionFixedWitdh}>
         <CardFixedWidth
           title="Youtube Channel on TypeScript"
@@ -27,7 +27,7 @@ export const CourseSection = (): React.ReactElement => {
         <CardFixedWidth
           title="Learn TypeScript"
           description="If you’re looking to move beyond vanilla JavaScript and take your skills to the next level, then you’ve come to the right place. TypeScript is an in-demand language that sits on top of JavaScript. That means you can do everything you can in JavaScript with TypeScript, but also enjoy countless other perks including support for JS libraries, NPM, static typing, and much more."
-          link="http://typescriptbook.com/"
+          link="https://typescriptbook.com/"
           image={
             <Image
               className={styles.cardFixedWidthImageImg}

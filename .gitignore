@@ -26,6 +26,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
 .env*.local
 
 # vercel
@@ -40,4 +41,4 @@ Thumbs.db
 /tools/search/.venv
 /tools/search/output
 
-.env
+.env*.Zone.Identifier

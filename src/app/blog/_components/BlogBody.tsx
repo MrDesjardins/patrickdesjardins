@@ -32,23 +32,28 @@ export function BlogBody(props: BlogBodyProps): React.ReactElement {
 
   return (
     <div className={styles.BlogBody}>
-      <header className={styles.siteTitle}>Patrick Desjardins Blog</header>
+      <h1 className={styles.siteTitle}>Patrick Desjardins Blog</h1>
       <nav>
         <ul className={styles.navLinks}>
           <li className={styles.navLinkItem}>
             <Link className={styles.navLinkText} href="/">
               Main Page
             </Link>
+          </li>
+          <li className={styles.navLinkItem}>
             <Link className={styles.navLinkText} href="/blog">
               Blog
             </Link>
+          </li>
+          <li className={styles.navLinkItem}>
             <Link className={styles.navLinkText} href="/blog/search">
               Search
             </Link>
-            {years.map((y) => {
-              return (
+          </li>
+          {years.map((y) => {
+            return (
+              <li key={y} className={styles.navLinkItem}>
                 <Link
-                  key={y}
                   className={clsx({
                     [styles.navLinkText]: true,
                     [styles.currentLink]: y === props.year,
@@ -57,9 +62,9 @@ export function BlogBody(props: BlogBodyProps): React.ReactElement {
                 >
                   {y}
                 </Link>
-              );
-            })}
-          </li>
+              </li>
+            );
+          })}
         </ul>
       </nav>
       <div className={styles.blogPictureContainer}>
@@ -72,7 +77,7 @@ export function BlogBody(props: BlogBodyProps): React.ReactElement {
         />
       </div>
       <main className={styles.main}>
-        <h1 className={styles.heading}>{props.topTitle}</h1>
+        <h2 className={styles.heading}>{props.topTitle}</h2>
         {props.children}
       </main>
       {pages.length > 0 ? (

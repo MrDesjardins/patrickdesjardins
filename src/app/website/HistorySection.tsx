@@ -13,7 +13,7 @@ export const HistorySection = (): React.ReactElement => {
     >
       <div className={styles2.historyOverlay}>
         <div className={styles2.historyOverlayColumn1}>
-          <header>Past and Present</header>
+          <h2>Past and Present</h2>
           <p>
             During elementary and high school I did competitive karate and won
             more than 250 prizes over 9 years. Finish twice second in Germany in

@@ -1,19 +1,16 @@
-import { type ResolvingMetadata, type Metadata } from "next";
+import { type Metadata } from "next";
 import { MAX_POSTS_PER_PAGE } from "../../../../constants/constants";
 import { getAllPosts, getTotalPages } from "../../../../lib/api";
 import { BlogEntry } from "../../_components/BlogEntry";
 import { BlogBody } from "../../_components/BlogBody";
-import {
-  sortByMetadataDateAsc,
-  sortByMetadataDateDesc,
-} from "../../../../_utils/list";
+import { sortByMetadataDateDesc } from "../../../../_utils/list";
+
 interface Props {
   params: { pageNumber: string };
   searchParams: Record<string, string | string[] | undefined>;
 }
 export async function generateMetadata(
   props: Props,
-  parent: ResolvingMetadata,
 ): Promise<Metadata> {
   return {
     title:
@@ -29,16 +26,11 @@ export async function generateStaticParams(): Promise<
   Array<{ pageNumber: string }>
 > {
   const posts = await getAllPosts();
-  posts.sort((a, b) =>
-    new Date(a.metadata.date) > new Date(b.metadata.date) ? -1 : 1,
-  );
-
-  const result = [];
   const totalPagesCount = getTotalPages(posts);
+  const result = [];
   for (let i = 1; i <= totalPagesCount; i++) {
     result.push(i);
   }
-
   return result.map((y) => ({ pageNumber: String(y) }));
 }
 
@@ -46,15 +38,13 @@ export default async function Page(props: {
   params: { pageNumber: string };
 }): Promise<React.ReactElement> {
   const posts = await getAllPosts();
-  posts.sort(sortByMetadataDateAsc);
+  posts.sort(sortByMetadataDateDesc);
 
   const currentPage = Number(props.params.pageNumber);
-  const result = posts
-    .slice(
-      (currentPage - 1) * MAX_POSTS_PER_PAGE,
-      currentPage * MAX_POSTS_PER_PAGE,
-    )
-    .sort(sortByMetadataDateDesc);
+  const result = posts.slice(
+    (currentPage - 1) * MAX_POSTS_PER_PAGE,
+    currentPage * MAX_POSTS_PER_PAGE,
+  );
   const totalPagesCount = getTotalPages(posts);
 
   return (
@@ -63,14 +53,14 @@ export default async function Page(props: {
       totalPages={totalPagesCount}
       topTitle="Blog Posts"
     >
-      {(result ?? []).map((node) => (
+      {result.map((node) => (
         <BlogEntry
           key={node.metadata.fileName}
           id={node.metadata.fileName}
           slug={node.metadata.slug}
-          title={node.frontmatter.title as string}
-          date={node.frontmatter.date as string}
-          categories={node.frontmatter.categories as string[]}
+          title={node.frontmatter.title}
+          date={node.frontmatter.date}
+          categories={node.frontmatter.categories}
         />
       ))}
     </BlogBody>

@@ -29,7 +29,7 @@ section.contactSection a:hover {
   padding-bottom: 100px;
 }
 
-.sectionMainpage > header {
+.sectionMainpage > h2 {
   margin-bottom: 40px;
   text-align: center;
   text-transform: uppercase;

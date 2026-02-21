@@ -4,7 +4,7 @@ import styles2 from "./AchievementsSection.module.css";
 import Image from "next/image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopyright } from "@fortawesome/free-solid-svg-icons";
-export const AchievementsSection = (): JSX.Element => {
+export const AchievementsSection = (): React.ReactElement => {
   return (
     <section
       id="achievements"
@@ -17,7 +17,7 @@ export const AchievementsSection = (): JSX.Element => {
       <div className={styles2.achievementOverlay}>
         <div className={styles2.achievementColumn1}>
           <div className={styles2.achivementTextZone}>
-            <header>Just Do It!</header>
+            <h2>Just Do It!</h2>
             <div className={styles2.achievementText}>
               <p>
                 You know what a person worth when this one must deliver. I'm a
@@ -48,25 +48,6 @@ export const AchievementsSection = (): JSX.Element => {
                   title="profile for Patrick Desjardins on Stack Exchange, a network of free, community-driven Q&amp;A sites"
                 />
               </a>
-            </div>
-            <br />
-            <br />
-            <div style={{ margin: "auto", width: 150 }}>
-              <iframe
-                id="twitter-widget-0"
-                scrolling="no"
-                frameBorder="0"
-                className="twitter-follow-button twitter-follow-button-rendered"
-                title="Twitter Follow Button"
-                src="http://platform.twitter.com/widgets/follow_button.f8c8d971a6ac545cf416e3c1ad4bbc65.en.html#dnt=false&amp;id=twitter-widget-0&amp;lang=en&amp;screen_name=mrdesjardins&amp;show_count=true&amp;show_screen_name=true&amp;size=m&amp;time=1504847325924"
-                style={{
-                  position: "static",
-                  visibility: "visible",
-                  width: 230,
-                  height: 20,
-                }}
-                data-screen-name="mrdesjardins"
-              ></iframe>
             </div>
             <br />
             <br />
@@ -215,7 +196,7 @@ export const AchievementsSection = (): JSX.Element => {
                 </div>
                 <div className="blog">
                   <a
-                    href="http://patrickdesjardins.com"
+                    href="https://patrickdesjardins.com"
                     target="_blank"
                     style={{ color: "rgb(255, 255, 255)" }}
                     rel="noreferrer"
@@ -256,13 +237,13 @@ export const AchievementsSection = (): JSX.Element => {
             <br />
             <br />
             <div className={styles2.patentFlair}>
-              <a href="#">
+              <span>
                 <FontAwesomeIcon
                   icon={faCopyright}
                   style={{ width: 14, marginRight: 6 }}
                 />
                 6 Sole Inventor Pending Patents
-              </a>
+              </span>
               <div style={{ color: "black" }}>
                 Online Available:
                 <a

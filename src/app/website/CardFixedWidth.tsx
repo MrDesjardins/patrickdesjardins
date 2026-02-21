@@ -3,7 +3,7 @@ export interface CardFixedWidthProps {
   title: string;
   description: string;
   link: string;
-  image: JSX.Element;
+  image: React.ReactElement;
 }
 export const CardFixedWidth = (
   props: CardFixedWidthProps,

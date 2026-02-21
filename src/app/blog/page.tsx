@@ -3,6 +3,7 @@ import { MAX_POSTS_PER_PAGE } from "../../constants/constants";
 import { getAllPosts, getTotalPages } from "../../lib/api";
 import { BlogEntry } from "./_components/BlogEntry";
 import { BlogBody } from "./_components/BlogBody";
+import { sortByMetadataDateDesc } from "../../_utils/list";
 
 export const metadata: Metadata = {
   title: "Patrick Desjardins Blog",
@@ -13,9 +14,7 @@ export default async function Page(): Promise<React.ReactElement> {
   const pageNumber = 1;
   const posts = await getAllPosts();
   const totalPage = getTotalPages(posts);
-  posts.sort((a, b) =>
-    new Date(a.metadata.date) > new Date(b.metadata.date) ? -1 : 1,
-  );
+  posts.sort(sortByMetadataDateDesc);
   const pagePost = posts.slice(
     (pageNumber - 1) * MAX_POSTS_PER_PAGE,
     pageNumber * MAX_POSTS_PER_PAGE,
@@ -38,9 +37,9 @@ export default async function Page(): Promise<React.ReactElement> {
           key={node.metadata.fileName}
           id={node.metadata.fileName}
           slug={node.metadata.slug}
-          title={typeof node.frontmatter.title === "string" ? node.frontmatter.title : ""}
-          date={typeof node.frontmatter.date === "string" ? node.frontmatter.date : ""}
-          categories={Array.isArray(node.frontmatter.categories) ? node.frontmatter.categories.filter((c): c is string => typeof c === "string") : []}
+          title={node.frontmatter.title}
+          date={node.frontmatter.date}
+          categories={node.frontmatter.categories}
         />
       ))}
     </BlogBody>

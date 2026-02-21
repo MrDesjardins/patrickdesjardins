@@ -1,7 +1,4 @@
 import styles from "./layout.module.css";
-import "@fontsource/open-sans";
-import "@fontsource/oswald";
-import "@fontsource/ubuntu-mono";
 export default function RootLayout({
   children,
 }: Readonly<{

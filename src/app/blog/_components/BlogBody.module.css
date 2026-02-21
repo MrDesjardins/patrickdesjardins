@@ -17,14 +17,18 @@
   color: var(--blog-title-foreground-color);
   font-weight: 700;
   margin: 0;
+  /* Originally a <header> landmark; now an <h1> — keep visual appearance unchanged */
 }
 .navLinks {
   display: flex;
+  flex-wrap: wrap;
   list-style: none;
   padding-left: 0;
+  margin: 0;
 }
 .navLinkItem {
-  padding-right: 2rem;
+  display: flex;
+  align-items: center;
 }
 .navLinkText {
   color: var(--link-foreground-color);

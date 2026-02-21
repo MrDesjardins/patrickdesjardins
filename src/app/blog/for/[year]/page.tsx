@@ -1,6 +1,6 @@
-import { type ResolvingMetadata, type Metadata } from "next";
+import { type Metadata } from "next";
 import { FIRST_YEAR, LAST_YEAR } from "../../../../constants/constants";
-import { type MdxData, getAllPosts, getTotalPages } from "../../../../lib/api";
+import { getAllPosts, getTotalPages } from "../../../../lib/api";
 import { BlogEntry } from "../../_components/BlogEntry";
 import { BlogBody } from "../../_components/BlogBody";
 import { sortByMetadataDateDesc } from "../../../../_utils/list";
@@ -11,7 +11,6 @@ interface Props {
 }
 export async function generateMetadata(
   props: Props,
-  parent: ResolvingMetadata,
 ): Promise<Metadata> {
   return {
     title: "Patrick Desjardins Blog - Year " + String(props.params.year),
@@ -19,11 +18,6 @@ export async function generateMetadata(
   };
 }
 
-export interface GeneratedPageContentType {
-  blogPosts: MdxData[];
-  year: number;
-  totalPages: number;
-}
 export async function generateStaticParams(): Promise<Array<{ year: string }>> {
   const years = [];
   for (let year = LAST_YEAR; year >= FIRST_YEAR; year--) {
@@ -44,14 +38,14 @@ export default async function Page(props: {
 
   return (
     <BlogBody totalPages={totalPages} year={year} topTitle="Blog Posts">
-      {(postForYear ?? []).map((node) => (
+      {postForYear.map((node) => (
         <BlogEntry
           key={node.metadata.fileName}
           id={node.metadata.fileName}
           slug={node.metadata.slug}
-          title={node.frontmatter.title as string}
-          date={node.frontmatter.date as string}
-          categories={node.frontmatter.categories as string[]}
+          title={node.frontmatter.title}
+          date={node.frontmatter.date}
+          categories={node.frontmatter.categories}
         />
       ))}
     </BlogBody>

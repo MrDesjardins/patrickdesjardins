@@ -1,2 +1,14 @@
-/*Cache for 30 days static assets*/
-Cache-Control: max-age=2592000
+# HTML pages — revalidate on every request so deploys are visible immediately
+/
+  Cache-Control: no-cache, must-revalidate
+
+/*.html
+  Cache-Control: no-cache, must-revalidate
+
+# Hashed static assets — safe to cache for a year
+/_next/static/*
+  Cache-Control: max-age=31536000, immutable
+
+# Everything else (images, fonts, etc.) — moderate cache
+/*
+  Cache-Control: max-age=3600

@@ -3,13 +3,13 @@ import * as React from "react";
 import styles from "./website.module.css";
 import Image from "next/image";
 import { CardFixedWidth } from "./CardFixedWidth";
-export const WorkSection = (): JSX.Element => {
+export const WorkSection = (): React.ReactElement => {
   return (
     <section
       id="work"
       className={clsx(styles.sectionMainpage, styles.sectionVisualOne)}
     >
-      <header>My Work</header>
+      <h2>My Work</h2>
       <div className={styles.sectionVisualOneSubHeader}>
         An excerpt of some of my works from the last few years. See resume for
         full entries
@@ -213,7 +213,7 @@ export const WorkSection = (): JSX.Element => {
         <CardFixedWidth
           title="Tenrox (Upland) - Timesheet.com"
           description="Working in many areas of the existing systems to improve features. Worked mainly in the visual graph that allowed to configure the flow of work."
-          link="http://timesheet.com/"
+          link="https://timesheet.com/"
           image={
             <Image
               className={styles.cardFixedWidthImageImg}
@@ -228,7 +228,7 @@ export const WorkSection = (): JSX.Element => {
         <CardFixedWidth
           title="StockVirtual.Com"
           description="Owner of StockVirtual.com which is a Asp.Net MVC, Entity Framework, Redis website hosted on Azure that has above 65 000 users that trade stocks in a safe virtualized environment. Thousands of unit tests, Application Insight for telemetry, Stride for transactions and SendGrid for email."
-          link="http://stockvirtual.com/"
+          link="https://stockvirtual.com/"
           image={
             <Image
               className={styles.cardFixedWidthImageImg}

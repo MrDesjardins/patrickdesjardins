@@ -23,7 +23,7 @@ export const StatisticsSection = (): React.ReactElement => {
           </div>
           <div className="counterup-content">
             <h5 className="count-number">13</h5>
-            <h6>Compagnies</h6>
+            <h6>Companies</h6>
           </div>
         </div>
 
