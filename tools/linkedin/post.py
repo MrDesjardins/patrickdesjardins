@@ -59,12 +59,11 @@ def generate_linkedin_text(title, body_text):
     prompt = f"""You are a LinkedIn content writer for a software engineering blog.
 Write a LinkedIn post for the article titled "{title}".
 Rules:
-- Start with a compelling 1-2 sentence hook
-- Summarize the key insight or takeaway in 2-3 sentences
+- 2-3 sentences maximum — be concise
+- One key insight or takeaway, no fluff
 - Professional but conversational tone
-- Do NOT include a URL (it will be appended separately)
-- End with 3-5 relevant hashtags
-- Stay under 200 words total
+- Do NOT include a URL (it will be added separately)
+- End with 2-3 relevant hashtags on their own line
 - Do not make it cringe or clickbaity
 
 Article content:
@@ -78,7 +77,7 @@ def post_to_linkedin(text, title, slug):
     person_id = os.environ['LINKEDIN_PERSON_ID']
     token = os.environ['LINKEDIN_ACCESS_TOKEN']
     url = f"{BLOG_BASE_URL}/{slug}"
-    full_text = f"{text}\n\n{url}"
+    full_text = f"New blog post: {url}\n\n{text}"
     payload = {
         "author": f"urn:li:person:{person_id}",
         "lifecycleState": "PUBLISHED",
