@@ -37,6 +37,15 @@ def strip_mdx(content):
     return body.strip()
 
 
+def find_first_image(content):
+    match = re.search(r'!\[.*?\]\((/images/blog/[^)]+)\)', content)
+    if not match:
+        return None
+    rel_path = match.group(1).lstrip("/")
+    abs_path = os.path.join(SCRIPT_DIR, "../../public", rel_path)
+    return abs_path if os.path.isfile(abs_path) else None
+
+
 def find_todays_post():
     today = datetime.datetime.now(datetime.timezone.utc).date().isoformat()  # "YYYY-MM-DD"
     for root, _, files in os.walk(BLOG_POSTS_DIR):
@@ -73,19 +82,65 @@ Article content:
     return response.text.strip()
 
 
-def post_to_linkedin(text, title, slug):
+def upload_image_to_linkedin(image_path, person_id, token):
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+        "X-Restli-Protocol-Version": "2.0.0",
+    }
+    register_payload = {
+        "registerUploadRequest": {
+            "recipes": ["urn:li:digitalmediaRecipe:feedshare-image"],
+            "owner": f"urn:li:person:{person_id}",
+            "serviceRelationships": [{
+                "relationshipType": "OWNER",
+                "identifier": "urn:li:userGeneratedContent"
+            }]
+        }
+    }
+    resp = requests.post(
+        "https://api.linkedin.com/v2/assets?action=registerUpload",
+        headers=headers,
+        json=register_payload,
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    upload_url = data["value"]["uploadMechanism"][
+        "com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest"
+    ]["uploadUrl"]
+    asset = data["value"]["asset"]
+
+    with open(image_path, "rb") as f:
+        put_resp = requests.put(
+            upload_url,
+            headers={"Authorization": f"Bearer {token}"},
+            data=f.read(),
+        )
+        put_resp.raise_for_status()
+
+    print(f"Uploaded image to LinkedIn asset: {asset}")
+    return asset
+
+
+def post_to_linkedin(text, title, slug, asset_urn=None):
     person_id = os.environ['LINKEDIN_PERSON_ID']
     token = os.environ['LINKEDIN_ACCESS_TOKEN']
     url = f"{BLOG_BASE_URL}/{slug}"
     full_text = f"New blog post: {url}\n\n{text}"
+    share_content = {
+        "shareCommentary": {"text": full_text},
+        "shareMediaCategory": "IMAGE" if asset_urn else "NONE",
+    }
+    if asset_urn:
+        share_content["media"] = [{
+            "status": "READY",
+            "media": asset_urn,
+        }]
     payload = {
         "author": f"urn:li:person:{person_id}",
         "lifecycleState": "PUBLISHED",
         "specificContent": {
-            "com.linkedin.ugc.ShareContent": {
-                "shareCommentary": {"text": full_text},
-                "shareMediaCategory": "NONE"
-            }
+            "com.linkedin.ugc.ShareContent": share_content
         },
         "visibility": {"com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"}
     }
@@ -117,8 +172,24 @@ if __name__ == "__main__":
     body = strip_mdx(content)
     linkedin_text = generate_linkedin_text(title, body)
     print("Generated LinkedIn text:\n", linkedin_text)
+
+    asset_urn = None
+    image_path = find_first_image(content)
+    if image_path:
+        print(f"Found blog image: {image_path}")
+        try:
+            asset_urn = upload_image_to_linkedin(
+                image_path,
+                os.environ['LINKEDIN_PERSON_ID'],
+                os.environ['LINKEDIN_ACCESS_TOKEN'],
+            )
+        except requests.HTTPError as e:
+            print(f"Image upload failed ({e.response.status_code}), falling back to text-only post")
+    else:
+        print("No blog image found, posting text-only")
+
     try:
-        post_to_linkedin(linkedin_text, title, slug)
+        post_to_linkedin(linkedin_text, title, slug, asset_urn=asset_urn)
     except requests.HTTPError as e:
         if e.response.status_code == 401:
             print("LinkedIn token expired — rotate LINKEDIN_ACCESS_TOKEN")
