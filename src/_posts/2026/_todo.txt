@@ -4,9 +4,10 @@
 === Completed waiting
 
 ⏲️ 2026-03-02: Transforming Software Development one Agent at a Time
-⏲️ 2026-02-26: How to make your AI agents remember and forget?
+⏲️ 2026-03-04: AI Coding, Trust and Review
 
 === Published
+✅ 2026-02-26: How to make your AI agents remember and forget?
 ✅ 2026-02-23: Code Quality in 2026 with AI
 ✅ 2026-02-19: Multi-Agents and the Future
 ✅ 2026-02-12: Making a Systemd journal dashboard
