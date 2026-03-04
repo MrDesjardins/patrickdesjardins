@@ -2,13 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>https://patrickdesjardins.com</loc>
-<lastmod>2026-03-03T17:38:26.227Z</lastmod>
+<lastmod>2026-03-04T04:38:33.033Z</lastmod>
 <changefreq>daily</changefreq>
 <priority>1</priority>
 </url>
 <url>
 <loc>https://patrickdesjardins.com/blog</loc>
-<lastmod>2026-03-03T17:38:26.227Z</lastmod>
+<lastmod>2026-03-04T04:38:33.033Z</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.9</priority>
 </url>
@@ -4821,6 +4821,12 @@
 <url>
 <loc>https://patrickdesjardins.com/blog/unit-testing-go-functions</loc>
 <lastmod>2025-04-07T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://patrickdesjardins.com/blog/ai-trust-and-review</loc>
+<lastmod>2026-03-04T00:00:00.000Z</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.7</priority>
 </url>
