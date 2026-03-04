@@ -48,8 +48,11 @@ jobs:
           node-version: "20"
           cache: "pnpm"
 
+      - name: Install system libvips (for sharp)
+        run: sudo apt-get install -y libvips-dev
+
       - name: Install Node dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
         run: pnpm run lint
