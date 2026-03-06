@@ -74,6 +74,8 @@ Rules:
 - Do NOT include a URL (it will be added separately)
 - End with 2-3 relevant hashtags on their own line
 - Do not make it cringe or clickbaity
+- Never use this character: —
+- Invite the reader to check out the article
 
 Article content:
 {body_text[:4000]}
