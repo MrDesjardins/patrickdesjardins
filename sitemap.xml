@@ -2,13 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>https://patrickdesjardins.com</loc>
-<lastmod>2026-03-08T17:18:13.202Z</lastmod>
+<lastmod>2026-03-09T17:42:52.053Z</lastmod>
 <changefreq>daily</changefreq>
 <priority>1</priority>
 </url>
 <url>
 <loc>https://patrickdesjardins.com/blog</loc>
-<lastmod>2026-03-08T17:18:13.202Z</lastmod>
+<lastmod>2026-03-09T17:42:52.053Z</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.9</priority>
 </url>
@@ -4827,6 +4827,12 @@
 <url>
 <loc>https://patrickdesjardins.com/blog/20-codex-20-claude</loc>
 <lastmod>2026-03-06T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://patrickdesjardins.com/blog/AI-blinders-remain-why-humans-still-have-an-edge-for-now</loc>
+<lastmod>2026-03-09T00:00:00.000Z</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.7</priority>
 </url>
