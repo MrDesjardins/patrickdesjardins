@@ -72,3 +72,34 @@ Here is one result from a heavy drag-and-drop user interface:
 While there are still many issues, the friction of manually going to the browser to test everything is reduced. The friction to build and maintain tests is becoming a story of the past.
 
 I am not a developer who connects many MCPs or extensions to AI tools, but I highly recommend the Playwright MCP if you are developing web systems.
+
+Here is another response with an "honest note":
+
+```
+• I fixed the three timeline issues you called out.
+
+  What changed:
+
+  - Clicking the left row name area is now the primary selection target, using pointerdown instead of relying on a later click. That makes row-name
+    selection more reliable for multi-select in VStreamTimelinePanel.tsx.
+  - Plain element-row menus no longer show Ungroup selected tracks. Ungroup is now only exposed from actual group rows.
+  - I kept the forgiving right-click behavior too: if you already have one row selected, right-clicking another row name extends the grouping context so
+    Group selected tracks still appears.
+
+  I also verified group collapse/expand live after creating a group on the target page:
+
+  - the new group row appeared as Group 1
+  - collapsing hid the grouped child rows
+  - expanding brought them back
+  - the toggle changed between ▸ and ▾ correctly
+
+  Tests/checks all pass:
+
+  - npx tsc --noEmit
+  - npm run lint
+  - npm run test
+
+  One honest note: in headless browser automation, raw Ctrl-click on the second row still behaved inconsistently, but the actual grouping flow now works
+  reliably because the row-name selection path is stronger and right-clicking the second row exposes Group selected tracks. If you want, I can go one step
+  further and add explicit row checkboxes or a dedicated Group selected rows toolbar action so this no longer depends on modifier keys at all.
+  ```
