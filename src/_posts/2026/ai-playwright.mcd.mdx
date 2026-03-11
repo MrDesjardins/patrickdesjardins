@@ -1,0 +1,74 @@
+---
+title: "AI and Playwright MCP"
+date: "2026-03-16"
+categories:
+ - "ai"
+ - "llm"
+ - "test"
+---
+
+User interfaces and automation have always been tricky. After all, part of the process requires seeing the final result, as theoretically styling can fall into many traps.
+
+For a long time, people created unit tests using Jest or other UI frameworks and, with utility functions, could test React components without a browser. However, nothing beats loading the application in a browser to see the final result.
+
+The cost has always been large: hard to create, hard to maintain, slow to run, and flaky. The rise of AI changed a few variables: fast to create and easier to maintain. The improvement is not perfect, but it goes a long way.
+
+Here is part of an execution:
+```
+• Called
+  └ playwright-headed.browser_run_code({"code":"async (page) => {\n  const lane = page.locator('[data-timeline-row-index=\"12\"]
+        [class*=\"timelineLane\"]').first();\n  const box = await lane.boundingBox();\n  if (!box) return { error: 'no lane box' };\n  const startX =
+        box.x + 1180;\n  const endX = box.x + 1280;\n  const y = box.y + box.height / 2;\n  await page.mouse.move(startX, y);\n  await page.mouse.down();
+        \n  await page.waitForTimeout(150);\n  await page.mouse.move(endX, y, { steps: 12 });\n  await page.waitForTimeout(150);\n  await page.mouse.up();
+        \n  await page.waitForTimeout(250);\n  const overlay = await page.locator('[data-testid=\"vstream-timeline-window-overlay\"]').count();\n  const
+        rowMenu = await page.locator('[data-testid=\"vstream-row-menu\"]').count();\n  return { box, startX, endX, y, overlayCount: overlay, rowMenuCount:
+        rowMenu };\n}"})
+    ### Result
+    {"box":{"x":282,"y":2908.9375,"width":1802.234375,"height":32},"startX":1462,"endX":1562,"y":2924.9375,"overlayCount":0,"rowMenuCount":0}
+    ### Ran Playwright code
+    ```js
+    await (async (page) => {
+      const lane = page.locator('[data-timeline-row-index="12"] [class*="timelineLane"]').first();
+      const box = await lane.boundingBox();
+      if (!box) return { error: 'no lane box' };
+      const startX = box.x + 1180;
+      const endX = box.x + 1280;
+      const y = box.y + box.height / 2;
+      await page.mouse.move(startX, y);
+      await page.mouse.down();
+      await page.waitForTimeout(150);
+      await page.mouse.move(endX, y, { steps: 12 });
+      await page.waitForTimeout(150);
+      await page.mouse.up();
+      await page.waitForTimeout(250);
+      const overlay = await...
+```
+
+Using Codex, Cursor, or Claude, you can install the [Playwright MCP](https://github.com/microsoft/playwright-mcp), which gives the AI access to a headless (or headful) browser. It can generate Playwright tests on the fly or create them traditionally in files. I am developing a new product and changing the UI and behavior quite often, so asking the AI to run automated tests and validate that the new feature I just coded does not break the existing UI simply means letting the AI use Playwright to try the features that are already implemented. It understands the features automatically by reading the markdown and the code.
+
+Here is one result from a heavy drag-and-drop user interface:
+
+```
+• I verified the delete-window behavior live on the target page while the populated V-Stream was loaded.
+
+  What I checked:
+
+  - I selected a time window on the Text 1 row, which had two red tween segments.
+  - I opened the window context menu and deleted that selected window.
+  - Before deletion, that row had:
+      - dots at about 14.747s, 17.747s, 20.528s
+      - tween segments Move and Resize • Rotate
+  - After deletion, it had:
+      - dots at about 14.747s, 16.197s, 18.978s
+      - only the remaining Resize • Rotate tween segment, shifted left and still aligned to the updated keyframes
+  - The selection overlay and row menu both cleared afterward, which is the expected cleanup path.
+
+  I also confirmed the sticky row-title fix live: after a 500px horizontal scroll, the label column stayed effectively pinned instead of scrolling away
+  with the lane.
+
+  One note: I reloaded the page afterward so the temporary editor mutation was discarded and not left dirty.
+```
+
+While there are still many issues, the friction of manually going to the browser to test everything is reduced. The friction to build and maintain tests is becoming a story of the past.
+
+I am not a developer who connects many MCPs or extensions to AI tools, but I highly recommend the Playwright MCP if you are developing web systems.
