@@ -42,3 +42,5 @@ Thumbs.db
 /tools/search/output
 
 .env*.Zone.Identifier
+
+__pycache__/

@@ -57,6 +57,8 @@ Required environment variables:
 | `GEMINI_API_KEY` | Gemini API key |
 | `LINKEDIN_ACCESS_TOKEN` | LinkedIn OAuth 2.0 token (expires after ~60 days) |
 | `LINKEDIN_PERSON_ID` | Your LinkedIn person ID (from `get_id.py`) |
+| `LINKEDIN_BLOG_WAIT_TIMEOUT_SECONDS` | Optional. Max time to wait for the public blog URL to serve the new post before posting to LinkedIn. Default: `600` |
+| `LINKEDIN_BLOG_WAIT_INTERVAL_SECONDS` | Optional. Delay between public URL readiness checks. Default: `15` |
 
 Copy `.env.example` to `.env` and fill in the values for local use.
 

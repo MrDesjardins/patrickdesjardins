@@ -1,4 +1,4 @@
-import os, re, sys, datetime, yaml, requests
+import os, re, sys, time, datetime, yaml, requests
 from google import genai
 from dotenv import load_dotenv
 
@@ -6,6 +6,8 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(SCRIPT_DIR, "../../.env"))
 BLOG_POSTS_DIR = os.path.join(SCRIPT_DIR, "../../src/_posts/")
 BLOG_BASE_URL = "https://patrickdesjardins.com/blog"
+DEFAULT_WAIT_TIMEOUT_SECONDS = 600
+DEFAULT_WAIT_INTERVAL_SECONDS = 15
 
 
 def parse_frontmatter(content):
@@ -124,6 +126,57 @@ def upload_image_to_linkedin(image_path, person_id, token):
     return asset
 
 
+def wait_for_blog_post_to_be_available(title, slug):
+    timeout_seconds = int(
+        os.environ.get("LINKEDIN_BLOG_WAIT_TIMEOUT_SECONDS", DEFAULT_WAIT_TIMEOUT_SECONDS)
+    )
+    interval_seconds = int(
+        os.environ.get("LINKEDIN_BLOG_WAIT_INTERVAL_SECONDS", DEFAULT_WAIT_INTERVAL_SECONDS)
+    )
+    deadline = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
+        seconds=timeout_seconds
+    )
+    url = f"{BLOG_BASE_URL}/{slug}"
+    expected_title = re.sub(r"\s+", " ", title).strip().lower()
+    last_error = "no response received"
+
+    while datetime.datetime.now(datetime.timezone.utc) < deadline:
+        try:
+            response = requests.get(
+                url,
+                timeout=20,
+                headers={"Cache-Control": "no-cache", "Pragma": "no-cache"},
+            )
+            normalized_html = re.sub(r"\s+", " ", response.text).lower()
+            if response.status_code == 200 and expected_title in normalized_html:
+                print(f"Confirmed blog post is publicly available: {url}")
+                return
+            last_error = (
+                f"status={response.status_code}; title_found={expected_title in normalized_html}"
+            )
+        except requests.RequestException as error:
+            last_error = str(error)
+
+        print(
+            f"Waiting for blog post to become available at {url} ({last_error}); retrying in {interval_seconds}s"
+        )
+        time_to_sleep_until = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
+            seconds=interval_seconds
+        )
+        while datetime.datetime.now(datetime.timezone.utc) < time_to_sleep_until:
+            remaining = (
+                time_to_sleep_until - datetime.datetime.now(datetime.timezone.utc)
+            ).total_seconds()
+            if remaining <= 0:
+                break
+            sleep_seconds = min(1, remaining)
+            time.sleep(sleep_seconds)
+
+    raise RuntimeError(
+        f"Timed out after {timeout_seconds}s waiting for blog post to become available at {url}. Last result: {last_error}"
+    )
+
+
 def post_to_linkedin(text, title, slug, asset_urn=None):
     person_id = os.environ['LINKEDIN_PERSON_ID']
     token = os.environ['LINKEDIN_ACCESS_TOKEN']
@@ -191,10 +244,14 @@ if __name__ == "__main__":
         print("No blog image found, posting text-only")
 
     try:
+        wait_for_blog_post_to_be_available(title, slug)
         post_to_linkedin(linkedin_text, title, slug, asset_urn=asset_urn)
     except requests.HTTPError as e:
         if e.response.status_code == 401:
             print("LinkedIn token expired — rotate LINKEDIN_ACCESS_TOKEN")
         else:
             print(f"LinkedIn API error {e.response.status_code}: {e.response.text}")
+        sys.exit(1)
+    except RuntimeError as e:
+        print(str(e))
         sys.exit(1)
