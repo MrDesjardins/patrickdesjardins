@@ -2,6 +2,7 @@
 ✍️ 2026-01-28: 
 
 === Completed waiting
+⏲️ 2026-03-21: Gemini brings my son's name in the wrong context
 ⏲️ 2026-03-19: The Consequences of Easy Access to AI
 ⏲️ 2026-03-16: AI and Playwright MCP
 
