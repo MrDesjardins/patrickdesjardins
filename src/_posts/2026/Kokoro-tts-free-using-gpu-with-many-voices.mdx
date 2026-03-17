@@ -1,0 +1,46 @@
+---
+title: "Kokoro TTS: Free using GPU with Many Voices"
+date: "2026-03-25"
+categories:
+ - "ai"
+ - "tts"
+ - "voice"
+---
+I recently had many voices to generate from English text. By many, I mean about 5,000 paragraphs. One requirement I had was to produce a non-robotic voice. After searching, I was open to using a service like OpenAI TTS and paying for it, but it was quite a large amount of text to generate. Since I have a good graphics card (Nvidia 5080), I preferred using it locally. I found: [Kokoro TTS](https://kokorottsai.com/).
+
+The TTS relies on a model with about 82 million parameters, which is relatively lightweight and can run locally. It can also accept large amounts of text and provides over a dozen English voices.
+
+Kokoro has a [CLI](https://github.com/nazdridoy/kokoro-tts) but also a [Python package](https://pypi.org/project/kokoro/) that allows several ways to generate audio files. The model is automatically downloaded and installed the first time the Kokoro pipeline is instantiated.
+
+Here is roughly what is needed:
+
+
+```python
+try:
+    pipeline = KPipeline(lang_code="a")
+    clips = []
+    phonemes = []
+    for _, phoneme_string, audio in pipeline(args.text, voice=args.voice, speed=args.speed):
+        if phoneme_string:
+            phonemes.append(str(phoneme_string))
+        if audio is not None:
+            clips.append(np.asarray(audio, dtype=np.float32))
+
+    if not clips:
+        print("Kokoro returned no audio for this text.", file=sys.stderr)
+        return 1
+
+    merged = np.concatenate(clips)
+    sf.write(args.out, merged, 24000)
+    print(json.dumps({"out": args.out, "voice": args.voice, "phonemes": " ".join(phonemes)}))
+    return 0
+except Exception as error:
+    print(f"Kokoro generation failed: {error}", file=sys.stderr)
+    return 1
+```
+
+The loop works with a generator that returns audio segments progressively as the text is synthesized. The output contains audio segments that are merged and written into a sound file. The pipeline also returns phonemes, which I am not using yet but could be useful in the future to explain pronunciation through another AI tool.
+
+The generated audio uses a 24 kHz sample rate, which is the native output of the Kokoro models. The final merged waveform is written directly to a file using this sample rate. On my Nvidia 5080 GPU, generation is fast enough to process thousands of paragraphs in a reasonable time (few minutes). The lightweight 82M parameter model keeps memory usage low and allows batch processing without the overhead typically associated with larger speech models.
+
+So far, the results have been significantly better than the [edge-tts Python library](https://pypi.org/project/edge-tts/) while remaining completely free.

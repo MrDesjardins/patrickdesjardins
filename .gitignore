@@ -44,3 +44,6 @@ Thumbs.db
 .env*.Zone.Identifier
 
 __pycache__/
+
+
+/tools/stats/*.png
