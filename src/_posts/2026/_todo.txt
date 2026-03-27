@@ -2,13 +2,16 @@
 ✍️ 2026-01-28: 
 
 === Completed waiting
-
-
+⏲️ 2027-04-24: Council of the Owls
+⏲️ 2026-04-20: Automating The Gatekeeper
 ⏲️ 2026-04-02: The AI-First Lifecycle
-⏲️ 2026-03-25: Kokoro TTS: Free using GPU with Many Voices
 
 
 === Published
+
+
+✅ 2026-03-27: The Vibe Coding Plateau
+✅ 2026-03-25: Kokoro TTS: Free using GPU with Many Voices
 ✅ 2026-03-23: Gemini brings my son's name in the wrong context
 ✅ 2026-03-19: The Consequences of Easy Access to AI
 ✅ 2026-03-16: AI and Playwright MCP

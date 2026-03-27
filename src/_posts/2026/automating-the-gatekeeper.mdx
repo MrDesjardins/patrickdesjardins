@@ -1,0 +1,19 @@
+---
+title: "Automating The Gatekeeper"
+date: "2026-04-20"
+categories:
+ - "ai"
+ - "llm"
+ - "slc"
+ - "lifecycle"
+---
+
+As AI continues to transform the development of software, we must fundamentally shift our habits to keep pace. Many traditional workflows have not yet adapted to this new reality, including early requirement gathering, permission systems, and the standard practices for design and code reviews. I have noticed a growing trend where developers use AI to summarize massive design documents to determine how to provide feedback, while the authors are simultaneously using AI to generate those same documents. This cycle of expanding and contracting text through artificial intelligence creates a disconnect between the author’s intent and the final output. If an author simply provided a few core ideas, the reviewer would already have the necessary context, yet the current process remains bogged down by AI-generated filler.
+
+![](/images/blog/AiGenereTextGenerateSummary.png)
+
+The code review process in particular is becoming a significant bottleneck that may eventually become obsolete in its current form. While we will always require robust CI/CD pipelines to ensure code compiles, passes long-running tests, and deploys successfully, the manual review step is slowing down our overall velocity. Because AI allows us to generate a much higher volume of code, reviewing has become an increasingly taxing chore. Reviewers often find themselves scrutinizing logic that even the original author hasn't fully digested because it was produced so rapidly by a machine.
+
+![](/images/blog/BeforeAfter2026CodeLifeCycle.png)
+
+Instead of maintaining this manual gate that reduces development speed, we should transition toward having AI integrated directly on every developer's machine. This local AI would not only write the code but also review and communicate improvements in real-time to ensure every line meets established standards. By embedding sophisticated rules and orchestration directly into the creation process, we can move toward a future of auto-validation. This evolution in tooling will allow us to move straight from generation to the CI pipeline and into production without the friction of traditional reviews.
