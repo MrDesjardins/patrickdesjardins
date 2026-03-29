@@ -58,6 +58,8 @@ jobs:
         run: pnpm run test
 
       - name: Build site
+        env:
+          NEXT_PUBLIC_GA_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-6EH8HNYV13' }}
         run: pnpm run build
 
       - name: Deploy to GitHub Pages
