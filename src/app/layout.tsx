@@ -1,8 +1,12 @@
 import { type Metadata } from "next";
-import styles from "./layout.module.css";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "@fontsource/open-sans";
 import "@fontsource/oswald";
 import "@fontsource/ubuntu-mono";
+import styles from "./layout.module.css";
+
+const gaMeasurementId =
+  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "G-6EH8HNYV13";
 
 export const metadata: Metadata = {
   title: "Patrick Desjardins",
@@ -28,7 +32,12 @@ export default function RootLayout({
 }>): React.ReactElement {
   return (
     <html lang="en" className={styles.htmlstyle}>
-      <body className={styles.bodystyle}>{children}</body>
+      <body className={styles.bodystyle}>
+        {children}
+        {process.env.NODE_ENV === "production" ? (
+          <GoogleAnalytics gaId={gaMeasurementId} />
+        ) : null}
+      </body>
     </html>
   );
 }
