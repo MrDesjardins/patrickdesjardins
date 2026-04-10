@@ -2,13 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
 <loc>https://patrickdesjardins.com</loc>
-<lastmod>2026-04-10T17:43:25.748Z</lastmod>
+<lastmod>2026-04-10T23:02:04.716Z</lastmod>
 <changefreq>daily</changefreq>
 <priority>1</priority>
 </url>
 <url>
 <loc>https://patrickdesjardins.com/blog</loc>
-<lastmod>2026-04-10T17:43:25.748Z</lastmod>
+<lastmod>2026-04-10T23:02:04.716Z</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.9</priority>
 </url>
@@ -4863,6 +4863,12 @@
 <url>
 <loc>https://patrickdesjardins.com/blog/audiobook-machine-version-2-with-esp-32</loc>
 <lastmod>2026-01-22T00:00:00.000Z</lastmod>
+<changefreq>monthly</changefreq>
+<priority>0.7</priority>
+</url>
+<url>
+<loc>https://patrickdesjardins.com/blog/automating-the-gatekeeper</loc>
+<lastmod>2026-04-06T00:00:00.000Z</lastmod>
 <changefreq>monthly</changefreq>
 <priority>0.7</priority>
 </url>
