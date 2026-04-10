@@ -3,11 +3,21 @@
 
 === Completed waiting
 ⏲️ 2027-04-24: Council of the Owls
-⏲️ 2026-04-20: Automating The Gatekeeper
 
 
 === Published
+
+=======
+
+
+
+
+
+
+=== Published
+✅ 2026-04-13: Speed Parallel of AI to Cars
 ✅ 2026-04-09: New AI Work Lifecycle of 5 Days
+✅ 2026-04-06: Automating The Gatekeeper
 ✅ 2026-04-02: The AI-First Lifecycle
 ✅ 2026-03-27: The Vibe Coding Plateau
 ✅ 2026-03-25: Kokoro TTS: Free using GPU with Many Voices
