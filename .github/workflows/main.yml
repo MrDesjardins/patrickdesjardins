@@ -5,8 +5,7 @@ on:
     branches: [master]
   schedule:
     - cron: "0 17 * * *"  # daily at 17:00 UTC / 09:00 PST / 10:00 PDT
-  workflow_dispatch:
-  # Allows manual triggering of the workflow
+  workflow_dispatch: # full pipeline + LinkedIn (same as schedule for the LinkedIn step)
 jobs:
   generate-and-deploy:
     runs-on: ubuntu-latest
@@ -71,7 +70,7 @@ jobs:
           cname: patrickdesjardins.com
 
       - name: Post new article to LinkedIn
-        if: success() && github.event_name == 'schedule'
+        if: success() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
         continue-on-error: true
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

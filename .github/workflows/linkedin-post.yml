@@ -1,0 +1,29 @@
+name: LinkedIn post (manual)
+
+# Re-run when the scheduled job hit Gemini/LinkedIn errors without rebuilding the site.
+on:
+  workflow_dispatch:
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-caching: true
+
+      - name: Install Python dependencies
+        run: uv sync
+        working-directory: tools
+
+      - name: Post today's article to LinkedIn
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
+          LINKEDIN_PERSON_ID: ${{ secrets.LINKEDIN_PERSON_ID }}
+        run: uv run python linkedin/post.py
+        working-directory: tools
