@@ -1,4 +1,5 @@
 import os, re, sys, time, datetime, yaml, requests
+from zoneinfo import ZoneInfo
 from google import genai
 from dotenv import load_dotenv
 
@@ -8,6 +9,20 @@ BLOG_POSTS_DIR = os.path.join(SCRIPT_DIR, "../../src/_posts/")
 BLOG_BASE_URL = "https://patrickdesjardins.com/blog"
 DEFAULT_WAIT_TIMEOUT_SECONDS = 600
 DEFAULT_WAIT_INTERVAL_SECONDS = 15
+
+
+def post_calendar_today_iso():
+    """Calendar date used to match frontmatter `date` (not necessarily UTC)."""
+    tz_name = (os.environ.get("LINKEDIN_POST_DATE_TZ") or "UTC").strip() or "UTC"
+    try:
+        tz = ZoneInfo(tz_name)
+    except Exception:
+        print(
+            f"Warning: invalid LINKEDIN_POST_DATE_TZ={tz_name!r}, using UTC",
+            file=sys.stderr,
+        )
+        tz = datetime.timezone.utc
+    return datetime.datetime.now(tz).date().isoformat()
 
 
 def parse_frontmatter(content):
@@ -49,7 +64,7 @@ def find_first_image(content):
 
 
 def find_todays_post():
-    today = datetime.datetime.now(datetime.timezone.utc).date().isoformat()  # "YYYY-MM-DD"
+    today = post_calendar_today_iso()
     for root, _, files in os.walk(BLOG_POSTS_DIR):
         for fname in files:
             if not fname.endswith(('.mdx', '.md')):
@@ -221,7 +236,10 @@ if __name__ == "__main__":
 
     title, slug, content = find_todays_post()
     if not title:
-        print("No post with today's date found. Skipping.")
+        tz_label = (os.environ.get("LINKEDIN_POST_DATE_TZ") or "UTC").strip() or "UTC"
+        print(
+            f"No post with date {post_calendar_today_iso()} (calendar day in {tz_label}) found. Skipping."
+        )
         sys.exit(0)
     print(f"Found today's post: {title} ({slug})")
     body = strip_mdx(content)
