@@ -2,11 +2,12 @@
 ✍️ 2026-01-28: 
 
 === Completed waiting
-⏲️ 2027-04-24: Council of the Owls
-✅ 2026-04-15: What is Code Quality in the Era of AI?
+
+
 
 
 === Published
+✅ 2026-04-20: What is Code Quality in the Era of AI?
 ✅ 2026-04-15: Silicon Valley: Pursuit of Leadership
 ✅ 2026-04-13: Speed Parallel of AI to Cars
 ✅ 2026-04-09: New AI Work Lifecycle of 5 Days
