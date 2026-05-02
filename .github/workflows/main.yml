@@ -80,3 +80,16 @@ jobs:
           LINKEDIN_POST_DATE_TZ: America/Los_Angeles
         run: uv run python linkedin/post.py
         working-directory: tools
+
+      - name: Post new article to X
+        if: success() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+        continue-on-error: true
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
+          TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
+          TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+          TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
+          TWITTER_POST_DATE_TZ: America/Los_Angeles
+        run: uv run python twitter/post.py
+        working-directory: tools

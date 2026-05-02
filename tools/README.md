@@ -73,3 +73,30 @@ LinkedIn OAuth tokens expire after ~60 days. When the workflow starts failing wi
 5. Click **Request access token** — copy the generated token.
 6. Update `.env` locally: set `LINKEDIN_ACCESS_TOKEN=<new token>`.
 7. Update the GitHub secret: **repo → Settings → Secrets and variables → Actions → `LINKEDIN_ACCESS_TOKEN` → Update**.
+
+---
+
+## twitter
+
+Posts a new article to X/Twitter. Detects any post in `src/_posts/` whose `date` frontmatter matches today, generates a short post via Gemini, and publishes through the official X API.
+
+**Post today's article:**
+
+```bash
+uv run --directory tools python tools/twitter/post.py
+```
+
+Required environment variables:
+
+| Variable | Description |
+|---|---|
+| `GEMINI_API_KEY` | Gemini API key |
+| `TWITTER_API_KEY` | X API consumer key |
+| `TWITTER_API_SECRET` | X API consumer secret |
+| `TWITTER_ACCESS_TOKEN` | X user access token |
+| `TWITTER_ACCESS_TOKEN_SECRET` | X user access token secret |
+| `TWITTER_POST_DATE_TZ` | Optional. Calendar timezone used to match the post `date`. |
+| `TWITTER_BLOG_WAIT_TIMEOUT_SECONDS` | Optional. Max time to wait for the public blog URL to serve the new post before posting to X. Default: `600` |
+| `TWITTER_BLOG_WAIT_INTERVAL_SECONDS` | Optional. Delay between public URL readiness checks. Default: `15` |
+
+Update the same values in GitHub repository secrets before using the workflow automation.
