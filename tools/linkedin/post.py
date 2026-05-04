@@ -1,107 +1,54 @@
-import os, re, sys, time, datetime, yaml, requests
-from zoneinfo import ZoneInfo
-from google import genai
+import os
+import sys
+from typing import Any
+
+import requests
 from dotenv import load_dotenv
+from google import genai
 
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-load_dotenv(os.path.join(SCRIPT_DIR, "../../.env"))
-BLOG_POSTS_DIR = os.path.join(SCRIPT_DIR, "../../src/_posts/")
-BLOG_BASE_URL = "https://patrickdesjardins.com/blog"
-DEFAULT_WAIT_TIMEOUT_SECONDS = 600
-DEFAULT_WAIT_INTERVAL_SECONDS = 15
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from social_common import (
+    BLOG_BASE_URL,
+    SCRIPT_DIR,
+    find_first_image,
+    find_todays_post,
+    post_calendar_today_iso,
+    strip_mdx,
+    wait_for_blog_post_to_be_available,
+)
 
-def post_calendar_today_iso():
-    """Calendar date used to match frontmatter `date` (not necessarily UTC)."""
-    tz_name = (os.environ.get("LINKEDIN_POST_DATE_TZ") or "UTC").strip() or "UTC"
-    try:
-        tz = ZoneInfo(tz_name)
-    except Exception:
-        print(
-            f"Warning: invalid LINKEDIN_POST_DATE_TZ={tz_name!r}, using UTC",
-            file=sys.stderr,
-        )
-        tz = datetime.timezone.utc
-    return datetime.datetime.now(tz).date().isoformat()
+load_dotenv(os.path.join(SCRIPT_DIR, "../.env"))
 
 
-def parse_frontmatter(content):
-    match = re.match(r'^---\n(.*?\n)---\n', content, flags=re.DOTALL)
-    return yaml.safe_load(match.group(1)) if match else {}
+def require_generated_text(response_text: str | None) -> str:
+    if response_text is None:
+        raise RuntimeError("Gemini returned no text for the LinkedIn post")
+    return response_text.strip()
 
 
-def strip_mdx(content):
-    body = re.sub(r'^---\n.*?\n---\n', '', content, count=1, flags=re.DOTALL)
-    body = re.sub(r'```[\s\S]*?```', '', body)
-    body = re.sub(r'`[^`]+`', '', body)
-    body = re.sub(r'!\[.*?\]\(.*?\)', '', body)
-    body = re.sub(r'\[([^\]]+)\]\(.*?\)', r'\1', body)
-    body = re.sub(r'^#{1,6}\s+', '', body, flags=re.MULTILINE)
-    body = re.sub(r'^(import|export)\s+.*$', '', body, flags=re.MULTILINE)
-    # Strip JSX self-closing tags: <Alert />, <YouTube id="..." />
-    body = re.sub(r'<[A-Z][A-Za-z]*[^>]*/>', '', body)
-    # Strip JSX block tags: <Alert>...</Alert>
-    body = re.sub(r'<[A-Z][A-Za-z]*[^>]*>.*?</[A-Z][A-Za-z]*>', '', body, flags=re.DOTALL)
-    # Strip MDX interpolations: {variable}
-    body = re.sub(r'\{[^}]*\}', '', body)
-    # Strip blockquotes: > text
-    body = re.sub(r'^>\s*', '', body, flags=re.MULTILINE)
-    # Strip unordered list markers: - item, * item
-    body = re.sub(r'^[-*]\s+', '', body, flags=re.MULTILINE)
-    # Strip ordered list markers: 1. item
-    body = re.sub(r'^\d+\.\s+', '', body, flags=re.MULTILINE)
-    body = re.sub(r'\n{3,}', '\n\n', body)
-    return body.strip()
-
-
-def find_first_image(content):
-    match = re.search(r'!\[.*?\]\((/images/blog/[^)]+)\)', content)
-    if not match:
-        return None
-    rel_path = match.group(1).lstrip("/")
-    abs_path = os.path.join(SCRIPT_DIR, "../../public", rel_path)
-    return abs_path if os.path.isfile(abs_path) else None
-
-
-def find_todays_post():
-    today = post_calendar_today_iso()
-    for root, _, files in os.walk(BLOG_POSTS_DIR):
-        for fname in files:
-            if not fname.endswith(('.mdx', '.md')):
-                continue
-            path = os.path.join(root, fname)
-            with open(path, 'r', encoding='utf-8') as f:
-                content = f.read()
-            fm = parse_frontmatter(content)
-            post_date = str(fm.get('date', ''))[:10]
-            if post_date == today:
-                slug = re.sub(r'\.(mdx|md)$', '', fname)
-                return fm.get('title', 'Untitled'), slug, content
-    return None, None, None
-
-
-def generate_linkedin_text(title, body_text):
-    client = genai.Client(api_key=os.environ['GEMINI_API_KEY'])
+def generate_linkedin_text(title: str, body_text: str) -> str:
+    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
     prompt = f"""You are a LinkedIn content writer for a software engineering blog.
 Write a LinkedIn post for the article titled "{title}".
 Rules:
-- 2-3 sentences maximum — be concise
+- 2-3 sentences maximum
 - One key insight or takeaway, no fluff
 - Professional but conversational tone
-- Do NOT include a URL (it will be added separately)
+- Do NOT include a URL
 - End with 2-3 relevant hashtags on their own line
 - Do not make it cringe or clickbaity
 - Never use this character: —
 - Invite the reader to check out the article
 
-Article content:
+    Article content:
 {body_text[:4000]}
 """
-    response = client.models.generate_content(model='gemini-2.5-flash', contents=prompt)
-    return response.text.strip()
+    response = client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
+    return require_generated_text(response.text)
 
 
-def upload_image_to_linkedin(image_path, person_id, token):
+def upload_image_to_linkedin(image_path: str, person_id: str, token: str) -> str:
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json",
@@ -111,136 +58,85 @@ def upload_image_to_linkedin(image_path, person_id, token):
         "registerUploadRequest": {
             "recipes": ["urn:li:digitalmediaRecipe:feedshare-image"],
             "owner": f"urn:li:person:{person_id}",
-            "serviceRelationships": [{
-                "relationshipType": "OWNER",
-                "identifier": "urn:li:userGeneratedContent"
-            }]
+            "serviceRelationships": [
+                {
+                    "relationshipType": "OWNER",
+                    "identifier": "urn:li:userGeneratedContent",
+                }
+            ],
         }
     }
-    resp = requests.post(
+    response = requests.post(
         "https://api.linkedin.com/v2/assets?action=registerUpload",
         headers=headers,
         json=register_payload,
     )
-    resp.raise_for_status()
-    data = resp.json()
+    response.raise_for_status()
+    data = response.json()
     upload_url = data["value"]["uploadMechanism"][
         "com.linkedin.digitalmedia.uploading.MediaUploadHttpRequest"
     ]["uploadUrl"]
     asset = data["value"]["asset"]
 
-    with open(image_path, "rb") as f:
-        put_resp = requests.put(
+    with open(image_path, "rb") as file_handle:
+        put_response = requests.put(
             upload_url,
             headers={"Authorization": f"Bearer {token}"},
-            data=f.read(),
+            data=file_handle.read(),
         )
-        put_resp.raise_for_status()
+        put_response.raise_for_status()
 
     print(f"Uploaded image to LinkedIn asset: {asset}")
     return asset
 
 
-def wait_for_blog_post_to_be_available(title, slug):
-    timeout_seconds = int(
-        os.environ.get("LINKEDIN_BLOG_WAIT_TIMEOUT_SECONDS", DEFAULT_WAIT_TIMEOUT_SECONDS)
-    )
-    interval_seconds = int(
-        os.environ.get("LINKEDIN_BLOG_WAIT_INTERVAL_SECONDS", DEFAULT_WAIT_INTERVAL_SECONDS)
-    )
-    deadline = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
-        seconds=timeout_seconds
-    )
-    url = f"{BLOG_BASE_URL}/{slug}"
-    expected_title = re.sub(r"\s+", " ", title).strip().lower()
-    last_error = "no response received"
-
-    while datetime.datetime.now(datetime.timezone.utc) < deadline:
-        try:
-            response = requests.get(
-                url,
-                timeout=20,
-                headers={"Cache-Control": "no-cache", "Pragma": "no-cache"},
-            )
-            normalized_html = re.sub(r"\s+", " ", response.text).lower()
-            if response.status_code == 200 and expected_title in normalized_html:
-                print(f"Confirmed blog post is publicly available: {url}")
-                return
-            last_error = (
-                f"status={response.status_code}; title_found={expected_title in normalized_html}"
-            )
-        except requests.RequestException as error:
-            last_error = str(error)
-
-        print(
-            f"Waiting for blog post to become available at {url} ({last_error}); retrying in {interval_seconds}s"
-        )
-        time_to_sleep_until = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
-            seconds=interval_seconds
-        )
-        while datetime.datetime.now(datetime.timezone.utc) < time_to_sleep_until:
-            remaining = (
-                time_to_sleep_until - datetime.datetime.now(datetime.timezone.utc)
-            ).total_seconds()
-            if remaining <= 0:
-                break
-            sleep_seconds = min(1, remaining)
-            time.sleep(sleep_seconds)
-
-    raise RuntimeError(
-        f"Timed out after {timeout_seconds}s waiting for blog post to become available at {url}. Last result: {last_error}"
-    )
-
-
-def post_to_linkedin(text, title, slug, asset_urn=None):
-    person_id = os.environ['LINKEDIN_PERSON_ID']
-    token = os.environ['LINKEDIN_ACCESS_TOKEN']
+def post_to_linkedin(text: str, slug: str, asset_urn: str | None = None) -> None:
+    person_id = os.environ["LINKEDIN_PERSON_ID"]
+    token = os.environ["LINKEDIN_ACCESS_TOKEN"]
     url = f"{BLOG_BASE_URL}/{slug}"
     full_text = f"New blog post: {url}\n\n{text}"
-    share_content = {
+    share_content: dict[str, Any] = {
         "shareCommentary": {"text": full_text},
         "shareMediaCategory": "IMAGE" if asset_urn else "NONE",
     }
     if asset_urn:
-        share_content["media"] = [{
-            "status": "READY",
-            "media": asset_urn,
-        }]
+        share_content["media"] = [{"status": "READY", "media": asset_urn}]
     payload = {
         "author": f"urn:li:person:{person_id}",
         "lifecycleState": "PUBLISHED",
-        "specificContent": {
-            "com.linkedin.ugc.ShareContent": share_content
-        },
-        "visibility": {"com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"}
+        "specificContent": {"com.linkedin.ugc.ShareContent": share_content},
+        "visibility": {"com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC"},
     }
-    resp = requests.post(
+    response = requests.post(
         "https://api.linkedin.com/v2/ugcPosts",
         headers={
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json",
-            "X-Restli-Protocol-Version": "2.0.0"
+            "X-Restli-Protocol-Version": "2.0.0",
         },
-        json=payload
+        json=payload,
     )
-    resp.raise_for_status()
-    print(f"Posted to LinkedIn: {resp.headers.get('X-RestLi-Id', resp.status_code)}")
+    response.raise_for_status()
+    print(f"Posted to LinkedIn: {response.headers.get('X-RestLi-Id', response.status_code)}")
 
 
 if __name__ == "__main__":
-    required_vars = ['GEMINI_API_KEY', 'LINKEDIN_ACCESS_TOKEN', 'LINKEDIN_PERSON_ID']
-    missing = [v for v in required_vars if not os.environ.get(v)]
+    required_vars = ["GEMINI_API_KEY", "LINKEDIN_ACCESS_TOKEN", "LINKEDIN_PERSON_ID"]
+    missing = [var_name for var_name in required_vars if not os.environ.get(var_name)]
     if missing:
         print(f"Error: Missing required environment variables: {', '.join(missing)}")
         sys.exit(1)
 
-    title, slug, content = find_todays_post()
+    title, slug, content = find_todays_post("LINKEDIN_POST_DATE_TZ")
     if not title:
         tz_label = (os.environ.get("LINKEDIN_POST_DATE_TZ") or "UTC").strip() or "UTC"
         print(
-            f"No post with date {post_calendar_today_iso()} (calendar day in {tz_label}) found. Skipping."
+            f"No post with date {post_calendar_today_iso('LINKEDIN_POST_DATE_TZ')} (calendar day in {tz_label}) found. Skipping."
         )
         sys.exit(0)
+    if slug is None or content is None:
+        raise RuntimeError("Matched LinkedIn post is missing slug or content")
+
     print(f"Found today's post: {title} ({slug})")
     body = strip_mdx(content)
     linkedin_text = generate_linkedin_text(title, body)
@@ -253,23 +149,25 @@ if __name__ == "__main__":
         try:
             asset_urn = upload_image_to_linkedin(
                 image_path,
-                os.environ['LINKEDIN_PERSON_ID'],
-                os.environ['LINKEDIN_ACCESS_TOKEN'],
+                os.environ["LINKEDIN_PERSON_ID"],
+                os.environ["LINKEDIN_ACCESS_TOKEN"],
             )
-        except requests.HTTPError as e:
-            print(f"Image upload failed ({e.response.status_code}), falling back to text-only post")
+        except requests.HTTPError as error:
+            print(
+                f"Image upload failed ({error.response.status_code}), falling back to text-only post"
+            )
     else:
         print("No blog image found, posting text-only")
 
     try:
-        wait_for_blog_post_to_be_available(title, slug)
-        post_to_linkedin(linkedin_text, title, slug, asset_urn=asset_urn)
-    except requests.HTTPError as e:
-        if e.response.status_code == 401:
+        wait_for_blog_post_to_be_available(title, slug, "LINKEDIN")
+        post_to_linkedin(linkedin_text, slug, asset_urn=asset_urn)
+    except requests.HTTPError as error:
+        if error.response.status_code == 401:
             print("LinkedIn token expired — rotate LINKEDIN_ACCESS_TOKEN")
         else:
-            print(f"LinkedIn API error {e.response.status_code}: {e.response.text}")
+            print(f"LinkedIn API error {error.response.status_code}: {error.response.text}")
         sys.exit(1)
-    except RuntimeError as e:
-        print(str(e))
+    except RuntimeError as error:
+        print(str(error))
         sys.exit(1)
