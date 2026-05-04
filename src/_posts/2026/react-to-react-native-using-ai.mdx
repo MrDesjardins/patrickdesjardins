@@ -1,0 +1,21 @@
+---
+title: "React to React Native using AI"
+date: "2026-05-05"
+categories:
+ - "ai"
+ - "react"
+ - "react-native"
+---
+
+Early in my career, I started with VB5 and VB6 before moving to web development using PHP. Since then, I have stayed focused on the web because the ease of distribution and the ability to reach millions of users across devices always felt like a major advantage. Throughout those years, the iPhone appeared and mobile applications became a gold rush starting in 2008. However, I was never compelled to invest much of my time there. The barrier to entry for iOS, such as the developer license and hardware requirements, combined with the fragmented languages between ecosystems, felt like the opposite of the web's philosophy. During my time at Microsoft and Netflix, I witnessed how challenging development was from coding to release, often requiring separate teams for each platform. The struggle to balance platform-specific paradigms with a company’s own UI design also reduced team efficiency. Furthermore, maintaining feature parity between ecosystems and the web was never particularly appealing.
+
+However, in 2026, with the rise of AI and the maturity of React Native allowing for cross-platform development, is the situation any better? I was not initially convinced and, to be honest, I am still not rushing into native development, but the barrier to entry is lower than ever. I recently led a professional project with a team of four developers where we built a React Native application for iOS and Android using the Expo framework within a few weeks. Expo assists with cross-platform features like over-the-air updates, while React Native allows us to code once using React-style components that are then compiled natively. The outcome looks great and performs better than alternatives like Capacitor.js, which would have simply wrapped our website. This was largely because our existing website and components were never designed for PWA applications. Otherwise, the conclusion might have been different.
+
+![](/images/blog/AI-React-Native-Speed.png)
+
+Nonetheless, AI using agentic coding provided a massive boost. Within our monorepository, we created a sibling folder to the web directory and, with very defined requirements, we experienced a significant first-week surge in productivity.
+
+We did hit a bump while reviewing the generated code, as we had to remove useless unit tests that were testing constant values and strip out features that were not yet part of the product. AI also allowed us to test the Expo framework in parallel with Capacitor.js so we could gain practical insights rather than relying on theory alone. Moving forward, we still maintain a velocity that surpasses teams not fully invested in agentic development. AI is not perfect, but neither are humans when coding manually. It moves very fast if you have clear requirements and an existing codebase, especially if you instruct the AI to add rules and documentation whenever it takes a wrong turn instead of simply fixing the error and moving on.
+
+
+
