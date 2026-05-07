@@ -3,7 +3,6 @@ import sys
 
 import requests
 from dotenv import load_dotenv
-from google import genai
 from requests_oauthlib import OAuth1
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -13,6 +12,7 @@ from social_common import (
     SCRIPT_DIR,
     find_first_image,
     find_todays_post,
+    generate_gemini_text,
     post_calendar_today_iso,
     strip_mdx,
     wait_for_blog_post_to_be_available,
@@ -32,14 +32,7 @@ def build_oauth1() -> OAuth1:
     )
 
 
-def require_generated_text(response_text: str | None) -> str:
-    if response_text is None:
-        raise RuntimeError("Gemini returned no text for the X post")
-    return response_text.strip()
-
-
 def generate_twitter_text(title: str, body_text: str) -> str:
-    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
     prompt = f"""You are writing a post for X for a software engineering blog article titled "{title}".
 Write a single post body before the URL is appended separately.
 Rules:
@@ -54,8 +47,7 @@ Rules:
 Article content:
 {body_text[:4000]}
 """
-    response = client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
-    return require_generated_text(response.text)
+    return generate_gemini_text(prompt, purpose="X post")
 
 
 def compose_tweet(text: str, slug: str) -> str:

@@ -32,7 +32,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/output
+          git add public/output public/philosophy-output
           git commit -m "Daily output update at 17:00 UTC" || echo "No changes to commit"
           git push
 

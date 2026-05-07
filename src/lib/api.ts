@@ -16,6 +16,10 @@ import { type ReactElement, type JSXElementConstructor } from "react";
 import { isDevelopment } from "../_utils/env";
 
 export const ROOT_POSTS_PATH = path.join(process.cwd(), "/src/_posts");
+export const ROOT_PHILOSOPHY_PATH = path.join(
+  process.cwd(),
+  "/src/_philosophy",
+);
 
 export interface Frontmatter {
   title: string;
@@ -37,23 +41,27 @@ export interface MdxData {
   frontmatter: Frontmatter;
 }
 
-export function getAllMdxFilesWithoutContent(): FileMetadata[] {
+/**
+ * Lists MDX/MD filenames under YEAR subfolders within a collection root.
+ */
+export function getAllMdxFilesWithoutContent(
+  collectionRoot: string = ROOT_POSTS_PATH,
+): FileMetadata[] {
   const files: FileMetadata[] = [];
   for (let y = FIRST_YEAR; y <= LAST_YEAR; y++) {
-    const filePath = `${ROOT_POSTS_PATH}/${y}`;
-    // Ensure that the directory exists (might not have any article for the year yet, especially on the change of year)
+    const filePath = path.join(collectionRoot, String(y));
     if (!fs.existsSync(filePath)) {
       continue;
     }
     const fules = fs
       .readdirSync(filePath)
-      .filter((path) => /\.mdx?$/.test(path));
+      .filter((p) => /\.mdx?$/.test(p));
     for (const f of fules) {
       files.push({
         year: y,
         date: y.toString(),
         fileName: f,
-        fullPathWithFileName: `${filePath}/${f}`,
+        fullPathWithFileName: path.join(filePath, f),
         slug: f.slice(0, f.lastIndexOf(".")),
       });
     }
@@ -124,10 +132,45 @@ export function getTotalPages(posts: MdxData[]): number {
   return totalPages;
 }
 
+async function fetchAllPostsFiltered(
+  collectionRoot: string,
+): Promise<MdxData[]> {
+  const post: Array<Promise<MdxData>> = [];
+  const postFilePaths = getAllMdxFilesWithoutContent(collectionRoot);
+  for (const p of postFilePaths) {
+    post.push(getMdxFileContent(p.fullPathWithFileName));
+  }
+  const posts = await Promise.all(post);
+  const today = new Date();
+  const blogUntil = isDevelopment()
+    ? new Date(today.getFullYear() + 1, today.getMonth(), today.getDate())
+    : today;
+  blogUntil.setUTCHours(23, 59, 59, 999);
+  return posts.filter((p) => new Date(p.metadata.date) <= blogUntil);
+}
+
 export async function getPostBySlug(slug: string): Promise<MdxData | undefined> {
   for (let y = LAST_YEAR; y >= FIRST_YEAR; y--) {
     for (const ext of [".mdx", ".md"]) {
-      const filePath = `${ROOT_POSTS_PATH}/${y}/${slug}${ext}`;
+      const filePath = path.join(ROOT_POSTS_PATH, String(y), `${slug}${ext}`);
+      if (fs.existsSync(filePath)) {
+        return await getMdxFileContent(filePath);
+      }
+    }
+  }
+  return undefined;
+}
+
+export async function getPhilosophyPostBySlug(
+  slug: string,
+): Promise<MdxData | undefined> {
+  for (let y = LAST_YEAR; y >= FIRST_YEAR; y--) {
+    for (const ext of [".mdx", ".md"]) {
+      const filePath = path.join(
+        ROOT_PHILOSOPHY_PATH,
+        String(y),
+        `${slug}${ext}`,
+      );
       if (fs.existsSync(filePath)) {
         return await getMdxFileContent(filePath);
       }
@@ -137,25 +180,28 @@ export async function getPostBySlug(slug: string): Promise<MdxData | undefined> 
 }
 
 let getAllPostsResult: MdxData[] | undefined;
+let getAllPhilosophyPostsResult: MdxData[] | undefined;
+
 /**
- * Get all MDX files content and metadata.
+ * Get all MDX files content and metadata for the technical blog (`src/_posts`).
  * Optimized to do the I/O only once.
  * Only return the posts that are not in the future.
  * Returns a copy of the cached array so callers cannot mutate the cache.
- * @returns
  */
 export async function getAllPosts(): Promise<MdxData[]> {
   if (getAllPostsResult === undefined) {
-    const post: Array<Promise<MdxData>> = [];
-    const postFilePaths = getAllMdxFilesWithoutContent();
-    for (const p of postFilePaths) {
-      post.push(getMdxFileContent(p.fullPathWithFileName));
-    }
-    const posts = await Promise.all(post);
-    const today = new Date();
-    const blogUntil = isDevelopment()? new Date(today.getFullYear()+1, today.getMonth(), today.getDate()):today;
-    blogUntil.setUTCHours(23, 59, 59, 999);
-    getAllPostsResult = posts.filter((p) => new Date(p.metadata.date) <= blogUntil);
+    getAllPostsResult = await fetchAllPostsFiltered(ROOT_POSTS_PATH);
   }
   return [...getAllPostsResult];
+}
+
+/**
+ * Get all philosophy MDX posts from `src/_philosophy`, with the same rules as {@link getAllPosts}.
+ */
+export async function getAllPhilosophyPosts(): Promise<MdxData[]> {
+  if (getAllPhilosophyPostsResult === undefined) {
+    getAllPhilosophyPostsResult =
+      await fetchAllPostsFiltered(ROOT_PHILOSOPHY_PATH);
+  }
+  return [...getAllPhilosophyPostsResult];
 }

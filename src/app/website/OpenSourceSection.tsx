@@ -8,7 +8,7 @@ export const OpenSourceSection = (): React.ReactElement => {
       id="open-source"
       className={clsx(styles.sectionMainpage, styles.sectionVisualOne)}
     >
-      <header>Open Source</header>
+      <h2>Open Source</h2>
       <div className={styles.sectionFixedWitdh}>
         <CardFixedWidth
           title="Python Discord Schedule Bot"

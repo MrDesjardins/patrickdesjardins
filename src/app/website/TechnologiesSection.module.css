@@ -9,7 +9,7 @@
 
 @media only screen and (max-width: 500px) {
   .technologiesColumn {
-    max-width: --var(--size-column);
+    max-width: var(--size-column);
     grid-template-columns: none;
   }
 }

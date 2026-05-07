@@ -21,7 +21,7 @@ export const ContactSection = (): React.ReactElement => {
       id="contact"
       className={clsx(
         styles.sectionMainpage,
-        styles.sectionVisualTwo,
+        styles.sectionVisualOne,
         styles2.contactSection,
       )}
     >
@@ -37,7 +37,7 @@ export const ContactSection = (): React.ReactElement => {
 
         <div className={styles2.contactDetail}>
           <FontAwesomeIcon icon={faMapMarker} />
-          <h5>United States, California, San Jose</h5>
+          <h5>United States, California</h5>
         </div>
       </div>
       <div className={styles2.contactContainer2}>

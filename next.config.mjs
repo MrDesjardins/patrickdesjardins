@@ -39,7 +39,9 @@ const nextConfig = {
         apply(compiler) {
           compiler.hooks.thisCompilation.tap("MDXWatcher", (compilation) => {
             const postsDir = path.resolve(__dirname, "src/_posts");
+            const philosophyDir = path.resolve(__dirname, "src/_philosophy");
             compilation.contextDependencies.add(postsDir);
+            compilation.contextDependencies.add(philosophyDir);
           });
         },
       });

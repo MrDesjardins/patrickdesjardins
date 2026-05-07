@@ -16,21 +16,28 @@ This creates `tools/.venv/` and `tools/uv.lock`. Commit `uv.lock` to keep builds
 
 ## search
 
-Generates a semantic search index over all blog posts in `src/_posts/`.
+Generates semantic search indexes for:
 
-**Generate the index:**
+- Technical blog posts in `src/_posts/` → `tools/search/output/` (local, NumPy) and `public/output/` (site, JSON)
+- Philosophy posts in `src/_philosophy/` → `tools/search/output-philosophy/` and `public/philosophy-output/`
+
+**Generate both indexes:**
 
 ```bash
 uv run --directory tools python tools/search/main.py generate
 ```
 
-**Search the index:**
+**Search the technical blog index:**
 
 ```bash
 uv run --directory tools python tools/search/main.py search "your query here"
 ```
 
-Output files are written to `tools/search/output/` (local) and `public/output/` (website).
+**Search the philosophy index:**
+
+```bash
+uv run --directory tools python tools/search/main.py search philosophy "your query here"
+```
 
 ---
 

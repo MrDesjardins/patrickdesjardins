@@ -1,0 +1,30 @@
+.blogEntry {
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--blog-section-border-color);
+}
+
+.blogEntry:last-child {
+  border-bottom: none;
+}
+
+.blogEntryArticleTitle {
+  margin: 0 0 6px;
+}
+
+.blogEntryArticleTitle a {
+  color: var(--blog-title-foreground-color);
+  text-decoration: none;
+}
+
+.blogEntryArticleTitle a:hover {
+  text-decoration: underline;
+}
+
+.blogEntryDetails {
+  color: var(--blog-date-foreground-color);
+}
+
+.blogEntryDate {
+  margin-right: 8px;
+}

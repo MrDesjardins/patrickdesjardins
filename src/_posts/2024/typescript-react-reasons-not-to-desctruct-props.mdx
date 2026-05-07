@@ -83,7 +83,7 @@ export default async function MyComponent({
 
 # Reason 2: Variable Origin
 
-React component tends to get large with state and effects. When you have a large component, it is hard to know where the variable comes from. Is it a prop, a state, or a variable and the parameters of an event? While looking at the component is the key, it is easier to know where the variable comes from when you don't use property destruction—keeping the object you know with certainty that the variable is coming from the props. The following code is short, but if it had 400 lines, it would be more work to find out where the value is coming from. Doing a pull request review is a case where the whole file is not always visible, and having the object clarify at first glance where the variable is coming from.
+React component tends to get large with state and effects. When you have a large component, it is hard to know where the variable comes from. Is it a prop, a state, or a variable and the parameters of an event? While looking at the component is the key, it is easier to know where the variable comes from when you don't use property destruction, keeping the object you know with certainty that the variable is coming from the props. The following code is short, but if it had 400 lines, it would be more work to find out where the value is coming from. Doing a pull request review is a case where the whole file is not always visible, and having the object clarify at first glance where the variable is coming from.
 
 ```tsx {4}
 export function MyComponent(props: MyComponentProps): ReactElement {

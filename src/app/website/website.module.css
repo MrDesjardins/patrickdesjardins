@@ -41,6 +41,35 @@ section.contactSection a:hover {
   line-height: 2.5rem;
 }
 
+.sectionPhilosophySub {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 400;
+  font-size: 1.15rem;
+  color: var(--text-color1);
+  text-align: center;
+  margin: 28px auto 36px;
+  max-width: 36rem;
+  font-style: italic;
+}
+
+.sectionPhilosophyCta {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.sectionPhilosophyCta a {
+  font-family: "Oswald";
+  font-size: 1.35rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-color3);
+  text-decoration: none;
+}
+
+.sectionPhilosophyCta a:hover {
+  color: var(--link-background1);
+}
+
 .sectionMainpage h3,
 .sectionMainpage h5 {
   color: var(--text-color3);
@@ -99,17 +128,17 @@ section.contactSection a:hover {
   text-align: center;
 }
 .cardFixedWidthImageImg {
-  max-width: --var(--size-column);
+  max-width: var(--size-column);
 }
 
 .sectionSingleFixedWidth {
-  max-width: --var(--size-column);
+  max-width: var(--size-column);
   margin: auto;
 }
 
 @media only screen and (max-width: 500px) {
   .cardWithImageContainer {
-    max-width: --var(--size-column);
+    max-width: var(--size-column);
     grid-template-columns: none;
   }
 }

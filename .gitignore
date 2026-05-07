@@ -40,6 +40,7 @@ Thumbs.db
 
 /tools/search/.venv
 /tools/search/output
+/tools/search/output-philosophy
 
 .env*.Zone.Identifier
 

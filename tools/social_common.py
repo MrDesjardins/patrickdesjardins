@@ -1,5 +1,6 @@
 import datetime
 import os
+import random
 import re
 import sys
 import time
@@ -14,6 +15,9 @@ BLOG_POSTS_DIR = os.path.join(SCRIPT_DIR, "../src/_posts/")
 BLOG_BASE_URL = "https://patrickdesjardins.com/blog"
 DEFAULT_WAIT_TIMEOUT_SECONDS = 600
 DEFAULT_WAIT_INTERVAL_SECONDS = 15
+GEMINI_RETRY_MAX_ATTEMPTS = 6
+GEMINI_RETRY_BASE_DELAY_SECONDS = 5
+GEMINI_RETRY_MAX_DELAY_SECONDS = 60
 
 
 def post_calendar_today_iso(env_var_name: str, default_tz_name: str = "UTC") -> str:
@@ -84,6 +88,52 @@ def find_post_by_calendar_date(target_date: str) -> tuple[str | None, str | None
 def find_todays_post(tz_env_var_name: str) -> tuple[str | None, str | None, str | None]:
     today = post_calendar_today_iso(tz_env_var_name)
     return find_post_by_calendar_date(today)
+
+
+def generate_gemini_text(
+    prompt: str,
+    *,
+    purpose: str,
+    model: str = "gemini-2.5-flash",
+    max_attempts: int = GEMINI_RETRY_MAX_ATTEMPTS,
+) -> str:
+    """Call Gemini's generate_content with retry/backoff on transient server errors.
+
+    The Gemini API frequently returns 503 UNAVAILABLE under load. We retry with
+    exponential backoff so a brief spike does not break the daily CI workflow.
+    """
+    from google import genai
+    from google.genai import errors as genai_errors
+
+    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+    last_error: Exception | None = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            response = client.models.generate_content(model=model, contents=prompt)
+        except genai_errors.ServerError as error:
+            last_error = error
+            if attempt == max_attempts:
+                break
+            delay = min(
+                GEMINI_RETRY_MAX_DELAY_SECONDS,
+                GEMINI_RETRY_BASE_DELAY_SECONDS * (2 ** (attempt - 1)),
+            ) + random.uniform(0, 1)
+            print(
+                f"Gemini {purpose} request failed with server error "
+                f"(attempt {attempt}/{max_attempts}): {error}; retrying in {delay:.1f}s",
+                file=sys.stderr,
+            )
+            time.sleep(delay)
+            continue
+        text = response.text
+        if text is None:
+            raise RuntimeError(f"Gemini returned no text for the {purpose}")
+        return text.strip()
+
+    assert last_error is not None
+    raise RuntimeError(
+        f"Gemini {purpose} request failed after {max_attempts} attempts: {last_error}"
+    ) from last_error
 
 
 def wait_for_blog_post_to_be_available(title: str, slug: str, env_prefix: str) -> None:

@@ -4,7 +4,6 @@ from typing import Any
 
 import requests
 from dotenv import load_dotenv
-from google import genai
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -13,6 +12,7 @@ from social_common import (
     SCRIPT_DIR,
     find_first_image,
     find_todays_post,
+    generate_gemini_text,
     post_calendar_today_iso,
     strip_mdx,
     wait_for_blog_post_to_be_available,
@@ -21,14 +21,7 @@ from social_common import (
 load_dotenv(os.path.join(SCRIPT_DIR, "../.env"))
 
 
-def require_generated_text(response_text: str | None) -> str:
-    if response_text is None:
-        raise RuntimeError("Gemini returned no text for the LinkedIn post")
-    return response_text.strip()
-
-
 def generate_linkedin_text(title: str, body_text: str) -> str:
-    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
     prompt = f"""You are a LinkedIn content writer for a software engineering blog.
 Write a LinkedIn post for the article titled "{title}".
 Rules:
@@ -44,8 +37,7 @@ Rules:
     Article content:
 {body_text[:4000]}
 """
-    response = client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
-    return require_generated_text(response.text)
+    return generate_gemini_text(prompt, purpose="LinkedIn post")
 
 
 def upload_image_to_linkedin(image_path: str, person_id: str, token: str) -> str:

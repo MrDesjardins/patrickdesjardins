@@ -4,6 +4,7 @@ import {
   extractYearFromStringDate,
   getTotalPages,
   getAllMdxFilesWithoutContent,
+  ROOT_PHILOSOPHY_PATH,
   type MdxData,
 } from "./api";
 
@@ -80,6 +81,16 @@ describe("getAllMdxFilesWithoutContent", () => {
       expect(first).toHaveProperty("fullPathWithFileName");
       expect(first.fileName.endsWith(".mdx") || first.fileName.endsWith(".md")).toBe(true);
       expect(first.slug).not.toContain(".");
+    }
+  });
+
+  it("accepts a custom collection root for philosophy posts", () => {
+    const result = getAllMdxFilesWithoutContent(ROOT_PHILOSOPHY_PATH);
+    expect(Array.isArray(result)).toBe(true);
+    if (result.length > 0) {
+      expect(result.every((e) => e.fullPathWithFileName.includes("_philosophy"))).toBe(
+        true,
+      );
     }
   });
 });

@@ -139,7 +139,7 @@ curl -X POST http://localhost:3000/api/query \
 
 I relied on Claude for the indexing portion to avoid spending too much time learning Weaviate internals. Weaviate runs in a Docker container and has a dedicated collection for Trilium notes. A YAML configuration file exposes several options, including the embedding provider.
 
-In my case, I use `sentence-transformers`, which runs locally and splits text by sentence boundaries with a configurable maximum chunk size. Running embeddings locally keeps costs low. Only the final LLM call—containing the user question and the retrieved context is sent to OpenAI. Since I query the system infrequently, the overall cost remains minimal.
+In my case, I use `sentence-transformers`, which runs locally and splits text by sentence boundaries with a configurable maximum chunk size. Running embeddings locally keeps costs low. Only the final LLM call, containing the user question and the retrieved context is sent to OpenAI. Since I query the system infrequently, the overall cost remains minimal.
 
 The querying logic is similar to a standard ChatGPT request. It includes a system prompt, followed by contextual note excerpts retrieved from Weaviate, and finally the user’s question:
 

@@ -50,6 +50,11 @@ export function BlogBody(props: BlogBodyProps): React.ReactElement {
               Search
             </Link>
           </li>
+          <li className={styles.navLinkItem}>
+            <Link className={styles.navLinkText} href="/philosophy">
+              Philosophy
+            </Link>
+          </li>
           {years.map((y) => {
             return (
               <li key={y} className={styles.navLinkItem}>

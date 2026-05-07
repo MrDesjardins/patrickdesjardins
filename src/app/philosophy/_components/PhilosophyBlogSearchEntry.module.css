@@ -1,0 +1,17 @@
+.blogSearchEntry {
+  margin-bottom: 20px;
+}
+
+.blogSearchEntryArticleTitle {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.blogSearchEntryArticleTitle a {
+  color: var(--link-foreground-color);
+  text-decoration: none;
+}
+
+.blogSearchEntryArticleTitle a:hover {
+  text-decoration: underline;
+}

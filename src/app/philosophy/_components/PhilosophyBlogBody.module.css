@@ -1,0 +1,125 @@
+.blogBodyShell {
+  margin: auto;
+  padding-top: 28px;
+  padding-bottom: 48px;
+  max-width: 42rem;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+@media only screen and (max-width: 800px) {
+  .main {
+    width: 100%;
+    margin: auto;
+  }
+}
+
+.siteTitle {
+  font-size: 2em;
+  letter-spacing: 0.02em;
+  color: var(--blog-title-foreground-color);
+  font-weight: 600;
+  margin: 0 0 4px;
+  font-variant-caps: small-caps;
+}
+
+.siteSubtitle {
+  font-size: 0.95em;
+  color: var(--blog-date-foreground-color);
+  font-style: italic;
+  margin: 0 0 20px;
+  font-family: Georgia, serif;
+}
+
+.paperEdge {
+  border: 1px solid var(--blog-section-border-color);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.04),
+    0 8px 24px rgba(0, 0, 0, 0.06);
+  padding: 20px 20px 8px;
+  margin-bottom: 24px;
+}
+
+.navLinks {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  gap: 2px 0;
+}
+
+.navLinkItem {
+  display: flex;
+  align-items: center;
+}
+
+.navLinkText {
+  color: var(--link-foreground-color);
+  margin-right: 10px;
+  padding: 2px 6px;
+  display: inline-block;
+  font-size: 0.92em;
+  text-decoration: none;
+}
+
+.navLinkText:hover {
+  text-decoration: underline;
+}
+
+.currentLink {
+  background-color: var(--current-link-background-color);
+  border-radius: 3px;
+}
+
+.main {
+  margin-top: 8px;
+}
+
+.heading {
+  color: var(--blog-title-foreground-color);
+  font-size: 1.35em;
+  font-weight: 600;
+  margin-top: 0;
+}
+
+.paginationBar {
+  margin-top: 36px;
+}
+
+.paginationTitle {
+  padding-top: 8px;
+  border-top: 1px solid var(--blog-section-border-color);
+  color: var(--blog-title-foreground-color);
+  font-size: 1em;
+  font-variant-caps: small-caps;
+  letter-spacing: 0.06em;
+}
+
+.paginationBar a {
+  margin-left: 4px;
+  padding: 4px 10px;
+  font-size: 0.95em;
+  line-height: 28px;
+  display: inline-block;
+  color: var(--link-foreground-color);
+}
+
+.paginationBar a:hover {
+  background-color: var(--current-link-background-color);
+  border-radius: 3px;
+}
+
+.paginationLinks {
+  margin-top: 8px;
+}
+
+.totalPosts {
+  margin-top: 16px;
+  margin-bottom: 16px;
+  color: var(--blog-date-foreground-color);
+  font-size: 0.92em;
+  font-style: italic;
+}

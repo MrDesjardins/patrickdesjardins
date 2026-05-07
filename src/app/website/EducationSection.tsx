@@ -16,7 +16,7 @@ export const EducationSection = (): React.ReactElement => {
         styles2.educationSection,
       )}
     >
-      <header>Education</header>
+      <h2>Education</h2>
       <div className={styles.sectionFixedWitdh}>
         <ul>
           <li>

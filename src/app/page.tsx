@@ -1,6 +1,7 @@
 import Image from "next/image";
 import styles from "./layout.module.css";
 import { AboutMeSection } from "./website/AboutMeSection";
+import { PhilosophySection } from "./website/PhilosophySection";
 import { AchievementsSection } from "./website/AchievementsSection";
 import { BookSection } from "./website/BookSection";
 import { ConferencesSection } from "./website/ConferencesSection";
@@ -59,6 +60,9 @@ export default function Index(): React.ReactElement {
             <Link href="/blog" className={styles.topHeaderBlog}>
               Blog
             </Link>
+            <Link href="/philosophy" className={styles.topHeaderBlog}>
+              Philosophy
+            </Link>
           </header>
         </nav>
 
@@ -100,6 +104,7 @@ export default function Index(): React.ReactElement {
         <EducationSection />
         <HistorySection />
         <ConferencesSection />
+        <PhilosophySection />
         <ContactSection />
       </main>
     </div>
