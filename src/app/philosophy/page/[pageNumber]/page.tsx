@@ -24,7 +24,7 @@ export async function generateStaticParams(): Promise<
   Array<{ pageNumber: string }>
 > {
   const posts = await getAllPhilosophyPosts();
-  const totalPagesCount = getTotalPages(posts);
+  const totalPagesCount = Math.max(1, getTotalPages(posts));
   const result = [];
   for (let i = 1; i <= totalPagesCount; i++) {
     result.push(i);

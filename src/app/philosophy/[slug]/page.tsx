@@ -9,12 +9,21 @@ import styles from "./Page.module.css";
 import "../../blog/[slug]/linenumber.css";
 import "./paper-prism.css";
 
+const EMPTY_PHILOSOPHY_SLUG = "__no-published-essays";
+
 interface Props {
   params: { slug: string };
   searchParams: Record<string, string | string[] | undefined>;
 }
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
+  if (props.params.slug === EMPTY_PHILOSOPHY_SLUG) {
+    return {
+      title: "Philosophy — Patrick Desjardins",
+      description: "Essays and notes on philosophy by Patrick Desjardins.",
+    };
+  }
+
   const post = await getPhilosophyPostBySlug(props.params.slug);
   if (post === undefined) {
     throw new Error("Philosophy post not found");
@@ -28,6 +37,9 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
 export async function generateStaticParams(): Promise<Array<{ slug: string }>> {
   const posts = await getAllPhilosophyPosts();
+  if (posts.length === 0) {
+    return [{ slug: EMPTY_PHILOSOPHY_SLUG }];
+  }
   return posts.map((p) => ({ slug: p.metadata.slug }));
 }
 
@@ -36,7 +48,19 @@ export default async function Page(props: {
 }): Promise<React.ReactElement> {
   const posts = await getAllPhilosophyPosts();
   const totalPages = getTotalPages(posts);
-  const post = posts.find((p) => p.metadata.slug === props.params.slug);
+  const post = await getPhilosophyPostBySlug(props.params.slug);
+  if (post === undefined && props.params.slug === EMPTY_PHILOSOPHY_SLUG) {
+    return (
+      <PhilosophyBlogBody totalPages={totalPages} topTitle="Essays">
+        <div className={styles.blogPostContainer}>
+          <p className={styles.blogPostDate}>
+            No philosophy essays are published yet.
+          </p>
+        </div>
+      </PhilosophyBlogBody>
+    );
+  }
+
   if (post === undefined) {
     throw new Error("Philosophy post not found");
   }
