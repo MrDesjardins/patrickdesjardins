@@ -5,6 +5,8 @@ on:
 
 jobs:
   post:
+    # Disabled for now. Remove this guard to reactivate philosophy LinkedIn posts.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
