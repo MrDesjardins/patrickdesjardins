@@ -1,6 +1,5 @@
-name: X post (manual)
+name: X philosophy post (manual)
 
-# Re-run when the scheduled job hit Gemini/X errors without rebuilding the site.
 on:
   workflow_dispatch:
 
@@ -20,14 +19,14 @@ jobs:
         run: uv sync
         working-directory: tools
 
-      - name: Post today's article to X
+      - name: Post today's philosophy essay to X
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
           TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET }}
           TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
           TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
-          SOCIAL_POST_CONTENT_KIND: blog
+          SOCIAL_POST_CONTENT_KIND: philosophy
           TWITTER_POST_DATE_TZ: America/Los_Angeles
         run: uv run python twitter/post.py
         working-directory: tools

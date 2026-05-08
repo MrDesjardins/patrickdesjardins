@@ -8,11 +8,13 @@ from dotenv import load_dotenv
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from social_common import (
-    BLOG_BASE_URL,
     SCRIPT_DIR,
+    build_post_url,
+    format_category_hashtag,
     find_first_image,
     find_todays_post,
     generate_gemini_text,
+    get_social_content_kind,
     post_calendar_today_iso,
     strip_mdx,
     wait_for_blog_post_to_be_available,
@@ -34,7 +36,29 @@ Rules:
 - Never use this character: —
 - Invite the reader to check out the article
 
-    Article content:
+Article content:
+{body_text[:4000]}
+"""
+    return generate_gemini_text(prompt, purpose="LinkedIn post")
+
+
+def generate_philosophy_linkedin_text(
+    title: str, body_text: str, category_hashtag: str | None
+) -> str:
+    hashtag_line = category_hashtag or "#philosophy"
+    prompt = f"""You are a LinkedIn content writer for a philosophical essay.
+Write a LinkedIn post for the philosophical essay titled "{title}".
+Rules:
+- 1-2 sentences maximum
+- Explicitly call it a philosophical essay
+- Briefly describe the essay's topic in 1-2 concise sentences
+- Professional but conversational tone
+- Do NOT include a URL
+- End with exactly this hashtag on its own line: {hashtag_line}
+- Do not make it cringe or clickbaity
+- Never use this character: —
+
+Essay content:
 {body_text[:4000]}
 """
     return generate_gemini_text(prompt, purpose="LinkedIn post")
@@ -85,8 +109,11 @@ def upload_image_to_linkedin(image_path: str, person_id: str, token: str) -> str
 def post_to_linkedin(text: str, slug: str, asset_urn: str | None = None) -> None:
     person_id = os.environ["LINKEDIN_PERSON_ID"]
     token = os.environ["LINKEDIN_ACCESS_TOKEN"]
-    url = f"{BLOG_BASE_URL}/{slug}"
-    full_text = f"New blog post: {url}\n\n{text}"
+    url = build_post_url(slug)
+    if get_social_content_kind() == "philosophy":
+        full_text = f"{text}\n\n{url}"
+    else:
+        full_text = f"New blog post: {url}\n\n{text}"
     share_content: dict[str, Any] = {
         "shareCommentary": {"text": full_text},
         "shareMediaCategory": "IMAGE" if asset_urn else "NONE",
@@ -119,19 +146,25 @@ if __name__ == "__main__":
         print(f"Error: Missing required environment variables: {', '.join(missing)}")
         sys.exit(1)
 
-    title, slug, content = find_todays_post("LINKEDIN_POST_DATE_TZ")
+    title, slug, content, frontmatter = find_todays_post("LINKEDIN_POST_DATE_TZ")
     if not title:
         tz_label = (os.environ.get("LINKEDIN_POST_DATE_TZ") or "UTC").strip() or "UTC"
+        content_kind = get_social_content_kind()
         print(
-            f"No post with date {post_calendar_today_iso('LINKEDIN_POST_DATE_TZ')} (calendar day in {tz_label}) found. Skipping."
+            f"No {content_kind} post with date {post_calendar_today_iso('LINKEDIN_POST_DATE_TZ')} (calendar day in {tz_label}) found. Skipping."
         )
         sys.exit(0)
-    if slug is None or content is None:
+    if slug is None or content is None or frontmatter is None:
         raise RuntimeError("Matched LinkedIn post is missing slug or content")
 
     print(f"Found today's post: {title} ({slug})")
     body = strip_mdx(content)
-    linkedin_text = generate_linkedin_text(title, body)
+    if get_social_content_kind() == "philosophy":
+        linkedin_text = generate_philosophy_linkedin_text(
+            title, body, format_category_hashtag(frontmatter)
+        )
+    else:
+        linkedin_text = generate_linkedin_text(title, body)
     print("Generated LinkedIn text:\n", linkedin_text)
 
     asset_urn = None

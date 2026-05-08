@@ -8,11 +8,13 @@ from requests_oauthlib import OAuth1
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from social_common import (
-    BLOG_BASE_URL,
     SCRIPT_DIR,
+    build_post_url,
+    format_category_hashtag,
     find_first_image,
     find_todays_post,
     generate_gemini_text,
+    get_social_content_kind,
     post_calendar_today_iso,
     strip_mdx,
     wait_for_blog_post_to_be_available,
@@ -50,8 +52,30 @@ Article content:
     return generate_gemini_text(prompt, purpose="X post")
 
 
+def generate_philosophy_twitter_text(
+    title: str, body_text: str, category_hashtag: str | None
+) -> str:
+    hashtag_line = category_hashtag or "#philosophy"
+    prompt = f"""You are writing a post for X about a philosophy essay titled "{title}".
+Write a single post body before the URL is appended separately.
+Rules:
+- 1-2 sentences maximum
+- Explicitly call it a philosophical essay
+- Briefly describe the essay's topic in 1-2 concise sentences
+- No fluff, no clickbait, no emojis
+- Do NOT include a URL
+- End with exactly this hashtag: {hashtag_line}
+- Never use this character: —
+- Keep it comfortably under 220 characters
+
+Essay content:
+{body_text[:4000]}
+"""
+    return generate_gemini_text(prompt, purpose="X post")
+
+
 def compose_tweet(text: str, slug: str) -> str:
-    url = f"{BLOG_BASE_URL}/{slug}"
+    url = build_post_url(slug)
     normalized_text = " ".join(text.split())
     available_length = TWEET_MAX_LENGTH - len(url) - 1
     if available_length <= 0:
@@ -103,19 +127,25 @@ if __name__ == "__main__":
         print(f"Error: Missing required environment variables: {', '.join(missing)}")
         sys.exit(1)
 
-    title, slug, content = find_todays_post("TWITTER_POST_DATE_TZ")
+    title, slug, content, frontmatter = find_todays_post("TWITTER_POST_DATE_TZ")
     if not title:
         tz_label = (os.environ.get("TWITTER_POST_DATE_TZ") or "UTC").strip() or "UTC"
+        content_kind = get_social_content_kind()
         print(
-            f"No post with date {post_calendar_today_iso('TWITTER_POST_DATE_TZ')} (calendar day in {tz_label}) found. Skipping."
+            f"No {content_kind} post with date {post_calendar_today_iso('TWITTER_POST_DATE_TZ')} (calendar day in {tz_label}) found. Skipping."
         )
         sys.exit(0)
-    if slug is None or content is None:
+    if slug is None or content is None or frontmatter is None:
         raise RuntimeError("Matched X post is missing slug or content")
 
     print(f"Found today's post: {title} ({slug})")
     body = strip_mdx(content)
-    twitter_text = generate_twitter_text(title, body)
+    if get_social_content_kind() == "philosophy":
+        twitter_text = generate_philosophy_twitter_text(
+            title, body, format_category_hashtag(frontmatter)
+        )
+    else:
+        twitter_text = generate_twitter_text(title, body)
     tweet = compose_tweet(twitter_text, slug)
     print("Generated X post:\n", tweet)
 

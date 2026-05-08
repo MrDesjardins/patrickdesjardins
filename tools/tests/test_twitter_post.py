@@ -5,6 +5,7 @@ import sys
 import types
 import unittest
 from importlib import import_module
+from unittest.mock import patch
 
 google_module = types.ModuleType("google")
 genai_module = types.ModuleType("genai")
@@ -33,6 +34,12 @@ class TwitterPostTests(unittest.TestCase):
     def test_compose_tweet_appends_url(self):
         tweet = compose_tweet("Short insight #python", "my-post")
         self.assertIn("https://patrickdesjardins.com/blog/my-post", tweet)
+        self.assertLessEqual(len(tweet), 280)
+
+    def test_compose_tweet_uses_philosophy_url_when_selected(self):
+        with patch.dict("os.environ", {"SOCIAL_POST_CONTENT_KIND": "philosophy"}, clear=False):
+            tweet = compose_tweet("Short philosophy note #fable", "my-post")
+        self.assertIn("https://patrickdesjardins.com/philosophy/my-post", tweet)
         self.assertLessEqual(len(tweet), 280)
 
     def test_compose_tweet_truncates_long_text(self):

@@ -1,6 +1,5 @@
-name: LinkedIn post (manual)
+name: LinkedIn philosophy post (manual)
 
-# Re-run when the scheduled job hit Gemini/LinkedIn errors without rebuilding the site.
 on:
   workflow_dispatch:
 
@@ -20,12 +19,12 @@ jobs:
         run: uv sync
         working-directory: tools
 
-      - name: Post today's article to LinkedIn
+      - name: Post today's philosophy essay to LinkedIn
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
           LINKEDIN_PERSON_ID: ${{ secrets.LINKEDIN_PERSON_ID }}
-          SOCIAL_POST_CONTENT_KIND: blog
+          SOCIAL_POST_CONTENT_KIND: philosophy
           LINKEDIN_POST_DATE_TZ: America/Los_Angeles
         run: uv run python linkedin/post.py
         working-directory: tools

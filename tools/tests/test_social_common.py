@@ -3,7 +3,13 @@ import types
 import unittest
 from unittest.mock import patch
 
-from social_common import find_first_image, parse_frontmatter, strip_mdx
+from social_common import (
+    build_post_url,
+    find_first_image,
+    format_category_hashtag,
+    parse_frontmatter,
+    strip_mdx,
+)
 
 
 class _FakeGenaiServerError(Exception):
@@ -88,6 +94,30 @@ console.log("test");
     def test_find_first_image_returns_none_when_missing(self):
         content = "No image here"
         self.assertIsNone(find_first_image(content))
+
+    def test_format_category_hashtag_uses_first_category(self):
+        frontmatter = {"categories": ["social commentary", "fable"]}
+        self.assertEqual(format_category_hashtag(frontmatter), "#socialcommentary")
+
+    def test_build_post_url_uses_blog_by_default(self):
+        self.assertEqual(
+            build_post_url("my-post"),
+            "https://patrickdesjardins.com/blog/my-post",
+        )
+
+    def test_build_post_url_uses_philosophy_when_selected(self):
+        with patch.dict("os.environ", {"SOCIAL_POST_CONTENT_KIND": "philosophy"}, clear=False):
+            self.assertEqual(
+                build_post_url("the-many-kingdoms-of-the-meadow"),
+                "https://patrickdesjardins.com/philosophy/the-many-kingdoms-of-the-meadow",
+            )
+
+    def test_invalid_social_content_kind_raises(self):
+        from social_common import get_social_content_kind
+
+        with patch.dict("os.environ", {"SOCIAL_POST_CONTENT_KIND": "unknown"}, clear=False):
+            with self.assertRaises(ValueError):
+                get_social_content_kind()
 
 
 class GenerateGeminiTextTests(unittest.TestCase):

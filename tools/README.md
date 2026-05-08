@@ -43,7 +43,7 @@ uv run --directory tools python tools/search/main.py search philosophy "your que
 
 ## linkedin
 
-Posts a new article to LinkedIn. Detects any post in `src/_posts/` whose `date` frontmatter matches today, generates a summary via Gemini, and publishes via the LinkedIn UGC API.
+Posts a new item to LinkedIn. By default, it posts technical blog posts from `src/_posts/`. Set `SOCIAL_POST_CONTENT_KIND=philosophy` to post philosophy essays from `src/_philosophy/` with the philosophy-specific prompt and first MDX image when present.
 
 **Post today's article:**
 
@@ -64,6 +64,7 @@ Required environment variables:
 | `GEMINI_API_KEY` | Gemini API key |
 | `LINKEDIN_ACCESS_TOKEN` | LinkedIn OAuth 2.0 token (expires after ~60 days) |
 | `LINKEDIN_PERSON_ID` | Your LinkedIn person ID (from `get_id.py`) |
+| `SOCIAL_POST_CONTENT_KIND` | Optional. Content source to post from. Default: `blog`. Supported: `philosophy`, `blog`. Set to `philosophy` for the essay-specific behavior. |
 | `LINKEDIN_BLOG_WAIT_TIMEOUT_SECONDS` | Optional. Max time to wait for the public blog URL to serve the new post before posting to LinkedIn. Default: `600` |
 | `LINKEDIN_BLOG_WAIT_INTERVAL_SECONDS` | Optional. Delay between public URL readiness checks. Default: `15` |
 
@@ -85,7 +86,7 @@ LinkedIn OAuth tokens expire after ~60 days. When the workflow starts failing wi
 
 ## twitter
 
-Posts a new article to X/Twitter. Detects any post in `src/_posts/` whose `date` frontmatter matches today, generates a short post via Gemini, and publishes through the official X API.
+Posts a new item to X/Twitter. By default, it posts technical blog posts from `src/_posts/`. Set `SOCIAL_POST_CONTENT_KIND=philosophy` to post philosophy essays from `src/_philosophy/` with the philosophy-specific prompt and first MDX image when present.
 
 **Post today's article:**
 
@@ -102,6 +103,7 @@ Required environment variables:
 | `TWITTER_API_SECRET` | X API consumer secret |
 | `TWITTER_ACCESS_TOKEN` | X user access token |
 | `TWITTER_ACCESS_TOKEN_SECRET` | X user access token secret |
+| `SOCIAL_POST_CONTENT_KIND` | Optional. Content source to post from. Default: `blog`. Supported: `philosophy`, `blog`. Set to `philosophy` for the essay-specific behavior. |
 | `TWITTER_POST_DATE_TZ` | Optional. Calendar timezone used to match the post `date`. |
 | `TWITTER_BLOG_WAIT_TIMEOUT_SECONDS` | Optional. Max time to wait for the public blog URL to serve the new post before posting to X. Default: `600` |
 | `TWITTER_BLOG_WAIT_INTERVAL_SECONDS` | Optional. Delay between public URL readiness checks. Default: `15` |

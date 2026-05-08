@@ -12,12 +12,22 @@ from zoneinfo import ZoneInfo
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 BLOG_POSTS_DIR = os.path.join(SCRIPT_DIR, "../src/_posts/")
+PHILOSOPHY_POSTS_DIR = os.path.join(SCRIPT_DIR, "../src/_philosophy/")
 BLOG_BASE_URL = "https://patrickdesjardins.com/blog"
+PHILOSOPHY_BASE_URL = "https://patrickdesjardins.com/philosophy"
 DEFAULT_WAIT_TIMEOUT_SECONDS = 600
 DEFAULT_WAIT_INTERVAL_SECONDS = 15
 GEMINI_RETRY_MAX_ATTEMPTS = 6
 GEMINI_RETRY_BASE_DELAY_SECONDS = 5
 GEMINI_RETRY_MAX_DELAY_SECONDS = 60
+
+CONTENT_CONFIG = {
+    "blog": {"posts_dir": BLOG_POSTS_DIR, "base_url": BLOG_BASE_URL},
+    "philosophy": {
+        "posts_dir": PHILOSOPHY_POSTS_DIR,
+        "base_url": PHILOSOPHY_BASE_URL,
+    },
+}
 
 
 def post_calendar_today_iso(env_var_name: str, default_tz_name: str = "UTC") -> str:
@@ -69,8 +79,45 @@ def find_first_image(content: str) -> str | None:
     return abs_path if os.path.isfile(abs_path) else None
 
 
-def find_post_by_calendar_date(target_date: str) -> tuple[str | None, str | None, str | None]:
-    for root, _, files in os.walk(BLOG_POSTS_DIR):
+def get_social_content_kind() -> str:
+    kind = (os.environ.get("SOCIAL_POST_CONTENT_KIND") or "blog").strip().lower()
+    if kind not in CONTENT_CONFIG:
+        valid_values = ", ".join(sorted(CONTENT_CONFIG))
+        raise ValueError(
+            f"Invalid SOCIAL_POST_CONTENT_KIND={kind!r}. Expected one of: {valid_values}"
+        )
+    return kind
+
+
+def get_social_content_config() -> dict[str, str]:
+    return CONTENT_CONFIG[get_social_content_kind()]
+
+
+def build_post_url(slug: str) -> str:
+    return f"{get_social_content_config()['base_url']}/{slug}"
+
+
+def format_category_hashtag(frontmatter: dict[str, Any]) -> str | None:
+    categories = frontmatter.get("categories")
+    if isinstance(categories, list):
+        for category in categories:
+            if not isinstance(category, str):
+                continue
+            normalized = re.sub(r"[^A-Za-z0-9]+", "", category.strip())
+            if normalized:
+                return f"#{normalized.lower()}"
+    if isinstance(categories, str):
+        normalized = re.sub(r"[^A-Za-z0-9]+", "", categories.strip())
+        if normalized:
+            return f"#{normalized.lower()}"
+    return None
+
+
+def find_post_by_calendar_date(
+    target_date: str,
+) -> tuple[str | None, str | None, str | None, dict[str, Any] | None]:
+    posts_dir = get_social_content_config()["posts_dir"]
+    for root, _, files in os.walk(posts_dir):
         for fname in files:
             if not fname.endswith((".mdx", ".md")):
                 continue
@@ -81,11 +128,13 @@ def find_post_by_calendar_date(target_date: str) -> tuple[str | None, str | None
             post_date = str(frontmatter.get("date", ""))[:10]
             if post_date == target_date:
                 slug = re.sub(r"\.(mdx|md)$", "", fname)
-                return frontmatter.get("title", "Untitled"), slug, content
-    return None, None, None
+                return frontmatter.get("title", "Untitled"), slug, content, frontmatter
+    return None, None, None, None
 
 
-def find_todays_post(tz_env_var_name: str) -> tuple[str | None, str | None, str | None]:
+def find_todays_post(
+    tz_env_var_name: str,
+) -> tuple[str | None, str | None, str | None, dict[str, Any] | None]:
     today = post_calendar_today_iso(tz_env_var_name)
     return find_post_by_calendar_date(today)
 
@@ -150,7 +199,7 @@ def wait_for_blog_post_to_be_available(title: str, slug: str, env_prefix: str) -
     deadline = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(
         seconds=timeout_seconds
     )
-    url = f"{BLOG_BASE_URL}/{slug}"
+    url = build_post_url(slug)
     expected_title = re.sub(r"\s+", " ", title).strip().lower()
     last_error = "no response received"
 
