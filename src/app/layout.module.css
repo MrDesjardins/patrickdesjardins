@@ -40,7 +40,8 @@
 .topMenu a,
 .topMenu a:visited {
   text-transform: uppercase;
-  text-decoration: none;
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
   font-size: 32px;
   letter-spacing: 1px;
   line-height: 65px;

@@ -56,6 +56,10 @@
   align-items: center;
 }
 
+.navLinkItem a {
+  text-decoration: underline;
+}
+
 .navLinkText {
   color: var(--link-foreground-color);
   margin-right: 10px;

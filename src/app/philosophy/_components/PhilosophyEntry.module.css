@@ -14,7 +14,8 @@
 
 .blogEntryArticleTitle a {
   color: var(--blog-title-foreground-color);
-  text-decoration: none;
+  text-decoration: underline;
+  text-underline-offset: 0.12em;
 }
 
 .blogEntryArticleTitle a:hover {
