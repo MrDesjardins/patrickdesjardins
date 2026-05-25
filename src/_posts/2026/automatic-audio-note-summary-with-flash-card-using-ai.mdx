@@ -1,0 +1,35 @@
+---
+title: "Automatic Audio Note Summary with Flash Card using AI"
+date: "2026-05-26"
+categories:
+ - "ai"
+ - "llm"
+ - "study"
+ - "project"
+---
+
+I recently [started studying philosophy at a university](https://patrickdesjardins.com/philosophy/philosophy-journey) and I am taking my notes in [Trilium](https://triliumnotes.org/) which allows accessing notes through an API. Since I save all my courses in a hierarchy of course → lesson → objective, I can automatically generate summaries from my own notes. My idea was not to generate notes from the course content itself but rather to take my notes and organize them. The goal is to review what I wrote myself to help me learn and retain the material. I also wanted a way to generate flashcards to reinforce the concepts.
+
+![](/images/blog/StudyNote1.png)
+
+The system is generated with AI and uses Python to extract the content of my notes. At any time, I can open the web application, which reads my notes, determines the available lessons, and shows me what has already been generated. The workflow is simple. I press a button, which starts a background Python job that extracts the content and asks OpenAI to generate an exhaustive summary based on my notes. The objective is to create study material from my own understanding of the lessons.
+
+IThe generated text serves two purposes. First, it is converted into audio using [Kokoro TTS](https://patrickdesjardins.com/blog/Kokoro-tts-free-using-gpu-with-many-voices) which is then uploaded to YouTube. The process goes from text to audio and then from audio to video using ffmpeg. Second, the same content is used to generate flashcards.
+
+The audio content is published to YouTube so it can later be consumed through my [Youtube Radio project](https://patrickdesjardins.com/blog/youtube-streaming-radio-with-auto-ai-summary-with-more-ai). My projects are starting to connect together, and I am more than happy that with only a few clicks I can get into my car on the way to work and listen to summaries of the material I have been studying.
+
+![](/images/blog/StudyNote2.png)
+
+The flashcard interface works well on mobile devices, allowing me to spend less time scrolling Reddit or other social media platforms and more time studying during small moments of downtime. I added a basic spaced repetition mechanism, and that was enough to make it useful.
+
+![](/images/blog/StudyNote3.png)
+
+Here is a quick architectural diagram showing how everything connects together.
+
+![](/images/blog/StudyNote0.png)
+
+As I embrace my journey of developing with AI, I realize that keeping small projects independent is very valuable. Similar to microservices, when a project has a limited scope, the AI does not need to know as much context. The projects share many common patterns, and soon I will extract those into a central repository. It will contain rules, deployment expectations, and other shared components.
+
+Keeping projects separated allows me to move quickly without fearing that changes will impact more resilient services or applications. While it would be possible to keep everything in a single repository, I find the separation helpful. It prevents LLMs from creating unnecessary dependencies between projects and keeps each part easy to modify through well-defined APIs while remaining stable.
+
+For example, deploying the new study workflow involves many moving parts, but I can still work quickly because I know that changes to Kokoro TTS or SQLite will not impact my other services. If an issue occurs, the blast radius remains limited.
