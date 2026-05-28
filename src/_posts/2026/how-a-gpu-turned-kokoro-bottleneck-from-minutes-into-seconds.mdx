@@ -1,0 +1,163 @@
+---
+title: "How a GPU Turned Kokoro TTS Bottleneck From Minutes Into Seconds"
+date: "2026-06-01"
+categories:
+ - "kokoro"
+ - "tts"
+ - "ai"
+ - "local-ai"
+---
+
+  I recently ran into a very practical performance problem in a study-generation pipeline. The application takes lesson notes from Trilium, turns them into teaching scripts, generates flashcards, synthesizes narration with Kokoro TTS, renders a simple MP4 with ffmpeg, and uploads the result to YouTube.
+
+  The pipeline worked, but it felt slow. At first glance, there were several possible suspects: OpenAI script generation, flashcard generation, audio synthesis, video rendering, YouTube upload, or even the note collection/normalization steps. Rather than guessing, I pulled production job-event timings from the SQLite database and measured where the time was really going.
+
+  The answer was not subtle: Kokoro TTS dominated the runtime.
+
+  ## The Production Batch
+
+  The batch generated audio and video for seven philosophy lessons:
+
+  1. What is Philosophy?
+  2. Intro Plato Allegory of the Cave
+  3. Intro Descartes I think, therefore I am
+  4. Introduction to the History of Philosophy
+  5. Introduction to Epistemology
+  6. Introduction to Metaphysics
+  7. Introduction to Ethics
+
+  Each lesson went through the same staged pipeline:
+
+```
+  collect -> normalize -> script -> flashcards -> audio -> video -> upload
+```
+
+  The completed production timing totals were:
+
+```
+  ┌────────────────────┬────────────┐
+  │ Stage              │ Total Time │
+  ├────────────────────┼────────────┤
+  │ Audio / Kokoro TTS │   94.9 min │
+  │ Script generation  │    9.5 min │
+  │ Video rendering    │    6.3 min │
+  │ Flashcards         │    2.6 min │
+  │ Collect            │    0.4 min │
+  │ Normalize          │    0.4 min │
+  │ Upload             │    0.3 min │
+  └────────────────────┴────────────┘
+```
+  Audio synthesis alone accounted for roughly 83% of the measured pipeline time. Everything else was comparatively small.
+
+  ## Per-Lesson Runtime
+
+  The slowest lessons were also the ones with longer narration:
+
+```
+  ┌───────────────────────────────────────────┬─────────────────────┐
+  │ Lesson                                    │ Total Pipeline Time │
+  ├───────────────────────────────────────────┼─────────────────────┤
+  │ Intro Descartes I think, therefore I am   │            19.7 min │
+  │ Introduction to Ethics                    │            19.5 min │
+  │ Introduction to the History of Philosophy │            18.8 min │
+  │ Introduction to Metaphysics               │            18.2 min │
+  │ What is Philosophy?                       │            15.9 min │
+  │ Introduction to Epistemology              │            13.2 min │
+  │ Intro Plato Allegory of the Cave          │             9.2 min │
+  └───────────────────────────────────────────┴─────────────────────┘
+```
+
+  This made the optimization target clear. Improving upload, ffmpeg, collection, or normalization would barely move the needle. The real question was whether Kokoro TTS was slow because of Kokoro itself, or because it was running on the mini-pc CPU.
+
+  ## The Benchmark
+
+  To test that, I took one real production script: "Intro Plato Allegory of the Cave." In production on the mini-pc, its Kokoro audio stage took 478.6 seconds. The generated audio was 302.675 seconds long, just over five minutes.
+
+  Then I copied the exact same script and ran Kokoro locally on a machine with an NVIDIA GeForce RTX 5080, using the same Kokoro settings:
+```
+  voice: af_heart
+  language code: a
+  speed: 1.0
+  script length: 837 words
+  audio duration: 302.675 seconds
+```
+  The result was dramatic.
+```
+  ┌─────────────────────────────────────────────────────────────┬────────┐
+  │ Environment                                                 │   Time │
+  ├─────────────────────────────────────────────────────────────┼────────┤
+  │ Mini-pc CPU production audio stage                          │ 478.6s │
+  │ RTX 5080 full local run, including model load and WAV write │  6.56s │
+  │ RTX 5080 same-process model load                            │  1.88s │
+  │ RTX 5080 warm generation run 1                              │  3.88s │
+  │ RTX 5080 warm generation run 2                              │  2.72s │
+  └─────────────────────────────────────────────────────────────┴────────┘
+```
+  That means the GPU path was about 73x faster when comparing the full local run against the production mini-pc audio stage. If the Kokoro model is already warm, the generation path was roughly 125x to 176x faster.
+
+  Put differently: the mini-pc spent almost eight minutes generating five minutes of audio. The RTX 5080 generated the same audio in a few seconds.
+
+  ## What This Means
+
+  The current pipeline is architecturally simple: FastAPI runs the job runner, and Kokoro runs inside that process. That is fine for correctness, but not ideal for heavy TTS work. Kokoro is the expensive stage, and CPU-bound TTS on the mini-pc is the clear bottleneck.
+
+  The data suggests that small optimizations will not matter much. Reusing some Python objects, tweaking ffmpeg, or improving SQLite queries would be marginal. The meaningful improvement is to move Kokoro synthesis to GPU.
+
+  There are a few practical ways to do that:
+
+  1. Run the whole generation worker on the GPU machine.
+  2. Split TTS into a dedicated remote worker or service.
+  3. Keep the mini-pc as the web/control plane, but send TTS jobs to the GPU machine.
+  4. Add a configurable Kokoro device path so local workers can use cuda when available.
+
+  The remote-worker design is probably the cleanest long-term option. It keeps the mini-pc lightweight and avoids tying the web app’s lifecycle to expensive audio generation. It also makes restarts safer and opens the door to processing multiple lessons more efficiently.
+
+  ## OpenAI TTS
+   
+  Using current official pricing for gpt-4o-mini-tts:
+
+  - Text input: $0.60 / 1M tokens
+  - Audio output: $12.00 / 1M audio tokens, shown by OpenAI as about $0.015 / minute of generated speech
+  - Sources: GPT-4o mini [TTS model pricing](https://developers.openai.com/api/docs/models/gpt-4o-mini-tts), [OpenAI API pricing](https://openai.com/api/pricing/)
+
+  For our 7 generated lessons, production audio durations were:
+
+```
+  ┌────────────────────┬──────────────┐
+  │ Lesson             │ Audio Length │
+  ├────────────────────┼──────────────┤
+  │ What is Philosophy │     8.98 min │
+  │ Plato              │     5.04 min │
+  │ Descartes          │     9.67 min │
+  │ History            │    10.58 min │
+  │ Epistemology       │     7.48 min │
+  │ Metaphysics        │    10.14 min │
+  │ Ethics             │    10.77 min │
+  └────────────────────┴──────────────┘
+```
+  Total generated audio: about 62.66 minutes.
+
+  Estimated `gpt-4o-mini-tts` output cost:
+
+```
+  62.66 min * $0.015/min = $0.94
+```
+  Input text cost is tiny. The 7 scripts total about 59,761 characters / 9,429 words. Roughly estimating 12k-15k input tokens:
+
+```
+  ~15,000 tokens * $0.60 / 1,000,000 = ~$0.009
+```
+  So the full 7-lesson batch would be roughly:
+
+  ~$0.95 total
+
+  Even if tokenization/chunking overhead pushes it a bit higher, I would expect it to stay around $1 for this batch.
+
+  One implementation caveat: the speech endpoint has per-request input limits, so our larger scripts would need to be split into chunks and concatenated. That is
+  straightforward, but we would want clean sentence-boundary chunking to avoid awkward audio joins.
+
+  ## Conclusion
+
+  The fascinating part of this analysis is how one stage completely dominated the system. The pipeline had many moving parts, but the numbers made the decision obvious:  Kokoro TTS on CPU was the bottleneck.
+
+  For seven lessons, audio synthesis took about 95 minutes. Everything else combined was much smaller. Then, using the exact same script and settings, the RTX 5080 generated a five-minute narration in roughly three seconds once warm.

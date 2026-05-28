@@ -8,6 +8,7 @@
 
 
 === Published
+✅ 2026-06-01: How a GPU Turned Kokoro TTS Bottleneck From Minutes Into Seconds
 ✅ 2026-05-26: Automatic Audio Note Summary with Flash Card using AI
 ✅ 2026-05-05: React to React Native using AI
 ✅ 2026-04-20: What is Code Quality in the Era of AI?
