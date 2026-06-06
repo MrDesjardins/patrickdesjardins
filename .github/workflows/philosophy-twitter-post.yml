@@ -1,12 +1,12 @@
-name: X philosophy post (manual)
+name: X philosophy post (manual, disabled)
+
+# Disabled until X API funding is available. This is not a functional failure.
 
 on:
   workflow_dispatch:
 
 jobs:
   post:
-    # Disabled for now. Remove this guard to reactivate philosophy X posts.
-    if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -21,7 +21,7 @@ jobs:
         run: uv sync
         working-directory: tools
 
-      - name: Post today's philosophy essay to X
+      - name: Skip X philosophy post until API funding is available
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
@@ -30,5 +30,7 @@ jobs:
           TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
           SOCIAL_POST_CONTENT_KIND: philosophy
           TWITTER_POST_DATE_TZ: America/Los_Angeles
+        # The script exits successfully and explains that X posting is disabled
+        # because the X API is not funded yet, not because the automation is broken.
         run: uv run python twitter/post.py
         working-directory: tools

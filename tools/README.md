@@ -86,6 +86,8 @@ LinkedIn OAuth tokens expire after ~60 days. When the workflow starts failing wi
 
 ## twitter
 
+X/Twitter posting is intentionally disabled because the X API is not funded yet. This is not a functional issue with the automation. Re-enable the script after API funding is available.
+
 Posts a new item to X/Twitter. By default, it posts technical blog posts from `src/_posts/`. Set `SOCIAL_POST_CONTENT_KIND=philosophy` to post philosophy essays from `src/_philosophy/` with the philosophy-specific prompt and first MDX image when present.
 
 **Post today's article:**

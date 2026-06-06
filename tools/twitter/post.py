@@ -23,6 +23,10 @@ from social_common import (
 load_dotenv(os.path.join(SCRIPT_DIR, "../.env"))
 
 TWEET_MAX_LENGTH = 280
+X_POSTING_DISABLED_REASON = (
+    "X posting is intentionally disabled because the X API is not funded yet. "
+    "This is not a functional failure; re-enable it after API funding is available."
+)
 
 
 def build_oauth1() -> OAuth1:
@@ -115,6 +119,9 @@ def post_to_twitter(text: str, media_id: str | None = None) -> None:
 
 
 if __name__ == "__main__":
+    print(X_POSTING_DISABLED_REASON)
+    sys.exit(0)
+
     required_vars = [
         "GEMINI_API_KEY",
         "TWITTER_API_KEY",

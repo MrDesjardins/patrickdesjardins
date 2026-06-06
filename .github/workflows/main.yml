@@ -82,7 +82,7 @@ jobs:
         run: uv run python linkedin/post.py
         working-directory: tools
 
-      - name: Post new article to X
+      - name: Skip X post until API funding is available
         if: success() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
         continue-on-error: true
         env:
@@ -93,5 +93,7 @@ jobs:
           TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
           SOCIAL_POST_CONTENT_KIND: blog
           TWITTER_POST_DATE_TZ: America/Los_Angeles
+        # The script exits successfully and explains that X posting is disabled
+        # because the X API is not funded yet, not because the automation is broken.
         run: uv run python twitter/post.py
         working-directory: tools

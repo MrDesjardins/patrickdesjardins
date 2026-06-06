@@ -1,6 +1,6 @@
-name: X post (manual)
+name: X post (manual, disabled)
 
-# Re-run when the scheduled job hit Gemini/X errors without rebuilding the site.
+# Disabled until X API funding is available. This is not a functional failure.
 on:
   workflow_dispatch:
 
@@ -20,7 +20,7 @@ jobs:
         run: uv sync
         working-directory: tools
 
-      - name: Post today's article to X
+      - name: Skip X post until API funding is available
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
@@ -29,5 +29,7 @@ jobs:
           TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
           SOCIAL_POST_CONTENT_KIND: blog
           TWITTER_POST_DATE_TZ: America/Los_Angeles
+        # The script exits successfully and explains that X posting is disabled
+        # because the X API is not funded yet, not because the automation is broken.
         run: uv run python twitter/post.py
         working-directory: tools
