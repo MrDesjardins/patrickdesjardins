@@ -106,7 +106,7 @@ To achieve this validation, a quick CRC32 can be applied to the frame's byte and
 This time we go with a size of 10 with the duplication fix applied.
 
 On the source computer:
-"`sh
+```sh
 cargo run -- -m inject -i testAssets/text1.txt -o outputs/out_bw_no_dup.mp4 -o --fps 30 --height 1080 --width 1920 --size 10 -a bw
 ```
 

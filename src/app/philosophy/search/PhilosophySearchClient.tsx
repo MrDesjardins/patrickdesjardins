@@ -9,6 +9,7 @@ import {
 import { PhilosophyBlogBody } from "../_components/PhilosophyBlogBody";
 import styles from "../../blog/search/page.module.css";
 import { PhilosophyBlogSearchEntry } from "../_components/PhilosophyBlogSearchEntry";
+import { slugFromMdxFilename } from "../../../lib/slug";
 
 interface Post {
   path: string;
@@ -21,13 +22,6 @@ function cosineSimilarity(a: number[], b: number[]): number {
   const normA = Math.sqrt(a.reduce((sum, val) => sum + val * val, 0));
   const normB = Math.sqrt(b.reduce((sum, val) => sum + val * val, 0));
   return dot / (normA * normB);
-}
-
-function slugTransform(filename: string): string {
-  return filename
-    .replace(/\.mdx?$/, "")
-    .replace(/_/g, "-")
-    .toLowerCase();
 }
 
 export default function PhilosophySearchClient(): React.ReactElement {
@@ -139,7 +133,7 @@ export default function PhilosophySearchClient(): React.ReactElement {
               position={i}
               key={post.filename}
               id={post.filename}
-              slug={slugTransform(post.filename)}
+              slug={slugFromMdxFilename(post.filename)}
               title={post.title}
               score={score}
             />

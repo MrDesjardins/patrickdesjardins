@@ -9,6 +9,7 @@ import {
 import { BlogBody } from "../_components/BlogBody";
 import styles from "./page.module.css";
 import { BlogSearchEntry } from "../_components/BlogSearchEntry";
+import { slugFromMdxFilename } from "../../../lib/slug";
 
 interface Post {
   path: string;
@@ -21,13 +22,6 @@ function cosineSimilarity(a: number[], b: number[]): number {
   const normA = Math.sqrt(a.reduce((sum, val) => sum + val * val, 0));
   const normB = Math.sqrt(b.reduce((sum, val) => sum + val * val, 0));
   return dot / (normA * normB);
-}
-
-function slugTransform(filename: string): string {
-  return filename
-    .replace(/\.mdx?$/, "")
-    .replace(/_/g, "-")
-    .toLowerCase();
 }
 
 export default function Page(): React.ReactElement {
@@ -143,7 +137,7 @@ export default function Page(): React.ReactElement {
               position={i}
               key={post.filename}
               id={post.filename}
-              slug={slugTransform(post.filename)}
+              slug={slugFromMdxFilename(post.filename)}
               title={post.title}
               score={score}
             />
