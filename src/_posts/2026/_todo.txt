@@ -8,6 +8,7 @@
 
 
 === Published
+✅ 2026-06-13: Audiobook machine version 3 using an ELECROW ESP32 Rotary Display 240x240
 ✅ 2026-06-07: How to Transfer Files Between Computers Using HDMI (Part 8: Registration, CRC, and a Working Transfer)
 ✅ 2026-06-01: How a GPU Turned Kokoro TTS Bottleneck From Minutes Into Seconds
 ✅ 2026-05-26: Automatic Audio Note Summary with Flash Card using AI

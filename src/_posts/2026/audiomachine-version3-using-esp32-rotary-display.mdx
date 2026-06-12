@@ -1,0 +1,25 @@
+---
+title: "Audiobook machine version 3 using an ELECROW ESP32 Rotary Display 240x240"
+date: "2026-06-13"
+categories:
+ - "esp32"
+ - "microcontroller"
+ - "audiomachine"
+ - "3dprinter"
+---
+
+
+I built an audiobook machine for my daughter in January 2022 using a Raspberry Pi and RFID cards ([YouTube video](https://www.youtube.com/watch?v=-lAeRB1GZUo)). In early 2026, I built a second version for my son using an ESP32 and a TFT display ([blog post here](ESP-32)). Over time, I wanted to replace my daughter's original device because the RFID cards became cumbersome whenever I wanted to add new audiobooks. The version I created for my son had a significant advantage: it synchronized with my personal server, allowing me to add new audiobooks remotely with almost no effort.
+
+![](/images/blog/esp32-audiobook-alicia1.jpg)
+
+While looking for ideas for a new version, I came across a circular display with a rotary ring around it and immediately found it fascinating. After some research, I discovered a model powered by an ESP32 that also had a GitHub repository containing 3D-printing files, hardware specifications, and code examples. For a DIY project, that was exactly what I was looking for. You can find the hardware's [GitHub repository](https://github.com/Elecrow-RD/CrowPanel-1.28inch-HMI-ESP32-Rotary-Display-240-240-IPS-Round-Touch-Knob-Screen) and the corresponding hardware on [Amazon](https://www.amazon.com/dp/B0G3TVV5H7).
+
+My plan was simple: reuse the software architecture from my son's audiobook machine and adapt it to the new hardware. To speed things up, I used Anthropic's Claude through Fable to translate the TFT display code to the rotary display. Remarkably, it was essentially a one-shot conversion. In less than 20 minutes, I had a fully functional version running.
+
+The complete source code is available in my [GitHub repository](https://github.com/MrDesjardins/aliciaMusicMachineEsp32Rotary). My son's earlier version is also [available on GitHub](https://github.com/MrDesjardins/audiobookstreamgooglehome). Both projects follow the same architecture: they act as clients that fetch audiobook metadata from my personal server, discover Google Home devices on the network, and broadcast audio to a selected speaker. Each audiobook machine is configured to use a specific Google Home device, allowing my daughter and son to independently control playback in their own rooms.
+
+<video src="/videos/blog/AudioBookMachineAliciaRotaryV1.mp4" controls/>
+
+The final result was surprisingly fast. In less than three hours, I had adapted the software, generated the new interface, and designed and printed a custom enclosure. What would have previously taken days of experimentation and development was completed in a single afternoon thanks to reusable software, open-source hardware resources, and AI-assisted development.
+
