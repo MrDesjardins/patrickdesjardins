@@ -415,6 +415,130 @@ section.app_website_website__contactSection a:hover {
 
 
 
+/* src/app/blog/[slug]/Page.module.css */
+.app_blog__slug__Page__blogPostContainer table {
+  border: 1px solid var(--blog-section-border-color);
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+}
+.app_blog__slug__Page__blogPostContainer table thead tr {
+  border-bottom: 1px solid var(--blog-section-border-color);
+}
+
+.app_blog__slug__Page__blogPostContainer p,
+.app_blog__slug__Page__blogPostContainer th,
+.app_blog__slug__Page__blogPostContainer td,
+.app_blog__slug__Page__blogPostContainer ol,
+.app_blog__slug__Page__blogPostContainer ul {
+  color: var(--blog-text-color);
+  line-height: 34px;
+  font-size: 22px;
+  margin-bottom: 24px;
+  text-align: justify;
+}
+.app_blog__slug__Page__blogPostContainer th,
+.app_blog__slug__Page__blogPostContainer td {
+  font-size: 16px;
+}
+.app_blog__slug__Page__blogPostContainer a {
+  color: var(--link-foreground-color);
+}
+
+.app_blog__slug__Page__blogPostContainer blockquote p::before {
+  content: "“";
+  font-size: 3em;
+  line-height: 0.1em;
+  vertical-align: -0.4em;
+  color: var(--blog-blockquote-border-color);
+  margin-right: 16px;
+}
+
+.app_blog__slug__Page__blogPostContainer blockquote p::after {
+  content: "”";
+  font-size: 3em;
+  line-height: 0.1em;
+  vertical-align: -0.4em;
+  color: var(--blog-blockquote-border-color);
+  margin-left: 2px;
+}
+
+.app_blog__slug__Page__blogPostContainer blockquote p {
+  font-style: italic;
+  color: var(--blog-blockquote-text-color);
+  border-left: 10px solid var(--blog-blockquote-border-color);
+  padding-left: 10px;
+  word-break: break-all;
+}
+
+.app_blog__slug__Page__blogPostContainer pre {
+  overflow: auto;
+}
+
+.app_blog__slug__Page__blogPostContainer p.app_blog__slug__Page__blogPostDate {
+  color: var(--blog-date-foreground-color);
+  font-size: 18px;
+  font-style: italic;
+  margin-bottom: 12px;
+}
+
+.app_blog__slug__Page__blogPostContainer h1 {
+  color: var(--blog-title-foreground-color);
+  font-size: 30px;
+  text-decoration: underline;
+}
+
+.app_blog__slug__Page__blogPostContainer h2 {
+  color: var(--blog-title-foreground-color);
+  font-size: 26px;
+}
+
+.app_blog__slug__Page__blogPostContainer h3 {
+  color: var(--blog-title-foreground-color);
+  font-size: 22px;
+}
+
+.app_blog__slug__Page__blogPostContainer code:not([class*="code-highlight"]) {
+  color: var(--blog-code-inline-foreground-color);
+  background-color: var(--blog-code-inline-background-color);
+  padding: 2px 4px 2px 4px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+}
+
+.app_blog__slug__Page__blogPostContainer p:has(img) {
+  padding: 20px;
+  text-align: center;
+}
+.app_blog__slug__Page__blogPostContainer img {
+  --distance: 16px;
+  box-shadow:
+    white var(--distance) var(--distance) 20px 0px,
+    white calc(0px - var(--distance)) var(--distance) 20px 0px,
+    white var(--distance) calc(0px - var(--distance)) 20px 0px,
+    white calc(0px - var(--distance)) calc(0px - var(--distance)) 20px 0px;
+  margin: var(--distance) 0;
+}
+
+.app_blog__slug__Page__blogPostContainer img,
+.app_blog__slug__Page__blogPostContainer video {
+  max-width: 100%;
+  border-radius: 10px;
+}
+
+.app_blog__slug__Page__blogPostContainer ul {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  list-style-type: square;
+}
+
+.app_blog__slug__Page__blogPostContainer p + ul {
+  margin-top: -20px;
+}
+
+
+
 /* src/app/blog/_components/BlogBody.module.css */
 .app_blog__components_BlogBody__BlogBody {
   margin: auto;
@@ -600,130 +724,6 @@ section.app_website_website__contactSection a:hover {
 
 
 
-/* src/app/blog/[slug]/Page.module.css */
-.app_blog__slug__Page__blogPostContainer table {
-  border: 1px solid var(--blog-section-border-color);
-  border-collapse: collapse;
-  margin-left: auto;
-  margin-right: auto;
-}
-.app_blog__slug__Page__blogPostContainer table thead tr {
-  border-bottom: 1px solid var(--blog-section-border-color);
-}
-
-.app_blog__slug__Page__blogPostContainer p,
-.app_blog__slug__Page__blogPostContainer th,
-.app_blog__slug__Page__blogPostContainer td,
-.app_blog__slug__Page__blogPostContainer ol,
-.app_blog__slug__Page__blogPostContainer ul {
-  color: var(--blog-text-color);
-  line-height: 34px;
-  font-size: 22px;
-  margin-bottom: 24px;
-  text-align: justify;
-}
-.app_blog__slug__Page__blogPostContainer th,
-.app_blog__slug__Page__blogPostContainer td {
-  font-size: 16px;
-}
-.app_blog__slug__Page__blogPostContainer a {
-  color: var(--link-foreground-color);
-}
-
-.app_blog__slug__Page__blogPostContainer blockquote p::before {
-  content: "“";
-  font-size: 3em;
-  line-height: 0.1em;
-  vertical-align: -0.4em;
-  color: var(--blog-blockquote-border-color);
-  margin-right: 16px;
-}
-
-.app_blog__slug__Page__blogPostContainer blockquote p::after {
-  content: "”";
-  font-size: 3em;
-  line-height: 0.1em;
-  vertical-align: -0.4em;
-  color: var(--blog-blockquote-border-color);
-  margin-left: 2px;
-}
-
-.app_blog__slug__Page__blogPostContainer blockquote p {
-  font-style: italic;
-  color: var(--blog-blockquote-text-color);
-  border-left: 10px solid var(--blog-blockquote-border-color);
-  padding-left: 10px;
-  word-break: break-all;
-}
-
-.app_blog__slug__Page__blogPostContainer pre {
-  overflow: auto;
-}
-
-.app_blog__slug__Page__blogPostContainer p.app_blog__slug__Page__blogPostDate {
-  color: var(--blog-date-foreground-color);
-  font-size: 18px;
-  font-style: italic;
-  margin-bottom: 12px;
-}
-
-.app_blog__slug__Page__blogPostContainer h1 {
-  color: var(--blog-title-foreground-color);
-  font-size: 30px;
-  text-decoration: underline;
-}
-
-.app_blog__slug__Page__blogPostContainer h2 {
-  color: var(--blog-title-foreground-color);
-  font-size: 26px;
-}
-
-.app_blog__slug__Page__blogPostContainer h3 {
-  color: var(--blog-title-foreground-color);
-  font-size: 22px;
-}
-
-.app_blog__slug__Page__blogPostContainer code:not([class*="code-highlight"]) {
-  color: var(--blog-code-inline-foreground-color);
-  background-color: var(--blog-code-inline-background-color);
-  padding: 2px 4px 2px 4px;
-  border-radius: 4px;
-  font-size: 16px;
-  font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
-}
-
-.app_blog__slug__Page__blogPostContainer p:has(img) {
-  padding: 20px;
-  text-align: center;
-}
-.app_blog__slug__Page__blogPostContainer img {
-  --distance: 16px;
-  box-shadow:
-    white var(--distance) var(--distance) 20px 0px,
-    white calc(0px - var(--distance)) var(--distance) 20px 0px,
-    white var(--distance) calc(0px - var(--distance)) 20px 0px,
-    white calc(0px - var(--distance)) calc(0px - var(--distance)) 20px 0px;
-  margin: var(--distance) 0;
-}
-
-.app_blog__slug__Page__blogPostContainer img,
-.app_blog__slug__Page__blogPostContainer video {
-  max-width: 100%;
-  border-radius: 10px;
-}
-
-.app_blog__slug__Page__blogPostContainer ul {
-  margin-top: 5px;
-  margin-bottom: 5px;
-  list-style-type: square;
-}
-
-.app_blog__slug__Page__blogPostContainer p + ul {
-  margin-top: -20px;
-}
-
-
-
 /* src/app/blog/search/page.module.css */
 .app_blog_search_page__searchContainer {
   display: flex;
@@ -805,6 +805,142 @@ section.app_website_website__contactSection a:hover {
   list-style: none;
   padding-left: 0;
   width: 100%;
+}
+
+
+
+/* src/app/philosophy/[slug]/Page.module.css */
+.app_philosophy__slug__Page__blogPostContainer {
+  max-width: 100%;
+}
+
+.app_philosophy__slug__Page__blogPostContent > p:first-of-type::first-letter {
+  float: left;
+  font-size: 4em;
+  line-height: 0.9;
+  margin-right: 0.12em;
+  margin-top: 0.06em;
+  font-weight: 600;
+}
+
+.app_philosophy__slug__Page__blogPostContainer table {
+  border: 1px solid var(--blog-section-border-color);
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.app_philosophy__slug__Page__blogPostContainer table thead tr {
+  border-bottom: 1px solid var(--blog-section-border-color);
+}
+
+.app_philosophy__slug__Page__blogPostContainer p,
+.app_philosophy__slug__Page__blogPostContainer th,
+.app_philosophy__slug__Page__blogPostContainer td,
+.app_philosophy__slug__Page__blogPostContainer ol,
+.app_philosophy__slug__Page__blogPostContainer ul {
+  color: var(--blog-text-color);
+  line-height: 1.75;
+  font-size: 1.06em;
+  margin-bottom: 2rem;
+  text-align: justify;
+}
+
+.app_philosophy__slug__Page__blogPostContainer th,
+.app_philosophy__slug__Page__blogPostContainer td {
+  font-size: 0.95em;
+}
+
+.app_philosophy__slug__Page__blogPostContainer a {
+  color: var(--link-foreground-color);
+}
+
+.app_philosophy__slug__Page__blogPostContainer blockquote {
+  margin: 0 0 1.25rem;
+  padding-left: 0;
+  border-left: none;
+}
+
+.app_philosophy__slug__Page__blogPostContainer blockquote p {
+  font-style: italic;
+  color: var(--blog-blockquote-text-color);
+  border-left: 4px solid var(--blog-blockquote-border-color);
+  padding-left: 16px;
+  margin-bottom: 0.75rem;
+}
+
+.app_philosophy__slug__Page__blogPostContainer blockquote p::before,
+.app_philosophy__slug__Page__blogPostContainer blockquote p::after {
+  content: none;
+}
+
+.app_philosophy__slug__Page__blogPostContainer pre {
+  overflow: auto;
+  background-color: #f7f6f2 !important;
+  border: 1px solid var(--blog-section-border-color);
+}
+
+.app_philosophy__slug__Page__blogPostContainer p.app_philosophy__slug__Page__blogPostDate {
+  color: var(--blog-date-foreground-color);
+  font-size: 0.95em;
+  font-style: italic;
+  margin-bottom: 12px;
+}
+
+.app_philosophy__slug__Page__blogPostContainer h1 {
+  color: var(--blog-title-foreground-color);
+  font-size: 1.65em;
+  font-weight: 600;
+}
+
+.app_philosophy__slug__Page__blogPostContainer h2 {
+  color: var(--blog-title-foreground-color);
+  font-size: 1.35em;
+}
+
+.app_philosophy__slug__Page__blogPostContainer h3 {
+  color: var(--blog-title-foreground-color);
+  font-size: 1.15em;
+}
+
+.app_philosophy__slug__Page__blogPostContainer code:not([class*="code-highlight"]) {
+  color: var(--blog-code-inline-foreground-color);
+  background-color: var(--blog-code-inline-background-color);
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-size: 0.85em;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Ubuntu Mono",
+    monospace;
+}
+
+.app_philosophy__slug__Page__blogPostContainer p:has(img) {
+  padding: 16px;
+  text-align: center;
+}
+
+.app_philosophy__slug__Page__blogPostContainer img {
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 0 1px rgba(0, 0, 0, 0.12);
+  margin: 16px 0;
+}
+
+.app_philosophy__slug__Page__blogPostContainer img,
+.app_philosophy__slug__Page__blogPostContainer video {
+  max-width: 100%;
+  border-radius: 4px;
+}
+
+.app_philosophy__slug__Page__blogPostContainer ul {
+  margin-top: 6px;
+  margin-bottom: 6px;
+  list-style-type: disc;
+  padding-left: 1.4rem;
+}
+
+.app_philosophy__slug__Page__blogPostContainer p + ul {
+  margin-top: -12px;
 }
 
 
@@ -994,142 +1130,6 @@ section.app_website_website__contactSection a:hover {
 
 .app_philosophy__components_PhilosophyEntry__blogEntryDate {
   margin-right: 8px;
-}
-
-
-
-/* src/app/philosophy/[slug]/Page.module.css */
-.app_philosophy__slug__Page__blogPostContainer {
-  max-width: 100%;
-}
-
-.app_philosophy__slug__Page__blogPostContent > p:first-of-type::first-letter {
-  float: left;
-  font-size: 4em;
-  line-height: 0.9;
-  margin-right: 0.12em;
-  margin-top: 0.06em;
-  font-weight: 600;
-}
-
-.app_philosophy__slug__Page__blogPostContainer table {
-  border: 1px solid var(--blog-section-border-color);
-  border-collapse: collapse;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.app_philosophy__slug__Page__blogPostContainer table thead tr {
-  border-bottom: 1px solid var(--blog-section-border-color);
-}
-
-.app_philosophy__slug__Page__blogPostContainer p,
-.app_philosophy__slug__Page__blogPostContainer th,
-.app_philosophy__slug__Page__blogPostContainer td,
-.app_philosophy__slug__Page__blogPostContainer ol,
-.app_philosophy__slug__Page__blogPostContainer ul {
-  color: var(--blog-text-color);
-  line-height: 1.75;
-  font-size: 1.06em;
-  margin-bottom: 2rem;
-  text-align: justify;
-}
-
-.app_philosophy__slug__Page__blogPostContainer th,
-.app_philosophy__slug__Page__blogPostContainer td {
-  font-size: 0.95em;
-}
-
-.app_philosophy__slug__Page__blogPostContainer a {
-  color: var(--link-foreground-color);
-}
-
-.app_philosophy__slug__Page__blogPostContainer blockquote {
-  margin: 0 0 1.25rem;
-  padding-left: 0;
-  border-left: none;
-}
-
-.app_philosophy__slug__Page__blogPostContainer blockquote p {
-  font-style: italic;
-  color: var(--blog-blockquote-text-color);
-  border-left: 4px solid var(--blog-blockquote-border-color);
-  padding-left: 16px;
-  margin-bottom: 0.75rem;
-}
-
-.app_philosophy__slug__Page__blogPostContainer blockquote p::before,
-.app_philosophy__slug__Page__blogPostContainer blockquote p::after {
-  content: none;
-}
-
-.app_philosophy__slug__Page__blogPostContainer pre {
-  overflow: auto;
-  background-color: #f7f6f2 !important;
-  border: 1px solid var(--blog-section-border-color);
-}
-
-.app_philosophy__slug__Page__blogPostContainer p.app_philosophy__slug__Page__blogPostDate {
-  color: var(--blog-date-foreground-color);
-  font-size: 0.95em;
-  font-style: italic;
-  margin-bottom: 12px;
-}
-
-.app_philosophy__slug__Page__blogPostContainer h1 {
-  color: var(--blog-title-foreground-color);
-  font-size: 1.65em;
-  font-weight: 600;
-}
-
-.app_philosophy__slug__Page__blogPostContainer h2 {
-  color: var(--blog-title-foreground-color);
-  font-size: 1.35em;
-}
-
-.app_philosophy__slug__Page__blogPostContainer h3 {
-  color: var(--blog-title-foreground-color);
-  font-size: 1.15em;
-}
-
-.app_philosophy__slug__Page__blogPostContainer code:not([class*="code-highlight"]) {
-  color: var(--blog-code-inline-foreground-color);
-  background-color: var(--blog-code-inline-background-color);
-  padding: 2px 4px;
-  border-radius: 3px;
-  font-size: 0.85em;
-  font-family:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Ubuntu Mono",
-    monospace;
-}
-
-.app_philosophy__slug__Page__blogPostContainer p:has(img) {
-  padding: 16px;
-  text-align: center;
-}
-
-.app_philosophy__slug__Page__blogPostContainer img {
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.08),
-    0 0 1px rgba(0, 0, 0, 0.12);
-  margin: 16px 0;
-}
-
-.app_philosophy__slug__Page__blogPostContainer img,
-.app_philosophy__slug__Page__blogPostContainer video {
-  max-width: 100%;
-  border-radius: 4px;
-}
-
-.app_philosophy__slug__Page__blogPostContainer ul {
-  margin-top: 6px;
-  margin-bottom: 6px;
-  list-style-type: disc;
-  padding-left: 1.4rem;
-}
-
-.app_philosophy__slug__Page__blogPostContainer p + ul {
-  margin-top: -12px;
 }
 
 
@@ -1560,4 +1560,5 @@ section.app_website_ContactsSection__contactSection a:hover {
     grid-template-columns: none;
   }
 }
+
 
