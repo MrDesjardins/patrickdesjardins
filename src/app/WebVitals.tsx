@@ -1,29 +1,32 @@
 "use client";
 
-import { useReportWebVitals } from "next/web-vitals";
+import { useEffect } from "react";
+import { onCLS, onFCP, onINP, onLCP, onTTFB, type Metric } from "web-vitals";
 import { sendTelemetryEvent } from "../lib/telemetry";
 
 const trackedMetrics = new Set(["CLS", "LCP", "INP", "FCP", "TTFB"]);
 
-export function WebVitals(): null {
-  useReportWebVitals((metric) => {
-    const rawName: unknown = metric.name;
-    const rawValue: unknown = metric.value;
-    const rawRating: unknown = metric.rating;
-    const metricName = String(rawName);
-    if (!trackedMetrics.has(metricName)) {
-      return;
-    }
-    const metricValue =
-      typeof rawValue === "number" ? Math.round(rawValue) : 0;
-    const metricRating = String(rawRating);
+function reportMetric(metric: Metric): void {
+  const metricName = String(metric.name);
+  if (!trackedMetrics.has(metricName)) {
+    return;
+  }
 
-    sendTelemetryEvent("web_vital", {
-      metric_name: metricName,
-      metric_value: metricValue,
-      metric_rating: metricRating,
-    });
+  sendTelemetryEvent("web_vital", {
+    metric_name: metricName,
+    metric_value: Math.round(metric.value),
+    metric_rating: String(metric.rating),
   });
+}
+
+export function WebVitals(): null {
+  useEffect(() => {
+    onCLS(reportMetric);
+    onFCP(reportMetric);
+    onINP(reportMetric);
+    onLCP(reportMetric);
+    onTTFB(reportMetric);
+  }, []);
 
   return null;
 }

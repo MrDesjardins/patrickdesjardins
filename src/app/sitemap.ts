@@ -3,20 +3,20 @@ import { getAllPhilosophyPosts, getAllPosts } from "../lib/api";
 
 const BASE_URL = "https://patrickdesjardins.com";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+export default async function sitemap(): Promise<MetadataRoute["Sitemap"]> {
   const [posts, philosophyPosts] = await Promise.all([
     getAllPosts(),
     getAllPhilosophyPosts(),
   ]);
 
-  const postEntries: MetadataRoute.Sitemap = posts.map((post) => ({
+  const postEntries: MetadataRoute["Sitemap"] = posts.map((post) => ({
     url: `${BASE_URL}/blog/${post.metadata.slug}`,
     lastModified: new Date(post.metadata.date),
     changeFrequency: "monthly",
     priority: 0.7,
   }));
 
-  const philosophyEntries: MetadataRoute.Sitemap = philosophyPosts.map(
+  const philosophyEntries: MetadataRoute["Sitemap"] = philosophyPosts.map(
     (post) => ({
       url: `${BASE_URL}/philosophy/${post.metadata.slug}`,
       lastModified: new Date(post.metadata.date),

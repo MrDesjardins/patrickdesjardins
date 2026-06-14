@@ -10,7 +10,7 @@ const staticRoutes = [
 ];
 
 function axeForPage(page: Page): AxeBuilder {
-  return new AxeBuilder({ page })
+  return new AxeBuilder({ page: page })
     .exclude("iframe")
     .disableRules([
       // Existing visual design and third-party widgets still have contrast debt.

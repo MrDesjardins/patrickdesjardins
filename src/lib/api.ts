@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { compileMDX } from "next-mdx-remote/rsc";
+import { evaluate } from "@mdx-js/mdx";
 import {
   FIRST_YEAR,
   LAST_YEAR,
@@ -8,11 +8,16 @@ import {
 } from "../constants/constants";
 import rehypePrism from "rehype-prism-plus";
 import remarkGfm from "remark-gfm";
+import * as runtime from "react/jsx-runtime";
 import { CodeSandbox } from "../app/blog/_mdxComponents/CodeSandbox";
 import { SoundCloud } from "../app/blog/_mdxComponents/SoundCloud";
 import { TocAzureContainerSeries } from "../app/blog/_mdxComponents/TocAzureContainerSeries";
 import { YouTube } from "../app/blog/_mdxComponents/YouTube";
-import { type ReactElement, type JSXElementConstructor } from "react";
+import {
+  createElement,
+  type JSXElementConstructor,
+  type ReactElement,
+} from "react";
 import { isDevelopment } from "../_utils/env";
 
 export const ROOT_POSTS_PATH = path.join(process.cwd(), "/src/_posts");
@@ -39,6 +44,47 @@ export interface MdxData {
   contentReact: ReactElement<unknown, string | JSXElementConstructor<unknown>>;
   rawFileContent: string;
   frontmatter: Frontmatter;
+}
+
+function parseFrontmatter(content: string): {
+  frontmatter: Frontmatter;
+  body: string;
+} {
+  const match = /^---\r?\n([\s\S]*?)\r?\n---\r?\n/.exec(content);
+  const rawFrontmatter = match?.[1] ?? "";
+  const body = match === null ? content : content.slice(match[0].length);
+  const parsed: Record<string, string | string[]> = {};
+  const lines = rawFrontmatter.split(/\r?\n/);
+
+  for (let i = 0; i < lines.length; i += 1) {
+    const scalar = /^([A-Za-z0-9_-]+):\s*(.*)$/.exec(lines[i]);
+    if (scalar === null) {
+      continue;
+    }
+
+    const [, key, rawValue] = scalar;
+    if (rawValue === "") {
+      const values: string[] = [];
+      while (i + 1 < lines.length && /^\s*-\s+/.test(lines[i + 1])) {
+        i += 1;
+        values.push(
+          lines[i].replace(/^\s*-\s+/, "").trim().replace(/^["']|["']$/g, ""),
+        );
+      }
+      parsed[key] = values;
+    } else {
+      parsed[key] = rawValue.trim().replace(/^["']|["']$/g, "");
+    }
+  }
+
+  return {
+    frontmatter: {
+      title: typeof parsed.title === "string" ? parsed.title : "",
+      date: typeof parsed.date === "string" ? parsed.date : "",
+      categories: Array.isArray(parsed.categories) ? parsed.categories : [],
+    },
+    body: body,
+  };
 }
 
 /**
@@ -73,17 +119,17 @@ export async function getMdxFileContent(
   fullPathWithFileName: string,
 ): Promise<MdxData> {
   const fileContent = await fs.promises.readFile(fullPathWithFileName, "utf8");
-  const { content, frontmatter: rawFm } = await compileMDX({
-    source: fileContent,
-    options: {
-      parseFrontmatter: true,
-      mdxOptions: {
-        remarkPlugins: [remarkGfm],
-        rehypePlugins: [
-          [rehypePrism, { ignoreMissing: true, defaultLanguage: "plaintext" }],
-        ],
-      },
-    },
+  const { frontmatter, body } = parseFrontmatter(fileContent);
+  const evaluated = await evaluate(body, {
+    ...runtime,
+    baseUrl: import.meta.url,
+    remarkPlugins: [remarkGfm as never],
+    rehypePlugins: [
+      [rehypePrism, { ignoreMissing: true, defaultLanguage: "plaintext" }],
+    ],
+  });
+  const Content = evaluated.default;
+  const content = createElement(Content, {
     components: {
       TocAzureContainerSeries: TocAzureContainerSeries,
       CodeSandbox: CodeSandbox,
@@ -91,13 +137,6 @@ export async function getMdxFileContent(
       SoundCloud: SoundCloud,
     },
   });
-  const frontmatter: Frontmatter = {
-    title: typeof rawFm.title === "string" ? rawFm.title : "",
-    date: typeof rawFm.date === "string" ? rawFm.date : "",
-    categories: Array.isArray(rawFm.categories)
-      ? rawFm.categories.filter((c): c is string => typeof c === "string")
-      : [],
-  };
   const fileName = extractFileFromFullFilePath(fullPathWithFileName);
   const slug = extractSlugFromFileName(fileName);
   const year = extractYearFromStringDate(frontmatter.date);
@@ -109,7 +148,10 @@ export async function getMdxFileContent(
       year: year,
       date: frontmatter.date,
     },
-    contentReact: content,
+    contentReact: content as ReactElement<
+      unknown,
+      string | JSXElementConstructor<unknown>
+    >,
     rawFileContent: fileContent,
     frontmatter: frontmatter,
   };

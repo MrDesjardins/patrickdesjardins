@@ -1,0 +1,199 @@
+<!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Patrick Desjardins Blog - An Introduction to Microsoft Azure and Kubernetes using Helm and Docker Images</title><meta name="description" content="An Introduction to Microsoft Azure and Kubernetes using Helm and Docker Images"><link rel="stylesheet" href="/assets/client-BRl4XhPQ.css"><link rel="stylesheet" href="/assets/static-modules.css"></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><header><h1 class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</h1><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a href="/" class="app_blog__components_BlogBody__navLinkText">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog" class="app_blog__components_BlogBody__navLinkText">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/search" class="app_blog__components_BlogBody__navLinkText">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/philosophy" class="app_blog__components_BlogBody__navLinkText">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2026" class="app_blog__components_BlogBody__navLinkText">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2025" class="app_blog__components_BlogBody__navLinkText">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2024" class="app_blog__components_BlogBody__navLinkText">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2023" class="app_blog__components_BlogBody__navLinkText">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2022" class="app_blog__components_BlogBody__navLinkText">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2021" class="app_blog__components_BlogBody__navLinkText">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2020" class="app_blog__components_BlogBody__navLinkText">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2019" class="app_blog__components_BlogBody__navLinkText">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2018" class="app_blog__components_BlogBody__navLinkText">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2017" class="app_blog__components_BlogBody__navLinkText">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2016" class="app_blog__components_BlogBody__navLinkText">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2015" class="app_blog__components_BlogBody__navLinkText">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2014" class="app_blog__components_BlogBody__navLinkText">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2013" class="app_blog__components_BlogBody__navLinkText">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2012" class="app_blog__components_BlogBody__navLinkText">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2011" class="app_blog__components_BlogBody__navLinkText">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260" loading="lazy"/></div></header><main class="app_blog__components_BlogBody__main"><h2 class="app_blog__components_BlogBody__heading">An Introduction to Microsoft Azure and Kubernetes using Helm and Docker Images</h2><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: 2022-08-05</p><p>Kubernetes is a convenient way to deploy an infrastructure of services in a central place. Once you have your service Docker images built and deployed you can use Kubernetes to deploy multiple instances across the cloud. In this article, we will see how Microsoft Azure can use a Kubernetes configuration generated with Helm and deploy many images from Azure Registry Container.</p>
+<h1>Create an Azure Kubernetes Service (AKS)</h1>
+<p>Few informations is required that was build when we created our Azure Docker Image Repository.
+You need to use the Azure resource group name after <code>--resource-group</code>.  The name of the Kubernetes service is after <code>--name</code>. The <code>--attach-acr</code> is the name of the Azure Container Registry (acr).</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">az aks create --resource-group realtimepixel_resourcegroup --name realpixelask --location eastus --attach-acr realtimepixel --generate-ssh-keys
+</span></code></pre>
+<p>There is few things to know:</p>
+<ol>
+<li>The name cannot have underscore. Even if you enclose with double quote it does not work</li>
+<li>The command takes a while to run. Expect at least 1 minute.</li>
+</ol>
+<p>Most online tutorial shows to use the Azure CLI (<code>az</code> command) but it is also possible to create the Kubernetes service on the Microsoft Azure Portal.</p>
+<p><img src="/images/blog/azure_kbs_creation.png" alt=""/></p>
+<h1>Configure Github Workflow</h1>
+<p>You can edit the existing Github workflow defined previously that was building the image and pushing it into Azure Container Registry (ACR). However, I decided to create a new workflow allowing me to decide manually when to push the image into production.</p>
+<p>Here is the full Github workflow that I store into the repository in <code>.github/workflows/k8sdeploy.yml</code></p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">on:
+</span><span class="code-line">  workflow_dispatch:
+</span><span class="code-line">
+</span><span class="code-line"># Environment variables available to all jobs and steps in this workflow
+</span><span class="code-line">env:
+</span><span class="code-line">  REGISTRY_NAME: realtimepixel
+</span><span class="code-line">  CLUSTER_NAME: realpixelask
+</span><span class="code-line">  CLUSTER_RESOURCE_GROUP: realtimepixel_resourcegroup
+</span><span class="code-line">  NAMESPACE: realtimepixel-prod
+</span><span class="code-line">
+</span><span class="code-line">jobs:
+</span><span class="code-line">  build:
+</span><span class="code-line">    runs-on: ubuntu-latest
+</span><span class="code-line">    steps:
+</span><span class="code-line">      - uses: actions/checkout@main
+</span><span class="code-line">
+</span><span class="code-line">      # Set the target Azure Kubernetes Service (AKS) cluster.
+</span><span class="code-line">      - uses: azure/aks-set-context@v1
+</span><span class="code-line">        with:
+</span><span class="code-line">          creds: ${{ secrets.AZURE_CREDENTIALS }}
+</span><span class="code-line">          cluster-name: ${{ env.CLUSTER_NAME }}
+</span><span class="code-line">          resource-group: ${{ env.CLUSTER_RESOURCE_GROUP }}
+</span><span class="code-line">
+</span><span class="code-line">      # Create namespace if doesn&#x27;t exist
+</span><span class="code-line">      - run: |
+</span><span class="code-line">          kubectl create namespace ${{ env.NAMESPACE }} --dry-run=client -o json | kubectl apply -f -
+</span><span class="code-line">
+</span><span class="code-line">      - name: Helm tool installer
+</span><span class="code-line">        uses: Azure/setup-helm@v1
+</span><span class="code-line">
+</span><span class="code-line">      - name: Azure Login
+</span><span class="code-line">        uses: Azure/login@v1.1
+</span><span class="code-line">        with:
+</span><span class="code-line">          creds: ${{ secrets.AZURE_CREDENTIALS }}
+</span><span class="code-line">
+</span><span class="code-line">      - name: Get Latest Tag Redis
+</span><span class="code-line">        id: latesttagredis
+</span><span class="code-line">        run: |
+</span><span class="code-line">          tag_redis=$(az acr repository show-tags --name ${{env.REGISTRY_NAME}} --repository realtimepixel_redis --top 1 --orderby time_desc -o tsv)
+</span><span class="code-line">          echo &quot;::set-output name=tag_redis::$tag_redis&quot;
+</span><span class="code-line">      
+</span><span class="code-line">      - name: Tag Redis
+</span><span class="code-line">        run: echo &quot;Tag Redis is ${{ steps.latesttagredis.outputs.tag_redis }}&quot;
+</span><span class="code-line">
+</span><span class="code-line">      - name: Get Latest Tag Backend
+</span><span class="code-line">        id: latesttagbackend
+</span><span class="code-line">        run: |
+</span><span class="code-line">          tag_backend=$(az acr repository show-tags --name ${{env.REGISTRY_NAME}} --repository realtimepixel_backend --top 1 --orderby time_desc -o tsv)
+</span><span class="code-line">          echo &quot;::set-output name=tag_backend::$tag_backend&quot;
+</span><span class="code-line">
+</span><span class="code-line">      - name: Tag Backend
+</span><span class="code-line">        run: echo &quot;Tag Backend is ${{ steps.latesttagbackend.outputs.tag_backend }}&quot;
+</span><span class="code-line">      
+</span><span class="code-line">      - name: Get Latest Tag Frontend
+</span><span class="code-line">        id: latesttagfrontend
+</span><span class="code-line">        run: |
+</span><span class="code-line">          tag_frontend=$(az acr repository show-tags --name ${{env.REGISTRY_NAME}} --repository realtimepixel_frontend --top 1 --orderby time_desc -o tsv)
+</span><span class="code-line">          echo &quot;::set-output name=tag_frontend::$tag_frontend&quot;
+</span><span class="code-line">
+</span><span class="code-line">      - name: Tag Frontend
+</span><span class="code-line">        run: echo &quot;Tag Frontend is ${{ steps.latesttagfrontend.outputs.tag_frontend }}&quot;
+</span><span class="code-line">
+</span><span class="code-line">      - name: Deploy
+</span><span class="code-line">        run: &gt;
+</span><span class="code-line">          helm upgrade realtimepixel ./kubernetes/realtimepixel 
+</span><span class="code-line">          --install 
+</span><span class="code-line">          --namespace=${{ env.NAMESPACE }} 
+</span><span class="code-line">          --set namespace=${{env.NAMESPACE}}
+</span><span class="code-line">          --set image.pullpolicy=IfNotPresent
+</span><span class="code-line">          --set image.redis.repository=${{env.REGISTRY_NAME}}.azurecr.io/realtimepixel_redis
+</span><span class="code-line">          --set image.redis.tag=${{ steps.latesttagredis.outputs.tag_redis }}
+</span><span class="code-line">          --set image.backend.repository=${{env.REGISTRY_NAME}}.azurecr.io/realtimepixel_backend
+</span><span class="code-line">          --set image.backend.tag=${{ steps.latesttagbackend.outputs.tag_backend }}
+</span><span class="code-line">          --set image.frontend.repository=${{env.REGISTRY_NAME}}.azurecr.io/realtimepixel_frontend
+</span><span class="code-line">          --set image.frontend.tag=${{ steps.latesttagfrontend.outputs.tag_frontend }}
+</span><span class="code-line">
+</span></code></pre>
+<p>Here is a description of what is going on:</p>
+<ol>
+<li>
+<p>The first section called <code>env</code> are variable that can be used across the whole workflow. It is a simple way to configure data in a central place for the script. It defined the registry (Azure Container Registry) name, the Kubernetes cluster name created in this blog post, the Azure resource group (previous article) and the Kubernetes namespace.</p>
+</li>
+<li>
+<p>The second section connect to AKS: Azure Kubernetes Service</p>
+</li>
+<li>
+<p>We create the namespace</p>
+</li>
+<li>
+<p>We then connect with Helm and Azure Login. From now, we are ready to perform some commands</p>
+</li>
+<li>
+<p>First, we get the latest image tag for each image</p>
+</li>
+<li>
+<p>Finally, we use <strong>helm</strong> to install or update the Kubernetes configuration. What is important is to override a lot of values from <code>kubernetes\realtimepixel\values.yaml</code> (Helm values file)</p>
+</li>
+</ol>
+<h1>Verification</h1>
+<p>At this point, the Helm command pushes the instruction to Azure Kubernetes Service. Going in the portal you can see under <code>Workloads</code> the deployment.</p>
+<p><img src="/images/blog/azure_k8s_workloads.png" alt=""/></p>
+<p>Everything should be running as expected! The screenshot shows three orange symbols next to my three deployments because there is an issue with the Kubernetes configuration which is outside the goal of this post. However, it is still interesting to know that you can drill and see the error reason being: <code>ErrImageNeverPull</code>.</p>
+<h2>Debug ErrImageNeverPull</h2>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">kubectl get pods -n realtimepixel-prod
+</span><span class="code-line">kubectl describe pod redis-deployment-6495cd48cc-fhzjg -n realtimepixel-prod
+</span></code></pre>
+<p>The last command gives more information saying the policy is to <code>Never</code></p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">Events:
+</span><span class="code-line">Type     Reason             Age                    From               Message
+</span><span class="code-line">----     ------             ----                   ----               -------
+</span><span class="code-line">Normal   Scheduled          59m                    default-scheduler  Successfully assigned realtimepixel-prod/redis-deployment-6495cd48cc-fhzjg to aks-agentpool-28884595-vmss000002
+</span><span class="code-line">Warning  Failed             57m (x12 over 59m)     kubelet            Error: ErrImageNeverPull
+</span><span class="code-line">Warning  ErrImageNeverPull  4m36s (x260 over 59m)  kubelet            Container image &quot;realtimepixel.azurecr.io/realtimepixel_redis:67dfbf27b868bd0b9e7c77aefafb596f2adb3ca0&quot; is not present with pull policy of Never
+</span></code></pre>
+<p>Trying to see what is really sent to Kubernetes using the <code>template</code> command:</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">helm template realtimepixel ./kubernetes/realtimepixel --set namespace=realtimepixel-prod --set image.pullPolicy=Always --set image.redis.repository=realtimepixel.azurecr.io/realtimepixel_redis --set image.redis.tag=123123 --set image.backend.repository=realtimepixel.azurecr.io/realtimepixel_backend --set image.backend.tag=123123 --set image.frontend.repository=realtimepixel.azurecr.io/realtimepixel_frontend --set image.frontend.tag=123123 &gt; temp.yaml
+</span></code></pre>
+<p>I found a case sensitive issue with the <code>image.pullPolicy</code>.</p>
+<h2>Debug CrashLoopBackOff</h2>
+<p>There is a command to get the health of all your pods. In my case, some of them were crashing:</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">kubectl get pods -n realtimepixel-prod
+</span></code></pre>
+<p>Resulted with:</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">NAME                                   READY   STATUS             RESTARTS         AGE
+</span><span class="code-line">backend-deployment-69c99548d9-g2w5d    0/1     CrashLoopBackOff   10 (3m28s ago)   30m
+</span><span class="code-line">backend-deployment-69c99548d9-wrhzp    0/1     CrashLoopBackOff   10 (3m42s ago)   30m
+</span><span class="code-line">backend-deployment-7dfbc4f7f8-m99kl    0/1     CrashLoopBackOff   10 (3m51s ago)   109m
+</span><span class="code-line">backend-deployment-7dfbc4f7f8-vbp24    0/1     CrashLoopBackOff   10 (4m4s ago)    109m
+</span><span class="code-line">frontend-deployment-6f88fdb587-2p2lk   1/1     Running            0                30m
+</span><span class="code-line">redis-deployment-5d48cc44bd-8w869      1/1     Running            0                30m
+</span></code></pre>
+<p>kubectl describe pod backend-deployment-69c99548d9-g2w5d -n realtimepixel-prod</p>
+<p>kubectl logs backend-deployment-69c99548d9-g2w5d -n realtimepixel-prod</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">&gt; start:production
+</span><span class="code-line">&gt; node -r ts-node/register/transpile-only -r tsconfig-paths/register build/backend/src/index.js
+</span><span class="code-line">
+</span><span class="code-line">Error: Cannot find module &#x27;/node/build/backend/src/index.js&#x27;
+</span><span class="code-line">    at Function.Module._resolveFilename (node:internal/modules/cjs/loader:933:15)
+</span><span class="code-line">    at Function.Module._resolveFilename.sharedData.moduleResolveFilenameHook.installedValue (/node/node_modules/@cspotcode/source-map-support/source-map-support.js:679:30)
+</span><span class="code-line">    at Function.Module._resolveFilename (/node/node_modules/tsconfig-paths/src/register.ts:90:36)
+</span><span class="code-line">    at Function.Module._load (node:internal/modules/cjs/loader:778:27)
+</span><span class="code-line">    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)
+</span><span class="code-line">    at node:internal/main/run_main_module:17:47 {
+</span><span class="code-line">  code: &#x27;MODULE_NOT_FOUND&#x27;,
+</span><span class="code-line">  requireStack: []
+</span><span class="code-line">}
+</span></code></pre>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">kubectl exec -it backend-deployment-69c99548d9-g2w5d -n realtimepixel-prod -- sh
+</span></code></pre>
+<p>But was producing:</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line"> error: unable to upgrade connection: container not found...
+</span></code></pre>
+<p>You can test it by creating a Pod for the problematic image that will not restart using the following commands:</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">kubectl run debug-demo -n realtimepixel-prod --image=realtimepixel.azurecr.io/realtimepixel_backend:67dfbf27b868bd0b9e7c77aefafb596f2adb3ca0 --restart=Never
+</span><span class="code-line">kubectl get pods -n realtimepixel-prod
+</span><span class="code-line">kubectl exec -it debug-demo -n realtimepixel-prod -- sh
+</span></code></pre>
+<p>However, the problem will remain that when the Kube Control runs the image that it will crash. However, the log above is providing good information. In my case I realized two things:</p>
+<ol>
+<li>When testing locally, I wasn&#x27;t testing properly. The build was passing because I had a <code>node_modules</code> with a dependency that was installed when performing <code>npm run install</code> which was adding all the <code>devDependencies</code>. On Github, performing the same command, with the <code>NODE_ENV</code> to <code>production</code> was causing <code>npm install</code> to install only the <code>dependencies</code> without the <code>devDependencies</code>.</li>
+<li>I added the <code>--target</code> in the build to ensure that only the production multi-stage is executed</li>
+</ol>
+<h1>Still Not Working!</h1>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">docker build -f ./services/backend/Dockerfile --target production --build-arg NODE_ENV=production .
+</span><span class="code-line">docker images
+</span><span class="code-line">docker run 40d4941a9092
+</span><span class="code-line">docker ps
+</span></code></pre>
+<p>Take the image id from the ps command:</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">docker run -it 40d4941a9092 bash
+</span></code></pre>
+<p>I could see the error. Now time to make the container not crash but to get into:</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">docker run 40d4941a9092 /bin/sh -c &quot;while true; do sleep 2; df -h; done&quot;
+</span></code></pre>
+<p>In another console:</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">docker run -it 40d4941a9092 bash
+</span></code></pre>
+<p>At that point, I saw that the build was messing around the folders of the ouput of TypeScript. I modified the path and was good to go.</p>
+<h1>Conclusion</h1>
+<p>At this point, the image was created with a build that was successful.</p>
+<p><img src="/images/blog/azure_kubernetes_deployement.png" alt=""/></p>
+<p>I would say that the experience was enriching. However, one question kept getting in the back of my mind: why isn&#x27;t the Azure Portal guiding me with more than a single keyword for the failure. As we saw, by messing around with commands, we found the root cause, but some support would have been great. Nonetheless, if something happens to you, now you should be equipped to diagnose a little bit better.</p>
+<div><h2>Azure Blog Posts: Docker Images &amp; Kubernetes</h2><ol><li><a href="/blog/azure-docker-container-repository">How to host Docker images on Microsoft Azure</a></li><li><a href="/blog/azure-docker-container-repository-github">How to use Kubernetes with Microsoft Azure and GitHub and how to debug if it does not workout</a></li><li><a href="/blog/azure-intro-kubernetes">An Introduction to Microsoft Azure and Kubernetes using Helm and Docker Images</a></li><li><a href="/blog/azure-kubernetes-public-access">How to Access your Web Application on Kubernetes Azure</a></li><li><a href="/blog/azure-kubernetes-pod-debug-crash">How to Debug a Kubernetes Pod that Crash at Startup (works on Microsoft Azure Kubernetes)?</a></li><li><a href="/blog/helmchart-introduction">How to use Helm Chart to configure dynamically your Kubernetes file for beginner?</a></li></ol></div></div></main><footer><div class="app_blog__components_BlogBody__paginationBar"><div class="app_blog__components_BlogBody__paginationTitle">Chronological Blog Articles by Page</div><div class="app_blog__components_BlogBody__paginationLinks"><a href="/blog/page/1" class="">1</a><a href="/blog/page/2" class="">2</a><a href="/blog/page/3" class="">3</a><a href="/blog/page/4" class="">4</a><a href="/blog/page/5" class="">5</a><a href="/blog/page/6" class="">6</a><a href="/blog/page/7" class="">7</a><a href="/blog/page/8" class="">8</a><a href="/blog/page/9" class="">9</a><a href="/blog/page/10" class="">10</a><a href="/blog/page/11" class="">11</a><a href="/blog/page/12" class="">12</a><a href="/blog/page/13" class="">13</a><a href="/blog/page/14" class="">14</a><a href="/blog/page/15" class="">15</a><a href="/blog/page/16" class="">16</a><a href="/blog/page/17" class="">17</a><a href="/blog/page/18" class="">18</a><a href="/blog/page/19" class="">19</a><a href="/blog/page/20" class="">20</a><a href="/blog/page/21" class="">21</a><a href="/blog/page/22" class="">22</a><a href="/blog/page/23" class="">23</a><a href="/blog/page/24" class="">24</a><a href="/blog/page/25" class="">25</a><a href="/blog/page/26" class="">26</a><a href="/blog/page/27" class="">27</a><a href="/blog/page/28" class="">28</a><a href="/blog/page/29" class="">29</a><a href="/blog/page/30" class="">30</a><a href="/blog/page/31" class="">31</a><a href="/blog/page/32" class="">32</a><a href="/blog/page/33" class="">33</a><a href="/blog/page/34" class="">34</a><a href="/blog/page/35" class="">35</a><a href="/blog/page/36" class="">36</a><a href="/blog/page/37" class="">37</a><a href="/blog/page/38" class="">38</a><a href="/blog/page/39" class="">39</a><a href="/blog/page/40" class="">40</a><a href="/blog/page/41" class="">41</a><a href="/blog/page/42" class="">42</a><a href="/blog/page/43" class="">43</a><a href="/blog/page/44" class="">44</a><a href="/blog/page/45" class="">45</a><a href="/blog/page/46" class="">46</a><a href="/blog/page/47" class="">47</a><a href="/blog/page/48" class="">48</a><a href="/blog/page/49" class="">49</a><a href="/blog/page/50" class="">50</a><a href="/blog/page/51" class="">51</a><a href="/blog/page/52" class="">52</a><a href="/blog/page/53" class="">53</a><a href="/blog/page/54" class="">54</a><a href="/blog/page/55" class="">55</a><a href="/blog/page/56" class="">56</a><a href="/blog/page/57" class="">57</a><a href="/blog/page/58" class="">58</a><a href="/blog/page/59" class="">59</a><a href="/blog/page/60" class="">60</a><a href="/blog/page/61" class="">61</a><a href="/blog/page/62" class="">62</a><a href="/blog/page/63" class="">63</a><a href="/blog/page/64" class="">64</a><a href="/blog/page/65" class="">65</a><a href="/blog/page/66" class="">66</a><a href="/blog/page/67" class="">67</a><a href="/blog/page/68" class="">68</a><a href="/blog/page/69" class="">69</a><a href="/blog/page/70" class="">70</a><a href="/blog/page/71" class="">71</a><a href="/blog/page/72" class="">72</a><a href="/blog/page/73" class="">73</a><a href="/blog/page/74" class="">74</a><a href="/blog/page/75" class="">75</a><a href="/blog/page/76" class="">76</a><a href="/blog/page/77" class="">77</a><a href="/blog/page/78" class="">78</a><a href="/blog/page/79" class="">79</a><a href="/blog/page/80" class="">80</a><a href="/blog/page/81" class="">81</a><a href="/blog/page/82" class="">82</a><a href="/blog/page/83" class="">83</a><a href="/blog/page/84" class="">84</a></div></div></footer></div></div><script type="module" src="/assets/client-DJDe0_HD.js"></script></body></html>

@@ -1,0 +1,83 @@
+<!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Patrick Desjardins Blog - AI and Playwright MCP</title><meta name="description" content="AI and Playwright MCP"><link rel="stylesheet" href="/assets/client-BRl4XhPQ.css"><link rel="stylesheet" href="/assets/static-modules.css"></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><header><h1 class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</h1><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a href="/" class="app_blog__components_BlogBody__navLinkText">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog" class="app_blog__components_BlogBody__navLinkText">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/search" class="app_blog__components_BlogBody__navLinkText">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/philosophy" class="app_blog__components_BlogBody__navLinkText">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2026" class="app_blog__components_BlogBody__navLinkText">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2025" class="app_blog__components_BlogBody__navLinkText">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2024" class="app_blog__components_BlogBody__navLinkText">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2023" class="app_blog__components_BlogBody__navLinkText">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2022" class="app_blog__components_BlogBody__navLinkText">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2021" class="app_blog__components_BlogBody__navLinkText">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2020" class="app_blog__components_BlogBody__navLinkText">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2019" class="app_blog__components_BlogBody__navLinkText">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2018" class="app_blog__components_BlogBody__navLinkText">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2017" class="app_blog__components_BlogBody__navLinkText">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2016" class="app_blog__components_BlogBody__navLinkText">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2015" class="app_blog__components_BlogBody__navLinkText">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2014" class="app_blog__components_BlogBody__navLinkText">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2013" class="app_blog__components_BlogBody__navLinkText">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2012" class="app_blog__components_BlogBody__navLinkText">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2011" class="app_blog__components_BlogBody__navLinkText">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260" loading="lazy"/></div></header><main class="app_blog__components_BlogBody__main"><h2 class="app_blog__components_BlogBody__heading">AI and Playwright MCP</h2><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: 2026-03-16</p><p>User interfaces and automation have always been tricky. After all, part of the process requires seeing the final result, as theoretically styling can fall into many traps.</p>
+<p>For a long time, people created unit tests using Jest or other UI frameworks and, with utility functions, could test React components without a browser. However, nothing beats loading the application in a browser to see the final result.</p>
+<p>The cost has always been large: hard to create, hard to maintain, slow to run, and flaky. The rise of AI changed a few variables: fast to create and easier to maintain. The improvement is not perfect, but it goes a long way.</p>
+<p>Here is part of an execution:</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">• Called
+</span><span class="code-line">  └ playwright-headed.browser_run_code({&quot;code&quot;:&quot;async (page) =&gt; {\n  const lane = page.locator(&#x27;[data-timeline-row-index=\&quot;12\&quot;]
+</span><span class="code-line">        [class*=\&quot;timelineLane\&quot;]&#x27;).first();\n  const box = await lane.boundingBox();\n  if (!box) return { error: &#x27;no lane box&#x27; };\n  const startX =
+</span><span class="code-line">        box.x + 1180;\n  const endX = box.x + 1280;\n  const y = box.y + box.height / 2;\n  await page.mouse.move(startX, y);\n  await page.mouse.down();
+</span><span class="code-line">        \n  await page.waitForTimeout(150);\n  await page.mouse.move(endX, y, { steps: 12 });\n  await page.waitForTimeout(150);\n  await page.mouse.up();
+</span><span class="code-line">        \n  await page.waitForTimeout(250);\n  const overlay = await page.locator(&#x27;[data-testid=\&quot;vstream-timeline-window-overlay\&quot;]&#x27;).count();\n  const
+</span><span class="code-line">        rowMenu = await page.locator(&#x27;[data-testid=\&quot;vstream-row-menu\&quot;]&#x27;).count();\n  return { box, startX, endX, y, overlayCount: overlay, rowMenuCount:
+</span><span class="code-line">        rowMenu };\n}&quot;})
+</span><span class="code-line">    ### Result
+</span><span class="code-line">    {&quot;box&quot;:{&quot;x&quot;:282,&quot;y&quot;:2908.9375,&quot;width&quot;:1802.234375,&quot;height&quot;:32},&quot;startX&quot;:1462,&quot;endX&quot;:1562,&quot;y&quot;:2924.9375,&quot;overlayCount&quot;:0,&quot;rowMenuCount&quot;:0}
+</span><span class="code-line">    ### Ran Playwright code
+</span><span class="code-line">    ```js
+</span><span class="code-line">    await (async (page) =&gt; {
+</span><span class="code-line">      const lane = page.locator(&#x27;[data-timeline-row-index=&quot;12&quot;] [class*=&quot;timelineLane&quot;]&#x27;).first();
+</span><span class="code-line">      const box = await lane.boundingBox();
+</span><span class="code-line">      if (!box) return { error: &#x27;no lane box&#x27; };
+</span><span class="code-line">      const startX = box.x + 1180;
+</span><span class="code-line">      const endX = box.x + 1280;
+</span><span class="code-line">      const y = box.y + box.height / 2;
+</span><span class="code-line">      await page.mouse.move(startX, y);
+</span><span class="code-line">      await page.mouse.down();
+</span><span class="code-line">      await page.waitForTimeout(150);
+</span><span class="code-line">      await page.mouse.move(endX, y, { steps: 12 });
+</span><span class="code-line">      await page.waitForTimeout(150);
+</span><span class="code-line">      await page.mouse.up();
+</span><span class="code-line">      await page.waitForTimeout(250);
+</span><span class="code-line">      const overlay = await...
+</span></code></pre>
+<p>Using Codex, Cursor, or Claude, you can install the <a href="https://github.com/microsoft/playwright-mcp">Playwright MCP</a>, which gives the AI access to a headless (or headful) browser. It can generate Playwright tests on the fly or create them traditionally in files. I am developing a new product and changing the UI and behavior quite often, so asking the AI to run automated tests and validate that the new feature I just coded does not break the existing UI simply means letting the AI use Playwright to try the features that are already implemented. It understands the features automatically by reading the markdown and the code.</p>
+<p>Here is one result from a heavy drag-and-drop user interface:</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">• I verified the delete-window behavior live on the target page while the populated V-Stream was loaded.
+</span><span class="code-line">
+</span><span class="code-line">  What I checked:
+</span><span class="code-line">
+</span><span class="code-line">  - I selected a time window on the Text 1 row, which had two red tween segments.
+</span><span class="code-line">  - I opened the window context menu and deleted that selected window.
+</span><span class="code-line">  - Before deletion, that row had:
+</span><span class="code-line">      - dots at about 14.747s, 17.747s, 20.528s
+</span><span class="code-line">      - tween segments Move and Resize • Rotate
+</span><span class="code-line">  - After deletion, it had:
+</span><span class="code-line">      - dots at about 14.747s, 16.197s, 18.978s
+</span><span class="code-line">      - only the remaining Resize • Rotate tween segment, shifted left and still aligned to the updated keyframes
+</span><span class="code-line">  - The selection overlay and row menu both cleared afterward, which is the expected cleanup path.
+</span><span class="code-line">
+</span><span class="code-line">  I also confirmed the sticky row-title fix live: after a 500px horizontal scroll, the label column stayed effectively pinned instead of scrolling away
+</span><span class="code-line">  with the lane.
+</span><span class="code-line">
+</span><span class="code-line">  One note: I reloaded the page afterward so the temporary editor mutation was discarded and not left dirty.
+</span></code></pre>
+<p>While there are still many issues, the friction of manually going to the browser to test everything is reduced. The friction to build and maintain tests is becoming a story of the past.</p>
+<p>I am not a developer who connects many MCPs or extensions to AI tools, but I highly recommend the Playwright MCP if you are developing web systems.</p>
+<p>Here is another response with an &quot;honest note&quot;:</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">• I fixed the three timeline issues you called out.
+</span><span class="code-line">
+</span><span class="code-line">  What changed:
+</span><span class="code-line">
+</span><span class="code-line">  - Clicking the left row name area is now the primary selection target, using pointerdown instead of relying on a later click. That makes row-name
+</span><span class="code-line">    selection more reliable for multi-select in VStreamTimelinePanel.tsx.
+</span><span class="code-line">  - Plain element-row menus no longer show Ungroup selected tracks. Ungroup is now only exposed from actual group rows.
+</span><span class="code-line">  - I kept the forgiving right-click behavior too: if you already have one row selected, right-clicking another row name extends the grouping context so
+</span><span class="code-line">    Group selected tracks still appears.
+</span><span class="code-line">
+</span><span class="code-line">  I also verified group collapse/expand live after creating a group on the target page:
+</span><span class="code-line">
+</span><span class="code-line">  - the new group row appeared as Group 1
+</span><span class="code-line">  - collapsing hid the grouped child rows
+</span><span class="code-line">  - expanding brought them back
+</span><span class="code-line">  - the toggle changed between ▸ and ▾ correctly
+</span><span class="code-line">
+</span><span class="code-line">  Tests/checks all pass:
+</span><span class="code-line">
+</span><span class="code-line">  - npx tsc --noEmit
+</span><span class="code-line">  - npm run lint
+</span><span class="code-line">  - npm run test
+</span><span class="code-line">
+</span><span class="code-line">  One honest note: in headless browser automation, raw Ctrl-click on the second row still behaved inconsistently, but the actual grouping flow now works
+</span><span class="code-line">  reliably because the row-name selection path is stronger and right-clicking the second row exposes Group selected tracks. If you want, I can go one step
+</span><span class="code-line">  further and add explicit row checkboxes or a dedicated Group selected rows toolbar action so this no longer depends on modifier keys at all.
+</span></code></pre></div></main><footer><div class="app_blog__components_BlogBody__paginationBar"><div class="app_blog__components_BlogBody__paginationTitle">Chronological Blog Articles by Page</div><div class="app_blog__components_BlogBody__paginationLinks"><a href="/blog/page/1" class="">1</a><a href="/blog/page/2" class="">2</a><a href="/blog/page/3" class="">3</a><a href="/blog/page/4" class="">4</a><a href="/blog/page/5" class="">5</a><a href="/blog/page/6" class="">6</a><a href="/blog/page/7" class="">7</a><a href="/blog/page/8" class="">8</a><a href="/blog/page/9" class="">9</a><a href="/blog/page/10" class="">10</a><a href="/blog/page/11" class="">11</a><a href="/blog/page/12" class="">12</a><a href="/blog/page/13" class="">13</a><a href="/blog/page/14" class="">14</a><a href="/blog/page/15" class="">15</a><a href="/blog/page/16" class="">16</a><a href="/blog/page/17" class="">17</a><a href="/blog/page/18" class="">18</a><a href="/blog/page/19" class="">19</a><a href="/blog/page/20" class="">20</a><a href="/blog/page/21" class="">21</a><a href="/blog/page/22" class="">22</a><a href="/blog/page/23" class="">23</a><a href="/blog/page/24" class="">24</a><a href="/blog/page/25" class="">25</a><a href="/blog/page/26" class="">26</a><a href="/blog/page/27" class="">27</a><a href="/blog/page/28" class="">28</a><a href="/blog/page/29" class="">29</a><a href="/blog/page/30" class="">30</a><a href="/blog/page/31" class="">31</a><a href="/blog/page/32" class="">32</a><a href="/blog/page/33" class="">33</a><a href="/blog/page/34" class="">34</a><a href="/blog/page/35" class="">35</a><a href="/blog/page/36" class="">36</a><a href="/blog/page/37" class="">37</a><a href="/blog/page/38" class="">38</a><a href="/blog/page/39" class="">39</a><a href="/blog/page/40" class="">40</a><a href="/blog/page/41" class="">41</a><a href="/blog/page/42" class="">42</a><a href="/blog/page/43" class="">43</a><a href="/blog/page/44" class="">44</a><a href="/blog/page/45" class="">45</a><a href="/blog/page/46" class="">46</a><a href="/blog/page/47" class="">47</a><a href="/blog/page/48" class="">48</a><a href="/blog/page/49" class="">49</a><a href="/blog/page/50" class="">50</a><a href="/blog/page/51" class="">51</a><a href="/blog/page/52" class="">52</a><a href="/blog/page/53" class="">53</a><a href="/blog/page/54" class="">54</a><a href="/blog/page/55" class="">55</a><a href="/blog/page/56" class="">56</a><a href="/blog/page/57" class="">57</a><a href="/blog/page/58" class="">58</a><a href="/blog/page/59" class="">59</a><a href="/blog/page/60" class="">60</a><a href="/blog/page/61" class="">61</a><a href="/blog/page/62" class="">62</a><a href="/blog/page/63" class="">63</a><a href="/blog/page/64" class="">64</a><a href="/blog/page/65" class="">65</a><a href="/blog/page/66" class="">66</a><a href="/blog/page/67" class="">67</a><a href="/blog/page/68" class="">68</a><a href="/blog/page/69" class="">69</a><a href="/blog/page/70" class="">70</a><a href="/blog/page/71" class="">71</a><a href="/blog/page/72" class="">72</a><a href="/blog/page/73" class="">73</a><a href="/blog/page/74" class="">74</a><a href="/blog/page/75" class="">75</a><a href="/blog/page/76" class="">76</a><a href="/blog/page/77" class="">77</a><a href="/blog/page/78" class="">78</a><a href="/blog/page/79" class="">79</a><a href="/blog/page/80" class="">80</a><a href="/blog/page/81" class="">81</a><a href="/blog/page/82" class="">82</a><a href="/blog/page/83" class="">83</a><a href="/blog/page/84" class="">84</a></div></div></footer></div></div><script type="module" src="/assets/client-DJDe0_HD.js"></script></body></html>

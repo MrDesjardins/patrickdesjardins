@@ -1,0 +1,114 @@
+<!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Patrick Desjardins Blog - How a GPU Turned Kokoro TTS Bottleneck From Minutes Into Seconds</title><meta name="description" content="How a GPU Turned Kokoro TTS Bottleneck From Minutes Into Seconds"><link rel="stylesheet" href="/assets/client-BRl4XhPQ.css"><link rel="stylesheet" href="/assets/static-modules.css"></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><header><h1 class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</h1><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a href="/" class="app_blog__components_BlogBody__navLinkText">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog" class="app_blog__components_BlogBody__navLinkText">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/search" class="app_blog__components_BlogBody__navLinkText">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/philosophy" class="app_blog__components_BlogBody__navLinkText">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2026" class="app_blog__components_BlogBody__navLinkText">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2025" class="app_blog__components_BlogBody__navLinkText">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2024" class="app_blog__components_BlogBody__navLinkText">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2023" class="app_blog__components_BlogBody__navLinkText">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2022" class="app_blog__components_BlogBody__navLinkText">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2021" class="app_blog__components_BlogBody__navLinkText">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2020" class="app_blog__components_BlogBody__navLinkText">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2019" class="app_blog__components_BlogBody__navLinkText">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2018" class="app_blog__components_BlogBody__navLinkText">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2017" class="app_blog__components_BlogBody__navLinkText">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2016" class="app_blog__components_BlogBody__navLinkText">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2015" class="app_blog__components_BlogBody__navLinkText">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2014" class="app_blog__components_BlogBody__navLinkText">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2013" class="app_blog__components_BlogBody__navLinkText">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2012" class="app_blog__components_BlogBody__navLinkText">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a href="/blog/for/2011" class="app_blog__components_BlogBody__navLinkText">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260" loading="lazy"/></div></header><main class="app_blog__components_BlogBody__main"><h2 class="app_blog__components_BlogBody__heading">How a GPU Turned Kokoro TTS Bottleneck From Minutes Into Seconds</h2><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: 2026-06-01</p><p>I recently ran into a very practical performance problem in a study-generation pipeline. The application takes lesson notes from Trilium, turns them into teaching scripts, generates flashcards, synthesizes narration with Kokoro TTS, renders a simple MP4 with ffmpeg, and uploads the result to YouTube.</p>
+<p>The pipeline worked, but it felt slow. At first glance, there were several possible suspects: OpenAI script generation, flashcard generation, audio synthesis, video rendering, YouTube upload, or even the note collection/normalization steps. Rather than guessing, I pulled production job-event timings from the SQLite database and measured where the time was really going.</p>
+<p>The answer was not subtle: Kokoro TTS dominated the runtime.</p>
+<h2>The Production Batch</h2>
+<p>The batch generated audio and video for seven philosophy lessons:</p>
+<ol>
+<li>What is Philosophy?</li>
+<li>Intro Plato Allegory of the Cave</li>
+<li>Intro Descartes I think, therefore I am</li>
+<li>Introduction to the History of Philosophy</li>
+<li>Introduction to Epistemology</li>
+<li>Introduction to Metaphysics</li>
+<li>Introduction to Ethics</li>
+</ol>
+<p>Each lesson went through the same staged pipeline:</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">  collect -&gt; normalize -&gt; script -&gt; flashcards -&gt; audio -&gt; video -&gt; upload
+</span></code></pre>
+<p>The completed production timing totals were:</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">  ┌────────────────────┬────────────┐
+</span><span class="code-line">  │ Stage              │ Total Time │
+</span><span class="code-line">  ├────────────────────┼────────────┤
+</span><span class="code-line">  │ Audio / Kokoro TTS │   94.9 min │
+</span><span class="code-line">  │ Script generation  │    9.5 min │
+</span><span class="code-line">  │ Video rendering    │    6.3 min │
+</span><span class="code-line">  │ Flashcards         │    2.6 min │
+</span><span class="code-line">  │ Collect            │    0.4 min │
+</span><span class="code-line">  │ Normalize          │    0.4 min │
+</span><span class="code-line">  │ Upload             │    0.3 min │
+</span><span class="code-line">  └────────────────────┴────────────┘
+</span></code></pre>
+<p>Audio synthesis alone accounted for roughly 83% of the measured pipeline time. Everything else was comparatively small.</p>
+<h2>Per-Lesson Runtime</h2>
+<p>The slowest lessons were also the ones with longer narration:</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">  ┌───────────────────────────────────────────┬─────────────────────┐
+</span><span class="code-line">  │ Lesson                                    │ Total Pipeline Time │
+</span><span class="code-line">  ├───────────────────────────────────────────┼─────────────────────┤
+</span><span class="code-line">  │ Intro Descartes I think, therefore I am   │            19.7 min │
+</span><span class="code-line">  │ Introduction to Ethics                    │            19.5 min │
+</span><span class="code-line">  │ Introduction to the History of Philosophy │            18.8 min │
+</span><span class="code-line">  │ Introduction to Metaphysics               │            18.2 min │
+</span><span class="code-line">  │ What is Philosophy?                       │            15.9 min │
+</span><span class="code-line">  │ Introduction to Epistemology              │            13.2 min │
+</span><span class="code-line">  │ Intro Plato Allegory of the Cave          │             9.2 min │
+</span><span class="code-line">  └───────────────────────────────────────────┴─────────────────────┘
+</span></code></pre>
+<p>This made the optimization target clear. Improving upload, ffmpeg, collection, or normalization would barely move the needle. The real question was whether Kokoro TTS was slow because of Kokoro itself, or because it was running on the mini-pc CPU.</p>
+<h2>The Benchmark</h2>
+<p>To test that, I took one real production script: &quot;Intro Plato Allegory of the Cave.&quot; In production on the mini-pc, its Kokoro audio stage took 478.6 seconds. The generated audio was 302.675 seconds long, just over five minutes.</p>
+<p>Then I copied the exact same script and ran Kokoro locally on a machine with an NVIDIA GeForce RTX 5080, using the same Kokoro settings:</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">  voice: af_heart
+</span><span class="code-line">  language code: a
+</span><span class="code-line">  speed: 1.0
+</span><span class="code-line">  script length: 837 words
+</span><span class="code-line">  audio duration: 302.675 seconds
+</span></code></pre>
+<p>The result was dramatic.</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">  ┌─────────────────────────────────────────────────────────────┬────────┐
+</span><span class="code-line">  │ Environment                                                 │   Time │
+</span><span class="code-line">  ├─────────────────────────────────────────────────────────────┼────────┤
+</span><span class="code-line">  │ Mini-pc CPU production audio stage                          │ 478.6s │
+</span><span class="code-line">  │ RTX 5080 full local run, including model load and WAV write │  6.56s │
+</span><span class="code-line">  │ RTX 5080 same-process model load                            │  1.88s │
+</span><span class="code-line">  │ RTX 5080 warm generation run 1                              │  3.88s │
+</span><span class="code-line">  │ RTX 5080 warm generation run 2                              │  2.72s │
+</span><span class="code-line">  └─────────────────────────────────────────────────────────────┴────────┘
+</span></code></pre>
+<p>That means the GPU path was about 73x faster when comparing the full local run against the production mini-pc audio stage. If the Kokoro model is already warm, the generation path was roughly 125x to 176x faster.</p>
+<p>Put differently: the mini-pc spent almost eight minutes generating five minutes of audio. The RTX 5080 generated the same audio in a few seconds.</p>
+<h2>What This Means</h2>
+<p>The current pipeline is architecturally simple: FastAPI runs the job runner, and Kokoro runs inside that process. That is fine for correctness, but not ideal for heavy TTS work. Kokoro is the expensive stage, and CPU-bound TTS on the mini-pc is the clear bottleneck.</p>
+<p>The data suggests that small optimizations will not matter much. Reusing some Python objects, tweaking ffmpeg, or improving SQLite queries would be marginal. The meaningful improvement is to move Kokoro synthesis to GPU.</p>
+<p>There are a few practical ways to do that:</p>
+<ol>
+<li>Run the whole generation worker on the GPU machine.</li>
+<li>Split TTS into a dedicated remote worker or service.</li>
+<li>Keep the mini-pc as the web/control plane, but send TTS jobs to the GPU machine.</li>
+<li>Add a configurable Kokoro device path so local workers can use cuda when available.</li>
+</ol>
+<p>The remote-worker design is probably the cleanest long-term option. It keeps the mini-pc lightweight and avoids tying the web app’s lifecycle to expensive audio generation. It also makes restarts safer and opens the door to processing multiple lessons more efficiently.</p>
+<h2>OpenAI TTS</h2>
+<p>Using current official pricing for gpt-4o-mini-tts:</p>
+<ul>
+<li>Text input: $0.60 / 1M tokens</li>
+<li>Audio output: $12.00 / 1M audio tokens, shown by OpenAI as about $0.015 / minute of generated speech</li>
+<li>Sources: GPT-4o mini <a href="https://developers.openai.com/api/docs/models/gpt-4o-mini-tts">TTS model pricing</a>, <a href="https://openai.com/api/pricing/">OpenAI API pricing</a></li>
+</ul>
+<p>For our 7 generated lessons, production audio durations were:</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">  ┌────────────────────┬──────────────┐
+</span><span class="code-line">  │ Lesson             │ Audio Length │
+</span><span class="code-line">  ├────────────────────┼──────────────┤
+</span><span class="code-line">  │ What is Philosophy │     8.98 min │
+</span><span class="code-line">  │ Plato              │     5.04 min │
+</span><span class="code-line">  │ Descartes          │     9.67 min │
+</span><span class="code-line">  │ History            │    10.58 min │
+</span><span class="code-line">  │ Epistemology       │     7.48 min │
+</span><span class="code-line">  │ Metaphysics        │    10.14 min │
+</span><span class="code-line">  │ Ethics             │    10.77 min │
+</span><span class="code-line">  └────────────────────┴──────────────┘
+</span></code></pre>
+<p>Total generated audio: about 62.66 minutes.</p>
+<p>Estimated <code>gpt-4o-mini-tts</code> output cost:</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">  62.66 min * $0.015/min = $0.94
+</span></code></pre>
+<p>Input text cost is tiny. The 7 scripts total about 59,761 characters / 9,429 words. Roughly estimating 12k-15k input tokens:</p>
+<pre class="language-plaintext"><code class="language-plaintext code-highlight"><span class="code-line">  ~15,000 tokens * $0.60 / 1,000,000 = ~$0.009
+</span></code></pre>
+<p>So the full 7-lesson batch would be roughly:</p>
+<p>~$0.95 total</p>
+<p>Even if tokenization/chunking overhead pushes it a bit higher, I would expect it to stay around $1 for this batch.</p>
+<p>One implementation caveat: the speech endpoint has per-request input limits, so our larger scripts would need to be split into chunks and concatenated. That is
+straightforward, but we would want clean sentence-boundary chunking to avoid awkward audio joins.</p>
+<h2>Conclusion</h2>
+<p>The fascinating part of this analysis is how one stage completely dominated the system. The pipeline had many moving parts, but the numbers made the decision obvious:  Kokoro TTS on CPU was the bottleneck.</p>
+<p>For seven lessons, audio synthesis took about 95 minutes. Everything else combined was much smaller. Then, using the exact same script and settings, the RTX 5080 generated a five-minute narration in roughly three seconds once warm.</p></div></main><footer><div class="app_blog__components_BlogBody__paginationBar"><div class="app_blog__components_BlogBody__paginationTitle">Chronological Blog Articles by Page</div><div class="app_blog__components_BlogBody__paginationLinks"><a href="/blog/page/1" class="">1</a><a href="/blog/page/2" class="">2</a><a href="/blog/page/3" class="">3</a><a href="/blog/page/4" class="">4</a><a href="/blog/page/5" class="">5</a><a href="/blog/page/6" class="">6</a><a href="/blog/page/7" class="">7</a><a href="/blog/page/8" class="">8</a><a href="/blog/page/9" class="">9</a><a href="/blog/page/10" class="">10</a><a href="/blog/page/11" class="">11</a><a href="/blog/page/12" class="">12</a><a href="/blog/page/13" class="">13</a><a href="/blog/page/14" class="">14</a><a href="/blog/page/15" class="">15</a><a href="/blog/page/16" class="">16</a><a href="/blog/page/17" class="">17</a><a href="/blog/page/18" class="">18</a><a href="/blog/page/19" class="">19</a><a href="/blog/page/20" class="">20</a><a href="/blog/page/21" class="">21</a><a href="/blog/page/22" class="">22</a><a href="/blog/page/23" class="">23</a><a href="/blog/page/24" class="">24</a><a href="/blog/page/25" class="">25</a><a href="/blog/page/26" class="">26</a><a href="/blog/page/27" class="">27</a><a href="/blog/page/28" class="">28</a><a href="/blog/page/29" class="">29</a><a href="/blog/page/30" class="">30</a><a href="/blog/page/31" class="">31</a><a href="/blog/page/32" class="">32</a><a href="/blog/page/33" class="">33</a><a href="/blog/page/34" class="">34</a><a href="/blog/page/35" class="">35</a><a href="/blog/page/36" class="">36</a><a href="/blog/page/37" class="">37</a><a href="/blog/page/38" class="">38</a><a href="/blog/page/39" class="">39</a><a href="/blog/page/40" class="">40</a><a href="/blog/page/41" class="">41</a><a href="/blog/page/42" class="">42</a><a href="/blog/page/43" class="">43</a><a href="/blog/page/44" class="">44</a><a href="/blog/page/45" class="">45</a><a href="/blog/page/46" class="">46</a><a href="/blog/page/47" class="">47</a><a href="/blog/page/48" class="">48</a><a href="/blog/page/49" class="">49</a><a href="/blog/page/50" class="">50</a><a href="/blog/page/51" class="">51</a><a href="/blog/page/52" class="">52</a><a href="/blog/page/53" class="">53</a><a href="/blog/page/54" class="">54</a><a href="/blog/page/55" class="">55</a><a href="/blog/page/56" class="">56</a><a href="/blog/page/57" class="">57</a><a href="/blog/page/58" class="">58</a><a href="/blog/page/59" class="">59</a><a href="/blog/page/60" class="">60</a><a href="/blog/page/61" class="">61</a><a href="/blog/page/62" class="">62</a><a href="/blog/page/63" class="">63</a><a href="/blog/page/64" class="">64</a><a href="/blog/page/65" class="">65</a><a href="/blog/page/66" class="">66</a><a href="/blog/page/67" class="">67</a><a href="/blog/page/68" class="">68</a><a href="/blog/page/69" class="">69</a><a href="/blog/page/70" class="">70</a><a href="/blog/page/71" class="">71</a><a href="/blog/page/72" class="">72</a><a href="/blog/page/73" class="">73</a><a href="/blog/page/74" class="">74</a><a href="/blog/page/75" class="">75</a><a href="/blog/page/76" class="">76</a><a href="/blog/page/77" class="">77</a><a href="/blog/page/78" class="">78</a><a href="/blog/page/79" class="">79</a><a href="/blog/page/80" class="">80</a><a href="/blog/page/81" class="">81</a><a href="/blog/page/82" class="">82</a><a href="/blog/page/83" class="">83</a><a href="/blog/page/84" class="">84</a></div></div></footer></div></div><script type="module" src="/assets/client-DJDe0_HD.js"></script></body></html>

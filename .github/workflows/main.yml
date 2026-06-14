@@ -49,6 +49,9 @@ jobs:
       - name: Test
         run: pnpm run test:ci
 
+      - name: Check generated site freshness
+        run: pnpm run build:check
+
   search-index:
     runs-on: ubuntu-latest
     steps:
@@ -76,7 +79,7 @@ jobs:
             public/output
             public/philosophy-output
 
-  build:
+  verify-site:
     runs-on: ubuntu-latest
     needs: [quality, search-index]
     steps:
@@ -103,12 +106,8 @@ jobs:
       - name: Install Node dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build site
-        env:
-          NEXT_PUBLIC_GA_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_GA_MEASUREMENT_ID }}
-          NEXT_PUBLIC_BUILD_COMMIT: ${{ github.sha }}
-          NEXT_PUBLIC_BUILD_TIME: ${{ github.run_id }}
-        run: pnpm run build
+      - name: Check generated site freshness
+        run: pnpm run build:check
 
       - name: Install Playwright Chromium
         run: pnpm exec playwright install --with-deps chromium
@@ -123,21 +122,12 @@ jobs:
       - name: Check artifact filenames
         run: node scripts/check-portable-filenames.mjs out
 
-      - name: Upload site artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: static-site
-          path: out
-
   deploy:
     runs-on: ubuntu-latest
-    needs: build
+    needs: verify-site
     steps:
-      - name: Download site artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: static-site
-          path: out
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

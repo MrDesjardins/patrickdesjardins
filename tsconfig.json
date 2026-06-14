@@ -16,25 +16,33 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     "target": "ES2020",
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "next": [
+        "./src/site/next.ts"
+      ],
+      "next/image": [
+        "./src/site/next-image.tsx"
+      ],
+      "next/link": [
+        "./src/site/next-link.tsx"
+      ],
+      "next/dynamic": [
+        "./src/site/next-dynamic.tsx"
+      ],
+      "next/web-vitals": [
+        "./src/site/next-web-vitals.ts"
       ]
     }
   },
   "include": [
-    "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
     "build/types/**/*.ts"
   ],
   "exclude": [
