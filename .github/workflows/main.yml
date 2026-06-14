@@ -34,6 +34,9 @@ jobs:
       - name: Validate content
         run: pnpm run content:validate
 
+      - name: Install image tooling
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
       - name: Check image optimization
         run: pnpm run images:check
 
