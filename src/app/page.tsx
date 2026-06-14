@@ -26,8 +26,8 @@ export default function Index(): React.ReactElement {
   return (
     <div className={styles.container}>
       <main>
-        <nav className={styles.topMenu}>
-          <header className={styles.topHeader}>
+        <header className={styles.topMenu}>
+          <nav className={styles.topHeader} aria-label="Primary">
             <Link className={styles.topHeaderMyName} href="/">
               Patrick Desjardins
             </Link>
@@ -63,8 +63,8 @@ export default function Index(): React.ReactElement {
             <Link href="/philosophy" className={styles.topHeaderBlog}>
               Philosophy
             </Link>
-          </header>
-        </nav>
+          </nav>
+        </header>
 
         <div className={styles.wrapper}>
           <div className={styles.textOnPicture}>

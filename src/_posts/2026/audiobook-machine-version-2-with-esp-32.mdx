@@ -14,7 +14,7 @@ Several years ago, I built an audiobook machine using a Raspberry Pi and RFID ca
 
 However, the machine was clunky. It had a few issues with wires disconnecting, and while the RFID cards were an interesting idea, they made creating new stories more complex. Still, we all love it. Now that my son is getting older, he is also interested in listening to audiobooks before going to sleep.
 
-![](/images/blog/AudioBookMachineJacobIn3DEnclosure.png)
+![](/images/blog/AudioBookMachineJacobIn3DEnclosure.webp)
 
 This time, I wanted something that I could modify rapidly and that did not require as many components. The previous project had its own speakers, but all our rooms already have Google Home devices. In this new project, the machine is smaller, built around an ESP-32, and relies on sending the audiobook to the appropriate Google Home speaker.
 
@@ -30,7 +30,7 @@ To make this work, part of the system runs server-side on a private network. A f
 For this project, a Python HTTP server provides the list of available tracks and the list of playback devices. It also exposes an HTTP endpoint to play a specific track on a selected device. When invoked, the server sends a signal to the appropriate Google Home, along with a link to the server so it can stream the MP3 file.
 
 
-![](/images/blog/AudioBookMachineJacobInside.png)
+![](/images/blog/AudioBookMachineJacobInside.webp)
 
 # Challenges
 

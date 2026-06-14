@@ -22,13 +22,27 @@
   gap: 10px;
 }
 
+.label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .textbox {
   flex: 1 1;
   height: 40px;
   line-height: 40px;
   font-size: 16px;
   padding-left: 10px;
-  background-color: var(--blog-date-foreground-color);
+  color: var(--blog-title-foreground-color);
+  background-color: var(--blog-background-color2);
+  border: 1px solid var(--blog-section-border-color);
   border-radius: 5px;
 }
 .textbox::placeholder {

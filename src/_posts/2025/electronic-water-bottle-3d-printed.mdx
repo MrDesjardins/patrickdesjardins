@@ -28,7 +28,7 @@ The water holder connects to a box. The box has one ESP32, the brain, that will 
 
 The reality is that even with some improvement in term of wire management that without PCB it gets messy.
 
-![](/images/blog/water_project_1.jpg)
+![](/images/blog/water_project_1.webp)
 
 The brain or the "sender" relies on the DF9 sensor, which, when you push on the sensor, varies the values. It works well in theory and when I push with my finger. The idea was that the brain would be potentially not close to an electric outlet, thus would be powered by three AAA batteries using an MP1584EN for moving the voltage down (4.5v to 3.3v). The electronic schema looks like:
 
@@ -135,7 +135,7 @@ void loop() {
 ```
 The result is stunning and the 3d printing enclosure worked as expected on the first print:
 
-![](/images/blog/water_project_2.jpg)
+![](/images/blog/water_project_2.webp)
 
 # The Current Situation
 Last evening, I decided to move everything from the breadboard to the soldering station. Ready to test and nothing. Checked the wire and still a read of zero. After some debugging, I realized something I should have done a long time ago. I never tested in any way the bottle and the system. I assumed because I was pushing the DF9 sensor that it would work. The flat surface of the DF9 indicates that any pressure parallel to the sensor would be enough. However, this is far from being true in practice. The pressure on the sensor was significantly greater than that of a full bottle. Modifying the resistor to a higher resistance could help. I started at 10k ohm, moved up to 100k, 400k, 600k, and 1 million ohm. 600 was not bad, 1 million to sensitive going quickly to 100% to 0% (or in term of input 4095 and 0). The issue is that the sensor does not work well with the current idea that a moving platform would move slightly up and down with water movement.
@@ -152,7 +152,7 @@ I have learned a few learning in this project.
 6. I need to step up my game while moving from breadboard to soldering because I am not having a fun ride. It is always challenging to get the connection, and when multiple wires need to connect, even using a green board produces an unclean result.
 7. I learned more about thinking about how to place elements to interact together in terms of distance and how the pragmatic distance of elements is important, allowing for screwing or passing wires.
 
-![](/images/blog/water_project_3.jpg)
+![](/images/blog/water_project_3.webp)
 
 # Conclusion
 

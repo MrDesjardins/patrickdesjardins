@@ -13,15 +13,17 @@ export const PhilosophyBlogSearchEntry = (
   props: PhilosophyBlogSearchEntryProps,
 ): React.ReactElement => {
   return (
-    <article className={styles.blogSearchEntry} key={props.id}>
-      <h2 className={styles.blogSearchEntryArticleTitle}>
-        <Link href={`/philosophy/${props.slug}`}>
-          {props.position + 1}
-          {". "}
-          {props.title} ({formatScore(props.score)})
-        </Link>
-      </h2>
-    </article>
+    <li key={props.id}>
+      <article className={styles.blogSearchEntry}>
+        <h2 className={styles.blogSearchEntryArticleTitle}>
+          <Link href={`/philosophy/${props.slug}`}>
+            {props.position + 1}
+            {". "}
+            {props.title} ({formatScore(props.score)})
+          </Link>
+        </h2>
+      </article>
+    </li>
   );
 };
 

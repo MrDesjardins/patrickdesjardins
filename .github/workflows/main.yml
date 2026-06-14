@@ -4,13 +4,47 @@ on:
   push:
     branches: [master]
   schedule:
-    - cron: "0 17 * * *"  # daily at 17:00 UTC / 09:00 PST / 10:00 PDT
-  workflow_dispatch: # full pipeline + LinkedIn (same as schedule for the LinkedIn step)
+    - cron: "0 17 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
 jobs:
-  generate-and-deploy:
+  quality:
     runs-on: ubuntu-latest
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.6.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install Node dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate content
+        run: pnpm run content:validate
+
+      - name: Check image optimization
+        run: pnpm run images:check
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Test
+        run: pnpm run test:ci
+
+  search-index:
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -24,22 +58,35 @@ jobs:
         run: uv sync
         working-directory: tools
 
-      - name: Run generation script
+      - name: Generate search outputs
         run: uv run python search/main.py generate
         working-directory: tools
 
-      - name: Commit generated output
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/output public/philosophy-output
-          git commit -m "Daily output update at 17:00 UTC" || echo "No changes to commit"
-          git push
+      - name: Upload search outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: search-output
+          path: |
+            public/output
+            public/philosophy-output
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [quality, search-index]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download search outputs
+        uses: actions/download-artifact@v4
+        with:
+          name: search-output
+          path: public
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 11.6.0
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -50,16 +97,38 @@ jobs:
       - name: Install Node dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm run lint
-
-      - name: Test
-        run: pnpm run test
-
       - name: Build site
         env:
-          NEXT_PUBLIC_GA_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-6EH8HNYV13' }}
+          NEXT_PUBLIC_GA_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_GA_MEASUREMENT_ID }}
+          NEXT_PUBLIC_BUILD_COMMIT: ${{ github.sha }}
+          NEXT_PUBLIC_BUILD_TIME: ${{ github.run_id }}
         run: pnpm run build
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run accessibility checks
+        env:
+          E2E_BASE_URL: http://127.0.0.1:3000
+        run: |
+          pnpm run serve &
+          pnpm run e2e:a11y
+
+      - name: Upload site artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: static-site
+          path: out
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download site artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: static-site
+          path: out
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
@@ -69,22 +138,35 @@ jobs:
           publish_dir: ./out
           cname: patrickdesjardins.com
 
+  social-post:
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: success() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-caching: true
+
+      - name: Install Python dependencies
+        run: uv sync
+        working-directory: tools
+
       - name: Post new article to LinkedIn
-        if: success() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
-        continue-on-error: true
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           LINKEDIN_ACCESS_TOKEN: ${{ secrets.LINKEDIN_ACCESS_TOKEN }}
           LINKEDIN_PERSON_ID: ${{ secrets.LINKEDIN_PERSON_ID }}
           SOCIAL_POST_CONTENT_KIND: blog
-          # Match frontmatter `date` to local publish day (evening US Pacific is next day in UTC)
           LINKEDIN_POST_DATE_TZ: America/Los_Angeles
         run: uv run python linkedin/post.py
         working-directory: tools
 
       - name: Skip X post until API funding is available
-        if: success() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
-        continue-on-error: true
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY }}
@@ -93,7 +175,5 @@ jobs:
           TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
           SOCIAL_POST_CONTENT_KIND: blog
           TWITTER_POST_DATE_TZ: America/Los_Angeles
-        # The script exits successfully and explains that X posting is disabled
-        # because the X API is not funded yet, not because the automation is broken.
         run: uv run python twitter/post.py
         working-directory: tools

@@ -12,18 +12,20 @@ export const BlogSearchEntry = (
   props: BlogSearchEntryProps,
 ): React.ReactElement => {
   return (
-    <article className={styles.blogSearchEntry} key={props.id}>
-      <h2 className={styles.blogSearchEntryArticleTitle}>
-        <Link href={`/blog/${props.slug}`}>
-          {props.position + 1}{". "}
-          {props.title} ({formatScore(props.score)})
-        </Link>
-      </h2>
-      {/* <div className={styles.blogEntryDetails}>
+    <li key={props.id}>
+      <article className={styles.blogSearchEntry}>
+        <h2 className={styles.blogSearchEntryArticleTitle}>
+          <Link href={`/blog/${props.slug}`}>
+            {props.position + 1}{". "}
+            {props.title} ({formatScore(props.score)})
+          </Link>
+        </h2>
+        {/* <div className={styles.blogEntryDetails}>
         <span className={styles.blogEntryDate}>Posted: {props.date}</span>
         <BlogCategories categories={props.categories} />
       </div> */}
-    </article>
+      </article>
+    </li>
   );
 };
 

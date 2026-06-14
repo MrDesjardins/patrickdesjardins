@@ -87,7 +87,7 @@ def generate_index_for_collection(collection_name: str):
     for root, _, filenames in os.walk(posts_dir):
         print(f"[{collection_name}] processing directory: {root}")
         for filename in filenames:
-            if filename.endswith(".mdx"):
+            if filename.endswith((".md", ".mdx")):
                 path = os.path.join(root, filename)
                 with open(path, 'r', encoding='utf-8') as file:
                     content = file.read()
@@ -100,7 +100,7 @@ def generate_index_for_collection(collection_name: str):
 
     if len(contents) == 0:
         embedding_matrix = np.zeros((0, 384), dtype=np.float64)
-        print(f"[{collection_name}] no .mdx files found; empty embeddings.")
+        print(f"[{collection_name}] no .md/.mdx files found; empty embeddings.")
     else:
         embeddings = model.encode(contents, convert_to_tensor=True)
         embedding_matrix = np.array(embeddings.cpu().numpy())

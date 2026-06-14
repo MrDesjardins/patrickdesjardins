@@ -1,7 +1,9 @@
 export interface CodeSandboxProps {
   codeSandboxId: string;
+  title?: string;
 }
 export const CodeSandbox = (props: CodeSandboxProps): React.ReactElement => {
+  const title = props.title ?? `CodeSandbox example ${props.codeSandboxId}`;
   return (
     <iframe
       src={`https://codesandbox.io/embed/${props.codeSandboxId}`}
@@ -12,9 +14,14 @@ export const CodeSandbox = (props: CodeSandboxProps): React.ReactElement => {
         borderRadius: "4px",
         overflow: "hidden",
       }}
-      title="Code Sandbox"
+      title={title}
+      loading="lazy"
       allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking"
       sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"
-    ></iframe>
+    >
+      <a href={`https://codesandbox.io/s/${props.codeSandboxId}`}>
+        Open {title}
+      </a>
+    </iframe>
   );
 };

@@ -11,7 +11,7 @@ categories:
 
 My son received a Carrera race track for his birthday. He loves it! I recently started learning CAD and 3D printing and quickly built a simple dual-flap system that flips when the car crosses the finish line. It was simple, cost less than 1$ to print.
 
-![](/images/blog/FirstPrototypePrintedRaceTrackLapCounter.png)
+![](/images/blog/FirstPrototypePrintedRaceTrackLapCounter.webp)
 
  However, looking at the design, I could see some potential improvements.
 
@@ -47,7 +47,7 @@ I thought of adding screws, but with so many pieces, it would also not be visual
 
 The electronic parts worked well on the breadboard, and surprisingly, I had no issue soldering and having everything into the 3D printed device. However, each wires need to connect to the ESP32. I have only a developer board, and because I might have to replace a wire, I wasn't sold on solving each wire on the board. Also, it is pretty tight, which could have led to pins touching each other. I decided to crimp the Dupont connector to every wire, and it proved to be a good solution. I also marked all wires with a tape to know where they connect to, which helped the process.
 
-![](/images/blog/WiresInTheLapCounter.png)
+![](/images/blog/WiresInTheLapCounter.webp)
 
 Here is the full schematic:
 
@@ -85,10 +85,10 @@ I added a female connector in the box of the ESP. It gets the power from a wall 
 
 
 Carrera's electric plug has a proprietary input. However, using the secondary power supply, the battery, is not an issue. I will solder the solution soon.
-![](/images/blog/RaceTrackBatteryHack.jpg) 
+![](/images/blog/RaceTrackBatteryHack.webp) 
 
 I am glad I had kept a more "freestyle" form inside the box with additional space allowing the buck converter to sit next to the ESP32.
-![](/images/blog/RaceTrackBuckConverted.jpg) 
+![](/images/blog/RaceTrackBuckConverted.webp) 
 
 Here is the cheap DC wall plug that has a 5.5*2.1mm male part that connects into a 2.1mm female part.
-![](/images/blog/RaceTrackDCPlug.jpg)
+![](/images/blog/RaceTrackDCPlug.webp)

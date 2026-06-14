@@ -2,6 +2,7 @@
 .philosophyRoot {
   margin: 0;
   min-height: 100%;
+  font-family: "EB Garamond", Georgia, "Times New Roman", serif;
   font-size: 22px;
 
   --blog-title-foreground-color: #1a1a1a;

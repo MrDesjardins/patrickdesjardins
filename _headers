@@ -9,6 +9,13 @@
 /_next/static/*
   Cache-Control: max-age=31536000, immutable
 
+# Generated search assets — refreshed during deploy and safe to cache briefly
+/output/*
+  Cache-Control: max-age=86400
+
+/philosophy-output/*
+  Cache-Control: max-age=86400
+
 # Everything else (images, fonts, etc.) — moderate cache
 /*
   Cache-Control: max-age=3600

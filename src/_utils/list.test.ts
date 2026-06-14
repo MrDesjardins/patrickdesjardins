@@ -4,10 +4,16 @@ import { type MdxData } from "../lib/api";
 
 function makePost(date: string): MdxData {
   return {
-    metadata: { year: Number(date.slice(0, 4)), date: date, fullPathWithFileName: "", fileName: "", slug: "" },
+    metadata: {
+      year: Number(date.slice(0, 4)),
+      date: date,
+      fullPathWithFileName: "",
+      fileName: "",
+      slug: "",
+    },
     contentReact: null as never,
     rawFileContent: "",
-    frontmatter: { date: date },
+    frontmatter: { title: "", date: date, categories: [] },
   };
 }
 

@@ -4,9 +4,10 @@ import "@fontsource/open-sans";
 import "@fontsource/oswald";
 import "@fontsource/ubuntu-mono";
 import styles from "./layout.module.css";
+import { WebVitals } from "./WebVitals";
+import { OutboundLinkTelemetry } from "./OutboundLinkTelemetry";
 
-const gaMeasurementId =
-  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? "G-6EH8HNYV13";
+const gaMeasurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 export const metadata: Metadata = {
   title: "Patrick Desjardins",
@@ -33,8 +34,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={styles.htmlstyle}>
       <body className={styles.bodystyle}>
+        <WebVitals />
+        <OutboundLinkTelemetry />
         {children}
-        {process.env.NODE_ENV === "production" ? (
+        {process.env.NODE_ENV === "production" &&
+        gaMeasurementId !== undefined &&
+        gaMeasurementId.length > 0 ? (
           <GoogleAnalytics gaId={gaMeasurementId} />
         ) : null}
       </body>

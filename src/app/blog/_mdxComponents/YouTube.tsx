@@ -1,7 +1,9 @@
 export interface YouTubeProps {
   youTubeId: string;
+  title?: string;
 }
 export const YouTube = (props: YouTubeProps): React.ReactElement => {
+  const title = props.title ?? `YouTube video ${props.youTubeId}`;
   return (
     <iframe
       style={{
@@ -12,8 +14,13 @@ export const YouTube = (props: YouTubeProps): React.ReactElement => {
         overflow: "hidden",
       }}
       src={`https://www.youtube.com/embed/${props.youTubeId}`}
-      title="YouTube video player"
+      title={title}
+      loading="lazy"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    ></iframe>
+    >
+      <a href={`https://www.youtube.com/watch?v=${props.youTubeId}`}>
+        Watch {title}
+      </a>
+    </iframe>
   );
 };

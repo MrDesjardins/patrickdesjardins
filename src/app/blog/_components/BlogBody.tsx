@@ -32,86 +32,92 @@ export function BlogBody(props: BlogBodyProps): React.ReactElement {
 
   return (
     <div className={styles.BlogBody}>
-      <h1 className={styles.siteTitle}>Patrick Desjardins Blog</h1>
-      <nav>
-        <ul className={styles.navLinks}>
-          <li className={styles.navLinkItem}>
-            <Link className={styles.navLinkText} href="/">
-              Main Page
-            </Link>
-          </li>
-          <li className={styles.navLinkItem}>
-            <Link className={styles.navLinkText} href="/blog">
-              Blog
-            </Link>
-          </li>
-          <li className={styles.navLinkItem}>
-            <Link className={styles.navLinkText} href="/blog/search">
-              Search
-            </Link>
-          </li>
-          <li className={styles.navLinkItem}>
-            <Link className={styles.navLinkText} href="/philosophy">
-              Philosophy
-            </Link>
-          </li>
-          {years.map((y) => {
-            return (
-              <li key={y} className={styles.navLinkItem}>
-                <Link
-                  className={clsx({
-                    [styles.navLinkText]: true,
-                    [styles.currentLink]: y === props.year,
-                  })}
-                  href={`/blog/for/${y}`}
-                >
-                  {y}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
-      <div className={styles.blogPictureContainer}>
-        <Image
-          className={styles.blogTopPicture}
-          alt="Patrick Desjardins picture from a conference"
-          src="/images/backgrounds/patrickdesjardins_conference_bw.webp"
-          width={800}
-          height={260}
-        />
-      </div>
+      <header>
+        <h1 className={styles.siteTitle}>Patrick Desjardins Blog</h1>
+        <nav aria-label="Blog">
+          <ul className={styles.navLinks}>
+            <li className={styles.navLinkItem}>
+              <Link className={styles.navLinkText} href="/">
+                Main Page
+              </Link>
+            </li>
+            <li className={styles.navLinkItem}>
+              <Link className={styles.navLinkText} href="/blog">
+                Blog
+              </Link>
+            </li>
+            <li className={styles.navLinkItem}>
+              <Link className={styles.navLinkText} href="/blog/search">
+                Search
+              </Link>
+            </li>
+            <li className={styles.navLinkItem}>
+              <Link className={styles.navLinkText} href="/philosophy">
+                Philosophy
+              </Link>
+            </li>
+            {years.map((y) => {
+              return (
+                <li key={y} className={styles.navLinkItem}>
+                  <Link
+                    className={clsx({
+                      [styles.navLinkText]: true,
+                      [styles.currentLink]: y === props.year,
+                    })}
+                    href={`/blog/for/${y}`}
+                  >
+                    {y}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+        <div className={styles.blogPictureContainer}>
+          <Image
+            className={styles.blogTopPicture}
+            alt="Patrick Desjardins picture from a conference"
+            src="/images/backgrounds/patrickdesjardins_conference_bw.webp"
+            width={800}
+            height={260}
+          />
+        </div>
+      </header>
       <main className={styles.main}>
         <h2 className={styles.heading}>{props.topTitle}</h2>
         {props.children}
       </main>
-      {pages.length > 0 ? (
-        <div className={styles.paginationBar}>
-          <div className={styles.paginationTitle}>
-            Chronological Blog Articles by Page
-          </div>
-          <div className={styles.paginationLinks}>
-            {pages.map((page) => {
-              return (
-                <Link
-                  key={page}
-                  className={clsx({
-                    [styles.currentLink]: page === props.currentPage,
-                  })}
-                  href={`/blog/page/${page}`}
-                >
-                  {page}
-                </Link>
-              );
-            })}
-          </div>
-        </div>
+      {pages.length > 0 || props.totalBlogPost !== undefined ? (
+        <footer>
+          {pages.length > 0 ? (
+            <div className={styles.paginationBar}>
+              <div className={styles.paginationTitle}>
+                Chronological Blog Articles by Page
+              </div>
+              <div className={styles.paginationLinks}>
+                {pages.map((page) => {
+                  return (
+                    <Link
+                      key={page}
+                      className={clsx({
+                        [styles.currentLink]: page === props.currentPage,
+                      })}
+                      href={`/blog/page/${page}`}
+                    >
+                      {page}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
+          {props.totalBlogPost === undefined ? null : (
+            <div className={styles.totalBlogPost}>
+              Total Blog Posts: {props.totalBlogPost}
+            </div>
+          )}
+        </footer>
       ) : null}
-      {props.totalBlogPost === undefined ? null : (
-        <div className={styles.totalBlogPost}>
-          Total Blog Posts: {props.totalBlogPost}
-        </div>
-      )}
     </div>
   );
 }

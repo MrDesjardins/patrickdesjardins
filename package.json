@@ -6,16 +6,23 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "serve": "npx serve@latest out",
+    "serve": "node scripts/serve-static.mjs out",
     "images:optimize": "node scripts/optimize-mdx-images.mjs",
+    "images:check": "node scripts/optimize-mdx-images.mjs --dry-run",
+    "content:validate": "node scripts/validate-content.mjs",
+    "content:new": "node scripts/new-post.mjs",
     "lint": "next lint",
     "lint:fix": "npx eslint --fix",
     "prettier:fix": "npx prettier . --write",
-    "test": "vitest"
+    "test": "vitest",
+    "test:ci": "vitest run",
+    "test:watch": "vitest",
+    "e2e:a11y": "playwright test tests/accessibility.spec.ts"
   },
   "dependencies": {
     "@fontsource/open-sans": "^5.1.0",
     "@fontsource/oswald": "^5.1.0",
+    "@fontsource/eb-garamond": "^5.1.0",
     "@fontsource/ubuntu-mono": "^5.1.0",
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
     "@fortawesome/free-brands-svg-icons": "^6.6.0",
@@ -35,6 +42,8 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
+    "@axe-core/playwright": "^4.10.2",
+    "@playwright/test": "^1.41.2",
     "@types/node": "^20.16.11",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
@@ -57,10 +66,5 @@
     "typescript-eslint": "^7.18.0",
     "vitest": "^2.1.8"
   },
-  "pnpm": {
-    "overrides": {
-      "onnxruntime-node": "npm:noop-onnxruntime-node@1.0.0",
-      "sharp": "^0.33.0"
-    }
-  }
+  "packageManager": "pnpm@11.6.0"
 }
