@@ -43,6 +43,8 @@ Thumbs.db
 /tools/search/output-philosophy
 
 .env*.Zone.Identifier
+*:Zone.Identifier
+*.Zone.Identifier
 
 __pycache__/
 

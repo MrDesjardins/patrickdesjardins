@@ -12,6 +12,7 @@
     "serve": "node scripts/serve-static.mjs out",
     "images:optimize": "node scripts/optimize-mdx-images.mjs",
     "images:check": "node scripts/optimize-mdx-images.mjs --dry-run",
+    "files:check": "node scripts/check-portable-filenames.mjs",
     "content:validate": "node scripts/validate-content.mjs",
     "content:new": "node scripts/new-post.mjs",
     "lint": "next lint",
