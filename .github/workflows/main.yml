@@ -49,9 +49,6 @@ jobs:
       - name: Test
         run: pnpm run test:ci
 
-      - name: Check generated site freshness
-        run: pnpm run build:check
-
   search-index:
     runs-on: ubuntu-latest
     steps:
@@ -79,7 +76,7 @@ jobs:
             public/output
             public/philosophy-output
 
-  verify-site:
+  build-site:
     runs-on: ubuntu-latest
     needs: [quality, search-index]
     steps:
@@ -106,8 +103,30 @@ jobs:
       - name: Install Node dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Check generated site freshness
-        run: pnpm run build:check
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: tools/sitegen
+
+      - name: Restore site build cache
+        uses: actions/cache@v4
+        with:
+          path: out
+          key: site-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'tools/sitegen/Cargo.lock', 'tools/sitegen/src/**', 'src/**', 'vite.config.ts', 'scripts/render-site.mjs') }}
+          restore-keys: |
+            site-${{ runner.os }}-
+
+      - name: Build site
+        run: pnpm run build
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install Playwright Chromium
         run: pnpm exec playwright install --with-deps chromium
@@ -122,12 +141,25 @@ jobs:
       - name: Check artifact filenames
         run: node scripts/check-portable-filenames.mjs out
 
+      - name: Prepare publish artifact
+        run: rm -rf out/.site-cache out/.site-manifest.json out/.vite
+
+      - name: Upload site artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-out
+          path: out
+          compression-level: 1
+
   deploy:
     runs-on: ubuntu-latest
-    needs: verify-site
+    needs: build-site
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Download site artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: site-out
+          path: out
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

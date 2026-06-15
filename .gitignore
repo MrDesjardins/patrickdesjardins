@@ -10,6 +10,7 @@
 /coverage
 
 # generated site
+/out/
 /.next/
 
 # production
