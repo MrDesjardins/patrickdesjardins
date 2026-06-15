@@ -2,7 +2,6 @@
 
 import { useCallback, useRef, useState } from "react";
 import { type FeatureExtractionPipeline } from "@xenova/transformers";
-import { BlogBody } from "../_components/BlogBody";
 import styles from "./page.module.css";
 import { BlogSearchEntry } from "../_components/BlogSearchEntry";
 import { slugFromMdxFilename } from "../../../lib/slug";
@@ -136,7 +135,7 @@ export default function Page(): React.ReactElement {
   }, [embeddings, index, initializeSearch, query]);
 
   return (
-    <BlogBody topTitle="Search Posts">
+    <>
       <div className={styles.searchContainer}>
         <div className={styles.inputs}>
           <label className={styles.label} htmlFor="blog-search-query">
@@ -204,6 +203,6 @@ export default function Page(): React.ReactElement {
             ? "Semantic search is loaded."
             : "Semantic search loads on first interaction."}
       </p>
-    </BlogBody>
+    </>
   );
 }

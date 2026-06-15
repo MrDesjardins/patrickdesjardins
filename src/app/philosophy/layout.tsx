@@ -13,5 +13,7 @@ export default function PhilosophyLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>): React.ReactElement {
-  return <div className={styles.philosophyRoot}>{children}</div>;
+  return (
+    <div className={`philosophy-site ${styles.philosophyRoot}`}>{children}</div>
+  );
 }

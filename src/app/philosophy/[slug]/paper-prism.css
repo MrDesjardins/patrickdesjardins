@@ -1,6 +1,6 @@
 /* Light, print-friendly prism tokens for fenced code blocks */
-code[class*="language-"],
-pre[class*="language-"] {
+.philosophy-site code[class*="language-"],
+.philosophy-site pre[class*="language-"] {
   color: #1f2933;
   background: transparent;
   font-family:
@@ -17,82 +17,82 @@ pre[class*="language-"] {
   hyphens: none;
 }
 
-pre[class*="language-"] {
+.philosophy-site pre[class*="language-"] {
   padding: 1em;
   margin: 0.75em 0;
   overflow: auto;
 }
 
-:not(pre) > code[class*="language-"] {
+.philosophy-site :not(pre) > code[class*="language-"] {
   padding: 0.12em 0.35em;
   border-radius: 3px;
   white-space: normal;
 }
 
-:not(pre) > code[class*="language-"],
-pre[class*="language-"] {
+.philosophy-site :not(pre) > code[class*="language-"],
+.philosophy-site pre[class*="language-"] {
   background-color: transparent !important;
   background-image: none;
 }
 
-.token.comment,
-.token.block-comment,
-.token.prolog,
-.token.doctype,
-.token.cdata {
+.philosophy-site .token.comment,
+.philosophy-site .token.block-comment,
+.philosophy-site .token.prolog,
+.philosophy-site .token.doctype,
+.philosophy-site .token.cdata {
   color: #6b7280;
 }
 
-.token.punctuation {
+.philosophy-site .token.punctuation {
   color: #374151;
 }
 
-.token.property,
-.token.tag,
-.token.boolean,
-.token.number,
-.token.constant,
-.token.symbol,
-.token.deleted {
+.philosophy-site .token.property,
+.philosophy-site .token.tag,
+.philosophy-site .token.boolean,
+.philosophy-site .token.number,
+.philosophy-site .token.constant,
+.philosophy-site .token.symbol,
+.philosophy-site .token.deleted {
   color: #92400e;
 }
 
-.token.selector,
-.token.attr-name,
-.token.string,
-.token.char,
-.token.builtin,
-.token.inserted {
+.philosophy-site .token.selector,
+.philosophy-site .token.attr-name,
+.philosophy-site .token.string,
+.philosophy-site .token.char,
+.philosophy-site .token.builtin,
+.philosophy-site .token.inserted {
   color: #1d4ed8;
 }
 
-.token.operator,
-.token.entity,
-.token.url {
+.philosophy-site .token.operator,
+.philosophy-site .token.entity,
+.philosophy-site .token.url {
   color: #0f766e;
 }
 
-.token.atrule,
-.token.attr-value,
-.token.keyword {
+.philosophy-site .token.atrule,
+.philosophy-site .token.attr-value,
+.philosophy-site .token.keyword {
   color: #7c3aed;
 }
 
-.token.function,
-.token.class-name {
+.philosophy-site .token.function,
+.philosophy-site .token.class-name {
   color: #b45309;
 }
 
-.token.regex,
-.token.important,
-.token.variable {
+.philosophy-site .token.regex,
+.philosophy-site .token.important,
+.philosophy-site .token.variable {
   color: #be185d;
 }
 
-.token.bold {
+.philosophy-site .token.bold {
   font-weight: bold;
 }
 
-.token.italic {
+.philosophy-site .token.italic {
   font-style: italic;
 }

@@ -2,7 +2,6 @@
 
 import { useCallback, useRef, useState } from "react";
 import { type FeatureExtractionPipeline } from "@xenova/transformers";
-import { PhilosophyBlogBody } from "../_components/PhilosophyBlogBody";
 import styles from "../../blog/search/page.module.css";
 import { PhilosophyBlogSearchEntry } from "../_components/PhilosophyBlogSearchEntry";
 import { slugFromMdxFilename } from "../../../lib/slug";
@@ -137,7 +136,7 @@ export default function PhilosophySearchClient(): React.ReactElement {
   }, [embeddings, index, initializeSearch, query]);
 
   return (
-    <PhilosophyBlogBody topTitle="Search essays">
+    <>
       <div className={styles.searchContainer}>
         <div className={styles.inputs}>
           <label className={styles.label} htmlFor="philosophy-search-query">
@@ -210,6 +209,6 @@ export default function PhilosophySearchClient(): React.ReactElement {
             ? "Semantic search is loaded."
             : "Semantic search loads on first interaction."}
       </p>
-    </PhilosophyBlogBody>
+    </>
   );
 }
