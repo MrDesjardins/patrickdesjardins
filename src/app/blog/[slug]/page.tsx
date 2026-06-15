@@ -38,7 +38,7 @@ export default async function Page(props: {
 }): Promise<React.ReactElement> {
   const posts = await getAllPosts();
   const totalPages = getTotalPages(posts);
-  const post = posts.find((p) => p.metadata.slug === props.params.slug);
+  const post = await getPostBySlug(props.params.slug);
   if (post === undefined) {
     throw new Error("Post not found");
   }

@@ -41,7 +41,7 @@ export interface FileMetadata {
 }
 export interface MdxData {
   metadata: FileMetadata;
-  contentReact: ReactElement<unknown, string | JSXElementConstructor<unknown>>;
+  contentReact?: ReactElement<unknown, string | JSXElementConstructor<unknown>>;
   rawFileContent: string;
   frontmatter: Frontmatter;
 }
@@ -157,6 +157,27 @@ export async function getMdxFileContent(
   };
 }
 
+export async function getMdxFileMetadata(
+  fullPathWithFileName: string,
+): Promise<MdxData> {
+  const fileContent = await fs.promises.readFile(fullPathWithFileName, "utf8");
+  const { frontmatter } = parseFrontmatter(fileContent);
+  const fileName = extractFileFromFullFilePath(fullPathWithFileName);
+  const slug = extractSlugFromFileName(fileName);
+  const year = extractYearFromStringDate(frontmatter.date);
+  return {
+    metadata: {
+      fullPathWithFileName: fullPathWithFileName,
+      fileName: fileName,
+      slug: slug,
+      year: year,
+      date: frontmatter.date,
+    },
+    rawFileContent: fileContent,
+    frontmatter: frontmatter,
+  };
+}
+
 export function extractFileFromFullFilePath(
   fullPathWithFileName: string,
 ): string {
@@ -180,7 +201,7 @@ async function fetchAllPostsFiltered(
   const post: Array<Promise<MdxData>> = [];
   const postFilePaths = getAllMdxFilesWithoutContent(collectionRoot);
   for (const p of postFilePaths) {
-    post.push(getMdxFileContent(p.fullPathWithFileName));
+    post.push(getMdxFileMetadata(p.fullPathWithFileName));
   }
   const posts = await Promise.all(post);
   const today = new Date();

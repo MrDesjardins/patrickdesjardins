@@ -1,11 +1,18 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { createLogger, createServer } from "vite";
 
 process.env.NODE_ENV = process.env.NODE_ENV ?? "production";
 
 async function loadRenderer() {
+  const bundledRenderer = path.resolve("out/server/render.js");
+  if (fs.existsSync(bundledRenderer)) {
+    const renderer = await import(pathToFileURL(bundledRenderer).href);
+    return { renderer, close: async () => undefined };
+  }
+
   const logger = createLogger("warn");
   const originalError = logger.error;
   logger.error = (message, options) => {
@@ -59,16 +66,13 @@ async function main() {
     }
 
     const payload = JSON.parse(fs.readFileSync(process.argv[3], "utf8"));
-    const routes = await renderer.buildRoutes(payload.assets);
-    const routeByPath = new Map(routes.map((route) => [route.path, route]));
-
     for (const requested of payload.routes) {
-      const route = routeByPath.get(requested.path);
-      if (route === undefined) {
-        throw new Error(`Route disappeared before render: ${requested.path}`);
-      }
       fs.mkdirSync(path.dirname(requested.outputFile), { recursive: true });
-      fs.writeFileSync(requested.outputFile, await route.render(), "utf8");
+      fs.writeFileSync(
+        requested.outputFile,
+        await renderer.renderPath(requested.path, payload.assets),
+        "utf8",
+      );
     }
 
     fs.writeFileSync(payload.sitemapFile, await renderer.renderSitemap(), "utf8");

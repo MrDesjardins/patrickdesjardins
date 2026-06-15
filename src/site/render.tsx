@@ -146,6 +146,7 @@ function collectionDependencies(posts: MdxData[]): string[] {
 function sharedDependencies(): string[] {
   return [
     "src/app",
+    "src/site",
     "src/constants",
     "src/lib",
     "src/_utils",
@@ -175,6 +176,129 @@ const value =
   <TValue,>(input: TValue): (() => TValue) =>
   () =>
     input;
+
+async function renderRouteDocument(
+  renderPage: () => Promise<React.ReactNode> | React.ReactNode,
+  metadata: () => Promise<Metadata | undefined> | Metadata | undefined,
+  assets: AssetLinks,
+): Promise<string> {
+  return renderDocument(await renderPage(), await metadata(), assets);
+}
+
+export async function renderPath(
+  routePath: string,
+  assets: AssetLinks,
+): Promise<string> {
+  if (routePath === "/") {
+    return await renderRouteDocument(() => <HomePage />, value(homeMetadata), assets);
+  }
+  if (routePath === "/blog") {
+    return await renderRouteDocument(
+      async () => withBlogLayout(await BlogPage()),
+      value(blogMetadata),
+      assets,
+    );
+  }
+  if (routePath === "/blog/search") {
+    return await renderRouteDocument(
+      () => withBlogLayout(<BlogSearchPage />),
+      value({
+        title: "Patrick Desjardins Blog Search",
+        description: "Patrick Desjardins Blog Search",
+      }),
+      assets,
+    );
+  }
+  if (routePath === "/philosophy") {
+    return await renderRouteDocument(
+      async () => withPhilosophyLayout(await PhilosophyPage()),
+      value(philosophyMetadata),
+      assets,
+    );
+  }
+  if (routePath === "/philosophy/search") {
+    return await renderRouteDocument(
+      () => withPhilosophyLayout(<PhilosophySearchPage />),
+      value({
+        title: "Philosophy Search",
+        description: "Search philosophy essays by Patrick Desjardins",
+      }),
+      assets,
+    );
+  }
+  if (routePath === "/404") {
+    return await renderRouteDocument(
+      () => <NotFoundPage />,
+      value({
+        title: "Page not found",
+        description: "Page not found",
+      }),
+      assets,
+    );
+  }
+
+  const blogPageMatch = /^\/blog\/page\/([^/]+)$/.exec(routePath);
+  if (blogPageMatch !== null) {
+    const pageProps = props({ pageNumber: blogPageMatch[1] });
+    return await renderRouteDocument(
+      async () => withBlogLayout(await BlogPaginationPage(pageProps)),
+      async () => await generateBlogPaginationMetadata(pageProps),
+      assets,
+    );
+  }
+
+  const blogYearMatch = /^\/blog\/for\/([^/]+)$/.exec(routePath);
+  if (blogYearMatch !== null) {
+    const yearProps = props({ year: blogYearMatch[1] });
+    return await renderRouteDocument(
+      async () => withBlogLayout(await BlogYearPage(yearProps)),
+      async () => await generateBlogYearMetadata(yearProps),
+      assets,
+    );
+  }
+
+  const blogPostMatch = /^\/blog\/([^/]+)$/.exec(routePath);
+  if (blogPostMatch !== null) {
+    const postProps = props({ slug: blogPostMatch[1] });
+    return await renderRouteDocument(
+      async () => withBlogLayout(await BlogPostPage(postProps)),
+      async () => await generateBlogPostMetadata(postProps),
+      assets,
+    );
+  }
+
+  const philosophyPageMatch = /^\/philosophy\/page\/([^/]+)$/.exec(routePath);
+  if (philosophyPageMatch !== null) {
+    const pageProps = props({ pageNumber: philosophyPageMatch[1] });
+    return await renderRouteDocument(
+      async () => withPhilosophyLayout(await PhilosophyPaginationPage(pageProps)),
+      async () => await generatePhilosophyPaginationMetadata(pageProps),
+      assets,
+    );
+  }
+
+  const philosophyYearMatch = /^\/philosophy\/for\/([^/]+)$/.exec(routePath);
+  if (philosophyYearMatch !== null) {
+    const yearProps = props({ year: philosophyYearMatch[1] });
+    return await renderRouteDocument(
+      async () => withPhilosophyLayout(await PhilosophyYearPage(yearProps)),
+      async () => await generatePhilosophyYearMetadata(yearProps),
+      assets,
+    );
+  }
+
+  const philosophyPostMatch = /^\/philosophy\/([^/]+)$/.exec(routePath);
+  if (philosophyPostMatch !== null) {
+    const postProps = props({ slug: philosophyPostMatch[1] });
+    return await renderRouteDocument(
+      async () => withPhilosophyLayout(await PhilosophyPostPage(postProps)),
+      async () => await generatePhilosophyPostMetadata(postProps),
+      assets,
+    );
+  }
+
+  throw new Error(`Unknown route path: ${routePath}`);
+}
 
 export async function buildRoutes(assets: AssetLinks): Promise<SiteRoute[]> {
   const [blogPosts, philosophyPosts] = await Promise.all([
