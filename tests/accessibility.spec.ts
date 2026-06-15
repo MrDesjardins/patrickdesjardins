@@ -34,8 +34,9 @@ for (const route of staticRoutes) {
 test("has no axe violations on one blog post", async ({ page }) => {
   await page.goto("/blog");
   const href = await page
-    .locator('a[href^="/blog/"]')
-    .filter({ hasText: /.+/ })
+    .locator(
+      'article a[href^="/blog/"]:not([href="/blog/search"]):not([href^="/blog/page/"]):not([href^="/blog/for/"])',
+    )
     .first()
     .getAttribute("href");
 
