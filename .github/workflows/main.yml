@@ -49,16 +49,53 @@ jobs:
       - name: Test
         run: pnpm run test:ci
 
+  search-changes:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    outputs:
+      needed: ${{ steps.filter.outputs.search }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            search:
+              - 'src/_posts/**'
+              - 'src/_philosophy/**'
+              - 'tools/search/**'
+              - 'tools/pyproject.toml'
+              - 'tools/uv.lock'
+
   search-index:
     runs-on: ubuntu-latest
+    needs: search-changes
+    if: |
+      always() && (
+        github.event_name == 'schedule' ||
+        github.event_name == 'workflow_dispatch' ||
+        (needs.search-changes.result == 'success' && needs.search-changes.outputs.needed == 'true')
+      )
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Restore search index cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            public/output
+            public/philosophy-output
+            tools/search/output
+            tools/search/output-philosophy
+          key: search-${{ runner.os }}-${{ hashFiles('tools/search/main.py', 'tools/pyproject.toml') }}
+          restore-keys: |
+            search-${{ runner.os }}-
+
       - name: Install uv
         uses: astral-sh/setup-uv@v5
         with:
-          enable-caching: true
+          enable-cache: true
 
       - name: Install Python dependencies
         run: uv sync
@@ -79,11 +116,16 @@ jobs:
   build-site:
     runs-on: ubuntu-latest
     needs: [quality, search-index]
+    if: |
+      always() &&
+      needs.quality.result == 'success' &&
+      (needs.search-index.result == 'success' || needs.search-index.result == 'skipped')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Download search outputs
+        if: needs.search-index.result == 'success'
         uses: actions/download-artifact@v4
         with:
           name: search-output

@@ -5,6 +5,10 @@ import { type FeatureExtractionPipeline } from "@xenova/transformers";
 import styles from "../../blog/search/page.module.css";
 import { PhilosophyBlogSearchEntry } from "../_components/PhilosophyBlogSearchEntry";
 import { slugFromMdxFilename } from "../../../lib/slug";
+import {
+  cosineSimilarity,
+  loadEmbeddings,
+} from "../../../lib/search/loadEmbeddings";
 import { sendTelemetryEvent } from "../../../lib/telemetry";
 
 interface Post {
@@ -13,20 +17,13 @@ interface Post {
   title: string;
 }
 
-function cosineSimilarity(a: number[], b: number[]): number {
-  const dot = a.reduce((sum, val, i) => sum + val * b[i], 0);
-  const normA = Math.sqrt(a.reduce((sum, val) => sum + val * val, 0));
-  const normB = Math.sqrt(b.reduce((sum, val) => sum + val * val, 0));
-  return dot / (normA * normB);
-}
-
 export default function PhilosophySearchClient(): React.ReactElement {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<Array<{ post: Post; score: number }>>(
     [],
   );
   const [index, setIndex] = useState<Post[]>([]);
-  const [embeddings, setEmbeddings] = useState<number[][]>([]);
+  const [embeddings, setEmbeddings] = useState<Float32Array[]>([]);
   const [embedder, setEmbedder] = useState<FeatureExtractionPipeline | null>(
     null,
   );
@@ -53,19 +50,16 @@ export default function PhilosophySearchClient(): React.ReactElement {
     });
 
     initPromiseRef.current = (async () => {
-      const [indexRes, embRes] = await Promise.all([
+      const [indexRes, loadedEmbeddings] = await Promise.all([
         fetch("/philosophy-output/index.json"),
-        fetch("/philosophy-output/embeddings.json"),
+        loadEmbeddings("/philosophy-output"),
       ]);
 
       const indexData: unknown = await indexRes.json();
-      const embData: unknown = await embRes.json();
 
       if (!Array.isArray(indexData)) throw new Error("Invalid index data format");
-      if (!Array.isArray(embData))
-        throw new Error("Invalid embeddings data format");
       setIndex(indexData as Post[]);
-      setEmbeddings(embData as number[][]);
+      setEmbeddings(loadedEmbeddings.rows);
       const transformers = await import("@xenova/transformers");
       // @ts-expect-error — onnx backend type does not expose 'wasm' variant in library types
       transformers.env.backends.onnx = "wasm";
