@@ -3,6 +3,8 @@ name: GitHub Pages
 on:
   push:
     branches: [master]
+    paths-ignore:
+      - ".github/**"
   schedule:
     - cron: "0 17 * * *"
   workflow_dispatch:
@@ -11,8 +13,45 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+      search: ${{ steps.filter.outputs.search }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          filter: blob:none
+          sparse-checkout: .github
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            code:
+              - 'src/!((_posts|_philosophy)/**)/**'
+              - 'vite.config.ts'
+              - 'scripts/**'
+              - 'tools/sitegen/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'tests/**'
+              - 'playwright.config.*'
+            search:
+              - 'src/_posts/**'
+              - 'src/_philosophy/**'
+              - 'tools/search/**'
+              - 'tools/pyproject.toml'
+              - 'tools/uv.lock'
+
   quality:
     runs-on: ubuntu-latest
+    needs: [detect-changes]
+    if: |
+      always() && (
+        github.event_name != 'push' ||
+        needs.detect-changes.outputs.code == 'true'
+      )
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -46,32 +85,14 @@ jobs:
       - name: Test
         run: pnpm run test:ci
 
-  search-changes:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-    outputs:
-      needed: ${{ steps.filter.outputs.search }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            search:
-              - 'src/_posts/**'
-              - 'src/_philosophy/**'
-              - 'tools/search/**'
-              - 'tools/pyproject.toml'
-              - 'tools/uv.lock'
-
   search-index:
     runs-on: ubuntu-latest
-    needs: search-changes
+    needs: [detect-changes]
     if: |
       always() && (
         github.event_name == 'schedule' ||
         github.event_name == 'workflow_dispatch' ||
-        (needs.search-changes.result == 'success' && needs.search-changes.outputs.needed == 'true')
+        (needs.detect-changes.result == 'success' && needs.detect-changes.outputs.search == 'true')
       )
     steps:
       - name: Checkout repository
@@ -112,30 +133,15 @@ jobs:
 
   build-site:
     runs-on: ubuntu-latest
-    needs: [quality, search-index]
+    needs: [quality, search-index, detect-changes]
     if: |
       always() &&
-      needs.quality.result == 'success' &&
-      (needs.search-index.result == 'success' || needs.search-index.result == 'skipped')
+      (needs.quality.result == 'success' || needs.quality.result == 'skipped') &&
+      (needs.search-index.result == 'success' || needs.search-index.result == 'skipped') &&
+      (needs.detect-changes.result == 'success' || needs.detect-changes.result == 'skipped')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Detect structural changes
-        id: structure
-        if: github.event_name == 'push'
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            changed:
-              - 'src/!((_posts|_philosophy)/**)/**'
-              - 'vite.config.ts'
-              - 'scripts/**'
-              - 'tools/sitegen/**'
-              - 'package.json'
-              - 'pnpm-lock.yaml'
-              - 'tests/**'
-              - 'playwright.config.*'
 
       - name: Download search outputs
         if: needs.search-index.result == 'success'
@@ -158,6 +164,18 @@ jobs:
       - name: Install Node dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Check portable filenames
+        if: needs.quality.result == 'skipped'
+        run: pnpm run files:check
+
+      - name: Validate content
+        if: needs.quality.result == 'skipped'
+        run: pnpm run content:validate
+
+      - name: Check image optimization
+        if: needs.quality.result == 'skipped'
+        run: pnpm run images:check
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
@@ -178,7 +196,7 @@ jobs:
         run: pnpm run build
 
       - name: Cache Playwright browsers
-        if: github.event_name != 'push' || steps.structure.outputs.changed == 'true'
+        if: github.event_name != 'push' || needs.detect-changes.outputs.code == 'true'
         id: pw-cache
         uses: actions/cache@v4
         with:
@@ -186,11 +204,11 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install Playwright Chromium
-        if: (github.event_name != 'push' || steps.structure.outputs.changed == 'true') && steps.pw-cache.outputs.cache-hit != 'true'
+        if: (github.event_name != 'push' || needs.detect-changes.outputs.code == 'true') && steps.pw-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Run accessibility checks
-        if: github.event_name != 'push' || steps.structure.outputs.changed == 'true'
+        if: github.event_name != 'push' || needs.detect-changes.outputs.code == 'true'
         env:
           E2E_BASE_URL: http://127.0.0.1:3000
         run: |
