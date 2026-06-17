@@ -37,9 +37,6 @@ jobs:
       - name: Validate content
         run: pnpm run content:validate
 
-      - name: Install image tooling
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
-
       - name: Check image optimization
         run: pnpm run images:check
 
@@ -165,20 +162,24 @@ jobs:
         run: pnpm run build
 
       - name: Cache Playwright browsers
+        id: pw-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install Playwright Chromium
+        if: steps.pw-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Run accessibility checks
         env:
           E2E_BASE_URL: http://127.0.0.1:3000
         run: |
-          pnpm run serve &
+          node scripts/serve-static.mjs out &
+          SERVER_PID=$!
           pnpm run e2e:a11y
+          kill $SERVER_PID 2>/dev/null || true
 
       - name: Check artifact filenames
         run: node scripts/check-portable-filenames.mjs out

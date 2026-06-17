@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
-import { spawnSync } from "node:child_process";
+import sharp from "sharp";
 
 const DEFAULT_CONTENT_ROOTS = ["src/_posts", "src/_philosophy"];
 const DEFAULT_MAX_BYTES = 1_000_000;
@@ -95,18 +95,11 @@ Options:
   --max-bytes <bytes>     Convert images larger than this
   --max-width <px>        Resize wider images down to this width
   --min-width <px>        Never resize an image below this width
-  --quality <1-100>       WebP quality passed to ffmpeg
-  --compression-level <n> WebP compression level passed to ffmpeg
+  --quality <1-100>       WebP quality passed to sharp
+  --compression-level <n> WebP compression effort passed to sharp
 `);
 }
 
-function commandExists(command) {
-  const result = spawnSync("command", ["-v", command], {
-    shell: true,
-    stdio: "ignore",
-  });
-  return result.status === 0;
-}
 
 function walkFiles(root, predicate) {
   const files = [];
@@ -143,53 +136,21 @@ function extractImageRefs(content) {
   return refs;
 }
 
-function getImageDimensions(filePath) {
-  const result = spawnSync(
-    "ffprobe",
-    [
-      "-v",
-      "error",
-      "-select_streams",
-      "v:0",
-      "-show_entries",
-      "stream=width,height",
-      "-of",
-      "csv=p=0:s=x",
-      filePath,
-    ],
-    { encoding: "utf8" },
-  );
-  if (result.status !== 0) {
-    throw new Error(`ffprobe failed for ${filePath}: ${result.stderr.trim()}`);
-  }
-  const [width, height] = result.stdout.trim().split("x").map(Number);
+async function getImageDimensions(filePath) {
+  const metadata = await sharp(filePath).metadata();
+  const width = metadata.width;
+  const height = metadata.height;
   if (!Number.isFinite(width) || !Number.isFinite(height)) {
     throw new Error(`Could not read dimensions for ${filePath}`);
   }
   return { width, height };
 }
 
-function convertToWebp(sourcePath, outputPath, targetWidth, options) {
-  const args = [
-    "-y",
-    "-v",
-    "error",
-    "-i",
-    sourcePath,
-    "-vf",
-    `scale=${targetWidth}:-2`,
-    "-c:v",
-    "libwebp",
-    "-quality",
-    String(options.quality),
-    "-compression_level",
-    String(options.compressionLevel),
-    outputPath,
-  ];
-  const result = spawnSync("ffmpeg", args, { encoding: "utf8" });
-  if (result.status !== 0) {
-    throw new Error(`ffmpeg failed for ${sourcePath}: ${result.stderr.trim()}`);
-  }
+async function convertToWebp(sourcePath, outputPath, targetWidth, options) {
+  await sharp(sourcePath)
+    .resize(targetWidth, null, { withoutEnlargement: true })
+    .webp({ quality: options.quality, effort: options.compressionLevel })
+    .toFile(outputPath);
 }
 
 function replaceAll(content, replacements) {
@@ -208,11 +169,8 @@ function toPublicPath(filePath) {
   return `/${path.relative("public", filePath).split(path.sep).join("/")}`;
 }
 
-function main() {
+async function main() {
   const options = parseArgs(process.argv.slice(2));
-  if (!commandExists("ffmpeg") || !commandExists("ffprobe")) {
-    throw new Error("This script requires ffmpeg and ffprobe on PATH");
-  }
 
   const contentFiles = options.roots.flatMap((root) =>
     walkFiles(root, (filePath) => /\.mdx?$/.test(filePath)),
@@ -250,7 +208,7 @@ function main() {
       continue;
     }
 
-    const dimensions = getImageDimensions(sourcePath);
+    const dimensions = await getImageDimensions(sourcePath);
     const targetWidth =
       dimensions.width > options.maxWidth
         ? Math.max(options.minWidth, options.maxWidth)
@@ -283,14 +241,14 @@ function main() {
       console.log(`[dry-run] ${planned}`);
       continue;
     }
-    convertToWebp(
+    await convertToWebp(
       conversion.sourcePath,
       conversion.outputPath,
       conversion.targetWidth,
       options,
     );
     const outputSize = fs.statSync(conversion.outputPath).size;
-    const outputDimensions = getImageDimensions(conversion.outputPath);
+    const outputDimensions = await getImageDimensions(conversion.outputPath);
     console.log(
       `${planned}; output ${outputSize} bytes, ${outputDimensions.width}x${outputDimensions.height}`,
     );
@@ -344,9 +302,7 @@ function main() {
   }
 }
 
-try {
-  main();
-} catch (error) {
+main().catch((error) => {
   console.error(error instanceof Error ? error.message : error);
   process.exit(1);
-}
+});
