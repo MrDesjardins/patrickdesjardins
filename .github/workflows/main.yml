@@ -121,6 +121,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Detect structural changes
+        id: structure
+        if: github.event_name == 'push'
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            changed:
+              - 'src/!((_posts|_philosophy)/**)/**'
+              - 'vite.config.ts'
+              - 'scripts/**'
+              - 'tools/sitegen/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'tests/**'
+              - 'playwright.config.*'
+
       - name: Download search outputs
         if: needs.search-index.result == 'success'
         uses: actions/download-artifact@v4
@@ -162,6 +178,7 @@ jobs:
         run: pnpm run build
 
       - name: Cache Playwright browsers
+        if: github.event_name != 'push' || steps.structure.outputs.changed == 'true'
         id: pw-cache
         uses: actions/cache@v4
         with:
@@ -169,10 +186,11 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install Playwright Chromium
-        if: steps.pw-cache.outputs.cache-hit != 'true'
+        if: (github.event_name != 'push' || steps.structure.outputs.changed == 'true') && steps.pw-cache.outputs.cache-hit != 'true'
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Run accessibility checks
+        if: github.event_name != 'push' || steps.structure.outputs.changed == 'true'
         env:
           E2E_BASE_URL: http://127.0.0.1:3000
         run: |
