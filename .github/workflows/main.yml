@@ -122,6 +122,12 @@ jobs:
         run: uv sync
         working-directory: tools
 
+      - name: Cache HuggingFace model
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface/hub
+          key: hf-model-${{ runner.os }}-all-MiniLM-L6-v2
+
       - name: Generate search outputs
         run: uv run python search/main.py generate
         working-directory: tools

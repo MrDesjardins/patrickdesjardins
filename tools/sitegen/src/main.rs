@@ -1213,7 +1213,7 @@ fn render_markdown(path: &str, body: &str) -> Result<String> {
                 _ => "plaintext".to_string(),
             };
             Event::Html(CowStr::from(format!(
-                r#"<pre class="language-{0}"><code class="language-{0} code-highlight">"#,
+                r#"<pre class="language-{0}" tabindex="0"><code class="language-{0} code-highlight">"#,
                 escape_html(&language)
             )))
         }
