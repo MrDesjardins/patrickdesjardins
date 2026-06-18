@@ -157,7 +157,18 @@ New path, June 18    2m20s
 Approximate reduction: 65 seconds, about 32%
 ```
 
-The more interesting number is inside the new workflow:
+The first real post published with the new pipeline felt even better than the workflow average. From pushing the article to seeing it published, the whole loop took less than 45 seconds. That is the number that matters most when writing: not the theoretical build time, but how long it takes to correct a sentence, publish, and move on.
+
+For comparison, two similar pre-migration content pushes through the old NextJS path took 3m15s and 3m38s end-to-end in GitHub Actions.
+
+```
+Real article publishing loop
+
+Old NextJS path      3m15s to 3m38s
+Rust generator path  less than 45 seconds observed
+```
+
+The more interesting number is inside the new workflow for the whole site:
 
 ```
 ┌────────────────────┬──────────┐
