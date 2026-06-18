@@ -967,7 +967,7 @@ const ContactSection = () => {
           /* @__PURE__ */ jsx("div", { className: styles2$5.contactDetail, children: /* @__PURE__ */ jsx(
             "a",
             {
-              href: "https://patrickdesjardins.com/rss.xml",
+              href: "https://patrickdesjardins.com/blog/rss.xml",
               target: "_blank",
               rel: "noopener noreferrer",
               title: "Patrick Desjardins RSS Blog",

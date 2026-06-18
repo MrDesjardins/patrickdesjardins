@@ -16,6 +16,12 @@
 /philosophy-output/*
   Cache-Control: max-age=86400
 
+/blog/rss.xml
+  Content-Type: application/rss+xml; charset=utf-8
+
+/philosophy/rss.xml
+  Content-Type: application/rss+xml; charset=utf-8
+
 # Everything else (images, fonts, etc.) — moderate cache
 /*
   Cache-Control: max-age=3600
