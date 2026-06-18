@@ -18,20 +18,22 @@ function run(command, args) {
   });
 }
 
-let result;
-if (fs.existsSync(releaseBinary)) {
-  result = run(releaseBinary, sitegenArgs);
-} else {
-  result = run("cargo", [
-    "run",
-    "--release",
-    "--quiet",
-    "--manifest-path",
-    manifestPath,
-    "--",
-    ...sitegenArgs,
-  ]);
+const buildResult = run("cargo", [
+  "build",
+  "--release",
+  "--quiet",
+  "--manifest-path",
+  manifestPath,
+]);
+if (buildResult.error !== undefined) {
+  console.error(buildResult.error.message);
+  process.exit(1);
 }
+if (buildResult.status !== 0) {
+  process.exit(buildResult.status ?? 1);
+}
+
+const result = run(releaseBinary, sitegenArgs);
 
 if (result.error !== undefined) {
   console.error(result.error.message);

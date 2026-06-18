@@ -1775,6 +1775,43 @@ fn render_detail_route(
     ))
 }
 
+const ANCILLARY_OUTPUTS: [&str; 4] = [
+    "sitemap.xml",
+    "robots.txt",
+    "blog/rss.xml",
+    "philosophy/rss.xml",
+];
+
+fn should_render_ancillary_outputs(
+    force_full: bool,
+    previous: Option<&Manifest>,
+    changed_paths: &BTreeSet<String>,
+    out_dir: &Path,
+) -> bool {
+    if force_full || previous.is_none() {
+        return true;
+    }
+    for path in ANCILLARY_OUTPUTS {
+        if !file_exists(&out_dir.join(path)) {
+            return true;
+        }
+    }
+    changed_paths.iter().any(|path| {
+        path.starts_with("src/_posts/")
+            || path.starts_with("src/_philosophy/")
+            || path.starts_with("meta:src/_posts/")
+            || path.starts_with("meta:src/_philosophy/")
+    })
+}
+
+fn render_ancillary_outputs(root: &Path, out_dir: &Path) -> Result<()> {
+    let (blog_posts, philosophy_posts) = all_content_posts(root)?;
+    render_sitemap(out_dir, &blog_posts, &philosophy_posts)?;
+    render_robots(out_dir)?;
+    render_rss_feeds(out_dir, &blog_posts, &philosophy_posts)?;
+    Ok(())
+}
+
 fn render_routes_native_first(
     root: &Path,
     out_dir: &Path,
@@ -1784,9 +1821,10 @@ fn render_routes_native_first(
 ) -> Result<BTreeMap<String, ContentCacheEntry>> {
     let mut fallback = Vec::new();
     let mut content_manifest = BTreeMap::new();
-    let detail_only = routes
-        .iter()
-        .all(|route| detail_dependency(route).is_some());
+    let detail_only = !routes.is_empty()
+        && routes
+            .iter()
+            .all(|route| detail_dependency(route).is_some());
     if detail_only {
         let rendered = routes
             .par_iter()
@@ -1841,9 +1879,6 @@ fn render_routes_native_first(
     if !fallback.is_empty() {
         render_routes(root, out_dir, assets, &fallback)?;
     }
-    render_sitemap(out_dir, &blog_posts, &philosophy_posts)?;
-    render_robots(out_dir)?;
-    render_rss_feeds(out_dir, &blog_posts, &philosophy_posts)?;
     Ok(content_manifest)
 }
 
@@ -2170,6 +2205,15 @@ fn main() -> Result<()> {
 
     let mut content_manifest =
         render_routes_native_first(&root, &out_dir, &assets, &routes, &stale_routes)?;
+    let render_ancillary = should_render_ancillary_outputs(
+        force_full,
+        previous.as_ref(),
+        &changed_paths,
+        &out_dir,
+    );
+    if render_ancillary {
+        render_ancillary_outputs(&root, &out_dir)?;
+    }
     timer.mark("render routes");
     let headers = root.join("_headers");
     if file_exists(&headers) {
@@ -2223,16 +2267,8 @@ fn main() -> Result<()> {
             output_hashes.insert(output_path.clone(), hash);
         }
     }
-    let detail_only = stale_routes
-        .iter()
-        .all(|route| detail_dependency(route).is_some());
-    for output_path in [
-        "sitemap.xml",
-        "robots.txt",
-        "blog/rss.xml",
-        "philosophy/rss.xml",
-    ] {
-        if (!detail_only || !output_hashes.contains_key(output_path))
+    for output_path in ANCILLARY_OUTPUTS {
+        if (render_ancillary || !output_hashes.contains_key(output_path))
             && let Some(hash) = output_hash(&out_dir, output_path)?
         {
             output_hashes.insert(output_path.to_string(), hash);
@@ -2377,6 +2413,33 @@ mod tests {
     fn rss_head_link_points_at_collection_feed() {
         assert!(rss_head_link(Collection::Blog).contains("/blog/rss.xml"));
         assert!(rss_head_link(Collection::Philosophy).contains("/philosophy/rss.xml"));
+    }
+
+    #[test]
+    fn renders_ancillary_outputs_when_rss_feed_is_missing() {
+        let out_dir = env::temp_dir().join(format!(
+            "sitegen-ancillary-test-{}",
+            std::process::id()
+        ));
+        let _ = fs::remove_dir_all(&out_dir);
+        fs::create_dir_all(&out_dir).expect("create temp out dir");
+        let previous = Manifest {
+            schema_version: SCHEMA_VERSION,
+            generated_at: String::new(),
+            assets: Assets::default(),
+            source_hashes: BTreeMap::new(),
+            output_hashes: BTreeMap::new(),
+            routes: BTreeMap::new(),
+            content: BTreeMap::new(),
+            global_hashes: GlobalHashes::default(),
+        };
+        assert!(should_render_ancillary_outputs(
+            false,
+            Some(&previous),
+            &BTreeSet::new(),
+            &out_dir,
+        ));
+        let _ = fs::remove_dir_all(out_dir);
     }
 
     #[test]
