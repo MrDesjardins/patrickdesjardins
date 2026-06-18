@@ -15,6 +15,7 @@ const SCHEMA_VERSION: u32 = 2;
 const FIRST_YEAR: i32 = 2011;
 const PHILOSOPHY_FIRST_YEAR: i32 = 2026;
 const MAX_POSTS_PER_PAGE: usize = 10;
+const MAX_RSS_ITEMS: usize = 50;
 const BASE_URL: &str = "https://patrickdesjardins.com";
 const MARKDOWN_RENDERER_VERSION: &str = "rust-md-2026-06-14";
 const SHORTCODE_RENDERER_VERSION: &str = "shortcodes-2026-06-14";
@@ -777,6 +778,145 @@ fn escape_html(value: &str) -> String {
         .replace('"', "&quot;")
 }
 
+fn escape_xml(value: &str) -> String {
+    value
+        .replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
+        .replace('\'', "&apos;")
+}
+
+fn rss_pub_date(date: &str) -> Result<String> {
+    let date_part = date.get(..10).unwrap_or(date);
+    Ok(String::from_utf8(
+        Command::new("date")
+            .args(["-u", "-d", date_part, "+%a, %d %b %Y %H:%M:%S +0000"])
+            .output()
+            .with_context(|| format!("format RSS pubDate for {date_part}"))?
+            .stdout,
+    )?
+    .trim()
+    .to_string())
+}
+
+fn plain_text_excerpt(body: &str, max_len: usize) -> String {
+    let mut excerpt = String::new();
+    for line in body.lines() {
+        let trimmed = line.trim();
+        if trimmed.is_empty()
+            || trimmed.starts_with('#')
+            || trimmed.starts_with('!')
+            || trimmed.starts_with('<')
+            || trimmed.starts_with("```")
+            || trimmed.starts_with("~~~")
+        {
+            continue;
+        }
+        let mut text = trimmed.to_string();
+        while let Some(start) = text.find('[') {
+            let Some(end) = text[start..].find(']') else {
+                break;
+            };
+            let after = start + end + 1;
+            if text.get(after..after + 1) == Some("(") {
+                if let Some(close) = text[after + 1..].find(')') {
+                    text.replace_range(start..after + 2 + close, "");
+                    continue;
+                }
+            }
+            break;
+        }
+        text = text.replace('`', "");
+        if text.is_empty() {
+            continue;
+        }
+        if !excerpt.is_empty() {
+            excerpt.push(' ');
+        }
+        excerpt.push_str(&text);
+        if excerpt.len() >= max_len {
+            break;
+        }
+    }
+    if excerpt.len() > max_len {
+        excerpt.truncate(max_len);
+        excerpt = excerpt.trim_end().to_string();
+        excerpt.push('…');
+    }
+    excerpt
+}
+
+fn rss_head_link(collection: Collection) -> String {
+    let (title, path) = match collection {
+        Collection::Blog => ("Patrick Desjardins Blog", "/blog/rss.xml"),
+        Collection::Philosophy => ("Philosophy — Patrick Desjardins", "/philosophy/rss.xml"),
+    };
+    format!(
+        r#"<link rel="alternate" type="application/rss+xml" title="{}" href="{BASE_URL}{path}">"#,
+        escape_html(title),
+    )
+}
+
+fn rss_channel_meta(collection: Collection) -> (&'static str, &'static str, &'static str) {
+    match collection {
+        Collection::Blog => (
+            "Patrick Desjardins Blog",
+            "/blog",
+            "Technical blog posts by Patrick Desjardins",
+        ),
+        Collection::Philosophy => (
+            "Philosophy — Patrick Desjardins",
+            "/philosophy",
+            "Essays and notes by Patrick Desjardins",
+        ),
+    }
+}
+
+fn render_rss_feed(out_dir: &Path, collection: Collection, posts: &[Post]) -> Result<()> {
+    let (channel_title, channel_path, channel_description) = rss_channel_meta(collection);
+    let prefix = collection.route_prefix();
+    let build_date = rss_pub_date(&today_utc()?)?;
+    let mut items = String::new();
+    for post in posts.iter().take(MAX_RSS_ITEMS) {
+        let link = format!("{BASE_URL}/{prefix}/{}", post.slug);
+        let description = plain_text_excerpt(&post.body, 300);
+        items.push_str(&format!(
+            r#"<item><title>{}</title><link>{}</link><description>{}</description><pubDate>{}</pubDate><guid isPermaLink="true">{}</guid></item>"#,
+            escape_xml(&post.title),
+            escape_xml(&link),
+            escape_xml(&description),
+            escape_xml(&rss_pub_date(&post.date)?),
+            escape_xml(&link),
+        ));
+    }
+    let output_path = out_dir.join(format!("{prefix}/rss.xml"));
+    if let Some(parent) = output_path.parent() {
+        fs::create_dir_all(parent)?;
+    }
+    fs::write(
+        output_path,
+        format!(
+            r#"<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>{}</title><link>{BASE_URL}{}</link><description>{}</description><language>en</language><lastBuildDate>{}</lastBuildDate>{items}</channel></rss>"#,
+            escape_xml(channel_title),
+            channel_path,
+            escape_xml(channel_description),
+            escape_xml(&build_date),
+        ),
+    )?;
+    Ok(())
+}
+
+fn render_rss_feeds(
+    out_dir: &Path,
+    blog_posts: &[Post],
+    philosophy_posts: &[Post],
+) -> Result<()> {
+    render_rss_feed(out_dir, Collection::Blog, blog_posts)?;
+    render_rss_feed(out_dir, Collection::Philosophy, philosophy_posts)?;
+    Ok(())
+}
+
 fn class(root: &Path, module: &str, local: &str) -> Result<String> {
     css_module_class_name(root, local, &root.join(module))
 }
@@ -787,6 +927,7 @@ fn page_document(
     description: &str,
     assets: &Assets,
     body: &str,
+    head_extra: Option<&str>,
 ) -> Result<String> {
     let html_class = class(root, "src/app/layout.module.css", "htmlstyle")?;
     let body_class = class(root, "src/app/layout.module.css", "bodystyle")?;
@@ -805,8 +946,9 @@ fn page_document(
             )
         })
         .collect::<String>();
+    let extra = head_extra.unwrap_or("");
     Ok(format!(
-        r#"<!doctype html><html lang="en" class="{html_class}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{}</title><meta name="description" content="{}">{css}</head><body class="{body_class}">{body}{js}</body></html>"#,
+        r#"<!doctype html><html lang="en" class="{html_class}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{}</title><meta name="description" content="{}">{extra}{css}</head><body class="{body_class}">{body}{js}</body></html>"#,
         escape_html(title),
         escape_html(description),
     ))
@@ -1495,7 +1637,14 @@ fn render_content_route(
         return Ok(false);
     };
     let body = content_body(root, body_options, &children)?;
-    let document = page_document(root, &title, &description, assets, &body)?;
+    let document = page_document(
+        root,
+        &title,
+        &description,
+        assets,
+        &body,
+        Some(&rss_head_link(collection)),
+    )?;
     let output_path = out_dir.join(&route.output_path);
     if let Some(parent) = output_path.parent() {
         fs::create_dir_all(parent)?;
@@ -1598,7 +1747,14 @@ fn render_detail_route(
         },
         &children,
     )?;
-    let document = page_document(root, &title, &post.title, assets, &body)?;
+    let document = page_document(
+        root,
+        &title,
+        &post.title,
+        assets,
+        &body,
+        Some(&rss_head_link(collection)),
+    )?;
     let output_path = out_dir.join(&route.output_path);
     if let Some(parent) = output_path.parent() {
         fs::create_dir_all(parent)?;
@@ -1687,6 +1843,7 @@ fn render_routes_native_first(
     }
     render_sitemap(out_dir, &blog_posts, &philosophy_posts)?;
     render_robots(out_dir)?;
+    render_rss_feeds(out_dir, &blog_posts, &philosophy_posts)?;
     Ok(content_manifest)
 }
 
@@ -1790,7 +1947,13 @@ fn stale_reasons(
         .iter()
         .map(|route| route.output_path.clone())
         .collect::<BTreeSet<_>>();
-    output_paths.extend(["sitemap.xml".into(), "robots.txt".into(), "_headers".into()]);
+    output_paths.extend([
+        "sitemap.xml".into(),
+        "robots.txt".into(),
+        "blog/rss.xml".into(),
+        "philosophy/rss.xml".into(),
+        "_headers".into(),
+    ]);
     output_paths.insert("server/render.js".into());
     for asset in asset_output_paths(&previous.assets) {
         output_paths.insert(asset);
@@ -2029,6 +2192,8 @@ fn main() -> Result<()> {
     tracked_outputs.extend([
         "sitemap.xml".to_string(),
         "robots.txt".to_string(),
+        "blog/rss.xml".to_string(),
+        "philosophy/rss.xml".to_string(),
         "_headers".to_string(),
         "server/render.js".to_string(),
     ]);
@@ -2061,7 +2226,12 @@ fn main() -> Result<()> {
     let detail_only = stale_routes
         .iter()
         .all(|route| detail_dependency(route).is_some());
-    for output_path in ["sitemap.xml", "robots.txt"] {
+    for output_path in [
+        "sitemap.xml",
+        "robots.txt",
+        "blog/rss.xml",
+        "philosophy/rss.xml",
+    ] {
         if (!detail_only || !output_hashes.contains_key(output_path))
             && let Some(hash) = output_hash(&out_dir, output_path)?
         {
@@ -2192,6 +2362,21 @@ mod tests {
         let rendered = render_markdown("post.mdx", "```tsx\n<UnknownWidget value=\"1\" />\n```\n")
             .expect("fenced JSX should render as code");
         assert!(rendered.contains("&lt;UnknownWidget"));
+    }
+
+    #[test]
+    fn plain_text_excerpt_skips_markdown_noise() {
+        let body = "# Heading\n\n![](/images/example.png)\n\nFirst paragraph text.\n\nSecond paragraph.";
+        assert_eq!(
+            plain_text_excerpt(body, 300),
+            "First paragraph text. Second paragraph."
+        );
+    }
+
+    #[test]
+    fn rss_head_link_points_at_collection_feed() {
+        assert!(rss_head_link(Collection::Blog).contains("/blog/rss.xml"));
+        assert!(rss_head_link(Collection::Philosophy).contains("/philosophy/rss.xml"));
     }
 
     #[test]

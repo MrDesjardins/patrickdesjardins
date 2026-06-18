@@ -103,7 +103,7 @@ export const ContactSection = (): React.ReactElement => {
         </div>
         <div className={styles2.contactDetail}>
           <a
-            href="https://patrickdesjardins.com/rss.xml"
+            href="https://patrickdesjardins.com/blog/rss.xml"
             target="_blank"
             rel="noopener noreferrer"
             title="Patrick Desjardins RSS Blog"
