@@ -1,0 +1,213 @@
+---
+title: "Replacing NextJS With a Rust Static Site Generator"
+date: "2026-06-18"
+categories:
+ - "rust"
+ - "nextjs"
+ - "ci"
+ - "static-site"
+---
+
+I recently moved this website away from NextJS as the static generation engine. The site was working, but it had become heavier than what I needed. Most pages are static. Most content is markdown. The build was doing a lot of framework work for a problem that had become much smaller than the framework.
+
+The goal was not to remove React everywhere in one dramatic rewrite. The goal was more practical: remove NextJS from the build path, keep the existing site structure alive, and let a small Rust generator decide what actually needs to be rebuilt.
+
+Over six days, the change touched 120 files with 7,032 insertions and 2,373 deletions. There were 22 commits in that window. That sounds large, but the important part is that the site moved from a framework-driven build to a content-driven build.
+
+## What Changed
+
+The most visible change is in `package.json`.
+
+```
+before: pnpm build -> next build
+after:  pnpm build -> node scripts/build-site.mjs
+```
+
+The NextJS dependencies are gone from the package:
+
+```
+next
+next-mdx-remote
+@next/third-parties
+eslint-config-next
+```
+
+The new build script compiles a Rust binary and runs it:
+
+```
+scripts/build-site.mjs
+  -> cargo build --release --manifest-path tools/sitegen/Cargo.toml
+  -> tools/sitegen/target/release/sitegen
+```
+
+The Rust generator is now the center of the static site build. It reads the content, computes routes, hashes dependencies, decides what is stale, renders supported markdown and MDX natively, and writes the static output.
+
+```
+content
+  -> Rust route discovery
+  -> dependency hashing
+  -> stale route selection
+  -> native MDX render or Vite fallback
+  -> out/
+  -> GitHub Pages
+```
+
+This is the new division of responsibilities:
+
+```
+┌──────────────────────────┬──────────────────────┬────────────────────────────┐
+│ Responsibility           │ Before               │ After                      │
+├──────────────────────────┼──────────────────────┼────────────────────────────┤
+│ Build entrypoint         │ NextJS               │ Node wrapper + Rust binary │
+│ Route planning           │ NextJS app router    │ Rust sitegen               │
+│ Content freshness        │ Full framework build │ Source/output hashes       │
+│ Markdown rendering       │ MDX/React path       │ Rust native path first     │
+│ Client assets            │ NextJS bundler       │ Vite                       │
+│ Sitemap and robots       │ NextJS app files     │ Rust + renderer bridge     │
+│ RSS feeds                │ External path        │ Rust generator             │
+│ Deploy target            │ GitHub Pages         │ GitHub Pages               │
+└──────────────────────────┴──────────────────────┴────────────────────────────┘
+```
+
+There is still React and we added Vite. That is intentional. The migration keeps compatibility shims for `next/image`, `next/link`, `next/dynamic`, `next/web-vitals`, and `next` so the existing application code can continue to run while the generation layer changes underneath it.
+
+This made the migration less risky. The first step was to replace the build engine. Cleaning up the remaining compatibility layer can happen later.
+
+## The Interesting Part: Incremental Generation
+
+The old build path treated the site more like an application. The new generator treats it like a set of files and routes.
+
+Each route has dependencies. A blog post page depends on the post body. A listing page depends mostly on post metadata. Shared pages depend on layouts, CSS, scripts, and shared libraries. The Rust generator hashes those inputs and writes a manifest to `out/.site-manifest.json`.
+
+On the next build, it compares the current hashes with the previous manifest. If nothing relevant changed, it can skip rendering. If one post body changed, it can rebuild that post without rebuilding every list page. If only frontmatter changed, list pages can update without pretending the whole site changed.
+
+That distinction matters because a personal site has many small edits. A typo fix should not behave like a full application deployment.
+
+The generator also has a native markdown path. Supported MDX shortcodes like YouTube, CodeSandbox, and SoundCloud render directly in Rust. If a route still needs the React renderer, the build can fall back to the Vite-rendered path. That hybrid approach is less pure, but it is useful. It lets the fastest path grow over time without blocking the migration.
+
+## The Development Loop
+
+Another improvement is local development. With NextJS, opening or editing individual MDX posts was slow. The site had thousands of pages, and even when I wanted to look at one article, the development server often felt like it was preparing much more than the page I needed.
+
+That matters when writing. A blog post is not a complex application flow. I want to save the file, refresh, and continue writing. Waiting on the framework for every MDX page breaks that loop.
+
+The new development path is much closer to instant. The generator can rebuild the changed content, and the local server can show the updated page immediately. Hot reload now feels like editing a static file again, which is exactly what most blog writing should feel like.
+
+```
+Local writing loop
+
+NextJS dev path      save -> wait -> route compiles -> page appears
+Rust/Vite dev path   save -> stale file regenerates -> hot reload
+```
+
+That change does not show up only in CI numbers. It changes the daily experience of writing and editing the site.
+
+## CI Changed Too
+
+The CI pipeline changed almost as much as the generator. Before, the workflow had one broad job that generated search output, installed dependencies, linted, tested, built, deployed, and posted socially.
+
+Now the workflow is split:
+
+```
+detect-changes
+quality
+search-index
+build-site
+deploy
+social-post
+```
+
+The split is important because not every push needs every expensive operation. A content-only push does not need the same checks as a generator change. A code-only change does not need to regenerate the search index. Playwright browser installation should not happen unless accessibility checks are actually going to run.
+
+The current workflow uses path filters, artifacts, and caches:
+
+1. `detect-changes` determines whether code or search inputs changed.
+2. `quality` can be skipped for content-only pushes.
+3. `search-index` can be skipped unless content or search code changed.
+4. Search outputs are uploaded as artifacts when regenerated.
+5. Rust builds are cached.
+6. The site output is cached.
+7. Playwright browser installation is conditional.
+
+The result is not just a faster build. It is a build that does less unnecessary work.
+
+## The Numbers
+
+The GitHub Actions history shows the shape of the improvement.
+
+```
+┌────────────┬────────────────────────────────────┬──────────────┬───────────────┐
+│ Date       │ Run                                │ Total Time   │ Notes         │
+├────────────┼────────────────────────────────────┼──────────────┼───────────────┤
+│ 2026-06-13 │ Old generate-and-deploy job        │ 4m40s        │ One large job │
+│ 2026-06-14 │ Split scheduled workflow           │ 5m25s        │ Search/social │
+│ 2026-06-18 │ Latest workflow dispatch           │ 2m20s        │ Full deploy   │
+│ 2026-06-18 │ Push after generator improvements  │ 2m11s        │ Deploy skipped│
+└────────────┴────────────────────────────────────┴──────────────┴───────────────┘
+```
+
+The old June 13 run reached deployment around 3m25s and finished the job around 4m40s because social posting was part of the same job. The June 18 workflow dispatch completed the full deploy path in about 2m20s.
+
+```
+Deploy-ready runtime
+
+Old path, June 13    3m25s
+New path, June 18    2m20s
+
+Approximate reduction: 65 seconds, about 32%
+```
+
+The more interesting number is inside the new workflow:
+
+```
+┌────────────────────┬──────────┐
+│ Job                │ Duration │
+├────────────────────┼──────────┤
+│ quality            │ 34s      │
+│ search-index       │ 35s      │
+│ build-site         │ 1m14s    │
+│ deploy             │ 17s      │
+└────────────────────┴──────────┘
+```
+
+Those jobs do not all need to run sequentially. `quality` and `search-index` can run in parallel. `build-site` waits for the useful outputs, and `deploy` only runs after a successful build.
+
+That is why the total workflow is smaller than adding every job duration together. The pipeline stopped being a single line and became a small dependency graph.
+
+```
+Old:
+
+checkout -> generate search -> install node -> lint -> test -> build -> deploy -> social
+
+New:
+
+                ┌-> quality -----┐
+detect-changes -┤                 ├-> build-site -> deploy -> social
+                └-> search-index -┘
+```
+
+## Why Rust
+
+Rust is a good fit for this part of the system because the generator is mostly file I/O, hashing, deterministic routing, and string generation. It is not a dynamic web server. It does not need a long-lived runtime. It needs to look at the repository, decide what changed, write files, and exit.
+
+The implementation uses `pulldown-cmark` for markdown, `sha2` for hashing, `serde` for manifests, and `rayon` where parallel work makes sense. None of that requires a large framework.
+
+The most useful part is not raw CPU speed. It is control. The generator knows the difference between a post body, post metadata, shared layout code, static assets, RSS output, and generated search files. That knowledge is harder to express cleanly when the framework owns the whole build.
+
+## What I Would Do Differently
+
+The migration worked, but a few things are worth calling out.
+
+First, compatibility shims are useful, but they should not live forever. They made the transition possible, but the codebase still has imports that look like NextJS even though NextJS is no longer the build engine.
+
+Second, the native MDX renderer should stay conservative. It is tempting to support every possible MDX pattern, but that recreates framework complexity. The better path is to support the small set of components I actually use and let the fallback handle the rest until those pages are simplified.
+
+Third, CI optimization should happen with data. The search index, Playwright checks, and social posting all had different cost profiles. Splitting the workflow made those costs visible.
+
+## Conclusion
+
+This migration was not about chasing Rust for its own sake. It was about matching the tool to the shape of the site.
+
+The website is mostly static content. The generator should understand content, hashes, routes, and output files. NextJS is excellent for many applications, but for this site it had become the heaviest part of a simple publishing pipeline.
+
+The result is a smaller build path, a faster deploy path, and a generator that can skip work instead of rebuilding the world for every small change. The site still uses React where it is useful and Vite where bundling is useful, but the generation layer is now mine, explicit, and much easier to reason about.
