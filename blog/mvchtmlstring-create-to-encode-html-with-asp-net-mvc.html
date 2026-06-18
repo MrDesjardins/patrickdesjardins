@@ -4,18 +4,18 @@
 <p>So, instead of using directly <code>@Model.YourStringProperty, you should use MvcHtmlString.Create(Model.YourStringProperty)</code></p>
 <p>This method will check if the input (parameter) inherit of IHtmlString, if it does, it won't do anything. The reason is that class that inherit from <code>IHtmlString</code>. If not, it will encode the html output.</p>
 <p>From here, you can create your own Html extension to extend</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public static class HtmlHelpers { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public static class HtmlHelpers { 
    public static MvcHtmlString HtmlEncode(this string data) { 
      return MvcHtmlString.Create(data); 
     } 
   } 
 </code></pre>
 <p>This extension will let you encode any string so you could use it with you properties.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> This is my property : @Model.Name.HtmlEncode() 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> This is my property : @Model.Name.HtmlEncode() 
 </code></pre>
 <p>On the other side, if you do not want to have the Html encoded, you could use <code>Html.Raw()</code> method which return a IHtmlString which won't be encoded by MVC framework.</p>
 <p>If you go inside the source code of Asp.Net we will find that <code>Html.Raw()</code> use the string and generate a simple IHtmlString from the concrete class HtmlString.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public IHtmlString Raw(string value) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public IHtmlString Raw(string value) { 
   return new HtmlString(value); 
 }
 
@@ -24,7 +24,7 @@ public IHtmlString Raw(object value) {
 } 
 </code></pre>
 <p>This is different from <code>MvcHtmlString.Create()</code></p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public sealed class MvcHtmlString : HtmlString { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public sealed class MvcHtmlString : HtmlString { 
   public static readonly MvcHtmlString Empty = Create(String.Empty);
 
   private readonly string_value;
@@ -38,7 +38,7 @@ public IHtmlString Raw(object value) {
 </code></pre>
 <p>Are you can see, this one return a MvcHtmlString. At the end, both return something similar and encoded html.</p>
 <p>In the scenario you want to display the html's string you simply need to use the variable:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">@{ var x= "&lt;b&gt;Test&lt;/b&gt;"; }
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">@{ var x= "&lt;b&gt;Test&lt;/b&gt;"; }
 @x 
 </code></pre>
 <p>To conclude, if you need to display html rendered to the browser, you can use one of the two methods and it will work. The reason is that MvcHtmlString inherit from HtmlString which inherit from IHtmlString. If you need to display the content of the string which contain Html (which will print the Html's string and not the rendered content) simply use directly the variable like : <code>@Model.MyStringWithHtml</code></p>

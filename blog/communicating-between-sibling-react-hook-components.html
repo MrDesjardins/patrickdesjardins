@@ -1,6 +1,6 @@
 <!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Patrick Desjardins Blog - Communicating Between Sibling React Hook Components</title><meta name="description" content="Communicating Between Sibling React Hook Components"><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-CZbWyyk4.css"><link rel="stylesheet" href="/assets/static-modules.css"></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><header><h1 class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</h1><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main class="app_blog__components_BlogBody__main"><h2 class="app_blog__components_BlogBody__heading">Communicating Between Sibling React Hook Components</h2><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: 2021-11-01</p><p>Communication between React's components is natural using the properties of each component. However, if a child wants to send information back the tree of components, some additional work is required. In this article, I'll clarify how to communicate top-down, bottom-up, and side-to-side.</p>
 <p>Let's start with a basic React application that has three components.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export default function App() {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export default function App() {
   return (
     &lt;div className="App"&gt;
       &lt;Parent&gt;
@@ -12,7 +12,7 @@
 }
 </code></pre>
 <p>The parent:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export interface ParentProps {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export interface ParentProps {
   children: React.ReactNode | React.ReactNode[];
 }
 
@@ -21,7 +21,7 @@ export const Parent = (props: ParentProps) =&gt; {
 };
 </code></pre>
 <p>And the two children components:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export interface Sibling1Props {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export interface Sibling1Props {
   name: string;
 }
 
@@ -42,7 +42,7 @@ export const Sibling2 = (props: Sibling2Props) =&gt; {
 <p>The scaffolding already contains one communication principle: passing the information by property. In that case, <code>App</code> hands down the <code>name</code> and <code>age</code>. Important to note that <code>Parent</code> does not pass the information down. The <code>Parent</code> component contains only an instruction to render what the <code>children</code> property.</p>
 <p>How can we have one of the siblings having an action to send information from the bottom-up? If we want to remain on track with React, we are limited by the property mechanism. However, instead of passing the information directly, we give the value inside a <em>function</em>.</p>
 <p>First, let's modify one of the siblings to have a property that takes a function without a parameter and that returns no value.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export interface Sibling2Props {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export interface Sibling2Props {
   age: number;
   notifyParent: () =&gt; void;
 }
@@ -67,7 +67,7 @@ export const Sibling2 = (props: Sibling2Props) =&gt; {
 <p>You can play with the code in <a href="https://codesandbox.io/s/react-sibling-communication-part1-ssdge">CodeSandbox.io</a>.</p>
 <h1>Bottom-Up Communication</h1>
 <p>If we modify the <code>App.tsx</code> to have a title and that each time the application gets notified that the title adds a smiley face, we get:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export default function App() {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export default function App() {
   const [title, setTitle] = useState("App Title");
   return (
     &lt;div className="App"&gt;
@@ -89,7 +89,7 @@ export const Sibling2 = (props: Sibling2Props) =&gt; {
 <p>Hence, the child that has a property that is function can send the information above.</p>
 <h1>Slibling Communication by the parent</h1>
 <p>The reflex is to communicate to a sibling is to look at the common point. In our case, the parent or the application component at the root of the application. For example, if we want to have the <code>Sibling2.tsx</code> communicate with <code>Sibling1.tsx</code> we would visit <code>Parent.tsx</code>. In terms of code, it is a slight change compared to the previous iteration. First, we need to remove the title from the <code>App.tsx</code> into <code>Sibling1.tsx</code>. We keep the <code>useState</code> in the <code>App.tsx</code>. The reason is that the function continues to be invoked in the <code>App.tsx</code>. Then, to send the information from the function to the sibling, we need to use the state. The reason is that we want to send top to bottom the information. Thus, we need to pass the new title to the other child. The code looks like this:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export default function App() {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export default function App() {
   const [title, setTitle] = useState("App Title");
   return (
     &lt;div className="App"&gt;
@@ -121,7 +121,7 @@ export const Sibling1 = (props: Sibling1Props) =&gt; {
 };
 </code></pre>
 <p>A keen eye realizes one conceptual issue here. The <code>App</code> does not have any business with the <code>title</code>. The state is the responsibility of the <code>Sibling1.tsx</code> only. So the logic to increment is a logic that belongs to the owner of the title, not the app, neither the sibling triggering the notification that something happened. An idea that is impossible to do is to have the <code>notifyParent</code> in the <code>App</code> to <em>call</em> a function in <code>Sibling1</code>. Something like:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export default function App() {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export default function App() {
 
   return (
     &lt;div className="App"&gt;
@@ -142,7 +142,7 @@ export const Sibling1 = (props: Sibling1Props) =&gt; {
 <h1>Communication sibling to sibling using Context</h1>
 <p>To communicate with a sibling without polluting a component with a state is to store that state elsewhere -- a shared place. That place is a custom context.</p>
 <p>Define the contract in an interface. In that particular example, we will share a way to consume using a property <code>title</code> and a way to send information <code>setTitle</code>. With the interface, we create a context. The values don't matter at that step. Actually, an alternative is to provide fake data is to mark the field as optional.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export interface Communication {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export interface Communication {
   title: string;
   setTitle: (newTitle: string) =&gt; void;
 }
@@ -153,7 +153,7 @@ export const CommunicationContext = createContext&lt;Communication&gt;({
 });
 </code></pre>
 <p>Then, you create a React component that will handle the values:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export interface CommunicationContextProviderProps {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export interface CommunicationContextProviderProps {
   children: ReactElement | ReactElement[];
 }
 
@@ -178,7 +178,7 @@ export const CommunicationContextProvider = (
 </code></pre>
 <p>The idea is the state is stored in the <em>Provider</em> function. It does not pollute the application or the parent component. Instead, it keeps the data inside the provider. By providing a <code>setTitle</code>, the sibling2 will be able to set the title. By providing the <code>title</code>, because we use a state, once the value change, anyone under the provider will have its component re-render and receive the new value using the context.</p>
 <p>Looks how uncluttered is the application now:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">
 export default function App() {
   return (
     &lt;div className="App"&gt;
@@ -193,7 +193,7 @@ export default function App() {
 }
 </code></pre>
 <p>The sibling2, which invokes the function looks the following. No more function in its properties for communication to a sibling but a call to the <code>useContext</code> to have access to the function to trigger a call that the other sibling will receive.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export interface Sibling2Props {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export interface Sibling2Props {
   age: number;
 }
 
@@ -216,7 +216,7 @@ export const Sibling2 = (props: Sibling2Props) =&gt; {
 };
 </code></pre>
 <p>The other sibling is also uncluttered. No more properties that receive the title. Instead, it relies on the context and consumes the value.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export interface Sibling1Props {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export interface Sibling1Props {
   name: string;
 }
 

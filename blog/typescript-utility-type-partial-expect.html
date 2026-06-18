@@ -2,7 +2,7 @@
 <p>The situation is that you want to transform an existing type into all optional fields except a subset of the fields to be required. A use case is that you wish to have all fields except the primary key and many other keys you know must always be present.</p>
 <h1>Example Type</h1>
 <p>We need to create a custom TypeScript utility type to have this new type. But first, let's make a testing type.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">interface MyType {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">interface MyType {
   a: string;
   b: string;
   c: string;
@@ -13,28 +13,28 @@
 <p>The result is the combination of two operations: picking required fields and picking optional fields.</p>
 <h2>Picking Required Fields</h2>
 <p>To pick the required field, we can take a subset of the fields depending of what the developer specifies as required properties of a type.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">type RequiredFielsd&lt;T, K extends keyof T&gt; = Required&lt;Pick&lt;T, K&gt;&gt;;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">type RequiredFielsd&lt;T, K extends keyof T&gt; = Required&lt;Pick&lt;T, K&gt;&gt;;
 </code></pre>
 <p>The first utility type uses two native TypeScript's utility types: <code>Pick</code> and <code>Required</code>.
 The <code>Pick</code> extracts from an existing type <code>T</code> fields specified.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">type MyOtherType1 = RequiredFielsd&lt;MyType, "a"&gt;;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">type MyOtherType1 = RequiredFielsd&lt;MyType, "a"&gt;;
 type MyOtherType2 = RequiredFielsd&lt;MyType, "a" | "b"&gt;;
 </code></pre>
 <p>These two examples create one type that has only a property name <code>a</code> from the original type that has a <code>a</code> and make it required. The second example creates another type with <code>a</code> and <code>b</code> fields required. No <code>c</code> field.</p>
 <h2>Picking Optional Fields</h2>
 <p>The second step is to extract the optional field. Similar to the first part, we will leverage the existing <code>Pick</code>. In this type, we will not take the field the user specify but the rest of the field (opposite).</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">type PartialFields&lt;T, K extends keyof T&gt; = Partial&lt;Pick&lt;T, Exclude&lt;keyof T, K&gt;&gt;&gt;;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">type PartialFields&lt;T, K extends keyof T&gt; = Partial&lt;Pick&lt;T, Exclude&lt;keyof T, K&gt;&gt;&gt;;
 </code></pre>
 <p>The utility type picks all fields that are not specified in <code>k</code>. Then, marks them as optional ( <code>| undefined</code>).</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">type MyOtherType3 = PartialFields&lt;MyType, "a"&gt;;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">type MyOtherType3 = PartialFields&lt;MyType, "a"&gt;;
 </code></pre>
 <p>The result of this new type is a type with <code>b</code> and <code>c</code> that will be both <code>string | undefined</code>. No <code>a</code>.</p>
 <h1>Combining the Utility Functions</h1>
 <p>Now, we need to combine both.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">type PartialExcept&lt;T, K extends keyof T&gt; = RequiredFielsd&lt;T, K&gt; &amp; PartialFields&lt;T, K&gt;;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">type PartialExcept&lt;T, K extends keyof T&gt; = RequiredFielsd&lt;T, K&gt; &amp; PartialFields&lt;T, K&gt;;
 </code></pre>
 <p>Using the same <code>T</code> with the same <code>K</code> means that the <code>RequiredFielsd</code> will take the fields specified and mark them as required while all the other fields will be set as optional.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">type MyFinalType = PartialExcept&lt;MyType, "a"&gt;;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">type MyFinalType = PartialExcept&lt;MyType, "a"&gt;;
 const test: MyFinalType = {
     a: "Required Value"
 };

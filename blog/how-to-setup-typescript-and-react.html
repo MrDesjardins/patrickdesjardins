@@ -1,13 +1,13 @@
 <!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Patrick Desjardins Blog - How to setup TypeScript and React</title><meta name="description" content="How to setup TypeScript and React"><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-CZbWyyk4.css"><link rel="stylesheet" href="/assets/static-modules.css"></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><header><h1 class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</h1><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main class="app_blog__components_BlogBody__main"><h2 class="app_blog__components_BlogBody__heading">How to setup TypeScript and React</h2><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: 2017-04-25</p><p>This article explains how to get an exiting <strong>TypeScript</strong> project that use <strong>Gulp</strong> to use <strong>ReactJs</strong>.</p>
 <h1>React NPM Packages</h1>
 <p>To use <strong>ReactJs</strong> you needs four different NPM packages for <strong>React</strong> and <strong>React-Dom</strong>.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight"> npm install react@latest --save npm install react-dom@latest --save npm install @types/react --save-dev npm install @types/react-dom --save-dev 
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight"> npm install react@latest --save npm install react-dom@latest --save npm install @types/react --save-dev npm install @types/react-dom --save-dev 
 </code></pre>
 <p>Two of them are the actual Facebook ReactJs libraries and the two others are Types which allow to use these two JavaScript libraries with TypeScript. This means that you will get all the autocomplete features while typing.</p>
 <p><img src="/images/blog/intellisenseReact.png" alt="" /></p>
 <h1>Modifying RequiresJs</h1>
 <p>Inside the configuration of your RequireJs, you need to add two entries for react and react-dom to indicate where will be the module to load. This is tricky in term that you must point to the "dist" folder. If you look in node_modules you will see that react exist in the main folder but also in the lib folder. These won't work. The other tricky part is that react-dom use a hyphen, which will require you to use quote. Both need to have lowercase path key, and both will be used with the lowercase on the import statement.</p>
-<pre class="language-javascript"><code class="language-javascript code-highlight">&lt;script&gt; requirejs.config({ 
+<pre class="language-javascript" tabindex="0"><code class="language-javascript code-highlight">&lt;script&gt; requirejs.config({ 
   baseUrl: 'output/', 
   paths: { vendors: 'vendors', jquery: '../vendors/jquery/jquery', react: "../vendors/react/dist/react", "react-dom": "../vendors/react-dom/dist/react-dom" } 
 });
@@ -19,12 +19,12 @@ requirejs(['file1']);
 <p>If your file1.ts was your entry point, this one can remain. You just need to have this one to be file1.tsx since it will use React JSX syntax.</p>
 <h1>TypeScript TsConfig.json</h1>
 <p>The TypeScript's configuration file needs to be altered to indicate the type of JSX we want to compile.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">"jsx": "react" 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">"jsx": "react" 
 </code></pre>
 <p>If you want, you can add both types under the property "types" but this is optional since TypeScript will looks into the node_modules package to get the definition.</p>
 <h1>Gulp and React</h1>
 <p>If you are using Gulp or any other toolkit for automation, you need to do a change. The change is mainly to change the path of file to compile to get TSX file additional to TS file.</p>
-<pre class="language-javascript"><code class="language-javascript code-highlight">paths.allTypeScript = paths.typescript_in + "**/*.{ts,tsx}"; 
+<pre class="language-javascript" tabindex="0"><code class="language-javascript code-highlight">paths.allTypeScript = paths.typescript_in + "**/*.{ts,tsx}"; 
 // ... 
 gulp.task("build", () =&gt; { 
   var compilationResults = gulp.src(paths.allTypeScript) 
@@ -39,7 +39,7 @@ gulp.task("build", () =&gt; {
 <p>This change add ts and tsx file to be compiled by TypeScript Compiler (TSC).</p>
 <h1>Using React</h1>
 <p>Once React is setup, you can modify your entry point by rendering a simple component. Here is an example that use a simple component. The component code:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">import * as React from "react"; 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">import * as React from "react"; 
 interface ComponentProps { name: string; }
 
 export class Component extends React.Component&lt;ComponentProps, {}&gt; { 
@@ -49,7 +49,7 @@ export class Component extends React.Component&lt;ComponentProps, {}&gt; {
 } 
 </code></pre>
 <p>The original TypeScript modified to have the .tsx extension:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">import * as React from "react"; 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">import * as React from "react"; 
 import * as ReactDOM from "react-dom"; 
 import { Component } from "component1";
 

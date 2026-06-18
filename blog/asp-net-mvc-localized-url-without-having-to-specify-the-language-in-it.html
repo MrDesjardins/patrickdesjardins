@@ -2,7 +2,7 @@
 <p>At the end, what we want is to have url like this : http://yourwebsite.com/Compte/Identification for French website and for English : http://yourwebsite.com/Account/Login</p>
 <p>Everything start by changing the routing. This can be done by opening the file <code>RouteConfig.cs</code> that is inside your web project under the folder App_Start.</p>
 <p>Several things need to be done. First, we need to specify which culture will be used by you application. Then, you will have to use a custom structure to specify every controllers and actions with the translated values. This is required to associate every language word to an existing controller and existing action. Finally, the last step is to create a binder that will allow you to use the new mechanism to translate route. This is an example of how the routeConfig.cs looks for a brand new Asp.Net MVC5 application with the Home and Account controller translated.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class RouteConfig { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class RouteConfig { 
   public static void RegisterRoutes(RouteCollection routes) { 
     routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
@@ -22,7 +22,7 @@
 <p>As you can see, it can be very exhaustive to define every actions of every controller. However, this configuration can be saved in a database and loaded once for the application if you desire.</p>
 <p>We are using a lot of classes that you will need. First of all, let's define all classes that are used to structure the controllers and actions translation. I have separated all classes in 4 files.</p>
 <p><img src="/images/blog/RoutingClasses.png" alt="" /></p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class ControllerTranslation { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class ControllerTranslation { 
   public string ControllerName { get; set; } 
   public List&lt;Translation&gt; Translation { get; set; } 
   public List&lt;ActionTranslation&gt; ActionTranslations { get; set; }
@@ -35,7 +35,7 @@
 } 
 </code></pre>
 <p>This is the main class that has the controller name, which is required to be able to bind the translated name for the real code name. It contains a translation list which contains for every cultures the new name which is used in the url. Then, it contains a list of actions. This way, we have a well structured a logically separated structure.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class ActionTranslation { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class ActionTranslation { 
   public string ActionName { get; set; } 
   public List&lt;Translation&gt; Translation { get; set; }
 
@@ -46,7 +46,7 @@
 } 
 </code></pre>
 <p>ActionTranslation is almost the same as ControllerTranslation. The only difference it that it doesn't contain a list of class.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class Translation { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class Translation { 
   public CultureInfo CultureInfo { get; set; } 
   public string TranslatedValue { get; set; } 
   public Translation(CultureInfo culture, string translatedValue) { 
@@ -58,14 +58,14 @@
 <p>Finally, the Translation class contain a culture information that is associated to a string that is translated in the language of the culture.</p>
 <p>Take note that you could also have a AreaTranslation that would have a Controller class list. This example is extensible for more level of url structure without problem. For the simplicity, this article concentrate its effort for Controller and Action only.</p>
 <p>The last class is here to define a new Route. In the RouteConfig.cs class, the route is defined, before the default route.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">routes.Add("LocalizedRoute", 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">routes.Add("LocalizedRoute", 
   new TranslatedRoute("{controller}/{action}/{id}", 
     new RouteValueDictionary(new { controller = "Home", action = "Index", id = "" }), 
       translationTables, 
         new MvcRouteHandler())); 
 </code></pre>
 <p>The third parameter takes the controller list that has all actions translated. A route is a class that inherit from System.Web.Routing.Route class. This class allow you to override two important methods. RouteData GetRouteData(HttpContextBase httpContext) and VirtualPathData GetVirtualPath(RequestContext requestContext, RouteValueDictionary values). The first one is used when a request is done to the server. This mean that is takes the localized words of the controller and action of the URL and translated them with your list of controller defined previously in the RouteConfig.cs. The second one is used by Html helper to create new link. This mean it takes the real controller and action name and translated them to create localized link for your application. This is awesome because not only your url are in the good language but also all your link everywhere in your application is automatically translated.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class TranslatedRoute : Route {
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class TranslatedRoute : Route {
 
   public List&lt;ControllerTranslation&gt; Controllers { get; private set; }
 

@@ -7,15 +7,15 @@
 <li>http://yourwebsite.com/page1#item2</li>
 </ul>
 <p>If someone go directly to the <em>item2</em> than you need to execute the code behind this hash tag. To have your code executed you need to use the window event called <code>onhashchange</code>.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">window.onhashchange = function() { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">window.onhashchange = function() { 
   //Get the hash value from the url and execute your code 
 }; 
 </code></pre>
 <p>The <code>onhashchange</code> become a hub if all time the url change which can be convenient to have a central place has a content controller. This method removes the need to have action handled in every click that has hash url to just have the click event of these links to change the url and let the <code>onhashchange</code> handles which action to execute.</p>
 <p>Here is an example:</p>
-<pre class="language-html"><code class="language-html code-highlight"> &lt;a id="report"&gt;Current Order Report&lt;/a&gt; 
+<pre class="language-html" tabindex="0"><code class="language-html code-highlight"> &lt;a id="report"&gt;Current Order Report&lt;/a&gt; 
  &lt;a id="edit"&gt;Edit Current Order&lt;/a&gt; 
-</code></pre><pre class="language-typescript"><code class="language-typescript code-highlight">$('#report').click(function(){ 
+</code></pre><pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">$('#report').click(function(){ 
   window.location.assign("#open-current-report"); 
 });
 

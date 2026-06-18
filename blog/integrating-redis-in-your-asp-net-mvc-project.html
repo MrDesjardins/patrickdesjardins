@@ -6,7 +6,7 @@
 <p>Next step, is to be able to set and get from the Asp.Net C# application. This is where it can be tricky. There is multiple clients available. Do not waste your time with the servicestack one. Even if a lot of documentation is available, that library became not free since version 4. The version 3 is still available to download via Nuget but it's more than 1 year old, the documentation does not fit quite well with the version 4 and it requires a lot of tricky hack to make everything work with all dependency packages. After wasted 3 hours I decided to use the stackexchange version one. The name is similar so do not get confuse.</p>
 <p><img src="/images/blog/StackExchangeRedis-400x65.png" alt="" /></p>
 <p>Once installed, you'll be able to access Redis with almost no effort for basic command like setting and getting. Here is a short example of possible use.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public class RedisCache : ICache { private readonly ConnectionMultiplexer redisConnections;
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public class RedisCache : ICache { private readonly ConnectionMultiplexer redisConnections;
 
 public RedisCache() { this.redisConnections = ConnectionMultiplexer.Connect("localhost"); } public void Set&lt;T&gt;(string key, T objectToCache) where T : class { var db = this.redisConnections.GetDatabase(); db.StringSet(key, JsonConvert.SerializeObject(objectToCache , Formatting.Indented , new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Serialize, PreserveReferencesHandling = PreserveReferencesHandling.Objects })); }
 

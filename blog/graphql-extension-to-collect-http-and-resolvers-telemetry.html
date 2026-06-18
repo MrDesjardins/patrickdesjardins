@@ -3,11 +3,11 @@
 <p><img src="/images/blog/GraphQLExtension-1.png" alt="" /></p>
 <p>A GraphQL Request with its HTTP requests</p>
 <p>The first requirement is to create the extension. It must inherit the GraphQLExtension class which is generic. The generic type needs to be your context type. Having access to the context is primordiale because it gives access to your user information. I assume that once authenticated the user is set in the context. Also, it gives you the possibility to inject statistic into the context throughout the exploration of the graph. In my case, I am using the context to collect information at my data service layer where all the HTTP requests are performed.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export class DevConsole&lt;TContext extends ApolloConfigurationContext&gt;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export class DevConsole&lt;TContext extends ApolloConfigurationContext&gt;
   implements GraphQLExtension&lt;TContext&gt; {}
 </code></pre>
 <p>There is two importants function that you can override. The first one is <code>requestDidStart</code> which is invoked when a GraphQL request is made. It means that when a context is created and it that case a "request" is the GraphQL request and not all HTTP request performed by GraphQL during that GraphQL's request. The function return a function. The return function is invoked when the request is completed. It is the place to output into the console all your statistic or to send the information to your telemetry system.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">public requestDidStart(o: {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">public requestDidStart(o: {
     request: Pick&lt;Request, "url" | "method" | "headers"&gt;;
     queryString?: string;
     parsedQuery?: DocumentNode;
@@ -26,7 +26,7 @@
 }
 </code></pre>
 <p>The second function is named "willResolveField" and is executed at every node of your graph. You can know the parent field and your field.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">willResolveField(source: any, args: { [argName: string]: any }, context: TContext, info: GraphQLResolveInfo) {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">willResolveField(source: any, args: { [argName: string]: any }, context: TContext, info: GraphQLResolveInfo) {
     // Info has the field name and parentType.name
     return (error: Error | null, result: any) =&gt; {
         // ...
@@ -34,13 +34,13 @@
 }
 </code></pre>
 <p>The next step is to plug the extension into Apollo GraphQL. The property "extensions" of ApolloServerConfig takes an array of extension.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const serverConfig: ApolloServerConfig = {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const serverConfig: ApolloServerConfig = {
   // ...,
   extensions: [() =&gt; new DevConsole()],
 };
 </code></pre>
 <p>I am using the RESTDataSource of Apollo as well to perform all HTTP request. The abstract class has the GraphQL's context. If you override the function willSendRequest, you can then have a global hook into all HTTP request. In that function, I am populating a property of my context that I named "stats" where I am storing each URL and parameters.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">public willSendRequest(request: RequestOptions) {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">public willSendRequest(request: RequestOptions) {
     const stats = this.context.stats;
     // push data in the stats object
 }

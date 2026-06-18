@@ -6,15 +6,15 @@
 <li>Search for getCurrTarget</li>
 <li>Add the following code under the code found in step 1:</li>
 </ol>
-<pre class="language-typescript"><code class="language-typescript code-highlight">this.setNextTarget = function(el) { currTour.steps[currStepNum+1].target = el; }; 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">this.setNextTarget = function(el) { currTour.steps[currStepNum+1].target = el; }; 
 </code></pre>
 <p>This allow later to call the <em>setNextTarget</em> function and specifying the Dom Element dynamically generated.</p>
 <p>So now we are all set. We can create the steps for a single page. I decided to create an interface called <code>IHelp</code>. When my View Model class is passed into the View, if this one implements IHelp, than I will display the button to start the wizard help and also generate the JavaScript. This way, I setup once the system and any further page just need to use that interface without having to care about HopScotch at all.</p>
 <p>Here is the interface code:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public interface IHelp { HelpViewModel GetHelp(); } 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public interface IHelp { HelpViewModel GetHelp(); } 
 </code></pre>
 <p>This interface is just method to get the help ViewModel. The HelpViewModel class is the one that contain codes about the HopScotch JavaScript. This is the class that the Html Helper later will use to generate the JSON object and the JavaScript call. It contains the tour id which is something unique. This is used in the case we use multiple page HopScotch wizard which I do not plan to use. This is why I just generate a random id. The list of steps are every help box. Each one contains the title, the description, which element to link to and also JavaScript action if required. Other than that, this view model can set some JavaScript action when we start the help wizard, stop this one or end it. The difference between close and end is that close is whenever the user stop using the help and end is only after every steps are done.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class HelpViewModel { private readonly string tourId;
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class HelpViewModel { private readonly string tourId;
 
 public HelpViewModel() { tourId = Guid.NewGuid().ToString(); this.Steps = new List&lt;HelpStep&gt;(); } public string TourId { get { return tourId; } }
 
@@ -24,15 +24,15 @@ public List&lt;HelpStep&gt; Steps { get; set; } public JRaw OnStart { get; set; 
 </code></pre>
 <p>In this code, few things worth to stop by. First, we are using the type <code>JRaw</code>. JRaw come from Json.Net library and allow to serialize data that won't be proceeded during serialization. This is required for JavaScript function to be generated as a function and not a string. The second interesting part is the <em>StepsJson</em> method. This one is there for steps. The help take care to build the HelpViewModel which is the data for the wizard itself while the steps are done automatically with the serialization.</p>
 <p>Steps are pretty straightforward. The class contains a one to one relationship with the JavaScript equivalence.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public class HelpStep { public HelpStep() { }
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public class HelpStep { public HelpStep() { }
 
 public HelpStep(string title, string content, JRaw target, string placement) { this.Title = title; this.Content = content; this.Target = target; this.Placement = placement; } public string Title { get; set; } public string Content { get; set; } public JRaw Target { get; set; } public JRaw OnPrev { get; set; } public JRaw OnNext { get; set; } public JRaw OnShow { get; set; } public string Placement { get; set; } } 
 </code></pre>
 <p>The Target property is the JQuery selector to the item. This could be also a straight JavaScript selector to the Dom element. The next part is to have something that use the View Model and to generate the HopScotch code. The partial view that hack has an helper is only used when the View Model implement the IHelp interface. Inside the layout.cshtml :</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> @if (Model is IHelp) { @Html.Partial("_helpScript", Model as IHelp) } 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> @if (Model is IHelp) { @Html.Partial("_helpScript", Model as IHelp) } 
 </code></pre>
 <p>This code call the partial view:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> @model ViewModel.Infrastructures.Definitions.IHelp 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> @model ViewModel.Infrastructures.Definitions.IHelp 
  &lt;script type="text/javascript"&gt; @{ 
   var infoTour = Model.GetHelp(); 
 } 
@@ -44,7 +44,7 @@ var tour = { id: "@infoTour.TourId", steps: @Html.Raw(infoTour.StepsJson), onClo
 
 </code></pre>
 <p>This create the help (called tour in Hopscotch). Then, it add to the help button the action to start the help wizard. The generated code look like the one that can be found in the official website. To create the first help wizard, you just need to have your view model having the implementation using the IHelp. Here is an example:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public HelpViewModel GetHelp() { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public HelpViewModel GetHelp() { 
   return new HelpViewModel() { 
   Steps = { 
     new HelpStep("Join Contest", "You can join one or many contests.", new JRaw("$('#contest-unsubscribed-panel-header')[0]"), "bottom"), 

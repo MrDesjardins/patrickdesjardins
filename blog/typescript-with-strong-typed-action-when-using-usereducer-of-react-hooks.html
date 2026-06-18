@@ -4,7 +4,7 @@
 <iframe src="https://codesandbox.io/embed/ll6n2p8omq" style="width:100%;height:500px;border:0;border-radius:4px;overflow:hidden" title="CodeSandbox example ll6n2p8omq" loading="lazy" allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking" sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"><a href="https://codesandbox.io/s/ll6n2p8omq">Open CodeSandbox example ll6n2p8omq</a></iframe>
 <h1>Configuring the Actions</h1>
 <p>The first step is to get some types. Once you have that code in your project, you will be good to go without touching it. I am posting the code and will explain what it does.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">/**
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">/**
  * Create an action that has a strongly typed string literal name with a strongly typed payload
  */
 export function createActionPayload&lt;TypeAction, TypePayload&gt;(
@@ -63,18 +63,18 @@ export type ActionsUnion&lt;A extends ActionCreatorsMapObject&gt; = ReturnType&l
 &gt;;
 </code></pre>
 <p>The first function uses a type named <em>ActionsWithPayload</em>. The function must be used when you create a new action that carry a payload. It will take two generics type. The former is the string literal of your type: a unique identifier for your action. The latter is the type of the payload. For example, you can set a field of an entity, like the name of a person, by using the following code.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">setName: createActionPayload&lt;typeof ACTION_SET_NAME, string&gt;(ACTION_SET_NAME);
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">setName: createActionPayload&lt;typeof ACTION_SET_NAME, string&gt;(ACTION_SET_NAME);
 </code></pre>
 <p>The <em>setName</em> is the strongly typed function of the action that you use to dispatch later on. It is linked to the specific string literal ACTION_SET_NAME (unique identifier) and the payload that can be passed to the action is only a string. You invoke the action by calling that function with the payload that you desire:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">dispatch(setName("MyNewNameHere"));
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">dispatch(setName("MyNewNameHere"));
 </code></pre>
 <p>The return of the function <em>createActionPayload</em> is an object with the payload and the type -- both strongly typed. It allows to have in your reducer a comparison on the type which is unique because it is not a string -- but a string literal type. To accomplish this feat, you must define one type per action. That is why, in your reducer file (or the file you want to store all your actions) you must defined a one line per action</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export const ACTION_INCREASE_COUNT = "ACTION_INCREASE_COUNT";
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export const ACTION_INCREASE_COUNT = "ACTION_INCREASE_COUNT";
 export const ACTION_SET_NAME = "ACTION_SET_NAME";
 </code></pre>
 <p>The <em>createActionPayload</em> has also a sibling function <em>createAction</em> that does not take any payload. It works in a similar fashion which is that the type of the action is a unique string literal, but that time without a payload.</p>
 <p>To recap what we need to far: first, we need to create a constant that is a string literal that will be used as a unique identifier of the action. Second, we need to create a function that has a payload strongly typed by the action's type. To tidy up everything, I usually group all common action in a single object.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export const AppActions = {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export const AppActions = {
   increaseCount: createAction&lt;typeof ACTION_INCREASE_COUNT&gt;(
     ACTION_INCREASE_COUNT
   ),
@@ -82,12 +82,12 @@ export const ACTION_SET_NAME = "ACTION_SET_NAME";
 };
 </code></pre>
 <p>It changes slightly how to invoke the action which is clearer. It "namespaces" the action.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">dispatch(setName("MyNewNameHere")); // Before
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">dispatch(setName("MyNewNameHere")); // Before
 dispatch(AppActions.setName("MyNewNameHere")); // After
 </code></pre>
 <h1>Reducer</h1>
 <p>The reducer is exactly like with Redux, it is a function that takes a state and an action. However, our actions will be constrained to the group of action we allow for the reducer.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export function appReducer(
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export function appReducer(
   state: AppReducerState,
   action: AcceptedActions
 ): AppReducerState {
@@ -95,14 +95,14 @@ dispatch(AppActions.setName("MyNewNameHere")); // After
 }
 </code></pre>
 <p>Because we have a strongly typed function per action, we can now define a collection of allowed actions. It helps when you have several reducers in an application to limit the scope of what is expected. If you are tidying the action in an object as proposed, you can do:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export type AcceptedActions = ActionsUnion&lt;typeof AppActions&gt;;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export type AcceptedActions = ActionsUnion&lt;typeof AppActions&gt;;
 </code></pre>
 <p>The <em>AcceptedActions</em> type is from the type you add in the <em>ActionsUnion</em>. It means you can add several group of action if you desire with the following syntax.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">ActionsUnion&lt;typeof ActionsObject1 &amp; typeof ActionsObject2&gt;;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">ActionsUnion&lt;typeof ActionsObject1 &amp; typeof ActionsObject2&gt;;
 
 </code></pre>
 <p>Here is the complete reducer, like any reducer that you are used to code. However, the switch case only accept cases with the name that are from the <em>AcceptedState</em> which clarify what is possible or not to reduce.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export function appReducer(
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export function appReducer(
   state: AppReducerState,
   action: AcceptedActions
 ): AppReducerState {
@@ -125,14 +125,14 @@ dispatch(AppActions.setName("MyNewNameHere")); // After
 <p>The last piece of the puzzle is how to consume the data from the reducer's state and how to mutate the value. The <em>useReducer</em> function is a React Hooks that take the reducer function and the initial state as parameter. It returns the state and the dispatcher funciton.</p>
 <p>const [state, dispatch] = useReducer(appReducer, appState);</p>
 <p>To read the value of the state, it is a matter to use the variable state. Because the state is strongly typed, you will get your IDE support as well as static validation from TypeScript. Same for the invocation.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">&lt;button
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">&lt;button
   onClick={() =&gt; {
     dispatch(AppActions.increaseCount());
   }}
 &gt;{`Increase State Count ${state.clickCount}`}&lt;/button&gt;
 </code></pre>
 <p>The dispatch requires a function. We reuse the tidy object to select the action. The object is strongly typed, hence when typing you get a nice autocompletion of what action can be dispatched. You avoid any potential mistake of using a variable that is not supported by the reducer. In that example, there is no payload, but the following example shows a strongly typed action with a strongly typed argument.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">&lt;button
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">&lt;button
   onClick={() =&gt; {
     dispatch(AppActions.setName("test"));
   }}

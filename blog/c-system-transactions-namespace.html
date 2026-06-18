@@ -2,7 +2,7 @@
 <p>This namespace work with SQL Server 2005 and later and offers support for <strong>distributed transactions</strong>. At first, this transactions namespace will handle the transaction has a <strong>local lightweight transaction</strong> but if detect that multiple connection is open that the transaction switch to <strong>distributed transactions</strong>. This behavior is also known as "implicit transaction" because the developer does not explicit how to handle it.</p>
 <p><img src="/images/blog/dtc.png" alt="" /></p>
 <p>For example, here is the example we previously did with the <code>SqlDbConnection</code> with the use of the <code>System.Transactions</code> instead of the one provided by the connection.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public int SaveCustomers(IEnumerable&lt;Customer&gt; customers) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public int SaveCustomers(IEnumerable&lt;Customer&gt; customers) { 
   ConnectionStringSettings connectionStringSettings = ConfigurationManager.ConnectionStrings["ApplicationServices"];
   int rowsAffected=0; 
   using (var connection = new SqlConnection(connectionStringSettings.ConnectionString)) { 

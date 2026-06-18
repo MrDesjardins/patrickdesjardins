@@ -1,21 +1,21 @@
 <!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Patrick Desjardins Blog - HttpCookie and web.config domain</title><meta name="description" content="HttpCookie and web.config domain"><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-CZbWyyk4.css"><link rel="stylesheet" href="/assets/static-modules.css"></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><header><h1 class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</h1><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main class="app_blog__components_BlogBody__main"><h2 class="app_blog__components_BlogBody__heading">HttpCookie and web.config domain</h2><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: 2012-07-12</p><p>You can set in your Asp.Net web.config file a domain for all your cookie. This is done by setting the httpcookies from the system.web.</p>
-<pre class="language-xml"><code class="language-xml code-highlight">&lt;system.web&gt; 
+<pre class="language-xml" tabindex="0"><code class="language-xml code-highlight">&lt;system.web&gt; 
   &lt;httpCookies domain=".domain.com"/&gt; 
 &lt;/system.web&gt; 
 </code></pre>
 <p>The main goal is to have all your cookies attached to the domain and not set to the subdomain. Also, notice that I have wrote .domain.com and not domain.com. This is important, otherwise, it won't work with subdomain.</p>
 <p>So what does it do behind the scene? It simply set the domain property of the cookie to the domain name. In fact you could have code it manually:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> var cookie = new HttpCookie(); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> var cookie = new HttpCookie(); 
  cookie.Domain = ".domain.com"; 
 </code></pre>
 <p>Instead you set it once in the web.config. This is the constructor of <code>HttpCookie</code>. As you can see, it calls <code>SetDefaultsFromConfig()</code>.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public HttpCookie(String name, String value) {
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public HttpCookie(String name, String value) {
   _name = name;_stringValue = value; 
   SetDefaultsFromConfig();_changed = true; 
 } 
 </code></pre>
 <p>This method goes into the web.config to get the domain.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">private void SetDefaultsFromConfig() { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">private void SetDefaultsFromConfig() { 
   HttpCookiesSection config = RuntimeConfig.GetConfig().HttpCookies;
   _secure = config.RequireSSL;_httpOnly = config.HttpOnlyCookies;
 
@@ -25,7 +25,7 @@
 </code></pre>
 <p>The <code>variable_domain</code> is changed by the configuration file value.</p>
 <p>This variable is also setted by the domain property.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public String Domain { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public String Domain { 
    get { return_domain;} 
    set {
     _domain = value;

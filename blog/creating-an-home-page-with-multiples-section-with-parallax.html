@@ -7,7 +7,7 @@
 <li><a href="http://markdalgleish.com/projects/stellar.js/">Stellar</a></li>
 </ul>
 <p><code>JQuery</code> is there because I am already using the library and is useful in some part of this process. Mostly because we will associate <code>Swiper</code> and <code>Stellar</code> with JQuery to Html elements. Swiper is used as a pillar in this one page scenario. The reason is that it is the JavaScript library that transform the default web browser into a Power Point presentation. The Stellar library is used to improve the experience by adding the parallax effect when scrolling from top to bottom and the other way around. Let's start with the JavaScript configuration and then the Html. Keep in mind that some decisions are based on specific choices that are custom to the website I am creating -- mostly optional in a default case.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var mySwiper = new Swiper('.swiper-container', { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var mySwiper = new Swiper('.swiper-container', { 
   pagination: '.pagination', 
   paginationClickable: true, 
   mode: 'vertical', 
@@ -24,7 +24,7 @@
 </code></pre>
 <p>The creation of the Swiper object takes an element to be used for the Power Point container. In that case, I specify a class that will be used. It could have been an unique Id too. The second parameter is for settings. The first one is optional and allow to have an automatic pagination which is represented by little dot. One dot per Html's slide, the active one will be with a different dot color. The next image show you what it creates for you. Indeed, you can configure the visual representation of the pagination the way you want with CSS.</p>
 <p><img src="/images/blog/Pagination2.png" alt="" /></p>
-<pre class="language-css"><code class="language-css code-highlight"> /*Little dot for the navigation. This must always be there above all slides */ 
+<pre class="language-css" tabindex="0"><code class="language-css code-highlight"> /*Little dot for the navigation. This must always be there above all slides */ 
  .pagination { 
   position: absolute; 
   z-index: 20; 
@@ -54,13 +54,13 @@
 <p>The css code here is the one for the switches. I decided to have mine fix at the top of the screen with vertical alignment since I am scrolling vertically with Swiper. The direction is set inside the Json's setting with also the speed between slide. I strongly suggest to set something between 500ms and 1500ms. Smaller does not look good with the parallax effect and too slow make it non usable for your user. The event about slide starting to change is for an optional behavior. This project has in this page a sticky menu that is using BootStrap and I wanted to make change the current tab. The event remove all class that specify the active slide and set the current one. The CSS takes care of highlighting the correct one.</p>
 <p><img src="/images/blog/StickyMenu-400x34.png" alt="" /></p>
 <p>Next inside of the Swiper JavaScript code, in the document ready, we can set the Stellar code.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var property = 'transform'; 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var property = 'transform'; 
 $('.swiper-wrapper').stellar({ scrollProperty: property, positionProperty: property, horizontalScrolling: false }); 
 </code></pre>
 <p>The <code>Stellar</code> library code is pretty short and works with the Html with a specific data attribute. You must select the parent container that contains all slides. The JavaScript will loops through all html element and will apply some parallax effect on all elements with the <code>data-stellar-ratio</code>.</p>
 <p><img src="/images/blog/SwiperHtmlSections-400x125.png" alt="" /></p>
 <p>Every sections Html code looks as follow:</p>
-<pre class="language-html"><code class="language-html code-highlight">&lt;div id="about" class="swiper-slide blue-slide swiper-slide-visible swiper-slide-active"&gt; 
+<pre class="language-html" tabindex="0"><code class="language-html code-highlight">&lt;div id="about" class="swiper-slide blue-slide swiper-slide-visible swiper-slide-active"&gt; 
   &lt;article class="container all-information-from-slide"&gt; 
     &lt;div class="row"&gt; 
       &lt;header class="col-md-6 col-md-push-6"&gt; 

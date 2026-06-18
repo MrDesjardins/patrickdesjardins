@@ -4,7 +4,7 @@
 <p>The second step is to go at with your command line at the location of the package.json of your library. NPM has a command called "link". The execution of the command will specify if the creation is a success or not. If it is a success, you can use your command prompt to move to the project that consumes the library. Again, at the level of the package.json the command "npm link" must be executed. The difference is the argument that needs to specify which library to link. The name of the library is the name specified in the package.json of the library that we "npm link" at the second step. This command succeeds with an output that shows that node_modules points to the local directory.</p>
 <p>Finally, once you are done and want to use the node_module library, you can unlink. The command to unlink is "npm unlink " where the parameter is the parameter of the library linked. The library can also be unlinked by going back to the library and executed "npm unlink".</p>
 <p>As a recap:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">// 1) At the library level 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">// 1) At the library level 
 npm link 
 // 2) At the project level (consumer) 
 npm link my-library-name 

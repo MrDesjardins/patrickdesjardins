@@ -3,7 +3,7 @@
 <p>Here is what you can see if your decompile Asp.Net Identity assembly. You will see a resource file with defined strings.</p>
 <p><img src="/images/blog/IdentityResourceFile.png" alt="" /></p>
 <p>The problem is that you cannot just define your own resource file and setup the string you desire. You must use one of Microsoft's package for your language. Here is the one for French.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight"> Install-Package Microsoft.AspNet.Identity.Core.fr 
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight"> Install-Package Microsoft.AspNet.Identity.Core.fr 
 </code></pre>
 <p><img src="/images/blog/AspNetIdentityCore-400x304.png" alt="" /></p>
 <p>The problem with that solution is that you must be lucky to have your language available and you must like the string they chose for you. Some other options available is to create your own <code>UserValidator</code> and <code>PasswordValidator</code> and by inheriting the Identity ones can still have the benefit of <code>Identity</code>. Overall, there is some workaround but still is time consuming for nothing. Better solution like just having to drop a resource file of your own would have been way easier and easily custom for solution. Nevertheless, it starts to get in the right direction after more than a decade trying to create a better Identity framework.</p>

@@ -2,7 +2,7 @@
 <p><img src="/images/blog/ApplicationInsightsAnalytics-1024x322.png" alt="" /></p>
 <p>The Analytics service is available directly on Microsoft Azure portal. The Analytics is on its on page -- you won't be on Azure portal anymore. The website is very well done. You will see an easy access to the documentation, on the left side of the page is some commands you can use and in the main part you have a huge textbox where you will write you queries. The Analytics service is a query tool to get information from Application Insights. You can create queries, save them, generate tables of data or graphics all in this webpage.</p>
 <p>For example, I have some Azure WebJobs that collect the duration of the jobs. The output desired is to see the time that a job take and if the performance are stable across every execution but also in every day. This is possible with Analytics. The syntax is not really easy to catch on and I won't give all information in this article.</p>
-<pre class="language-sql"><code class="language-sql code-highlight"> customEvents 
+<pre class="language-sql" tabindex="0"><code class="language-sql code-highlight"> customEvents 
   | where name == "JobPerformance" 
   | where timestamp &gt;= ago(14d) 
   | extend d=parsejson(customDimensions) 

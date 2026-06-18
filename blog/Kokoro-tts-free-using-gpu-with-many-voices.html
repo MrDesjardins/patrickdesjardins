@@ -2,7 +2,7 @@
 <p>The TTS relies on a model with about 82 million parameters, which is relatively lightweight and can run locally. It can also accept large amounts of text and provides over a dozen English voices.</p>
 <p>Kokoro has a <a href="https://github.com/nazdridoy/kokoro-tts">CLI</a> but also a <a href="https://pypi.org/project/kokoro/">Python package</a> that allows several ways to generate audio files. The model is automatically downloaded and installed the first time the Kokoro pipeline is instantiated.</p>
 <p>Here is roughly what is needed:</p>
-<pre class="language-python"><code class="language-python code-highlight">try:
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">try:
     pipeline = KPipeline(lang_code="a")
     clips = []
     phonemes = []

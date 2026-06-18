@@ -10,12 +10,12 @@
 <p>Instead of using a <code>package.json</code> you have a <code>cargo.toml</code>. Very similar, with one difference: you do not have all the scripts that you use. Only the metadata of your application (name, version, author, etc.) and dependencies on other packages.</p>
 <p>I'm using the <code>readme.md</code> to document the commands that I often use like generating a build, test, coverage, etc.</p>
 <p>Outside the <code>cargo.toml</code>, a small file name <code>rust-toolchain.tom</code> specifies which version of Rust you are using. All my projects have:</p>
-<pre class="language-yaml"><code class="language-yaml code-highlight">[toolchain]
+<pre class="language-yaml" tabindex="0"><code class="language-yaml code-highlight">[toolchain]
 channel = "stable"
 </code></pre>
 <p>I also have a bash file in all my projects for code coverage. It performs the test with some environment variables and cleans up the generated files from <code>grcov</code>. The bash file:
 ­</p>
-<pre class="language-bash"><code class="language-bash code-highlight">CARGO_INCREMENTAL=0 RUSTFLAGS='-Cinstrument-coverage' LLVM_PROFILE_FILE='coverage-%p-%m.profraw' cargo test
+<pre class="language-bash" tabindex="0"><code class="language-bash code-highlight">CARGO_INCREMENTAL=0 RUSTFLAGS='-Cinstrument-coverage' LLVM_PROFILE_FILE='coverage-%p-%m.profraw' cargo test
 grcov . -s . --binary-path ./target/debug/ -t html --branch --ignore-not-existing --excl-line "///" -o ./target/debug/coverage/
 rm coverage*.profraw
 rm default*.profraw
@@ -25,14 +25,14 @@ rm default*.profraw
 <p>One exciting aspect of Rust is that you have a terminal entry point and a library entry point in your project. Hence, when you deploy your application, it is available from a terminal and any other Rust project. It is not required, but I found it very useful. I always have my <code>main.rs</code> referencing my <code>lib.rs</code>.</p>
 <p>It means that anyone can download your terminal application by installing  your code (which will download the code, build and install it into your $path);</p>
 <p>For example:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">cargo install ripgrep
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">cargo install ripgrep
 rg --help
 </code></pre>
 <h1>Mod, Pub Mod, and Use</h1>
 <p>A confusing aspect is the use of <code>mod</code>. There is a new and deprecated way to manage files and modules with Rust. In short, you should no longer rely on a file named <code>mod.rs</code> anymore.</p>
 <h2>Mod</h2>
 <p>Instead, you create a file with the <strong>exact</strong> same name as the folder with all your Rust (.rs) files.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">src
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">src
 ├── lib.rs
 ├── main.rs
 ├── utils
@@ -47,13 +47,13 @@ A simple way to understand <code>mod</code> is to see the instruction has a way 
 <h2>Pub Mod</h2>
 <p>In that example, the <code>utils.rs</code> defines the module (<code>mod utils</code>), which module is available for the lib.rs and main.rs by making it public (<code>pub mod</code>) outside the folder with <code>pub</code>. Coming from TypeScript/JavaScript is similar to having an <code>index.ts</code> that exports a collection of functions, classes, and interfaces.</p>
 <p>For example, in the utils.rs:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">pub mod function;
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">pub mod function;
 pub mod options;
 pub mod binary;
 pub mod encryption;
 </code></pre>
 <p>Inside your <code>lib.rs</code> you <strong>must</strong> call <code>mod utils</code> and then <strong>optionally</strong> use <code>use</code> to create shortcuts.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">// Access
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">// Access
 mod utils;
 
 // Imports
@@ -63,14 +63,14 @@ use crate::utils::options::SteganographyOption;
 <p>A way to visualize the <code>pub mod</code> is to see if the instruction has it copies all the content of the module inside the invoked. In that case, we would copy all the public traits, functions, etc., of the module <code>function</code>, <code>options</code>, <code>binary</code> and <code>encryption</code> into the <code>util</code> mod. Instead, we could erase these four files and have all the code directly into the <code>utils.rs</code> but that would not be an organized code.</p>
 <h2>Use</h2>
 <p>So, <code>use</code> is always optional. In that case, because we are defining two functions and one trait, we can now directly call:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">add_message_to_image(.....)
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">add_message_to_image(.....)
 // or 
 get_message_from_image(....)
 // or
 SteganographyOption
 </code></pre>
 <p>Without the <code>use</code> we would need to :</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">crate::utils::function::add_message_to_image(.....)
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">crate::utils::function::add_message_to_image(.....)
 // or 
 crate::utils::function::get_message_from_image(....)
 // or
@@ -101,7 +101,7 @@ crate::utils::options::SteganographyOption
 <p>Finally, Rust works well with VsCode but is not as smooth as TypeScript. For example, you need to save the file from getting feedback (error or warning). Otherwise, VsCode does not "compute" that something has changed. Otherwise, auto-complete and fetching comment for a rich experience is as expected.</p>
 <h1>Error Message and Warning</h1>
 <p>First-class level for messages. It clearly identifies the problem and suggests fixes (most of the time). Here is an example of a warning:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">warning: you seem to be trying to use `match` for destructuring a single pattern. Consider using `if let`
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">warning: you seem to be trying to use `match` for destructuring a single pattern. Consider using `if let`
   --&gt; src/main.rs:25:37
    |
 25 |           Ok(steganography_option) =&gt; match steganography(steganography_option) {

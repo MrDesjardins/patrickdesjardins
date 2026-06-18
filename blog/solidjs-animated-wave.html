@@ -10,7 +10,7 @@
 <li>Flexbox</li>
 </ol>
 <p>The position absolute is used to move the whole container above everything in the parent container. The container size (width and height) relies on the flexbox to expand the parent container.</p>
-<pre class="language-css"><code class="language-css code-highlight">.WaterScreen {
+<pre class="language-css" tabindex="0"><code class="language-css code-highlight">.WaterScreen {
   flex: 1;
   display: flex;
   justify-content: center;
@@ -23,7 +23,7 @@
 }
 </code></pre>
 <p>We can use our new component by dropping the component inside the parent container.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">&lt;ParentContainerHere&gt;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">&lt;ParentContainerHere&gt;
   &lt;div&gt;{/*... Sibling that will be covered */}&lt;/div&gt;
   {showWater() ? &lt;WaterScreen /&gt; : null} {/* Could be anywhere inside the &lt;ParentContainerHere&gt; */}
   &lt;div&gt;{/*... Sibling that will be covered */}&lt;/div&gt;
@@ -32,25 +32,25 @@
 <p>A keen observer might notice that we also require to have a <code>z-order</code> higher than other sibling components. I am using CSS variables in my application to have all the <code>z-order</code> at a unique place. I am configuring the <code>--transition-zindex</code> to be higher than the normal content <code>z-index</code>.</p>
 <h1>Component</h1>
 <p>The component is not as complex as one might think. It returns a container and a canvas.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">return (
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">return (
   &lt;div class={styles.WaterScreen}&gt;
     &lt;canvas ref={canvasRef} class={styles.WaterScreen} width={canvasWidth} height={canvasHeight} /&gt;
   &lt;/div&gt;
 );
 </code></pre>
 <p>The container has the parent's size and will always be above everything. This is why it is important in the usage of this component to not render it until ready. We can see that we are returning <code>null</code> in the code above.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">{showWater() ? &lt;WaterScreen /&gt; : null} 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">{showWater() ? &lt;WaterScreen /&gt; : null} 
 </code></pre>
 <p>We want the component to be the whole page, and we want to cover everything only when the wave animation starts. It has two purposes. The first one is that it allows having an accurate container already in place. The second one is that it blocks the user from clicking anything underneath.</p>
 <p>Most of the code is inside the canvas. When we mount the container, we start an animation that will render a single shape.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">onMount(() =&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">onMount(() =&gt; {
   frame = requestAnimationFrame(draw);
   onCleanup(() =&gt; cancelAnimationFrame(frame));
 });
 </code></pre>
 <p>Here lies the complexity. We want to render a sine shape and then go to the bottom-right corner, bottom-left corner and close the shape. We do that 30 times per second until we reach the top.</p>
 <p>The <code>draw</code> function is within the SolidJS component and repeats the same drawing pattern with a slight variation of the sine function to make the sine wave move.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const draw = (time: number) =&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const draw = (time: number) =&gt; {
   const ctx = canvasRef?.getContext("2d") ?? null;
 
   if (ctx &amp;&amp; isWaveAnimationRunning()) {
@@ -95,16 +95,16 @@
 };
 </code></pre>
 <p>Let's go from top to bottom.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">if (time &gt; lastTime + 1000 / CONSTANTS.FPS) {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">if (time &gt; lastTime + 1000 / CONSTANTS.FPS) {
 </code></pre>
 <p>It allows skipping some rendering. What it goes is check if a minimum of time has elapsed before redrawing the water. Thus, it can skip a couple of times, giving the browser some room to breathe. The constant is set at 30.</p>
 <p>The next step, executed 30 times per second, is to clear the canvas and start drawing the shape that we will fill. We move to the top-left and then to the top-right position. The <code>lastY</code> is initialized to zero, starting from the bottom.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">ctx.clearRect(0, 0, canvasWidth, canvasHeight); // Might not need to clear all
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">ctx.clearRect(0, 0, canvasWidth, canvasHeight); // Might not need to clear all
 ctx.beginPath();
 ctx.moveTo(0 - waveXOffset, lastY);
 </code></pre>
 <p>The <code>waveXOffset</code> moves left and right the wave. It creates the horizontal oscillation movement. If we hardcode the <code>lastY</code> to a specific value, we would see the wave render with a movement that goes left and right without moving up.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">for (x = waveXOffset; x &lt;= canvasWidth + waveXOffset; x += 10) {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">for (x = waveXOffset; x &lt;= canvasWidth + waveXOffset; x += 10) {
   y = waveYOffset + waveHeight * Math.sin((x / (canvasWidth / WAVE_NUMBER)) * 2 * Math.PI);
   waveHeight += waveGrowing ? WAVE_GROWING_PIXEL : -WAVE_GROWING_PIXEL;
   if (waveHeight &gt; WAVE_HEIGHT) {
@@ -121,11 +121,11 @@ ctx.moveTo(0 - waveXOffset, lastY);
 <p>The next step is to render the many curves at the top of the water that creates the wave effect. Actually, What we need to do is to generate a sine function and apply it to the whole width. The loop goes from left to right of the canvas skipping 10 pixels. This is arbitrary and could be less or more depending on how many lines are desired to generate the wave.</p>
 <p>Then, to have a nicer effect, we want the sine function to have different heights. We want to start flat and go higher and then go lower. It creates a growing and shrinking effect. That part is handled with the <code>waveHeight</code> and <code>waveGrowing</code>. When the boolean <code>waveGrowing</code> is true, we increase slightly (0.02) pixel. Otherwise, we reduce the height of the same amount.</p>
 <p>The complex part is the first line that calculates the <code>y</code> which use the <code>waveYOffset</code>, the top of the wave starting at zero and increasing to reach the top position of the parent container. Then, it adds the wave height, which is continually pulsing, and finally, we move the result with a <code>Math.sin</code> function that is divided in two parts:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">Math.sin((x / (canvasWidth / WAVE_NUMBER)) * 2 * Math.PI);
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">Math.sin((x / (canvasWidth / WAVE_NUMBER)) * 2 * Math.PI);
 </code></pre>
 <p>The first part is what is on the left side, inside the parentheses. That part determines how many cycles of the sine we want. It means the amount of wave that goes up/down. We need a number of pixels from the whole width and then find the x coordinate for the sine function. That is performed using <code>x/canvasWidth/WAVE_NUMBER</code>. In my case, the constant is 4. I have a canvas width of 1024, so the first pixel will give a <code>1/1024/4</code>. However, we still need to multiply by the second part. The second part is the <code>2*Math.PI</code>. The reason is that a whole circle two times PI. So, what we do is we take a fraction of this complete circle. The fraction is what we computed on the left part, which will end up to be to be <code>1</code> because the <code>x</code> moves in the loop up to the <code>canvasWidth</code> which will result to: <code>1014/1024/4</code>... not exactly 1, but 0.25 is close enough for us.</p>
 <p>At each computation, we draw a line with <code>lineTo</code> and keep track of the last x and y coordinate, which will tell us where to start on the next loop. The <code>y</code> increases, and the <code>x</code> goes left and right.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">ctx.lineTo(x - waveXOffset, y);
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">ctx.lineTo(x - waveXOffset, y);
 lastY = y;
 lastX = x;
 </code></pre>

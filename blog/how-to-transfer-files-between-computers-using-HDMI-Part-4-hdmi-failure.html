@@ -13,7 +13,7 @@ The first change requires adding a new option to the CLI, which would let us swi
 <p>The first change resulted, as expected in a bigger file, and the visual was more apparent: the end-of-file character is represented like any other character with 8 pixels that keep filling the frame until the end for the small test. Thus, it visually looks like lines.</p>
 <p><img src="/images/blog/hdmi-file-transfer-video-frame-bw-lines.png" alt="" /></p>
 <p>A new error message appears when extracting the text. Instead of the previous <code>mcbpc damaged</code>, this time it is about a market bit missing.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">Running `target/debug/hdmifiletransporter -m extract -i outputs/out_from_hdmi_bw_1.avi -o outputs/text_bw_1.txt --fps 30 --height 1080 --width 1920 --size 1 -a bw`
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">Running `target/debug/hdmifiletransporter -m extract -i outputs/out_from_hdmi_bw_1.avi -o outputs/text_bw_1.txt --fps 30 --height 1080 --width 1920 --size 1 -a bw`
 [mpeg4 @ 0x55aa4bc17100] 1. marker bit missing in 3. esc
 [mpeg4 @ 0x55aa4bc17100] Error at MB: 8038
 </code></pre>
@@ -26,15 +26,15 @@ The first change requires adding a new option to the CLI, which would let us swi
 <h2>Hypothesis of Failure</h2>
 <p>This time, the generated file couldn't be opened at all.</p>
 <p>A step back to ffmpeg:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">ffmpeg -r 30 -f dshow -s 1920x1080 -vcodec mjpeg -i video="USB Video" -r 30 out.mp4
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">ffmpeg -r 30 -f dshow -s 1920x1080 -vcodec mjpeg -i video="USB Video" -r 30 out.mp4
 </code></pre>
 <p>We might have an issue with the <code>vcodec</code> used. The choice was because the capture card stream data using <code>mjpeg</code> (<code>ffmpeg -f dshow -list_options true -i video= "USB Video"</code>). Maybe, we should capture in raw and then manipulate the data received and figure out which option is the best. I found out in the <a href="http://ffmpeg.org/ffmpeg.html#Stream-copy">ffmpeg documentation an option called stream copy</a>.</p>
 <p>Using <code>-codec:v copy</code> we tell <code>ffmpeg</code> to copy all the video frame</p>
-<pre class="language-sh"><code class="language-sh code-highlight">ffmpeg -f vfwcap -r 30 -i video= "USB Video" -codec:v copy rawvideo.nut
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">ffmpeg -f vfwcap -r 30 -i video= "USB Video" -codec:v copy rawvideo.nut
 </code></pre>
 <p>Then, we need to use the raw format and convert it into a video format that the video player can read The input (<code>-i') is the raw video from the previous step. The </code>-codec:v<code>is the desired output video format. The</code>-crf 0<code>means to be lossless. The</code>-preset` indicates how the compression ratio occurs. Slower it goes, the less erroneous the compression.</p>
 <p>You can get more information in the <a href="https://trac.ffmpeg.org/wiki/Encode/H.264">H.264 ffmpeg documentation</a>.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">ffmpeg -i rawvideo.nut -codec:v libx264 -crf 0 -preset medium -pix_fmt yuv420p -movflags +faststart output.mkv
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">ffmpeg -i rawvideo.nut -codec:v libx264 -crf 0 -preset medium -pix_fmt yuv420p -movflags +faststart output.mkv
 </code></pre>
 <p>At this point, I was getting several issues. The first one was the size of the video recorded was humongous with several megs for few seconds. Then, the process of creating the data was very slow. For example, the second command to get the <code>mkv</code> took over 20 minutes for less than 10 seconds.</p>
 <h1>Third Change: Step Back</h1>
@@ -43,20 +43,20 @@ The first change requires adding a new option to the CLI, which would let us swi
 <p>The hypothesis was that the drawing into the video using the black and white algorithm was quickly true: the data was not appropriately written with 1 bit off every byte, making the extraction impossible.</p>
 <h1>Fourth Change: Duplicate Red Frame</h1>
 <p>The code was modified, and unit tests added. Finally, the command to read the pixel came back to the first one:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">ffmpeg -r 30 -f dshow -s 1920x1080 -vcodec mjpeg -i video="USB Video" -r 30 out_bw_red_fix_2.mp4
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">ffmpeg -r 30 -f dshow -s 1920x1080 -vcodec mjpeg -i video="USB Video" -r 30 out_bw_red_fix_2.mp4
 </code></pre>
 <p>The result was extracted using:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">cargo run -- -m extract -i outputs/out_bw_red_fix_2.mp4 -o outputs/text1.txt --fps 30 --height 1080 --width 1920 --size 1 -a bw
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">cargo run -- -m extract -i outputs/out_bw_red_fix_2.mp4 -o outputs/text1.txt --fps 30 --height 1080 --width 1920 --size 1 -a bw
 </code></pre>
 <p>However, the file was empty. After some debugging, I discovered that the logic of finding the red frame that set the start and the end had a flaw: If the ffmpeg recorsd twice the same red frame next to each other (duplicate reading), it would have zero frames of data. This discovery also found that good frame were duplicated. While the generated video had no duplicated frame, the transmission and recording caused the frame to duplicate here and there. The fix was to ensure we ignore the data of a frame if the content is exactly the same as the previous one.</p>
 <p>To achieve this validation, a quick CRC32 can be applied to the frame's byte and ensure that no consecutive checksum is the same.</p>
 <h1>Working Solution or Not?</h1>
 <p>This time we go with a size of 10 with the duplication fix applied.</p>
 <p>On the source computer:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">cargo run -- -m inject -i testAssets/text1.txt -o outputs/out_bw_no_dup.mp4 -o --fps 30 --height 1080 --width 1920 --size 10 -a bw
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">cargo run -- -m inject -i testAssets/text1.txt -o outputs/out_bw_no_dup.mp4 -o --fps 30 --height 1080 --width 1920 --size 10 -a bw
 </code></pre>
 <p>The video plays fullscreen and on the target computer:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">cd outputs
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">cd outputs
 ffmpeg -r 30 -f dshow -s 1920x1080 -vcodec mjpeg -i video="USB Video" -r 30 out_bw_no_dup.mp4
 cargo run -- -m extract -i outputs/out_bw_no_dup.mp4 -o outputs/text1.txt --fps 30 --height 1080 --width 1920 --size 10 -a bw
 </code></pre>

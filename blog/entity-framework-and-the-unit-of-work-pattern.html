@@ -7,7 +7,7 @@
 <p>This article explains how to create a layered approach that has a controller, a service layer, a data access layer accessor with repositories and unit of work with a simple set of entities. I already have wrote an article for <a href="./enterprise-asp-net-mvc-part-4-repository">repository and entity framework</a>. This was an other simpler way to design the repository. Previously, a facade was passing the DbContext to all repository, which was created the same behavior as the unit of work pattern. However, the unit of work is more elaborate and allows to unit test easily and allow you to reuse repository in several DbContext if required. Having the possibility to create several DbContext and to share it by domain (for domain driven design) is important for big software. It increase the performance of the database context by having a limited amount of entity to handle. So, the previous way to handle repository is perfect if you have under 50 entities. This is a rule of thumb and it depends of many factors. If you have a lot of entities and that you can draw specific domains, the approach of unit of work in this post is preferable. As you will see, a lot of more classes will be needed and this is not a small detail to consider before going into this way.</p>
 <h1>Creating the entities, the database context and the tables</h1>
 <p>First of all, let's create entities and a simple context that we will call directly from the controller. This should never been done in enterprise but it will allow us to migrate the code from a simple basic code to a more heavy layered application.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class Animal { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class Animal { 
   public int Id { get; set; } 
   public string Name { get; set; }
 
@@ -26,10 +26,10 @@ public class Dog : Animal {
 </code></pre>
 <p>We have two classes, one is for Cat and one is for Dog. Both inherit from Animal class. These are very simple classes because we want to focus on the unit of work and not on complex classes. The next step is to create the database context.</p>
 <p>The first step is to get Entity Framework. This can be done by using Nuget with the interface ("Manage Nuget Package") or with a command line :</p>
-<pre class="language-sh"><code class="language-sh code-highlight">PM&gt; install-package entityframework 
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">PM&gt; install-package entityframework 
 </code></pre>
 <p>Then, we need to inherit from DbContext and setup web.config to have a connection string for the database. The web.config looks like this:</p>
-<pre class="language-xml"><code class="language-xml code-highlight"> &lt;configuration&gt;
+<pre class="language-xml" tabindex="0"><code class="language-xml code-highlight"> &lt;configuration&gt;
   &lt;configSections&gt; 
     &lt;section name="entityFramework" type="System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false" /&gt; 
   &lt;/configSections&gt; 
@@ -39,7 +39,7 @@ public class Dog : Animal {
 </code></pre>
 <p>The first is that we have a new configSection for Entity Framework. This has been added automatically. The line that is required to be added manually is the connection string.</p>
 <p>The last step is to configure the entity. Since we are simplify the whole application for the purpose of the unit of work, the model class will be directly the entity. Some may want in enterprise application have an additional layer to not share entity classes with the model.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class AllDomainContext:DbContext { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class AllDomainContext:DbContext { 
   public AllDomainContext():base("EntityConnectionString") { }
 
   protected override void OnModelCreating(DbModelBuilder modelBuilder) { 
@@ -69,7 +69,7 @@ public class Dog : Animal {
 <h1>Transforming to have service layers</h1>
 <p>At this stage, the architecture of the web application is not enterprise grade. The controller has a strong reference to the database context. The next step is to have everything related to the database inside a service layer which abstract entity framework. This allow us to test easily the controller without having to care about the database.</p>
 <p>This is the current controller code at this moment.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class AnimalController : Controller { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class AnimalController : Controller { 
   private DatabaseContext db = new DatabaseContext();
 
   public ActionResult Index() { return View(db.Animals.ToList()); }
@@ -147,7 +147,7 @@ public class Dog : Animal {
 } 
 </code></pre>
 <p>If you want to test rapidly the database, just add the code in the index.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public ActionResult Index() {
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public ActionResult Index() {
    var animal1 = new Animal { Name = "Boss" }; 
    var cat1 = new Cat { Name = "Mi" }; 
    var cat2 = new Cat { Name = "Do" }; 
@@ -161,7 +161,7 @@ public class Dog : Animal {
 </code></pre>
 <p><img src="/images/blog/tablesDataForAssociation-400x309.png" alt="" /></p>
 <p>The first step is to create a repository class for animal inside the DataAccessLayer folder. Normally, I create a folder called Repository to have all repositories.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public class AnimalRepository : IAnimalRepository { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public class AnimalRepository : IAnimalRepository { 
   private DatabaseContext db = new DatabaseContext();
 
   public Models.Animal Find(int? id) { return db.Animals.Find(id); }
@@ -180,7 +180,7 @@ public class Dog : Animal {
 <p>This class as also an interface with the public method in it.</p>
 <p>The second step is to create a service layer. Normally, we would create a new project, but to keep everything simple, let's just add a new folder (namespace). Then, we move the DatabaseContext class from the controller to the service.</p>
 <p>The animal service class looks like the following code.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class AnimalService: IAnimalService { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class AnimalService: IAnimalService { 
   private IAnimalRepository animalRepository;
 
   public AnimalService(IAnimalRepository animalRepository) { this.animalRepository = animalRepository; }
@@ -198,7 +198,7 @@ public class Dog : Animal {
 </code></pre>
 <p>It's all the code from the controller. Later, some improvement should be done. One of this change is to move the SaveChanges because it's not interesting to save every time we add, modify or update an entity. This cause performance problem when several entities are required to be posted to the database. However, let's focus on the transformation first, later these details will be gone. The role of the service layer is to resemble every repository. In this situation we have only one repository. In fact, in more complex problem like in enterprise, a service has several repository and caching classes.</p>
 <p>The next class that require changes is the animal controller class. This one now has a constructor that need an IAnimalService.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class AnimalController : Controller { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class AnimalController : Controller { 
   private IAnimalService_service;
 
   public AnimalController() {_service = new AnimalService(new AnimalRepository()); }
@@ -273,7 +273,7 @@ public class Dog : Animal {
 </code></pre>
 <p>At this stage, the controller is separated from the database by the service and the repository. Still, it's better to not having a strong reference to AnimalService inside the controller. This is why we will extract an interface from AnimalService and we will inject the concrete class by inversion of control. This allow us to have when doing test entry point to inject a fake AnimalService that won't goes to the database. You can use the refactoring tool to extract the interface easily.</p>
 <p><img src="/images/blog/ExtractInterface-400x281.png" alt="" /></p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public interface IAnimalService { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public interface IAnimalService { 
   void Delete(Animal animal); 
   Animal Find(int? id); 
   IList&lt;Animal&gt; GetAll(); 
@@ -282,7 +282,7 @@ public class Dog : Animal {
 } 
 </code></pre>
 <p>Inside the controller, we have two constructors. One to help us for this example which instantiate the service layer and the real one that takes a single parameter. This is the one that you should have in your enterprise grade software because it can inject any thing of IAnimalService into the controller.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class AnimalController : Controller { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class AnimalController : Controller { 
   private IAnimalService_service;
 
   public AnimalController(IAnimalService animalService) {
@@ -292,7 +292,7 @@ public class Dog : Animal {
 </code></pre>
 <p>Before implementing the unit of work, we will create a new repository to illustrate why the unit of work is required. We will also do a little re-factoring by changing the repository to stop having automatically a call to SaveChanges. This allow us to insert several entities in a single transaction.</p>
 <p>This is now the animal service class and interface.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public interface IAnimalService { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public interface IAnimalService { 
   void Delete(Animal animal); 
   void Delete(IList&lt;Animal&gt; animals); 
   Animal Find(int? id); IList&lt;Animal&gt; GetAll(); 
@@ -345,13 +345,13 @@ public class AnimalService: IAnimalService {
 }
 </code></pre>
 <p>As you can see, it's better. It also hide the complexity for update and insert by having a single method "save". Next, we will create a new repository. We won't code its detail but we will use it inside the AnimalService to simulate a case where we need to interact on several entities.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class HumanRepository : IHumanRepository { } 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class HumanRepository : IHumanRepository { } 
 public interface IHumanRepository { 
   void Insert(Models.Human humain); 
 } 
 </code></pre>
 <p>We also need to modify the service to have in its constructor the IHumanRepository.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class AnimalService: IAnimalService { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class AnimalService: IAnimalService { 
   private IAnimalRepository animalRepository; 
   private IHumanRepository humanRepository;
 
@@ -363,10 +363,10 @@ public interface IHumanRepository {
 } 
 </code></pre>
 <p>Then we can simulate the need to have something in the same transaction between animal and human repository. This can be in the Save method of the AnimalService. Let's create a new save method in the service which take an Animal and also an Human. In IAnimalService we add.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">void SaveAll(Animal animal, Human humain); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">void SaveAll(Animal animal, Human humain); 
 </code></pre>
 <p>And in the concrete implementation we have :</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public void SaveAll(Animal animal, Human humain) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public void SaveAll(Animal animal, Human humain) { 
   his.animalRepository.Insert(animal); 
   this.humanRepository.Insert(humain); 
 } 
@@ -374,14 +374,14 @@ public interface IHumanRepository {
 <p>This is where the unit of work is required. The animal repository has its own DbContext and the human repository has its one two. Since both have not the same repository, they are in two different transaction. We could wrap these both lines with a TransactionScope but since Entity Framework is already a transaction scope and since in more complex scenario where we would want to use the DbContext furthermore, having to use the same DbContext is something viable.</p>
 <h1>Implementing Unit of Work pattern</h1>
 <p>As we have seen, we need to share the DbContext. This is where the unit of work shines. The first move is to create the unit of work which hold the DbContext.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public interface IUnitOfWork { IDbSet&lt;T&gt; Set&lt;T&gt;() where T:class;
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public interface IUnitOfWork { IDbSet&lt;T&gt; Set&lt;T&gt;() where T:class;
 
 DbEntityEntry&lt;T&gt; Entry&lt;T&gt;(T entity) where T:class;
 
 void SaveChanges(); } 
 </code></pre>
 <p>The interface could be richer but this should be the minimal number of methods. The implementation is only having a central point for every database sets. In a more domain driven design application we could restrain entities by having a DbContext that is less general than the one created. "AllDomainContext" contains all entities set. This is perfect to create the whole database or when your application has a limited number of entities (under 50). But if you are domain driven design or with a big application, to have Entity Framework perform well and restrict the domains, having several DbContext is a good solution. With unit of work and its generic T class, you can pass any domain you want to have.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class UnitOfWork&lt;T&gt;:IUnitOfWork where T : DbContext, new() { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class UnitOfWork&lt;T&gt;:IUnitOfWork where T : DbContext, new() { 
   public UnitOfWork() { 
     DatabaseContext = new T();
   }
@@ -396,7 +396,7 @@ void SaveChanges(); }
 } 
 </code></pre>
 <p>This unit of work is very general since it can takes T as set. This mean that any entity defined can be used. In our example, with this modified unit of work, the controller needs to be changed too.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class AnimalController : Controller { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class AnimalController : Controller { 
   private IAnimalService_service;
 
   public AnimalController() { 
@@ -412,7 +412,7 @@ void SaveChanges(); }
 </code></pre>
 <p>So, the unit of work is instantiated with the domain we want. Here, it's everything. We still have the "real" constructor that takes only the IAnimalService which is the one that should be used in the real application with inversion of control to inject the controller. Since it's an article, to keep it simple, I show you what the IoC should do in the background.</p>
 <p>The animal service is changed too to work with the unit of work.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class AnimalService: IAnimalService { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class AnimalService: IAnimalService { 
   private IAnimalRepository animalRepository; 
   private IHumanRepository humanRepository; 
   private IUnitOfWork unitOfWork; 
@@ -458,7 +458,7 @@ void SaveChanges(); }
 } 
 </code></pre>
 <p>The repository now accepts the unit of work. It can works with set defined in the domain without problem.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class AnimalRepository : WebsiteForUnitOfWork.DataAccessLayer.Repositories.IAnimalRepository { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class AnimalRepository : WebsiteForUnitOfWork.DataAccessLayer.Repositories.IAnimalRepository { 
   private IUnitOfWork UnitOfWork { get; set; }
 
   public AnimalRepository(IUnitOfWork unitOfWork) { this.UnitOfWork = unitOfWork; }

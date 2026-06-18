@@ -3,11 +3,11 @@
 <p>The illustration is the concept of what is happening. The reality is a little bit more complicated. There is more communication boundary that is required which can be confusing at first. The documentation is great but it lacks guidance for a first time user. The following illustration is what happens in term of communication and with that in mind, the flow should be easier to understand.</p>
 <p><img src="/images/blog/ChromeExtensionDeveloperTools-RealityView.png" alt="" /></p>
 <p>Your library that is sending information to your extension is very simple. It consists of using the "window.postMessage" to send an object. The extension will read and parse your payload depending on the source. For my library and extension, named <a href="https://github.com/MrDesjardins/dataaccessgateway">Data Access Gateway</a>, I decided to have the source name "dataaccessgateway-agent". The name could be anything. Keep in mind that later, you will reuse the name at the extension code to verify that the message is coming from your source.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">window.postMessage({ source: "dataaccessgateway-agent", payload: requestInfo }, "*"); 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">window.postMessage({ source: "dataaccessgateway-agent", payload: requestInfo }, "*"); 
 </code></pre>
 <p>The payload may be anything you want but make sure it remains with an object that is not constructed (with "new). For example, if in your payload you have a date, make sure they are not in the payload as an actual Date object but in a more primitive form (string or number). Otherwise, you will receive an exception.</p>
 <p>The next step is to configure the manifest file for the extension. The critical detail is to specify two JavaScript files: the background and content_script. The former run regardless of which website is active. It runs in the background of the Chrome Extension from when the extension is loaded until it is unloaded. The latter is a script that the extension injects into the webpage. The injection can be targetted to a specific page or to run on all webpage. In my case, the extension must receive a message from a library, hence I do not know which website might use it and I allow the injection in every page. Because we are having this requirement to be available on every page, the security and the communication is more overwhelming that most information you can find in the basic documentation.</p>
-<pre class="language-json"><code class="language-json code-highlight">{ 
+<pre class="language-json" tabindex="0"><code class="language-json code-highlight">{ 
   "name": "Data Access Gateway Developer Tool", 
   "version": "1.0", 
   "description": "Data Access Gateway Developer Tool that allows getting insight about how the data is retrieved", 
@@ -31,7 +31,7 @@
 </code></pre>
 <p>The manifest file asks for permissions and specifies the "index.html" which is the file loaded when the Chrome Developer Tool panel is open. We will come back later on the HTML file. The important part is the background and contentScript.js. Both files can be renamed as you wish. Before moving on, it is important to understand that the communication flows in this particular order: postMessage -&gt; contentScript.js -&gt; background.js -&gt; dev tools HTML page. The core of the code will be in the HTML page and the remaining is just a recipe that must be followed to be compliant with Chrome's security.</p>
 <p>The contentScript.js is the file injected into the webpage. The sole purpose of this file is to listen for message passed by "window.postMessage", to check the payload and make sure this is the one we are interested in and move along to Chrome's runtime. The following code registers a "message" listener when the webpage loads. The script captures "postMessage" and checks for the source. When is the agent name defined in the previous step, we invoke the sendMessage from the Chrome's runtime. The invocation passes the message to the background.js file.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">window.addEventListener("message", (event) =&gt; { // Only accept messages from the same frame 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">window.addEventListener("message", (event) =&gt; { // Only accept messages from the same frame 
   if (event.source !== window) { 
     return; 
   }
@@ -46,7 +46,7 @@
 }); 
 </code></pre>
 <p>The next step is to listen to the Chrome's runtime messages. More code is required. There is a collection of tabs which will handle multiple tabs situation to know where it comes from. There are two listeners. One handle incoming new message and one for new Chrome's tab. The message dispatches the message to the proper tab, the other listener subscribes to and unsubscribe the tab.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">let tabPorts: { [tabId: string]: chrome.runtime.Port } = {}; 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">let tabPorts: { [tabId: string]: chrome.runtime.Port } = {}; 
 chrome.runtime.onMessage.addListener((message, sender) =&gt; { 
   const port = sender.tab &amp;&amp; sender.tab.id !== undefined &amp;&amp; tabPorts[sender.tab.id]; 
   if (port) { 
@@ -75,7 +75,7 @@ chrome.runtime.onConnect.addListener((port: chrome.runtime.Port) =&gt; {
 }); 
 </code></pre>
 <p>The post.postMessage send the payload for the last time. This time, it will be within reach of your Chrome Developer Tools extension. You may remember that in the manifest file we also specified an HTML file. This file can have a JavaScript file specified that will listen to the messages from the background.js script. I am developing the Data Access Gateway Chrome Extension with React, so the index.html starts the index.jsx, this one attach the app.jsx which will have in its constructor the listener.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">this.port = chrome.runtime.connect({ name: "panel" });
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">this.port = chrome.runtime.connect({ name: "panel" });
 
 this.port.postMessage({ name: "init", tabId: chrome.devtools.inspectedWindow.tabId });
 

@@ -2,19 +2,19 @@
 For example, a website could try to execute a form to add something in your Amazon basket! This can be limited by adding an hidden field to a form and a cookie. Both will contain the same value and when the form is submitted the hidden field is compared to the cookie value. If it's the same value, we know that the user has sent the form. If it's not, we know it's a malicious attack.</p>
 <p>In Asp.Net MVC, <code>ValidateAntiForgeryToken</code> is a combination of an html helper (hidden field) and attribute(cookie) that allows to verify if the form as been created and sent by the same user.</p>
 <p>The first step is to add the HtmlHelper method <code>@Html.AntiForgeryToken()</code> inside the form in your view.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">@using (Html.BeginForm()) { @Html.AntiForgeryToken() //... 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">@using (Html.BeginForm()) { @Html.AntiForgeryToken() //... 
 </code></pre>
 <p>This generate an hidden field with the name <code>__RequestVerificationToken</code> and an unique value. This is an example of the output generated:</p>
-<pre class="language-html"><code class="language-html code-highlight">&lt;form action="/House/Create" method="post" novalidate="novalidate"&gt; 
+<pre class="language-html" tabindex="0"><code class="language-html code-highlight">&lt;form action="/House/Create" method="post" novalidate="novalidate"&gt; 
   &lt;input name="__RequestVerificationToken" type="hidden" value="KPyzBk0KGpjStJR96AVI38AbBujBInJNB-1XH-RwsbuifwgmxnGiF-0R2cMHjcYBiz7yOBUnv0fZwoE2oBwiuKXalBDvsRr2RRG7nmkOsq41"&gt; 
 </code></pre>
 <p>The code behind the html helper is simple. It creates a MvcHtmlString from the AntiForgery class.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public MvcHtmlString AntiForgeryToken() { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public MvcHtmlString AntiForgeryToken() { 
   return new MvcHtmlString(AntiForgery.GetHtml().ToString()); 
 } 
 </code></pre>
 <p>The <code>AntiForgery</code> class contains the <code>GetHtml()</code> used in the html helper but also some validation of the forgery. Both use the class <code>AntiForgeryWorker</code>.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public static HtmlString GetHtml() { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public static HtmlString GetHtml() { 
   if (HttpContext.Current == null) 
     throw new ArgumentException(WebPageResources.HttpContextUnavailable); 
   else 
@@ -22,7 +22,7 @@ For example, a website could try to execute a form to add something in your Amaz
 } 
 </code></pre>
 <p>The worker that we see in the code above is of type <code>AntiForgeryWorker</code>. This class is about 139 lines and the core of it is the <code>GetFormInputElement</code> used by the <code>GetHtml</code>.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public TagBuilder GetFormInputElement(HttpContextBase httpContext) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public TagBuilder GetFormInputElement(HttpContextBase httpContext) { 
   this.CheckSSLConfig(httpContext); 
   AntiForgeryToken cookieTokenNoThrow = this.GetCookieTokenNoThrow(httpContext); 
   AntiForgeryToken newCookieToken; 
@@ -39,7 +39,7 @@ For example, a website could try to execute a form to add something in your Amaz
   return tagBuilder; } 
 </code></pre>
 <p>This is interesting to see how the value is generated. As we can see, it's using the serializer to serialize the form token. The form token is build inside the class TokenValidator that take some property of the Identity. I won't go deeper because it goes a little beyond the scope of the article. Just remember that the token is unique for the user. However, the GetFormInputElement code above is also important for something else. The token store role is to create the cookie which set also the token.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public void SaveCookieToken(HttpContextBase httpContext, AntiForgeryToken token) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public void SaveCookieToken(HttpContextBase httpContext, AntiForgeryToken token) { 
   HttpCookie cookie = new HttpCookie(this._config.CookieName, this._serializer.Serialize(token)) { 
     HttpOnly = true 
   }; 
@@ -51,10 +51,10 @@ For example, a website could try to execute a form to add something in your Amaz
 <p>The way the <code>ValidateAntiForgeryToken</code> attribute works is by checking to see that the cookie and hidden form field left by the <code>Html.AntiForgeryToken()</code> Html Helper essentially exists and match. If they do not exist or match, it throws an <code>HttpAntiForgeryException</code>.</p>
 <p><img src="/images/blog/ValidateAntiforgerytoken.png" alt="" /></p>
 <p>The attribute does have a <code>ValidateAntiForgeryTokenAttribute</code> method that call the <code>AntiForgery</code> class. I have previously mentioned that it has not only the method to get the input but also for validation. Here is where it's used.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public ValidateAntiForgeryTokenAttribute() : this(new Action(AntiForgery.Validate)) { } 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public ValidateAntiForgeryTokenAttribute() : this(new Action(AntiForgery.Validate)) { } 
 </code></pre>
 <p>This method go through several method of the framework to end to the <code>ValidateTokens(...)</code> methods that look like the code below.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public void ValidateTokens(HttpContextBase httpContext, IIdentity identity, AntiForgeryToken sessionToken, AntiForgeryToken fieldToken) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public void ValidateTokens(HttpContextBase httpContext, IIdentity identity, AntiForgeryToken sessionToken, AntiForgeryToken fieldToken) { 
   if (sessionToken == null) 
     throw HttpAntiForgeryException.CreateCookieMissingException(this._config.CookieName); 
   if (fieldToken == null) throw HttpAntiForgeryException.CreateFormFieldMissingException(this._config.FormFieldName); 

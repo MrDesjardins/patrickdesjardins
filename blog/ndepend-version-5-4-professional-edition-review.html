@@ -10,10 +10,10 @@
 <p>The next step is to match the rules' violation with the code. This is make easily by clicking the problem and NDepend opens the methods matched panel where every methods in violation appear. However, it might have some false positive. For example, NDepend found that I have 5 methods with too many arguments. The problem is that the 5 methods from an assembly that use Entity Framework's Migration Tool. Double clicking the method from NDepend</p>
 <p><img src="/images/blog/NDependCannotOpenDeclarationSourceFile-400x195.png" alt="" /></p>
 <p>This could be resolved by changing the CQLinq which is NDepend Linq language. The too many parameters look like this:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight"> warnif count &gt; 0 from m in JustMyCode.Methods where m.NbParameters &gt; 8 orderby m.NbParameters descending select new { m, m.NbParameters } 
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight"> warnif count &gt; 0 from m in JustMyCode.Methods where m.NbParameters &gt; 8 orderby m.NbParameters descending select new { m, m.NbParameters } 
 </code></pre>
 <p>To fix the problem I edited the query to do not check the class in problem.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight"> warnif count &gt; 0 from m in JustMyCode.Methods where m.NbParameters &gt; 8 &amp;&amp; m.FullName.Contains("DataAccessMigration") orderby m.NbParameters descending select new { m, m.NbParameters } 
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight"> warnif count &gt; 0 from m in JustMyCode.Methods where m.NbParameters &gt; 8 &amp;&amp; m.FullName.Contains("DataAccessMigration") orderby m.NbParameters descending select new { m, m.NbParameters } 
 </code></pre>
 <p>What is interesting is that you have auto-completion and the result is live. That mean that whilst typing the query you see the result to the output panel. For me, the Queries and Rules Explorer is the panel that I use the most of all NDepend's feature. The only negative I have found is that I was expecting to move to Visual Studio when double clicking a method in problem inside the Visual NDepend. It does open the code but every time into a new Visual Studio instance. That mean that you can have 10 Visual Studio running if you double clicked 10 methods to be improved.</p>
 <p>Another tool that NDepend offers is the <strong>Dependency Graph</strong>. For me, that tool is not useful because it creates a spaghetti graph.</p>

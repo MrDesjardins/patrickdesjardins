@@ -1,24 +1,24 @@
 <!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Patrick Desjardins Blog - Resizing an Image with NodeJs</title><meta name="description" content="Resizing an Image with NodeJs"><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-CZbWyyk4.css"><link rel="stylesheet" href="/assets/static-modules.css"></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><header><h1 class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</h1><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main class="app_blog__components_BlogBody__main"><h2 class="app_blog__components_BlogBody__heading">Resizing an Image with NodeJs</h2><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: 2017-08-01</p><p>This is the second post about project of creating a search tool for local pictures. As mentioned in the first post, this tool needs to use a web service to get information about the picture. This mean we need to upload the image that Microsoft Cognitive Vision/Face service will analyze and return a JSON object with information about the picture. Like most service, there is some constraints in term of the minimum and maximum of the size of what you can upload. Also, even for us, we do not want to send a 25 megs picture when it is not necessary. This article discuss about how to resize picture before sending a request to the web service. This will not only allow to be withing the range of the acceptable values, but also speed up the upload.</p>
 <p>I decide to take the arbitrary value of sending picture with the widest side of 640px. This produce in average a file 30kb which is tiny but still enough for the cognitive service to give very good result. This value may not be good if you are building something similar where people are far or if you are not using portrait pictures. In my case, the main subjects are always close range, hence very easy to get detail at that small resolution.</p>
 <p>Resizing a file requires to use a third-party library. This is something easy to find with JavaScript and NPM has a library named "Sharp" that do it perfectly. The TypeScript definition file is also available, so we are in business!</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">npm install --save sharp npm install --save-dev @types/sharp
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">npm install --save sharp npm install --save-dev @types/sharp
 </code></pre>
 <p>Before anything, even if this project is for myself, I defined some configuration variables. Some rigor is required when it's cheap to do! The three first constant is the maximum size we want to output the image. I choose 640 pixel. The directory name is the constant of the folder where we will save the image we will send and where we will late save the JSON file with the analysed data. We save the resized image because on the website later, we will use this small image instead of the full resolution image. The website will be snappy and since we have the file, why not using this optimization for free. At 30kb for 2000 images, we only use 58 megs. The last constant is the glob pattern to get all underscore JPEG pictures. We will talk about glob very soon.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const maxSize = 640;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const maxSize = 640;
 const directoryName = "metainfo";
 const pathImagesDirectory = path.join(imagesDirectory, "**/_*.+(jpg|JPG)");
 </code></pre>
 <p>The second pre-task is to find the images to resize. Again, this will require a third-party library to simplify our life. We could recursively navigate folders, but it would be nicer to have a singe glob pattern that handle it.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">npm install --save glob npm install --save-dev @types/glob
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">npm install --save glob npm install --save-dev @types/glob
 </code></pre>
 <p>From there, we need to import the module. We will bring the <code>path</code> and <code>fs</code> module of NodeJs to be able to create proper path syntax and to save file on disk.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">import _ as g from "glob"; 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">import _ as g from "glob"; 
 import _ as path from "path"; 
 import _ as sharp from "sharp"; 
 import _ as fs from "fs";
 </code></pre>
 <p>The first function that we need to create is the one that return a list of string that represent the file to resize. This will be all our underscore aka best pictures. We want to be sure that we can re-run this function multiple times, thus we need to ignore the output folder where we will save resized images. This function returns the list in a promise fashion because the glob library is asynchronous. Here is the first version which call the module function "Glob" and add everything into an array while sending in the console the file for debugging purpose.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function getImageToAnalyze(): Promise&lt;string[]&gt; { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function getImageToAnalyze(): Promise&lt;string[]&gt; { 
   const fullPathFiles: string[] = []; 
   const promise = new Promise&lt;string[]&gt;((resolve, reject) =&gt; { 
     const glob = new g.Glob(pathImagesDirectory, { ignore: "**/" + directoryName + "/**" } as g.IOptions, (err: Error, matches: string[]) =&gt; { 
@@ -32,7 +32,7 @@ import _ as fs from "fs";
 }
 </code></pre>
 <p>This can be simplified by just returning the <em>matches</em> string array and returning the promise instead of using a variable. At the end, if you are not debugging you can use :</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function getImageToAnalyze(): Promise&lt;string[]&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function getImageToAnalyze(): Promise&lt;string[]&gt; {
   return new Promise&lt;string[]&gt;((resolve, reject) =&gt; {
     const glob = new g.Glob(
       pathImagesDirectory,
@@ -46,7 +46,7 @@ import _ as fs from "fs";
 </code></pre>
 <p>As mentioned, the quality of this code is average. In reality, some loves are missing around the error scenario. Right now, if something is wrong, the rejection promise bubble up.</p>
 <p>At this point, we can call the method with :</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">console.log("Step 1 : Getting images to analyze " + pathImagesDirectory);
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">console.log("Step 1 : Getting images to analyze " + pathImagesDirectory);
 getImageToAnalyze().then((fullPathFiles: string[]) =&gt; {
   console.log("Step 2 : Resize " + fullPathFiles.length + " files");
   return resize(fullPathFiles);
@@ -54,13 +54,13 @@ getImageToAnalyze().then((fullPathFiles: string[]) =&gt; {
 </code></pre>
 <p>The code inside the <code>then</code> is the one executed if the promise is resolved successfully. It will start resizing the list of pictures and pass this list into the function that we will create in an instant.</p>
 <p>The <em>resize</em> function is not the one that will do the resize. It will call the function that does the resize only if the picture has not been yet resized. This is great if something happen to fail and you need to re-run. The resize function will check in the "metainfo" folder, where we output the resized picture and only resize this one if not present. In both case, this function return a promise. The type of the promise is a list of <code>IImage</code>.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export interface IImage {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export interface IImage {
   thumbnailPath: string;
   originalFullPathImage: string;
 }
 </code></pre>
 <p>This type allows to have the detail about the full path of the thumbnail "resized" picture and the original picture. When we have already resized, we just create an instance, when we do not have an image we create this one and then return a new instance. This method waits all resize to occur before resolving. This is the reason of the <code>.all</code>. We are doing so just to have a clear cut before moving to the next step and since we are launching multiple resizes in parallel, we are waiting to have them all done before analyzing.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function resize(fullPathFiles: string[]): Promise&lt;IImage[]&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function resize(fullPathFiles: string[]): Promise&lt;IImage[]&gt; {
   const listPromises: Array&lt;Promise&lt;IImage&gt;&gt; = [];
   const promise = new Promise&lt;IImage[]&gt;((resolve, reject) =&gt; {
     for (const imagePathFile of fullPathFiles) {
@@ -82,7 +82,7 @@ getImageToAnalyze().then((fullPathFiles: string[]) =&gt; {
 }
 </code></pre>
 <p>This function use a function to get the thumbnail path to lookup if it's been already created or not. This function call another one too, and both of these methods are having the same goal of providing a path. The first one, the <code>getThumbnailPathAndFileName</code> get the original full quality picture path and return the full image path of where the resized thumbnail is stored. The second one is a function that will be resused in some occasion and it gives the metainfo directory. This is where the resized picture are stored, but also the JSON file with the analytic data are saved.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function getThumbnailPathAndFileName(imageFullPath: string): string {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function getThumbnailPathAndFileName(imageFullPath: string): string {
   const dir = getMetainfoDirectoryPath(imageFullPath);
   const imageFilename = path.parse(imageFullPath);
   const thumbnail = path.join(dir, imageFilename.base);
@@ -97,7 +97,7 @@ function getMetainfoDirectoryPath(imageFullPath: string): string {
 }
 </code></pre>
 <p>The last method is the actual resize logic. The first line of the method create a "sharp" object for the desired picture. Then we invoke the "metadata" method that will give us access to the image information. We need this to get the actual width and height and do some computation to get the wider side and find the ratio of resizing. Once we know the height and the width of the thumbnail we need to create the destination folder before saving. Finally, we need to call the "resize" method with the height and width calculated. The "webp" method is the one that generate the image. From there, we could generate a buffered image and use a stream to handle it in memory or to store it on disk like we will do with the method "toFile". This return a promise that we use to generate and return the IImage.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function resizeImage(imageToProceed: string): Promise&lt;IImage&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function resizeImage(imageToProceed: string): Promise&lt;IImage&gt; {
   const sharpFile = sharp(imageToProceed);
   return sharpFile.metadata().then(
     (metadata: sharp.Metadata) =&gt; {

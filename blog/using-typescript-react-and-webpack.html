@@ -1,7 +1,7 @@
 <!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Patrick Desjardins Blog - Using TypeScript, React and WebPack</title><meta name="description" content="Using TypeScript, React and WebPack"><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-CZbWyyk4.css"><link rel="stylesheet" href="/assets/static-modules.css"></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><header><h1 class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</h1><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main class="app_blog__components_BlogBody__main"><h2 class="app_blog__components_BlogBody__heading">Using TypeScript, React and WebPack</h2><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: 2017-07-24</p><p>I created an open source project to bootstrap TypeScript and React few months ago. You can see the first article about <a href="./how-to-setup-typescript-and-react">TypeScript/React/Gulp</a> before this article. It wasn't bundling the code, and was using Gulp which is in mid-2017 not the preferred tool to package JavaScript code. At this moment, Webpack is the most popular tool allowing to do everything Gulp or Grunt was doing but avoiding to rely on the middle man of having Gulp's package (or Grunt's package) to invoke the actual library. Webpack is also very smart in term of exploring the code and figure out dependencies. This article will focus to migrate from Gulp to Webpack for a TypeScript and React project.</p>
 <p>First of all, we need to change index.html. The file was using RequireJs and was not referring to any bundles. The change is dual. We need to remove RequireJs. We will use Webpack to handle to load dependencies between modules. We also need to refer to bundles.</p>
 <p>Before:</p>
-<pre class="language-html"><code class="language-html code-highlight">&lt;html&gt; 
+<pre class="language-html" tabindex="0"><code class="language-html code-highlight">&lt;html&gt; 
 &lt;head&gt; 
   &lt;title&gt;TS + React Boilerplate v1.01&lt;/title&gt; 
 &lt;/head&gt;
@@ -25,7 +25,7 @@
 &lt;/html&gt; 
 </code></pre>
 <p>After:</p>
-<pre class="language-html"><code class="language-html code-highlight">  &lt;html&gt; 
+<pre class="language-html" tabindex="0"><code class="language-html code-highlight">  &lt;html&gt; 
   &lt;head&gt; &lt;title&gt;TS + React Boilerplate v1.01&lt;/title&gt; &lt;/head&gt; 
   &lt;body&gt; 
     &lt;div id="main"&gt;&lt;/div&gt; 
@@ -34,7 +34,7 @@
 &lt;/html&gt; 
 </code></pre>
 <p>RequireJs' configuration and the startup file are gone. The complexity will move into Webpack's configuration file that we will see soon. So, at this point, you see that we won't be using AMD. This mean that we need to build our TypeScript to use something else. We will use CommonJS.</p>
-<pre class="language-javascript"><code class="language-javascript code-highlight">{ 
+<pre class="language-javascript" tabindex="0"><code class="language-javascript code-highlight">{ 
    "compilerOptions": { 
      "sourceMap": true, 
      "target": "es6", 
@@ -48,17 +48,17 @@
 </code></pre>
 <p>since Webpack will read the EcmaScript syntax used in each file of each module, it will transpile in CommonJS format. The JavaScript produced is read by Webpack and this one will bring all the file into a single one (bundle). This remove the need to load asynchronously (like AMD) was doing.</p>
 <p>Changing to CommonJS made the code to require a change. If you want to load a relative to the file that want to import a module, it needs to start with <code>./</code> instead of directly the name. For example, you won't be able to write :</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">import { Component } from "component1";"
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">import { Component } from "component1";"
 </code></pre>
 <p>but</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight"> import { Component } from "./component1";
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight"> import { Component } from "./component1";
 </code></pre>
 <p>The next change was around JQuery. The file that was using JQuery didn't had any reference to JQuery, but now we explicitly mention the library.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">import * as $ from "jquery"; 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">import * as $ from "jquery"; 
 </code></pre>
 <p>Before going in Webpack configuration, we had with AMD a lazy loading file that was loading and using a specific file after 2 seconds. This is to simulate the "load on-demand" files that we may want not to load initially. The scenarios are multiple. This can be justify because the user is rarely using the feature, hence no need to load this one. This can also be that the user doesn't have the authorization to do this kind of action, thus no need to load code that won't be used.</p>
 <p>Here is the AMD solution we had before:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight"> import foo = require("folder1/fileToLazyLoad"); 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight"> import foo = require("folder1/fileToLazyLoad"); 
  export class ClassB { 
    public method1(): void { 
      console.log("ClassB-&gt;method1"); 
@@ -70,7 +70,7 @@
   } 
 </code></pre>
 <p>The first line is to tell TypeScript the type we want to lazy load. It was using "require" which we will still use. This time, we can use the relative path. So far, not much as change. However, we can see that we were using requirejs directly inside the timer. This time, we will use CommonJS and load the module. It's almost the same thing -- using a different library.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">import foo = require("./fileToLazyLoad"); 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">import foo = require("./fileToLazyLoad"); 
 export class ClassB { public method1(): void { 
   console.log("ClassB-&gt;method1"); 
   setTimeout(() =&gt; { 
@@ -84,7 +84,7 @@ export class ClassB { public method1(): void {
 } 
 </code></pre>
 <p>We are at the point where bigger change will occurs. The change start with NPM module that we need to use. As we saw, we can remove RequireJS from the dependencies list. We also need to bring many libraries for Webpack, loader and utility library to clean and move files. Here is the complete list of dependencies:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">"devDependencies": { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">"devDependencies": { 
   "@types/express": "^4.0.35", 
   "@types/jquery": "^2.0.46", 
   "@types/react": "^15.0.26", 
@@ -108,7 +108,7 @@ export class ClassB { public method1(): void {
 } 
 </code></pre>
 <p>The next step is that we won't use Gulp to invoke action. If we want to delete previous generated deploy files, build TypeScript or run the server, we need to use the CLI of each of the tool we are using. We could use directly the TypeScript's CLI, named tcs, and use xcopy to move file, etc. The problem is that it is not easy to remember. NPM allows to have custom script which can be invoked with <code>npm use ABC</code> where "ABC" is the name of your script. Here is the script we need to add to replace the Gulp tasks we had.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">"scripts": { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">"scripts": { 
   "clean": "del-cli deploy/**", 
   "package": "./node_modules/.bin/webpack --config webpack.config.js --display-error-details", 
   "copy": "copyfiles -u 1 ./app/index.html ./deploy", 
@@ -118,22 +118,22 @@ export class ClassB { public method1(): void {
 </code></pre>
 <p>The "clean" script use the "del-cli" to delete the deployment folder. This could be use a native Windows or Linux command, but using this tool allows to be cross platform. The "package" allows to run webpack with a specific configuration file and for debugging purpose to display verbose detail. The principle is the same for all others script. The "build" one is using the clean + package + copy. So, in practice, you should use only build and server.</p>
 <p>The final step is to configure Webpack. This is done in the file webpack.config.js. You can rename it the way you want, you just need to specify it in the webpack command after --config. Webpack can use many NPM package to accomplish its job. For sure, you need at least the "webpack" package.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var path = require('path'); var webpack = require('webpack'); 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var path = require('path'); var webpack = require('webpack'); 
 </code></pre>
 <p>Webpack needs to have an entry point. In the example we are working on, the main file is the one that was used in the index.html with <code>requirejs(['file1']);</code>. This time, we do not have any indication in the HTML file. However, Webpack needs one, or many, entry point and will navigate through all the dependencies to make the main bundle.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">module.exports = { entry: { app: "./app/scripts/file1.tsx" }, 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">module.exports = { entry: { app: "./app/scripts/file1.tsx" }, 
 </code></pre>
 <p><strong>Entry</strong> may be the entry point, <strong>Output</strong> will be where the bundles goes. The filename uses the square bracket which will be replaced by the key provided by each entry point. In our example, we have "app" in the entry, and we will have a file produced with the name "appbundle.js" in the output. The directory is provided at the "path" property, which in that case is "deploy".</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">output: { path: path.resolve(__dirname, 'deploy'), filename: '[name]bundle.js' }, 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">output: { path: path.resolve(__dirname, 'deploy'), filename: '[name]bundle.js' }, 
 </code></pre>
 <p>The next configuration is to tell which extension Webpack should care of. For us, it's TypeScript</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">resolve: { extensions: ['.ts', '.tsx', '.js', '.jsx'] }, 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">resolve: { extensions: ['.ts', '.tsx', '.js', '.jsx'] }, 
 </code></pre>
 <p>This property allows to have source map. This give the possibility to debug TypeScript in Chrome on the real individual file even if it's bundled.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">devtool: "source-map", 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">devtool: "source-map", 
 </code></pre>
 <p>Webpack work with rules. Every "test" evaluate a condition to execute a loader. We use two different ones. One to call the TypeScript loader that will transpile TS and TSX file. The second one is to generate source map. Even if we have the devtool to provide source map, we need a central place to handle third-party JS library too.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">module: { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">module: { 
   rules: [ 
     { test: /\\.tsx?$/, loader: "awesome-typescript-loader" },
     { enforce: "pre", test: /\\.js$/, loader: "source-map-loader" }, 
@@ -141,7 +141,7 @@ export class ClassB { public method1(): void {
 }, 
 </code></pre>
 <p>The last piece is a plugin called CommonsChunkPlugin. It comes from Webpack and its role is to great additional bundle. In that case, we create a bundle name "vendorbundle.js". The minChunk can be a number of time we see the reference to join the bundle. For example, if we have a module that we use often and that we want them to be in a common bundle, we can say "5" and if more than 5 modules reference than instead of being in the "app" one, it would go in this one. For us, we want to have all vendors module, which mean they are from node_modules directory. To do so, the minChunks allows to pass a function. When it contains the node_modules in the path, it goes into that bundle instead of the main one (app).</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">plugins: [ 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">plugins: [ 
   new webpack.optimize.CommonsChunkPlugin(
     { name: "vendor", 
     filename: "vendorbundle.js", 

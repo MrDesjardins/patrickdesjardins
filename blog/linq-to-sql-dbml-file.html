@@ -2,13 +2,13 @@
 <p><img src="/images/blog/linq2sqlcreate-400x386.png" alt="" /></p>
 <p>Once created, the next step is to drag and drop table into the Visual Designer. This will generate Linq To Sql data class. You can also drag and drop stored procedure to be used.</p>
 <p>When done, you need to save and you can after that instantiate the Linq to Sql's data context.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">var dataContext = new MapperDataContext(); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">var dataContext = new MapperDataContext(); 
 dataContext.UpdateRegion(1, "Estern"); 
 </code></pre>
 <p>The process of creating a Linq to Sql data context will create a .dbml file. This file contains all tables dropped into the visual designer.</p>
 <p>This file is a XML file that contain all definitions of the table and the stored procedure you added into the Visual Designer.</p>
 <p>Here is a snippet of the .dbml of Northwind database with a custom stored procedure UpdateRegion.</p>
-<pre class="language-xml"><code class="language-xml code-highlight">&lt;Table Name="dbo.Region" Member="Regions"&gt; 
+<pre class="language-xml" tabindex="0"><code class="language-xml code-highlight">&lt;Table Name="dbo.Region" Member="Regions"&gt; 
   &lt;Type Name="Region"&gt; 
     &lt;Column Name="RegionID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" /&gt; 
     &lt;Column Name="RegionDescription" Type="System.String" DbType="NChar(50) NOT NULL" CanBeNull="false" /&gt; 
@@ -23,7 +23,7 @@ dataContext.UpdateRegion(1, "Estern");
 &lt;/Function&gt; 
 </code></pre>
 <p>But that's not all, the .dbml come with a .dbml.layout file. This file is also a XML but a little bit more complicate to understand. Here is a short section of the file.</p>
-<pre class="language-xml"><code class="language-xml code-highlight">&lt;classShape Id="40fcd11c-862f-4d4c-9d0f-b7b810cf15f4" absoluteBounds="6.75, 7.5, 2, 1.1939925130208344"&gt; 
+<pre class="language-xml" tabindex="0"><code class="language-xml code-highlight">&lt;classShape Id="40fcd11c-862f-4d4c-9d0f-b7b810cf15f4" absoluteBounds="6.75, 7.5, 2, 1.1939925130208344"&gt; 
   &lt;DataClassMoniker Name="/MapperDataContext/Region" /&gt; 
   &lt;nestedChildShapes&gt; 
     &lt;elementListCompartment Id="59d75784-613d-41c6-b53c-10f870c17964" absoluteBounds="6.765, 7.96, 1.9700000000000002, 0.63399251302083326" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" /&gt; 
@@ -32,7 +32,7 @@ dataContext.UpdateRegion(1, "Estern");
 </code></pre>
 <p>This esoteric is in fact just the information of the visual representation of all data classes of the visual designer. You should never have to look it.</p>
 <p>The last file that you have under the .dbml is *.dbml.designer.cs that contain the class that you will create an instance from. This file inherit of System.Data.Linq.DataContext and contains all methods generated to correspond to the classed generated from the tables dropped into the Visual Designer. This file contains multiple classes. You will have the DataContext class but also a single class for each of the tables. Here is an example of the code generated for the small table "Regions" of Northwind database.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> [global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Region")] 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> [global::System.Data.Linq.Mapping.TableAttribute(Name="dbo.Region")] 
  public partial class Region : INotifyPropertyChanging, INotifyPropertyChanged { 
   private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty); 
   private int_RegionID; 

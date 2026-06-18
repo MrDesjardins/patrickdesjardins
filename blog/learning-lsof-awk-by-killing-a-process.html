@@ -4,7 +4,7 @@
 <h1>Finding the process id by a port number: Lsof</h1>
 <p>The command line <code>lsof</code> is natively available in Linux. The letters of the tool are for "LiSt Open File".</p>
 <p>The trick is to use the <code>-i</code> which allows to find a file that matches a specific address. Many combinations vary for ipv4 or ipv6 or different protocols. In my case, the port I want to kill most of the time is for a web server, a docker container, or a port used in Visual Studio Code (VsCode) for debugging. They are all using <code>tcp</code>. Thus, using <code>lsof -i tcp:9229</code> gives the information.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">lsof -i tcp:9229
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">lsof -i tcp:9229
 
 COMMAND PID USER FD TYPE DEVICE
 node 19005 pdesjardins 26u IPv4 ox033434234
@@ -13,19 +13,19 @@ node 19005 pdesjardins 26u IPv4 ox033434234
 <p>The <code>pid</code> is the process identifier that is needed to pass to the next command line.</p>
 <h1>Grabbing the last line: Tail</h1>
 <p>The <code>tail</code> command line allows to read a specific line from the end of a file. A file can be the output of a command line. Using <code>tail</code> is a way to skip the header of the <code>lsof</code>. The following command uses the option <code>-n 1</code>, which returns the last line.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">lsof -i tcp:9229 | tail -n 1
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">lsof -i tcp:9229 | tail -n 1
 
 node 19005 pdesjardins 26u IPv4 ox033434234
 </code></pre>
 <h1>Grabbing a record: Awk</h1>
 <p>The <code>awk</code> command scans for a pattern. Awk has an option to scan each tab. The PID is on the second record (tab).</p>
-<pre class="language-sh"><code class="language-sh code-highlight">lsof -i tcp:9229 | tail -n 1 | awk '{print $2}' 
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">lsof -i tcp:9229 | tail -n 1 | awk '{print $2}' 
 
 19005
 </code></pre>
 <h1>Knowing your Tools</h1>
 <p>As I wrote this blog post, I looked further the <code>lsof</code> documentation and found out about <code>-t</code> option. The option provides a terse output with only the <code>pid</code>, meaning that the information can be piped to kill. It means that <code>tail</code> and <code>awk</code> can be removed by using:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">lsof -i tcp:9229 -t
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">lsof -i tcp:9229 -t
 </code></pre>
 <h1>Killing the process: Kill</h1>
 <p>The <code>kill</code> command sends a signal to a process using a <code>PID</code>. Killing with <code>kill -9 &lt;pid here&gt;</code> instantly kills the process.
@@ -33,7 +33,7 @@ However, another tool is needed to inject the PID into a command argument: <code
 <h1>xargs: Passing the PID from Lsof to Kill</h1>
 <p>The last step is to send the process id to <code>kill</code> from the <code>lsof</code>. The <code>xargs</code> executes a command line and can use a pattern to replace a string by a value. In our case, the pattern is <code>{pid}</code> and will be replaced by the piped PID. The <code>xargs</code> uses the <code>-I</code> to specify the string to replace. Then, the command is specified with its option. The command needs to use the string, for example, <code>{pid}</code>, which will be replaced by the value piped. If more than one value is passed, then the command will be executed several times with each value.</p>
 <p>The final script:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">lsof -i tcp:9229 -t | xargs -I {pid} kill -9 {pid}
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">lsof -i tcp:9229 -t | xargs -I {pid} kill -9 {pid}
 </code></pre>
 <h1>Conclusion</h1>
 <p>Ultimately, three tools were needed: <code>lsof</code>, <code>xargs</code> and kill. Learning about the tool helped to reduce the complexity by removing two additional tools (<code>tail</code> and <code>awk</code>).</p>

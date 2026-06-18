@@ -10,7 +10,7 @@
 <h1>How Zustand works in a Nutshell?</h1>
 <h2>Creating a Store</h2>
 <p>You create a store by defining its schema and setting default values. Similar to reducer or having state using hooks. For example, if you have a <code>userPreferences</code>, you can have an application-wide store with one branch (property) with the user preferences.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">interface MyAppState {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">interface MyAppState {
   userPrefrerences: UserPreferences;
   setUserPreference: (data: UserPreferences) =&gt; void;
 }
@@ -34,7 +34,7 @@ const useMyAppState = create&lt;MyAppState&gt;()(
 );
 </code></pre>
 <p>The first usage of the hook defined with <code>create</code> defines the store for the whole application. Hence, you do not need to wrap your application with a context (or provider pattern). Then, you call the hook that you defined in one or many of your components. In our example, it would be an invocation to <code>useMyAppState</code>. All future calls to the hook will get the information. When you set the state, the state does a copy automatically. However, you will need to create a copy as you go deeper like you do with Redux or with a React Context. For example, you can set a new setter for setting the profile that is a property deep in the store (under the user preference).</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">interface MyAppState {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">interface MyAppState {
   userPrefrerences: UserPreferences;
   setUserPreference: (data: UserPreferences) =&gt; void;
   setUserProfile: (data: UserProfile) =&gt; void;
@@ -63,7 +63,7 @@ const useMyAppState = create&lt;MyAppState&gt;()(
 );
 </code></pre>
 <p>Another typical use case is to derive value from your store's data. When using a React Context, you define a <code>useMemo</code> with dependency on the source of the data and then pass the memoized value to your context. With Zustand, you create a property.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">interface MyAppState {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">interface MyAppState {
   userPrefrerences: UserPreferences;
   setUserPreference: (data: UserPreferences) =&gt; void;
   setUserProfile: (data: UserProfile) =&gt; void;
@@ -97,7 +97,7 @@ const useMyAppState = create&lt;MyAppState&gt;()(
 </code></pre>
 <h2>How to Consume the Store Data?</h2>
 <p>Consuming is the act of calling the hook and defining which property to <em>listen</em> for a change. Very powerful since you control which elements need to change to cause a render. For example, if you are interested in getting the user name only, then only when the <code>userPreferences</code> is mutated will you get a render. If the <code>MyAppState</code> has many sibling properties to <code>userPreferences</code>, the component relying on <code>userPreferences</code> will remain stable and only get rendered in a limited way.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">// ... Snip, inside your React component
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">// ... Snip, inside your React component
 const userName = useMyAppState((state) =&gt; state.userPreference.name);
 </code></pre>
 <h1>Debugging</h1>

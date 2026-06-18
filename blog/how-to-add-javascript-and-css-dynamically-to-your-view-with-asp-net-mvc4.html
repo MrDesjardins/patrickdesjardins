@@ -2,11 +2,11 @@
 <p>This is where Asp.Net MVC <strong>section</strong> can shine.</p>
 <h2>Named Section</h2>
 <p>Asp.Net MVC have something called <strong>Named Section</strong>. It lets the developer setup optional placeholder inside the master page and if required, let the view inject some html code.</p>
-<pre class="language-html"><code class="language-html code-highlight"> ... &lt;script type="text/javascript" src="@Url.Content("/Scripts/javascriptAlwaysLoaded.js)"&gt; @RenderSection("scripts", required: false) &lt;/html&gt; 
+<pre class="language-html" tabindex="0"><code class="language-html code-highlight"> ... &lt;script type="text/javascript" src="@Url.Content("/Scripts/javascriptAlwaysLoaded.js)"&gt; @RenderSection("scripts", required: false) &lt;/html&gt; 
 </code></pre>
 <p>The code above show you the idea of some code that could have been written to be in the master page. As you can see, we have 1 Javascript file hard coded, that will be loaded what so ever the page. This is good for JQuery or other Javascript file that require to be always there. Then, we have the <strong>RenderSection</strong>. RenderSection works a little bit like <strong>RenderBody()</strong>. We have set the parameter required to false, which mean that this place holder ain't required if no script need to be registered.</p>
 <p>The next step is to go into a view that need to have a specific script and to add the html to load this one. For example:</p>
-<pre class="language-html"><code class="language-html code-highlight"> @section scripts { &lt;script type="text/javascript" src="@Url.Content("/Scripts/ABC.js")"&gt;&lt;/script&gt; } 
+<pre class="language-html" tabindex="0"><code class="language-html code-highlight"> @section scripts { &lt;script type="text/javascript" src="@Url.Content("/Scripts/ABC.js")"&gt;&lt;/script&gt; } 
 </code></pre>
 <h2>Conclusion</h2>
 <p>I think this approach is better than the Filter one because it let you handle client side directly inside the view without having to modify the controller. It's also not exactly to the controller the specify what design style (CSS) or script (Javascript) to display. In fact, the controller role is really to handle request and give a correct response to this one, not to implement detail for the view.</p>

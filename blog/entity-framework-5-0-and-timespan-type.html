@@ -3,7 +3,7 @@
 <p>There is no store type corresponding to the conceptual side type 'Edm.Time(Nullable=True,DefaultValue=,Precision=)' of primitive type 'Time'.</p>
 </blockquote>
 <p>I thought that Entity Framework 5 was able with SQL Server 2008 R2 to map Timespan to Time. I was wrong. However, theirs a work around.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public Int64 TimeBetweenExercicesTicks{ get; set; }
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public Int64 TimeBetweenExercicesTicks{ get; set; }
 
 [NotMapped] 
 public TimeSpan TimeBetweenExercices { 

@@ -5,14 +5,14 @@
 <p>The RelationshipManager object could not be serialized. This type of object cannot be serialized when the RelationshipManager belongs to an entity object that does not implement IEntityWithRelationships.</p>
 </blockquote>
 <p>This is why you should disable the proxy creation and handle the state of your poco with the DbContext instead of relying on proxy. Disabling the proxy is a matter of setting to false your DbContext's property <code>ProxyCreationEnabled</code>.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">_dbContext.Configuration.ProxyCreationEnabled = false; 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">_dbContext.Configuration.ProxyCreationEnabled = false; 
 </code></pre>
 <p>Let's come back to the main purpose of this article. The problem with circular reference can be fixed by two solutions.</p>
 <p>The first one, is to broke those references when we send the information to Json. That mean that in your controller, before sending back the ActionResult, you loop problematic property to remove the reference. If we take back the example with Player and Team, we could simply loop the Team array of Player and set to Null all Player[i].Team.</p>
 <p>The second solution can be to use the attribute <code>ScriptIgnore</code> over the property of Team for example. So, it will serialize only from one side. I haven't try this solution that I have found at <a href="http://stackoverflow.com/questions/2002940/json-and-circular-reference-exception">StackOverflow.com</a> because I do not think that I should alter the Model for the View this way. The serialization process shouldn't impact the model and for sure not to make something work only in half. At the end, we loss the reference on one side which will require to us to rebind it later on.</p>
 <p>A better solution is to use a different library of Json which can handle reference, by that I mean the <a href="http://james.newtonking.com/projects/json-net.aspx">Newton King Library</a>. This library support circular reference by add ID to object serialized.</p>
 <p>First, you need to remove the serialization from the default Json serializer and use the Json Newton King Library. This can be done in the Global.asax.cs file. with the following code.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">GlobalConfiguration.Configuration.Formatters.Clear(); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">GlobalConfiguration.Configuration.Formatters.Clear(); 
 GlobalConfiguration.Configuration.Formatters.Add(new JsonNetFormatter(new JsonSerializerSettings()));
 
 var jsonSerializerSettings = new JsonSerializerSettings { 
@@ -22,7 +22,7 @@ var jsonSerializerSettings = new JsonSerializerSettings {
 <p>As you can see, we are setting up the PreserceReferencesHandling.Ojects. This will add the reference to object when circular dependencies are found.</p>
 <p>This setting add values into the Json structure that in the format "$id": "1" and instead of copying the object over and over (and creating a stack over flow), will use the syntax "$ref": "1" to refer to the object. For example, if we have an object Player that contain the Team and the Team contains the players, than we could have circular reference. The serialization with the library and the PreserceReferencesHandling will produce something similar to the code below if we serialize a single player.</p>
 <p>The C# code:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">class Program { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">class Program { 
   static void Main(string[] args) { 
     var p = new Program(); 
   }
@@ -82,7 +82,7 @@ The result:
 } 
 </code></pre>
 <p>If instead your serialize the team you will get:</p>
-<pre class="language-javascript"><code class="language-javascript code-highlight">{ 
+<pre class="language-javascript" tabindex="0"><code class="language-javascript code-highlight">{ 
   "$id":"1", 
   "TeamName":"MyTeam", 
   "Players": [ 

@@ -1,6 +1,6 @@
 <!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Patrick Desjardins Blog - TypeScript Injection of Value Using Decorator</title><meta name="description" content="TypeScript Injection of Value Using Decorator"><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-CZbWyyk4.css"><link rel="stylesheet" href="/assets/static-modules.css"></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><header><h1 class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</h1><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main class="app_blog__components_BlogBody__main"><h2 class="app_blog__components_BlogBody__heading">TypeScript Injection of Value Using Decorator</h2><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: 2025-10-21</p><p>TypeScript is a great language for writing code that is type-safe and easy to read. However, sometimes you need to inject a value into a class or function. This can be done using a decorator.</p>
 <p>In this article, we will see how we can inject from a single source of truth values into a class. We will also ensure we can know when the value are done injecting. The goal is that the injection might be asynchronous.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">async function main(): Promise&lt;void&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">async function main(): Promise&lt;void&gt; {
     const t1 = new T();
     console.log("t1 before", ...t1.debug());
     await t1.injected;
@@ -10,10 +10,10 @@ main();
 </code></pre>
 <h1>Property Decorator</h1>
 <p>The first step is to create a property decorator that will inject the value on specific property of a class. In our example, we will use the <code>@injectProp</code> with will take 1 parameter. The parameter is the key (unique identifier) to the object/value we want to inject into a property. We will talk about the first parameter later.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const injectProp = locatorDecoratorFactory(loc);
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const injectProp = locatorDecoratorFactory(loc);
 </code></pre>
 <p>The decorator logic resides in the <code>locatorDecoratorFactory</code> function. It will return a function that will be used as a decorator. The function will take 3 parameters. The first one is the target which is the class prototype. The second one is the property key. The third one is the descriptor. Because we want to specify the key, the decorator wraps the function with three parameters with a function that takes an <code>id</code> which is the unique identifier of the object/value we want to inject into a property.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function locatorDecoratorFactory&lt;LocatorMap&gt;(locator: Locator&lt;LocatorMap&gt;) {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function locatorDecoratorFactory&lt;LocatorMap&gt;(locator: Locator&lt;LocatorMap&gt;) {
     return function &lt;ID extends LocatorID&lt;LocatorMap&gt;&gt;(id: NoUnion&lt;ID&gt;) {
         return function(_target: undefined, context: ClassFieldDecoratorContext&lt;unknown, LocatorMap[ID] | undefined&gt;): void {
             const { metadata, name, access, addInitializer } = context;
@@ -26,13 +26,13 @@ main();
 }
 </code></pre>
 <p>The <code>id</code> is not a raw <code>string</code>because it has to be from a key of the locator map (dictionary of key to object to inject). So, we have these utility types:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">type UnionToIntersection&lt;U&gt; = (U extends any ? (k: U) =&gt; void : never) extends (k: infer I) =&gt; void ? I : never;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">type UnionToIntersection&lt;U&gt; = (U extends any ? (k: U) =&gt; void : never) extends (k: infer I) =&gt; void ? I : never;
 type NoUnion&lt;Key&gt; = [Key] extends [UnionToIntersection&lt;Key&gt;] ? Key : never;
 type LocatorID&lt;LocatorMapType&gt; = keyof LocatorMapType &amp; string;
 type Constructor&lt;T = any&gt; = new (...args: any[]) =&gt; T;
 </code></pre>
 <p>The injection of the value into the property is done in the <code>addInitializer</code> function. This function is called when the class is instantiated, it sees the decorator, call the function to set the value.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function locatorDecoratorFactory&lt;LocatorMap&gt;(locator: Locator&lt;LocatorMap&gt;) {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function locatorDecoratorFactory&lt;LocatorMap&gt;(locator: Locator&lt;LocatorMap&gt;) {
     return function &lt;ID extends LocatorID&lt;LocatorMap&gt;&gt;(id: NoUnion&lt;ID&gt;) {
         return function(_target: undefined, context: ClassFieldDecoratorContext&lt;unknown, LocatorMap[ID] | undefined&gt;): void {
             const { metadata, name, access, addInitializer } = context;
@@ -60,7 +60,7 @@ type Constructor&lt;T = any&gt; = new (...args: any[]) =&gt; T;
 </code></pre>
 <p>The function aboves retrieve information using the <code>context</code> parameter. The <code>metadata</code> is used to store the metadata for the instance. The <code>name</code> is the name of the property. The <code>access</code> is used to set the value of the property. The <code>addInitializer</code> is used to add the initializer for the property.</p>
 <p>The <code>getInstanceMeta</code> function is used to get the metadata for the promise. It is a function that return a record of the promises for the instance. The goal is to have a single promise for the instance and not one promise for each property.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function getInstanceMeta(keyValuePromise: WeakMap&lt;object, unknown&gt;, instance: unknown): Record&lt;string | symbol, Promise&lt;void&gt;&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function getInstanceMeta(keyValuePromise: WeakMap&lt;object, unknown&gt;, instance: unknown): Record&lt;string | symbol, Promise&lt;void&gt;&gt; {
     const thisKey = instance as object;
     const metaValue = keyValuePromise.get(thisKey) as Record&lt;string | symbol, Promise&lt;void&gt;&gt;;
     const meta = metaValue ?? {};
@@ -72,7 +72,7 @@ type Constructor&lt;T = any&gt; = new (...args: any[]) =&gt; T;
 </code></pre>
 <h1>Locator</h1>
 <p>The locator role is to store the objects/values and to provide them when requested. In our example, we will use a simple locator that will store the objects/values in a map. In reality, you would use a dependency injection container to store the objects/values and to provide them when requested.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">class Locator&lt;M&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">class Locator&lt;M&gt; {
     constructor(private map: M) {}
     async get&lt;ID extends LocatorID&lt;M&gt;&gt;(id: NoUnion&lt;ID&gt;): Promise&lt;M[ID]&gt; {
         await new Promise(resolve =&gt; setTimeout(resolve, 100)); // Simulate a delay to simulate real scenarios
@@ -82,7 +82,7 @@ type Constructor&lt;T = any&gt; = new (...args: any[]) =&gt; T;
 </code></pre>
 <h1>Class Decorator</h1>
 <p>A feature we are adding, which is optional but useful, is to have a class decorator that will wait for all the injected properties to be completed. This is useful when you have a class that has many injected properties and you want to wait for all of them to be completed before doing something.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function injectable() {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function injectable() {
     return function (target: Constructor, context: ClassDecoratorContext): Constructor {
         return class extends (target as any) {
             readonly injected = Promise.all(Object.values(getInstanceMeta(context.metadata.decoratorInjectionPromise as WeakMap&lt;object, unknown&gt;, this)));
@@ -93,7 +93,7 @@ type Constructor&lt;T = any&gt; = new (...args: any[]) =&gt; T;
 <p>The class decorator is called <code>injectable</code> and add to the class a property <code>injected</code> that is a promise that will resolve when all the injected properties are completed. We can see that the <code>injected</code> property gets all <code>instances</code> from the metadata. The <code>instances</code> was injected in the property decorator using <code>const instancesMap = (metadata.instances ??= new WeakMap()) as WeakMap&lt;object, unknown&gt;;</code>.</p>
 <h1>Testing utility</h1>
 <p>To simplify the testing, we can create a utility class <code>Injectable</code> that will declare the <code>injected</code> property. This way, we can use the <code>untilInjected</code> function to wait for all the injected properties to be completed.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">abstract class InjectableDecorators {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">abstract class InjectableDecorators {
     declare readonly injected: Promise&lt;void&gt;;
 }
 
@@ -104,7 +104,7 @@ function waitUntilAllInjected&lt;T = unknown&gt;(target: T): Promise&lt;void&gt;
 </code></pre>
 <h1>Test</h1>
 <p>Creating few classes and a fake dependency injection container, we can test the scenario.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">class A {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">class A {
     readonly id = "A";
 }
 class B {
@@ -122,7 +122,7 @@ const loc: Locator&lt;LocatorMap&gt; = new Locator&lt;LocatorMap&gt;({
 });
 </code></pre>
 <p>Testing is a matter of using the decorators.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">@injectable()
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">@injectable()
 class T {
     @injectProp("A") 
     private _a?: A;
@@ -142,7 +142,7 @@ async function main(): Promise&lt;void&gt; {
 void main();
 </code></pre>
 <p>The properties are all undefined before the injection. After the injection, the properties are set to the values from the locator. We know exactly when the values are injected because we are using the <code>untilInjected</code> function.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">[LOG]: " t1 before injection",  "_a:",  undefined,  "_b:",  undefined 
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">[LOG]: " t1 before injection",  "_a:",  undefined,  "_b:",  undefined 
 [LOG]: " t1 after injection",  "_a:",  A: {
   "id": "A"
 },  "_b:",  B: {

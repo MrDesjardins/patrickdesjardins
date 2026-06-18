@@ -8,10 +8,10 @@
 <h2>Look-ahead</h2>
 <p>A parent children is the common scenario. Imagine a parent who has many children. GraphQL by default will call the resolver for the parent and then will call a single resolver by children. If you have the resolver of the parent fetching the parent data (1 HTTP request) and then one fetch at each child (1 HTTP request multiplied by the number of children) it can become not performant. Even if the GraphQL is connected directly to a database, it would not be performant on a big list of children. The database scenario is often easier to visualize. Instead of making several SELECT statement with a WHERE clause that specify a single child ID, we would do a SELECT statement with a IN clause that specify the array of IDs. That way, it would return a single query response with many rows. In REST, if you have an endpoint that allows the parent to expand the children, you can use that endpoint instead of the one that only return the immediate parent attribute.</p>
 <p>In GraphQL, you can peek at what is being queried. The look-ahead notion is the exploration of what the user specified in the query. The information is available in the fourth parameter of the query. The parameter's type is "GraphQLResolveInfo". You can use a NPM package named "<a href="https://www.npmjs.com/package/graphql-fields">graphQLFields</a>" that will give you an easy way to access the information.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const fields = graphQLFields(graphQLResolveInfo);
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const fields = graphQLFields(graphQLResolveInfo);
 </code></pre>
 <p>Once you have extracted all the fields, you can check if the children node is being requested. If not, you can fetch the parent information without the additional payload (SELECT directly the ID without further data from children).</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight"> if (fields.sites !== undefined){
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight"> if (fields.sites !== undefined){
     // Perform a more exhaustive query that will save us many small request
 }
 </code></pre>
@@ -21,7 +21,7 @@
 <p>Naturally, the DataLoader is taking an array of the key. Even if you want to request for a single element, the DataLoader will presume that you query for a collection. I will not go in this article about pattern that you can use other than mentioning that you could look at the number of ids passed in the DataLoader and take a smart decision about how to fetch the data. Worth mentioning, the load function of the DataLoader that is needed to get the information from the cache or the code inside the data loader (to fetch) can be invoked multiple times. The DataLoader will coalesce all singular loads which occur within a single tick and then call your batch loading function.</p>
 <p>An effective way to work with DataLoader is to have a single DataLoader by way to query the information. For example, if you query a "parent" entity by id, you would have a DataLoader for "parent" by "id". You will have one for "parent" by "name" and one for "child" by "id", etc. The separation might sound redundant but a single GraphQL query does not ask for many entities in a different way, hence does not duplicate much.</p>
 <p>A good way to keep everything tidy up is to define a class into which we can inject the current user's request. It gives all the security information like any authentication bearer token that the fetching code might need. The class trickle down the context information (user's HTTP request) by having the request passed in its constructor parameter down to the service that will fetch the data. In the following code, you can see the pattern.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export class DataLoaders {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export class DataLoaders {
     private dataSources: GraphQLCustomDataSources;
     public getParentByParentId: DataLoader&lt;number, Parent&gt;;
     public getChildByChildId: DataLoader&lt;number, Child&gt;;
@@ -48,13 +48,13 @@
 </code></pre>
 <p>The code above is a short version of what it can be with two entities: <em>Parent</em> and <em>Child</em>. In reality, you would have way more DataLoader and might want to breakdown each detail into a separated file and use the DataLoaders class as a facade to all the logic. The goal here is to have a single point of initialization to get the HTTP request passed down to the implementation of the data source.</p>
 <p>Still, there is an issue. We are caching the DataLoader of the <em>Parent</em> entity, not the <em>Child</em> entity. It means that when the GraphQL traverse and invokes the children resolver, that this one will call the DataLoader that request the child information by child id, not by parent ID. There are many patterns. You could invoke the parent DataLoader and check if the data is already present. You can also have the parent DataLoader <em>primes</em> the child DataLoader. Priming the data means to set in another cache the data. The following code can be added to the DataLoader previously built. Now, the GraphQL invokes the DataLoader of the parent, get the data and populate the parent's cache. Because it has the information about the children, it loops the collection and primes the child's DataLoader as well. The traversal continues and the child's resolver calls the child's DataLoader that has a promise resolved with the child data.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">children.forEach(c =&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">children.forEach(c =&gt; {
       this.getChildByChildId.prime(c.id, c);
 });
 
 </code></pre>
 <p>From there, you instantiate the class once in the Apollo's server configuration. The instantiation will occur at every request, hence no data is mixed between users.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">async function apolloServerConfig() {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">async function apolloServerConfig() {
     const serverConfig: ApolloServerConfig = {
         schema: schemas,
         context: (context: GraphQLCustomResolversContext) =&gt; {

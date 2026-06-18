@@ -43,10 +43,10 @@
 <h1>The Solution That Worked</h1>
 <p>I wrote the full command sequence into <code>docs/runbook-windows-wsl.md</code>. Here is the short version that recovered a ~3 MB file byte-identically.</p>
 <p><strong>Shared config everywhere:</strong></p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">--width 1920 --height 1080 --fps 30 --algo quantized --levels 2 --size 6
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">--width 1920 --height 1080 --fps 30 --algo quantized --levels 2 --size 6
 </code></pre>
 <p><strong>Transmitter (source machine):</strong> inject into a lossless MKV, then loop fullscreen on HDMI.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">hdmifiletransporter \
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">hdmifiletransporter \
   -m inject \
   -i myfile.zip \
   -o transfer.mkv \
@@ -59,12 +59,12 @@
 mpv --loop=inf --fullscreen transfer.mkv
 </code></pre>
 <p><strong>Receiver capture (Windows PowerShell, not WSL):</strong> copy the MJPEG stream without re-encoding.</p>
-<pre class="language-powershell"><code class="language-powershell code-highlight">ffmpeg -y -rtbufsize 200M -f dshow -video_size 1920x1080 -framerate 30 -i video="USB Video" -c:v copy "$env:USERPROFILE\Videos\captured.mp4"
+<pre class="language-powershell" tabindex="0"><code class="language-powershell code-highlight">ffmpeg -y -rtbufsize 200M -f dshow -video_size 1920x1080 -framerate 30 -i video="USB Video" -c:v copy "$env:USERPROFILE\Videos\captured.mp4"
 </code></pre>
 <p>Record 60 to 90 seconds. Press <code>q</code>. Watch the terminal: <code>speed</code> should stay near <code>1x</code> and there should be no <code>frame dropped!</code> lines.</p>
 <p><strong>Receiver extract (WSL):</strong> convert offline, then extract with the same flags as inject.</p>
 <p>OpenCV cannot read the MJPEG capture directly. An offline pass to FFV1 fixes that without overloading the live capture buffer:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">ffmpeg -i /mnt/c/Users/&lt;you&gt;/Videos/captured.mp4 -c:v ffv1 -level 3 captured_clean.mkv
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">ffmpeg -i /mnt/c/Users/&lt;you&gt;/Videos/captured.mp4 -c:v ffv1 -level 3 captured_clean.mkv
 
 hdmifiletransporter \
   -m extract \
@@ -79,7 +79,7 @@ hdmifiletransporter \
 <p>The recovered zip matched the original byte for byte.</p>
 <p>A few things are normal and should not send you back to square one. One <code>No JPEG data found in image</code> line when capture starts is fine. A flood of MJPEG warnings during the offline convert is also fine. Check the final <code>frame=</code> count instead (<code>duration x 30</code>, aim for at least 80%).</p>
 <p>If extract still fails after a clean capture, step down to a more conservative preset and re-inject with the same new flags:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">--algo brightness --levels 4 --size 6
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">--algo brightness --levels 4 --size 6
 </code></pre>
 <h1>What Changed in the Repository</h1>
 <p>For anyone pulling the code, here is the map of what landed in the last day:</p>

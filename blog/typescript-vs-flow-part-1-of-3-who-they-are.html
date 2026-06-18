@@ -118,7 +118,7 @@
 <p>During my evaluation of TypeScript vs Flow, rapidly I had to admit that a major difference between the two is that one is doing more than the other. TypeScript is not just a type checker, it’s a transpiler. Flow is a type checker, that’s it.</p>
 <p>What is the advantage of Flow? The advantage is that you can use whatever you want for transpiling. To be honest, it means that you will need BabelJs. BabelJs has the advantage against TypeScript that you can cherry-pick plugins and presets you want. TypeScript allows you to enable and disable features, but you are limited to the features they release. At the end, BabelJs is very popular and gives more flexibility. TypeScript is simpler to install and compatibility (or configuration) is a breeze.</p>
 <p>I migrated one of my small projects, which is a React project. Here is the TypeScript configuration followed by the BabelJs and Flow configuration.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">// tsconfig.json
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">// tsconfig.json
 {
 "compilerOptions": {
 "target": "es6",
@@ -139,7 +139,7 @@
 "typescript": "^2.3.2"
 </code></pre>
 <p>Flow and BabelJs:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">//.flowconfig
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">//.flowconfig
 [ignore]
 .*/node_moduless/*.*
 .*/deploy/*.*

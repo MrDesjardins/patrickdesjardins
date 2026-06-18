@@ -9,7 +9,7 @@
 <p>So, the system design consists of actually two parts: Go Server for the API and hosting the static files, and a PostgreSQL database.</p>
 <h1>Loading the data</h1>
 <p>Loading the data was quick using SQLite using the <code>copy</code> command. With some optimization, I was able to get the thousands of files (24.19 million prices) under 2 minutes. Similar result with DuckDB. Using threading and Go routine, I could achieve an even better result with PostgreSQL in about 60 seconds. The database has two tables: the stock price and one with the company information. To obfuscate the stock symbol, there is a UUID identifier created for each company. Also, each entry has an auto-increment ID.</p>
-<pre class="language-go"><code class="language-go code-highlight">type Stock struct {
+<pre class="language-go" tabindex="0"><code class="language-go code-highlight">type Stock struct {
    Id       int     `json:"id"`
    Symbol   string  `json:"symbol"`
    Date     string  `json:"date"`

@@ -5,7 +5,7 @@
 <p>To resolve this problem, you will find on the Web a lot of solution but most of them work with previous version of Entity Framework 4.35.0.</p>
 <p><img src="/images/blog/modelBackingException-400x262.png" alt="" /></p>
 <p>The solution from this version is to use the static method SetInitializer and bind to the context a Null value. If you are working on a Web solution, the best position to write the code is in the Application_Start of your Global.asax.cs file.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">protected void Application_Start() { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">protected void Application_Start() { 
   AreaRegistration.RegisterAllAreas(); 
   RegisterRoutes(RouteTable.Routes); 
   //... 

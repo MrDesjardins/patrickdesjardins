@@ -3,7 +3,7 @@
 <p>To understand <code>satisfies</code>, you must feel the pain of not having the operator.</p>
 <h2>Example 1: Too Many Fields</h2>
 <p>Imagine you have a type that defines a <code>Person</code> and a function to add people into something.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">interface Person {
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">interface Person {
     name: string;
     age: number;
 }
@@ -11,7 +11,7 @@
 declare function addPerson(p:Person):void;
 </code></pre>
 <p>In this example, we use <code>declare</code> to avoid getting into the detail of the function, as it is irrelevant to the point we are illustrating. What is important is how to call this function. Calling the function with a variable is the safest way without <code>satisfies</code> as the variable has an explicit type. For example:</p>
-<pre class="language-ts"><code class="language-ts code-highlight">interface Person {
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">interface Person {
     name: string;
     age: number;
 }
@@ -22,7 +22,7 @@ const p: Person = {name:"Patrick", age: 89}; // Variable
 addPerson(p); // Using the variable
 </code></pre>
 <p>The problem is that you <strong>must</strong> define an explicit variable. While it is acceptable in many cases, it would be, in some cases, more straightforward to remove that line.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">interface Person {
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">interface Person {
     name: string;
     age: number;
 }
@@ -32,12 +32,12 @@ declare function addPerson(p:Person):void;
 addPerson({name:"Patrick", age: 89}); // Will be dangerous soon
 </code></pre>
 <p>The problem with the above code is that you may add fields later. As long as the minimum is there, TypeScript will allow passing the object because of its structural nature.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">addPerson({name:"Patrick", age: 89, lastName:"Haha!"}); // lastName added, still pass the compilation time
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">addPerson({name:"Patrick", age: 89, lastName:"Haha!"}); // lastName added, still pass the compilation time
 </code></pre>
 <p>The problem is that maybe the <code>lastName</code> was there in the past and removed. Then, you have a piece of code that should not be there anymore, but you are not warned. It might sound like a small problem so let's get into a second example.</p>
 <h2>Example 2: Union</h2>
 <p>Let's add more complexity. Let's have a function called <code>add</code> that accepts a union of two interfaces with no field that overlaps.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">interface Person {
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">interface Person {
     name: string;
     age: number;
 }
@@ -52,16 +52,16 @@ add({name:"Patrick", breathUnderWater:true}); // dangerous
 </code></pre>
 <p>This example compiles without problem. The function takes a union of a <code>Person</code> or <code>Animal</code> and it is legit to pass a mix of both because it fulfills the <code>Animal</code> part of the contract and the <code>name</code> is superfluous. The auto-complete in Visual Studio Code (VsCode) is also mixed up by the suggestion a mix of both types.</p>
 <p>Before using TypeScript <code>satisfies</code> keyword, a trick was to use <code>cast</code>. For example, if we knew we wanted to pass a <code>Person</code> we could use <code>as Person</code> and the example above would be in error.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">add({name:"Patrick", breathUnderWater:true} as Person); // dangerous
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">add({name:"Patrick", breathUnderWater:true} as Person); // dangerous
 </code></pre>
 <p>However, it opens another issue: it coerces the type to be a <code>Person</code> while it is not. So it means that maybe we are getting an error because we forgot some fields, in that case <code>age</code>, and adding the field fixes the compiler error.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">add({name:"Patrick", age:123, breathUnderWater:true} as Person);
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">add({name:"Patrick", age:123, breathUnderWater:true} as Person);
 </code></pre>
 <p>But, it remains that the <code>breathUnderWater</code> field should not be acceptable.</p>
 <h2>Example 3: Nested Implicit Object</h2>
 <p>Another example is if you have a list of nested objects that are not explicitly typed. For example, you may have an object with many constants or feature flags.</p>
 <p>Here is a small example.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">const MY_APP_CONSTANTS = {
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">const MY_APP_CONSTANTS = {
     SIZES: {
         MIN: 1024
     },
@@ -75,7 +75,7 @@ add({name:"Patrick", breathUnderWater:true}); // dangerous
 };
 </code></pre>
 <p>The problem is that each field are <code>number</code> or <code>boolean</code> and it can be improved with <code>as const</code> so that each field has exactly only one possible value (the one defined in the object).</p>
-<pre class="language-ts"><code class="language-ts code-highlight">const MY_APP_CONSTANTS = {
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">const MY_APP_CONSTANTS = {
     SIZES: {
         MIN: 1024
     },
@@ -89,11 +89,11 @@ add({name:"Patrick", breathUnderWater:true}); // dangerous
 } as const;
 </code></pre>
 <p>The <code>const</code> and <code>as const</code> works well, and trying to access an additional field that does not exist does not compile.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">MY_APP_CONSTANTS.SIZES.MAX = 10000; // Compiler error, as expected.
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">MY_APP_CONSTANTS.SIZES.MAX = 10000; // Compiler error, as expected.
 </code></pre>
 <p>So, there is no problem with example 3? There is. In that case, there is no type, and the implicit typing takes care of the issue. However, in a similar matter, we may have a type that will get into a similar problem of example 2, where we can access a non-existant field without compilation error.</p>
 <p>Let's simplify the constant to have only the feature flag and to be open for additional flags. Later, we will allow any feature flag name as a string if the value is a boolean.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">interface AppThresholds extends Record&lt;string, boolean&gt;{}
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">interface AppThresholds extends Record&lt;string, boolean&gt;{}
 
 interface AppConfig {
     FEATURE_FLAGS: AppThresholds;
@@ -106,7 +106,7 @@ const MY_APP_CONSTANTS:AppConfig = {
 };
 </code></pre>
 <p>So far, so good. However, a problem occurs when we use a type for the root of the object rather than the children.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">interface AppFlags extends Record&lt;string, boolean&gt;{}
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">interface AppFlags extends Record&lt;string, boolean&gt;{}
 
 interface AppConfig {
     FEATURE_FLAGS: AppFlags;
@@ -122,21 +122,21 @@ MY_APP_CONSTANTS.FEATURE_FLAGS.ENABLE_POST_FORM = true;
 MY_APP_CONSTANTS.FEATURE_FLAGS.do_not_exist = true; // dangerous
 </code></pre>
 <p>The code compiles but <code>do_not_exist</code> does not exist. Using <code>as const</code> does not help.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">const MY_APP_CONSTANTS: AppConfig = {
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">const MY_APP_CONSTANTS: AppConfig = {
     FEATURE_FLAGS: {
         ENABLE_POST_FORM: true
     } as const
 } as const;
 </code></pre>
 <p>The only way is not to type, which will have the constant to infer the type and not use the feature flag as a <code>Record&lt;string&gt;</code>, which means can be anything like <code>do_not_exist</code>.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">const MY_APP_CONSTANTS = {
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">const MY_APP_CONSTANTS = {
     FEATURE_FLAGS: {
         ENABLE_POST_FORM: true
     } 
 }
 </code></pre>
 <p>However, the problem is that someone might add something else and change the goal of this object!</p>
-<pre class="language-ts"><code class="language-ts code-highlight">const MY_APP_CONSTANTS = {
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">const MY_APP_CONSTANTS = {
     FEATURE_FLAGS: {
         ENABLE_POST_FORM: true
     },
@@ -150,17 +150,17 @@ MY_APP_CONSTANTS.FEATURE_FLAGS.do_not_exist = true; // dangerous
 <p>In all three examples, the TypeScript operator <code>satisfies</code> fixes the issues.</p>
 <h2>Example 1: Too Many Fields</h2>
 <p>The first example showed that the function accepted too many fields.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">addPerson({name:"Patrick", age: 89, lastName:"Haha!"} satisfied Person); // Compiler error
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">addPerson({name:"Patrick", age: 89, lastName:"Haha!"} satisfied Person); // Compiler error
 </code></pre>
 <p>Using <code>satisfies</code> tells the compiler that the object must <em>satisfies</em> the contract of the <code>Person</code> interface, and it that case the field <code>lastName</code> is not part of the contract, thus causing a compilation error. <code>satisfies</code> is better than an <code>as</code> because it does not try to coerce the type to be casted to something that it does not. In this example, it would be cast because it has the minimum structural field to match the expected <code>Person</code>. Thus, <code>as</code> is not the solution.</p>
 <h2>Example 2: Union</h2>
 <p>Similarly, with example two with the union where a mix of the two desired type was compiled without a problem.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">add({name:"Patrick", age:123, breathUnderWater:true} satisfies Person);
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">add({name:"Patrick", age:123, breathUnderWater:true} satisfies Person);
 </code></pre>
 <p>The code was working with <code>as</code> but we were adding a field that did not belong there. With <code>satisfies</code> the code does not compile as expected.</p>
 <h2>Example 3: Nested Implicit Object</h2>
 <p>The final example works well with <code>satisfies</code> if you do not type the object. The object will respect the contract or <em>satisfy</em> the interface by only allowing the developer to add <code>FEATURE_FLAGS</code> to the <code>MY_APP_CONSTANTS</code> object but will not allow the usage of the object to access fields that do not <em>satisfy</em> the feature flag object signature.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">interface AppFlags extends Record&lt;string, boolean&gt;{}
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">interface AppFlags extends Record&lt;string, boolean&gt;{}
 
 interface AppConfig {
     FEATURE_FLAGS: AppFlags;

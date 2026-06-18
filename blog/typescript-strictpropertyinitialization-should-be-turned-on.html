@@ -2,7 +2,7 @@
 <p>Before 2.7, the only difference between an optional and a non optional class's property was that optional could receive the value of undefined while the other one was undefined until a value was set. After initialized, the non-optional protects the field to receive undefined. However, the case of declaring and not defining the value makes TypeScript less valuable by creating confusion. The nomenclature indicate that a field cannot be undefined but the missing initialization create a limbo where the value is something not allowed.</p>
 <p>TypeScript 2.7 brings a new compiler flag: "strictPropertyInitialization". This new strict flag indicates to TypeScript that any class property must initialize the field at the declaration time or inside the constructor of the class.</p>
 <p>Let's see an example that compile prior to the adoption of strictPropertyInitialization or if this flag is set to false. The following code shows three properties. The "m1" is initialized in the constructor. The "m2" is initialized at declaration. The "m3" is initialized by a call to a method from the constructor. The last example works only without the flag to true.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">class C { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">class C { 
   private m1: number; 
   private m2: string = "2"; 
   private m3: boolean;
@@ -18,7 +18,7 @@
 </code></pre>
 <p>The problem with initializing in a method is the lack of guarantee of invocation. The call to the method might be immediate or might be under a condition that make it not initialize or to initialize partially its properties. TypeScript can perform a deeper analysis if it concentrates on the each field and under a single method -- the constructor.</p>
 <p>Let's examine a second example where the compiler catches a missing initialization.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">class C { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">class C { 
   private m1: number; 
   private m2: string = "2"; 
   private m3: boolean;

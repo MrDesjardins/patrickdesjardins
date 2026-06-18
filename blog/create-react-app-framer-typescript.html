@@ -13,10 +13,10 @@
 <h1>The Solution</h1>
 <p>In my case, I decided to downgrade CRA to version 4. Once Craco is installed with npm, you need two files.</p>
 <h2>Craco</h2>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">npm install @craco/craco --save
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">npm install @craco/craco --save
 </code></pre>
 <p>The first file is the basic Craco configuration file: <code>craco.config.js</code>. The file must be at the root of your project, next to your <code>package.json</code> file. The content:</p>
-<pre class="language-js"><code class="language-js code-highlight">const { ProvidePlugin } = require("webpack");
+<pre class="language-js" tabindex="0"><code class="language-js code-highlight">const { ProvidePlugin } = require("webpack");
 const webpackFramerTyperScriptPlugin = require("./craco-plugin-framer-typescript");
 module.exports = {
   webpack: {
@@ -32,7 +32,7 @@ module.exports = {
 <p>The second and eleventh lines are important: they are the ones that indicate to Craco to use the plugin we need to develop.</p>
 <h2>Craco Plugin</h2>
 <p>The plugin is injected into Craco. The <a href="https://github.com/dilanx/craco/blob/master/packages/craco/README.md">documentation</a> is great with many <a href="https://github.com/dilanx/craco/tree/master/recipes">examples</a>, so I was able to write something very simple:</p>
-<pre class="language-js"><code class="language-js code-highlight">const { loaderByName, addBeforeLoader } = require("@craco/craco");
+<pre class="language-js" tabindex="0"><code class="language-js code-highlight">const { loaderByName, addBeforeLoader } = require("@craco/craco");
 module.exports = {
   overrideWebpackConfig: ({
     webpackConfig,

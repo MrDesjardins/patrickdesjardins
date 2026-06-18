@@ -3,7 +3,7 @@
 <p>First, before getting too deep with <code>future::mpsc::unbounded</code>, know that there is also <code>future::mpsc::channel</code>. Channel is similar but is for <em>bounded</em> communication. The <em>bounded</em> has a single channel per sender, while the <code>future::mpsc::unbounded</code> has a single channel for every sender. The example uses the <code>future::mpsc::unbounded</code> with an internal buffer in case the receiver is not fetching the data fast enough.</p>
 <h1>Main Loop Function</h1>
 <p>The example consists of three functions. The first one, the main one, is the entry one that will spawn two threads.</p>
-<pre class="language-rust"><code class="language-rust code-highlight">fn main() {
+<pre class="language-rust" tabindex="0"><code class="language-rust code-highlight">fn main() {
     let (broker_sender, broker_receiver) = mpsc::unbounded::&lt;String&gt;();
     task::spawn(receive_loop(broker_receiver));
     task::block_on(send_loop(broker_sender));

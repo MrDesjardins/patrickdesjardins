@@ -12,17 +12,17 @@
 <p>Redpanda offers a single command line to start a Redpanda node or cluster of nodes).</p>
 <p>Step #1: Open WSL2 on Windows
 Step #2: Download and install</p>
-<pre class="language-sh"><code class="language-sh code-highlight">curl -LO https://github.com/redpanda-data/redpanda/releases/latest/download/rpk-linux-amd64.zip
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">curl -LO https://github.com/redpanda-data/redpanda/releases/latest/download/rpk-linux-amd64.zip
 mkdir -p ~/.local/bin
 unzip rpk-linux-amd64.zip -d ~/.local/bin/
 rpk container start
 </code></pre>
 <p>If you are using ZSH, edit the <code>.zshrc</code> by adding the path to the installation of Redpanda (<code>rpk</code>).</p>
-<pre class="language-sh"><code class="language-sh code-highlight">path+=("~/.local/bin")
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">path+=("~/.local/bin")
 </code></pre>
 <h2>Docker Image</h2>
 <p>The former way did not work for me. However, using the docker Redpanda image worked.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">docker run -d --pull=always --name=redpanda-1 --rm \
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">docker run -d --pull=always --name=redpanda-1 --rm \
 -p 8081:8081 \
 -p 8082:8082 \
 -p 9092:9092 \
@@ -37,21 +37,21 @@ redpanda start \
 --check=false
 </code></pre>
 <p>Then login into the container:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">docker exec -it redpanda-1 bash
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">docker exec -it redpanda-1 bash
 </code></pre>
 <h1>Redpanda Topic</h1>
 <p>Messages need to travel into a topic. The producer will push the message into a topic. The consumer will pull the message from the topic.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">rpk topic create my-topic
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">rpk topic create my-topic
 </code></pre>
 <h1>Node Configurations</h1>
 <p>Redpanda is compatible with Kafka API. Thus, the TypeScript code will be using the <code>kafkajs</code> library. We will use the <code>uuid</code> library to have a unique identifier to consume the message.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">npm install --save uuid@latest kafkajs@latest    
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">npm install --save uuid@latest kafkajs@latest    
 npm install --save-dev @types/node @types/uuid typescript@latest  
 </code></pre>
 <h1>Consumer TypeScript Code</h1>
 <p>The first part is the consumer. The consumer will run first to receive the message from the producer. The consumer uses the Kafkajs library to connect to Redpanda. The main Kafka object connects to one or many brokers. They are instances of the Redpanda node.</p>
 <h2>Import and Kafka</h2>
-<pre class="language-typescript"><code class="language-typescript code-highlight">import { Kafka, logLevel } from "kafkajs";
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">import { Kafka, logLevel } from "kafkajs";
 import { brokers, topicName } from "./shared.js";
 import { v4 as uuidv4 } from "uuid";
 
@@ -61,12 +61,12 @@ const redpanda = new Kafka({
 });
 </code></pre>
 <p>The <code>./shared.js</code> is a file shared between the consumer and producer that contains the brokers and topic name. Thus, one place to edit if we change it and both parts of the system are updated. The content is two lines:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export const brokers = ["localhost:9092", "localhost:9644"];
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export const brokers = ["localhost:9092", "localhost:9644"];
 export const topicName = "my-topic";
 </code></pre>
 <h2>Consumer Code</h2>
 <p>Using the <code>uuid</code> library, the consumer is unique, allowing Redpanda to know if a particular consumer read the messages. Using the same <code>groupId</code> would mean that the system would not push previously pushed messages in the case of a reconnect. Thus, it's essential to have a unique id per user or process group that work together to consume messages on a topic.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const consumer = redpanda.consumer({ groupId: uuidv4() });
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const consumer = redpanda.consumer({ groupId: uuidv4() });
 
 try {
   await consumer.connect();
@@ -87,7 +87,7 @@ try {
 <p>The <code>run</code> reads one message at a time. Using the <code>batch</code> function can consume more than one message at a time. In that case, we display the value, the offset (order in the topic), and the time it went into Redpanda.</p>
 <h2>Consumer Cleaning Code</h2>
 <p>Finally, we need to disconnect in case of an error or in case the process is closed.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export async function disconnect() {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export async function disconnect() {
   try {
     await consumer.disconnect();
   } catch (error) {
@@ -107,7 +107,7 @@ process.on("SIGINT", async () =&gt; {
 </code></pre>
 <h1>Producer TypeScript Code</h1>
 <p>The producer is very similar. The first part is identical.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">import { Kafka, logLevel } from "kafkajs";
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">import { Kafka, logLevel } from "kafkajs";
 import { brokers, topicName } from "./shared.js";
 
 const redpanda = new Kafka({
@@ -116,7 +116,7 @@ const redpanda = new Kafka({
 });
 </code></pre>
 <p>The second part is to create a producer instead of a consumer. Then, connect, and instead of running, we are sending with <code>send</code>.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const producer = redpanda.producer();
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const producer = redpanda.producer();
 
 try {
   await producer.connect();
@@ -129,7 +129,7 @@ try {
 }
 </code></pre>
 <p>Finally, similarly, we are handling the disconnect.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export async function disconnect() {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export async function disconnect() {
   try {
     await producer.disconnect();
   } catch (error) {
@@ -150,27 +150,27 @@ process.on("SIGINT", async () =&gt; {
 <h1>Executing</h1>
 <p>Running the system requires two consoles open: one for the consumer and one for the producer.</p>
 <p>Console #1:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">npm run start:consumer
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">npm run start:consumer
 </code></pre>
 <p>Console #2:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">npm run start:producer
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">npm run start:producer
 </code></pre>
 <p>Once the second npm script starts, the first console will display the message.</p>
 <h1>Debugging</h1>
 <p>If you have an issue, you can always use the <code>rpk</code> command line to get more information. Here are some commands that can be useful:</p>
 <h2>Listening to a topic</h2>
 <p>If you want to debug your producer, you can listen to the topic. The goal is to isolate the potential issue of not receiving from the consumer by removing from the equation that the consumption code is failing.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">rpk topic consume my-topic
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">rpk topic consume my-topic
 </code></pre>
 <h2>Check the offset of a consumer id</h2>
 <p>We can use the private <code>__consumer_offsets</code> topic to read information about the offset.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">rpk topic consume __consumer_offsets
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">rpk topic consume __consumer_offsets
 </code></pre>
 <p>The output is a list of consumer with they groupId and the value is their offset within a topic. It's encoded in Unicode. I hardcoded the groupid to <code>patrickgroupid</code>. I know the offset is <code>4</code> in my example since the consumer script displays the offset and I ran the producer script four times. We can validate by fetching all the messages using:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">rpk topic consume my-topic -o "start"
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">rpk topic consume my-topic -o "start"
 </code></pre>
 <p>Which returns:</p>
-<pre class="language-json"><code class="language-json code-highlight">{
+<pre class="language-json" tabindex="0"><code class="language-json code-highlight">{
   "topic": "my-topic",
   "value": "Hello World!",
   "timestamp": 1694128832293,
@@ -207,7 +207,7 @@ process.on("SIGINT", async () =&gt; {
 }
 </code></pre>
 <p>We can see the private topic <code>__consumer_offsets</code> has these three entries for the group id <code>patrickgroupdid</code>:</p>
-<pre class="language-json"><code class="language-json code-highlight">{
+<pre class="language-json" tabindex="0"><code class="language-json code-highlight">{
   "topic": "__consumer_offsets",
   "key": "patrickgroupid",
   "value": "consumerRoundRobinAssigner,kafkajs-a4eb9d4d-370c-4e98-a7df-4c08d94d9a33�q��&lt;,kafkajs-a4eb9d4d-370c-4e98-a7df-4c08d94d9a33��kafkajs%n172.17.0.1�`u0my-topicmy-topic",
@@ -234,7 +234,7 @@ process.on("SIGINT", async () =&gt; {
 </code></pre>
 <p>The <code>offset</code> is not the offset of the group id, but the offset of the message into the <code>__consumer_offsets</code> topic. In that case, the value is <code>"value": "consumer�����q�(U",</code> which is in a binary format.
 Thus, some code is needed:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const admin = redpanda.admin();
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const admin = redpanda.admin();
 try {
   await admin.connect();
   const groupPartitionOffset = await admin.fetchOffsets({
@@ -252,7 +252,7 @@ try {
 }
 </code></pre>
 <p>In this particular case, we are targetting the <code>patrickgroupid</code> which output:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">Topic my-topic
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">Topic my-topic
 Offset for 5 at partition 0
 </code></pre>
 <p>The value is 5, meaning the following value to read would be the fifth offset.</p>

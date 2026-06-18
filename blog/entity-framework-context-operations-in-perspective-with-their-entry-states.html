@@ -1,9 +1,9 @@
 <!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Patrick Desjardins Blog - Entity Framework context operations in perspective with their entry states</title><meta name="description" content="Entity Framework context operations in perspective with their entry states"><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-CZbWyyk4.css"><link rel="stylesheet" href="/assets/static-modules.css"></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><header><h1 class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</h1><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main class="app_blog__components_BlogBody__main"><h2 class="app_blog__components_BlogBody__heading">Entity Framework context operations in perspective with their entry states</h2><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: 2013-05-27</p><p>When manipulating data with Entity Framework and the context, you are changing the state of the entity. For example, if you insert a new entity, the state will be to "Added". This article will show you all context operation that change the entity state and will show you that you can do what most of the operation do by simply changing manually the state of the entity.</p>
 <p>Before going deeper with the operation, let see all states. You can get the list of states by going into <code>EntityState</code> class of System.Data.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> namespace System.Data { [BindableType(IsBindable = false)] [Flags] public enum EntityState { Detached = 1, Unchanged = 2, Added = 4, Deleted = 8, Modified = 16, } } 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> namespace System.Data { [BindableType(IsBindable = false)] [Flags] public enum EntityState { Detached = 1, Unchanged = 2, Added = 4, Deleted = 8, Modified = 16, } } 
 </code></pre>
 <p>The <code>Detached</code> state is when an object is not yet attached to Entity Framework's context. By default, if you create a new instance of a class, this one is not attached. Another way to be detached is when you delete an entity. This one will be deleted from the database by Entity Framework but the object reference remains in your code. This one will be back to detached. Having said that, moving back to detached won't delete the entity but won't make Entity Framework knows about it. We could also manually set the entry to detached to have this one not tracked.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> var category = context.Categories.Find(id); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> var category = context.Categories.Find(id); 
  context.Categories.Remove(category); 
  context.SaveChanges(); // Will delete and set category as detached 
 
@@ -13,7 +13,7 @@
  context.SaveChanges(); // Will do nothing in the database because it's detached and it would required to be "Deleted" to be deleted. 
 </code></pre>
 <p>The example above call <code>Remove</code> to delete the entity. When deleting the state goes from <code>Added</code> to <code>Delete</code> to <code>Detached</code>. So both code below are doing the same thing : delete the entity from the database.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> var category = context.Categories.Find(id); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> var category = context.Categories.Find(id); 
  context.Categories.Remove(category); 
  context.SaveChanges(); 
 
@@ -23,7 +23,7 @@
  context.SaveChanges(); 
 </code></pre>
 <p>The <code>Unchanged</code> state occur when the entity is tracked by Entity Framework's context but has not changed yet. You can have this state if you use the method <code>Attach()</code> or if you change the state with <code>Entry()</code>.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> var category = new Category{Id=123}; 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> var category = new Category{Id=123}; 
  context.Categories.Attach(category); 
  context.SaveChanges(); 
 
@@ -33,7 +33,7 @@
  context.SaveChanges(); 
 </code></pre>
 <p>The <code>Added</code> state is synonym of insertion. When a new entity is added to the context, this one will be inserted into the database. In Entity Framework words, it's called Added. This can be done by using the <code>Add</code> method or by changing the state to <code>EntityState.Added</code>.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> var category = new Category{Id=123}; 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> var category = new Category{Id=123}; 
  context.Categories.Add(category); 
  context.SaveChanges(); 
 
@@ -43,7 +43,7 @@
  context.SaveChanges(); 
 </code></pre>
 <p>Finally, you can be <code>Modified</code>. This state will do an update to the property that has been changed. Once the update has been done by calling <code>SaveChanges</code>, the state come back to attached</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> var category = context.Categories.Find(id); //State is to attached 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> var category = context.Categories.Find(id); //State is to attached 
  context.Categories.Update(category); //State is now updated 
  context.SaveChanges(); //State is now attached 
  
@@ -53,12 +53,12 @@
  context.SaveChanges(); //State is now attached 
 </code></pre>
 <p>Without going in to much details you can handle modified state by using "<code>ApplyCurrentValues</code>". This will check the object passed by parameter and if changes are found will mark those properties with the new value and with the <code>Modified</code> state.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">var category = context.Categories.Attach(new Category { ID = categoryThatCameFromUserForm.ID }); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">var category = context.Categories.Attach(new Category { ID = categoryThatCameFromUserForm.ID }); 
 context.Categories.ApplyCurrentValues(categoryThatCameFromUserForm); 
 context.SaveChanges(); //State is now attached 
 </code></pre>
 <p>We could also specify manually which property that could have been changed with Entry method.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">var category = context.Categories.Attach(new Category { ID = categoryThatCameFromUserForm.ID }); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">var category = context.Categories.Attach(new Category { ID = categoryThatCameFromUserForm.ID }); 
 context.Entry(category).Property(d=&gt;d.Name).IsModified = true; 
 context.SaveChanges(); //State is now attached 
 </code></pre>

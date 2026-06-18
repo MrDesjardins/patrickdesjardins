@@ -6,7 +6,7 @@
 <p><img src="/images/blog/CreateFirebaseProject-1024x736.png" alt="" /></p>
 <p>Firebase is a library that is accessible via API keys and JavaScript API. You can also invoke the API through a Rest API which we will see in the second part. The first challenge is to figure out where to get the right API key because the system has many. The first step is to create the Service Worker. This is registered when the user goes into your website to run in the background of the browser. The default is to create a file called "firebase-messaging-sw.js" and to put that file at the root of your website. The location of the file is important because the service worker can only access assert that are sibling or child to the script registered.</p>
 <p>Here is the full code that I have for my Service Worker:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">importScripts("https://www.gstatic.com/firebasejs/3.5.0/firebase-app.js");
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">importScripts("https://www.gstatic.com/firebasejs/3.5.0/firebase-app.js");
 importScripts("https://www.gstatic.com/firebasejs/3.5.0/firebase-messaging.js");
 
 var config = {
@@ -44,7 +44,7 @@ self.addEventListener("notificationclick", function (event) {
 <p>The initialize command will connect the service worker to the server to listen to new messages. The <strong>setBackgroundMessageHandler</strong> function is called when a new message occurs when the user is not having the website in focus. It means that if the user has the website in a browser's tab that it not the current one, or if the user is not having the website open at all, or if the browser is minimized that this message will be invoked. The case about if the user is having focus will be treated later.</p>
 <p>This code get the data from the server. In my case, it's under the property <em>data</em> and <em>notification</em>. I set the title, the main message, the icon. The URL is there but didn't work at this time. That is why the second method, which use directly the push notification api to hook on <strong>notificationclick</strong>. This method handles when the user click the notification to open a specific URL. For example, in my case, the notification occurs when a specific event occurs and clicking the notification opens a specific page where the user can see the result of the action.</p>
 <p>The next step is to have a page where the user can subscribe to the push notification. In my case, it's done in the user's profile. I have a checkbox, if checked, the browser will request the authorization to the user to install the service worker. So, in my profile.js page I have the following code:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">$(document).ready(function () {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">$(document).ready(function () {
   initialiseUI();
 });
 
@@ -146,7 +146,7 @@ function updateSubscriptionOnServer(subscription) {
 <p><img src="/images/blog/ChromeApplicationTab-1024x226.png" alt="" /></p>
 <p>It's important to understand that what we are doing only work under localhost or with HTTPS' website. From Chrome'S debug panel, you can unregister, or click "Update on reload" to force a reinstallation of the service worker. This can be handy when developing to be sure to always have the latest version of your service worker.</p>
 <p>The next step is to have your website listen to incoming messages. This cover the scenario when the user is on the website and that we do not want to use the browser notification. To do, we need to use some code that we already used in the service worker concerning Firebase's initialization. In my case, I added in the master page (<code>_layout.cshtml</code>) a reference to Firebase script to initialize the library. It looks like that:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight"> &lt;script src="https://www.gstatic.com/firebasejs/3.6.2/firebase.js"&gt;&lt;/script&gt; &lt;/script&gt;
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight"> &lt;script src="https://www.gstatic.com/firebasejs/3.6.2/firebase.js"&gt;&lt;/script&gt; &lt;/script&gt;
  &lt;script&gt; var config = {
    apiKey: "AIzaSyDe0Z0NtygDUDySNMRtl2MIV5m4Hp7IAm0",
    authDomain: "bourse-virtuelle.firebaseapp.com",
@@ -155,7 +155,7 @@ function updateSubscriptionOnServer(subscription) {
  firebase.initializeApp(config); &lt;/script&gt;
 </code></pre>
 <p>I also have a global JavaScript file where I added the listener to message which are used in every page I have.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">$(document).ready(function () {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">$(document).ready(function () {
   var messaging = firebase.messaging();
   messaging.onMessage(function (payload) {
     var dataFromServer = JSON.parse(payload.data.notification);

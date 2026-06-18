@@ -2,7 +2,7 @@
 <p>React does not handle a use case well because you want to listen for change but not have the effect triggered on initialization. For example, if you're going to create an effect on a property of your component. You want to be notified when the property change. However, you do not want the inside of the effect function to be called upon initialization.</p>
 <p>There is some workaround with React by creating a variable that keep track of if the component is mounted and inside the effect to have a condition to check if the variable is set. Like many aspects of SolidJS, it handles it for you. No need to pollute your code with these tricks. Instead, you can pass an option to the <code>createEffect</code> that will defer the first change.</p>
 <p>Here is a full code sample of a small increment application that give the count to a child component. The child renders the property and has an effect that consoles the value as well. Without the defer option, the console display on rendering the value <code>1</code>.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">import { Component, createEffect, createSignal } from "solid-js";
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">import { Component, createEffect, createSignal } from "solid-js";
 import { render } from "solid-js/web";
 
 interface ChildProps {
@@ -37,7 +37,7 @@ const App: Component = () =&gt; {
 render(() =&gt; &lt;App /&gt;, document.getElementById("app"));
 </code></pre>
 <p>What if we only want to <code>console.log</code> the user action. We want to skip the first effect. We can change the child component to use the <code>createEffect</code> with the <code>on</code> function.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const Child = (props: ChildProps) =&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const Child = (props: ChildProps) =&gt; {
   createEffect(
     on(
       () =&gt; props.count,

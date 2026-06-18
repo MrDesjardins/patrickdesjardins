@@ -3,7 +3,7 @@
 <p>They are more than one usage for Rest. You can extract object's fields into individual variables, take the remaining of the field into an object, copy array values into variable, swapping value between variables, take the remaining of the values of an array into a new array.</p>
 <h2>Extracting Object fields a.k.a. Object Destructuring Assignment</h2>
 <p>Imagine that you have an object and that you want to extract specific values. A common scenario could be that you get more data from a Rest Api call and you need to get specific values.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const user = {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const user = {
   id: 1,
   name: "Patrick Desjardins",
   website: "http://patrickdesjardins.com/blog",
@@ -12,38 +12,38 @@
 };
 </code></pre>
 <p>Traditionally, you would do :</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const id = user.id;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const id = user.id;
 const name = user.name;
 const email = user.email;
 </code></pre>
 <p>Now, with object destructuring assigment you can extract in a single line the field you want.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const { id, name, email } = user;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const { id, name, email } = user;
 </code></pre>
 <p>This operation doesn't alter the user variable and create 3 variables that can be accessed like the traditional way.</p>
 <p>The example shown set the value from the name of the user. However, we can also specify the name of the variable we want which can be handy if the schema returned from the Rest Api doesn't satisfy the convention you are using. Let's do an example where we change the name to have underscore in front of each variable that we extract.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const { id: _id, name: _name, email: _email } = user;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const { id: _id, name: _name, email: _email } = user;
 </code></pre>
 <p>We can also have some cases where the information you get may not contain the property desired. For example, the user may have a field numberOfChildren with an integer if this one has at least one child and return nothing if no children. In that case, we would want to have a default value to 0.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const { id, name, email, numberOfChildren = 0 } = user;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const { id, name, email, numberOfChildren = 0 } = user;
 </code></pre>
 <p>In the case that the user has numberOfChildren defined, this one will take over the default value. In all cases, we can be sure that numberOfChildren variable will be set with a value.</p>
 <h2>Take the remaining of the field into an object</h2>
 <p>As seen in the previous section, you can extract specific fields into variable. But, you can also store all the remaining fields into a new object.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const { id, email, ...allRemainingFields } = user;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const { id, email, ...allRemainingFields } = user;
 </code></pre>
 <p>The value of allRemainingFields is an anonymous (any) object with the field email, website, isPaidUser.</p>
 <h2>Copy array values into variable</h2>
 <p>This scenario is handy if you accept an array for parameter and needs to extract values by position. For example, you expect to receive an array of 3 elements and that you want to store these 3 elements in a variable.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const myArray = ["patrick", "desjardins", true];
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const myArray = ["patrick", "desjardins", true];
 const [firstName, lastName, hasPaid] = myArray;
 </code></pre>
 <p>You probably ask yourself about what if the array doesn't contain at least 3 items that won't work! Well, you can also use default value. Here is an example where the website was not passed in the array.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const myArray = ["patrick", "desjardins", true];
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const myArray = ["patrick", "desjardins", true];
 const [firstName, lastName, hasPaid, website = "none"] = myArray;
 </code></pre>
 <h2>Swapping value between variables</h2>
 <p>Maybe not as useful but still interesting to have in your tool belt is two swap value between two variables. Doing it manually requires to have a temporary variable. You take the value of var1 set it to tempo, take value of var2 set it to var1 and set var2 with tempo.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">let var1 = 100;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">let var1 = 100;
 let var2 = 300;
 let tempo;
 tempo = var1;
@@ -51,11 +51,11 @@ var1 = var2;
 var2 = tempo;
 </code></pre>
 <p>Now, you can do it in a single line without temporary variable.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">let var1 = 100; let var2 = 300; [var1, var2] = [var2, var1];
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">let var1 = 100; let var2 = 300; [var1, var2] = [var2, var1];
 </code></pre>
 <h2>Take the remaining of the values of an array into a new array</h2>
 <p>This is similar to what we did with object's fields, but this time with an array. We can set some array values into variables and the remaining into a new array.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const myArray = ["patrick", "desjardins", true]; 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const myArray = ["patrick", "desjardins", true]; 
 const [firstName, ...remaining];
 </code></pre>
 <p>In this example remaining is : <code>["desjardins", true]</code></p>

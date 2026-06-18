@@ -9,7 +9,7 @@
 <p>Second, Entity Framework will do his mapping of the property inside the inner object with the property name of this one. That mean that Entity Framework will think that the table look like this:</p>
 <p><code>[Table] -Field1 -Field2 -Class2_Field3 -Class2_Field4</code></p>
 <p>If you do not want to alter your table, you will need to configure the Database Context.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">protected override void OnModelCreating(DbModelBuilder modelBuilder) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">protected override void OnModelCreating(DbModelBuilder modelBuilder) { 
   modelBuilder.Configuration.Add(new MyTable2Configuration()); 
   //Add subsequent configuration... 
 }

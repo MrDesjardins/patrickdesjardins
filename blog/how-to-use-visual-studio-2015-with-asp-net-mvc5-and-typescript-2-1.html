@@ -2,7 +2,7 @@
 <p>The first step is to download the latest version of TypeScript. This will install TypeScript in Program Files (C:\Program Files (x86)\Microsoft SDKs\TypeScript). Be aware that you may already have some older version of TypeScript (like 1.6 and 1.8) but you want to have 2.1.</p>
 <p><img src="/images/blog/TypeScriptVersionsInProgramFiles.png" alt="" /></p>
 <p>Installing TypeScript should take about 3 minutes. Once it's done, you need to add a tsconfig.json file at the root of your project. This second step add a file that gives configuration to TypeScript. For example, where to take the TypeScript and where to output the JavaScript result. Here is an example:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">{ 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">{ 
   "compilerOptions": { 
     "sourceMap": true,
      "target": "es6", 
@@ -12,13 +12,13 @@
 } 
 </code></pre>
 <p>That said to take the file app.ts from the src folder and create the corresponding JavaScript in the outDir. In this example, we take the file in /src/ and output the result in /Scripts/App/ which is the default JavaScript folder in Asp.Net MVC. It could have been any other folder as long as in your .cshtml you refer to this one. That said, we need to change the .cshtml where we want to consume the JavaScript. We need to add the script tag like we would do normally.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">&lt;script src="~/Scripts/App/app.js"&gt;&lt;/script&gt; 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">&lt;script src="~/Scripts/App/app.js"&gt;&lt;/script&gt; 
 </code></pre>
 <p>Before going any further, let's talk about the tsconfig.json. The option are very basic, the first one indicate that we want sourcemap which allow you to debug directly the TypeScript file instead of the JavaScript. The second parameter is the target. It indicates in which version of JavaScript (EcmaScript) to output. The third one if where to save the JavaScript files compiled. Files is the input.</p>
 <p>From here, you just need to have a TypeScript file called app.ts and write some code. Do as normally with C#, go in Visual Studio's menu under Build and do Build Solution. This will output JavaScript. You may not see the output file if you do not have "Show all Files" selected in the Solution Explorer.</p>
 <p><img src="/images/blog/SolutionExplorer.png" alt="" /></p>
 <p>At that point, you may ask yourself that it sounds cumbersome to manually add files if the project is big. This is why you can change the tsconfig.json to compile all TypeScript file of specific folders.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">{ 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">{ 
   "compilerOptions": { 
     "sourceMap": true, 
     "target": "es6", 

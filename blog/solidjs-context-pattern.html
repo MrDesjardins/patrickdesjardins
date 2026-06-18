@@ -7,13 +7,13 @@
 </ul>
 <h1>TypeScript Interfaces</h1>
 <p>There is a couple of valuable interfaces (or types) to define. The first one is the context property. The interface defines what can be done on the initialization of the context. It happens once, at the root of your application. Here is an example extracted from my latest SolidJS project. It has two</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export interface SensorsContextProps {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export interface SensorsContextProps {
   useFakeSensors: boolean;
   children: JSX.Element;
 }
 </code></pre>
 <p>In this example, there is the <code>useFakeSensors</code> which is determined at the beginning of the application. You can swap that property for the <em>theme</em> of your website or any other initial value. The <code>children</code> allows wrapping the rest of your application. The following code shows how the <code>useFakeSensors</code> is used.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const App: Component = () =&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const App: Component = () =&gt; {
   return (
     &lt;SensorsProvider useFakeSensors={true}&gt;
       &lt;div class={styles.App}&gt;
@@ -29,7 +29,7 @@
 };
 </code></pre>
 <p>In the example, you can see the provider. Before creating the provider, we need to define what content it will offer to wrap the underlying component.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export interface SensorsContextModel {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export interface SensorsContextModel {
   state: SensorsContextState;
   sensors: SensorsContextSensors;
   actions: SensorsContextActions;
@@ -38,7 +38,7 @@
 <p>In my <a href="https://github.com/MrDesjardins/gym-water-app">current project</a>, I have the <code>SensorsContextModel</code> interface that has three properties. One has some shared state, access to sensors information, and some actions that can be invoked by children component that will affect the <code>state</code>.</p>
 <h1>Provider</h1>
 <p>The core of the pattern is creating a component that returns a provider. That way, we force the context code to be used only under a context situation. The example is once again extract from my project and simplified. You can see it has its store for the state and returns a <code>SensorsContext</code>. The <code>SensorsContext</code> is coming from the <code>createContext</code>. Here, React has a subtle difference where you do not have to define an empty implementation of the <code>SensorsContextModel</code>, which is convenient. Instead, we create the context and return the provider.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export const SensorsContext = createContext&lt;SensorsContextModel&gt;();
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export const SensorsContext = createContext&lt;SensorsContextModel&gt;();
 
 export function SensorsProvider(props: SensorsContextProps) {
   const [state, setState] = createStore&lt;SensorsContextState&gt;({});
@@ -63,7 +63,7 @@ export function SensorsProvider(props: SensorsContextProps) {
 </code></pre>
 <h1>Using the Context</h1>
 <p>At this point, the last step is to consume the context. Exactly like React, the call to a function (or hook) is needed in the child. I have a small function to simulate a hook with the context file.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export function useSensors(): SensorsContextModel | undefined {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export function useSensors(): SensorsContextModel | undefined {
   return useContext(SensorsContext);
 }
 </code></pre>

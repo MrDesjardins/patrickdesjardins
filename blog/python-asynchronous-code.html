@@ -5,7 +5,7 @@ In this article, we will focus on the library called asyncio, which is very simi
 <p>The asyncio library uses the async/await syntax to wait for I/O (input and output operations) without blocking the main thread. Imagine the main thread as a loop and keep running. In a synchronous code, if there is a long operation, such as waiting for a database response or a network response, the loop waits, blocking any other operations. Using <code>await</code> would let the loop continue. In terms of code flow, you do not see the loop like in the <code>while</code> or <code>for</code> loop -- it is just there. Once the code being awaited returns, the main loop continues the execution. See the main loop as someone asking the awaited function, "Are you done?" If the awaited function says "Not yet," then it continues to listen to other events or running code.</p>
 <h1>Simple Use Case: Gather</h1>
 <p>The library offers a <code>gather</code> function that waits for the execution of an awaited function to be completed before continuing. It is the equivalent of <code>Promise.all(...)</code> in JavaScript. An asynchronous function in the world of Python and asyncio is called a "coroutine".</p>
-<pre class="language-Python"><code class="language-Python code-highlight">import asyncio
+<pre class="language-Python" tabindex="0"><code class="language-Python code-highlight">import asyncio
 
 WAIT_SECOND = 1
 
@@ -24,7 +24,7 @@ if __name__ == "__main__":
 <p>The code above starts the main function asynchronously using <code>asynio.run</code>. The function is required for Python version 3.1x, as Python modules are synchronous by default. The <code>main</code> function starts concurrently with three functions called <code>long_task</code>. The function simulates a task such as a network, file read, or database call.</p>
 <p>Without using <code>asyncio.gather</code>, these three functions would run synchronously, one after the other. Because it takes 2 seconds each, the total time would be 6 seconds. However, because they are all starting at the same time and await, Python runs the first function, prints the first statement, and then stops because of the <code>asyncio.sleep</code>. When stopping the function, it tells the Python's interpreter that there is nothing yet to do, allowing Python to run the second function. Similarly, it quickly prints and stops. Moving to the third. After a second elapses, the first function is completed, yield back to the main thread, print the second statement, and stop again. Similarly, the system awakens the second function and the third.</p>
 <p>The output is:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">Sub Task #1 for Task id 1
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">Sub Task #1 for Task id 1
 Sub Task #1 for Task id 2
 Sub Task #1 for Task id 3
 Sub Task #2 for Task id 1

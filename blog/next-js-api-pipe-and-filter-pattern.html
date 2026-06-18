@@ -3,7 +3,7 @@
 <p>The concept sits on having a pipe with many filters. The pipe defines all the sequential filters that must be executed in order. Upon a failure, the pipe stops and sends a response. The code is clean because each task is separated in a filter. The code is maintainable because adding a new filter is easy and does not require changing the existing code.</p>
 <h1>Creation of the Pipe</h1>
 <p>The pipe contains a list of filters. Each filter has a strongly typed input and output, and the pipe strongly types each of them to ensure that the output of a filter is the input of the next filter. The pipe is a class that contains a list of filters. The pipe has a method <code>execute</code> that runs all the filters in order. The pipe has a method <code>addFilter</code> that adds a filter to the list of filters.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export interface NextRequest {} // Use the real NextRequest from NextJS
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export interface NextRequest {} // Use the real NextRequest from NextJS
 
 export interface PipeOptions&lt;TInitial&gt; {
   name: string;
@@ -46,7 +46,7 @@ export class Pipe&lt;TInitial = any, TFilters extends any[] = []&gt; {
 
 </code></pre>
 <p>With the following <code>addFilter,</code> each addition ensures that the filter receives the last return filter. Here are some little unit tests that show how to use the pipe.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">import { Pipe, FilterOptions, NextRequest } from "./pipe";
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">import { Pipe, FilterOptions, NextRequest } from "./pipe";
 
 const fakeRequest: NextRequest = {} as NextRequest;
 
@@ -74,7 +74,7 @@ describe(Pipe.name, () =&gt; {
 <p>In the above test, changing the code of <code>pipe.addFilter(filter1).addFilter(filter2).addFilter(filter3);</code> for <code>pipe.addFilter(filter1).addFilter(filter2).addFilter(filter2);</code> does not compile because filter2 returns a string, and filter2 expects a number.</p>
 <h1>Execution of the Pipe</h1>
 <p>Once the setup of each step is defined for a pipe, we need to execute it. It is common for the filters to have an asynchronous function. The pipe must be able to handle this. The pipe has a method, <code>execute,</code> that runs all the filters in order by awaiting the list of filters. We must await because if there is a failure, the pipe must stop and send a response.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight"> public async execute(): Promise&lt;FilterFunction&lt;TFilters&gt; | PipeError&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight"> public async execute(): Promise&lt;FilterFunction&lt;TFilters&gt; | PipeError&gt; {
  const options: FilterOptions = {
       name: this.options.name,
       request: this.options.request,
@@ -95,7 +95,7 @@ describe(Pipe.name, () =&gt; {
  }
 </code></pre>
 <p>The function iterates the list and handles the error. If an error occurs, the function returns a <code>PipeError</code> object. The <code>PipeError</code> object is a class that contains the error and the name of the filter that failed. In a real-life scenario, handling error would add telemetry, logging, and sending a response to the richer client, like an error code, reading the type of error, and managing a generic response for the client. The key point is always to take the output and use it as input for the next filter (function). Here are two unit tests that show how to use the pipe in a successful and error case:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">describe(Pipe.name, () =&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">describe(Pipe.name, () =&gt; {
   describe("addFilter", () =&gt; {
     it("should add a filter", () =&gt; {
       const pipe = new Pipe({ name: "test", request: fakeRequest, data: 1 });

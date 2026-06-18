@@ -7,14 +7,14 @@
 </ul>
 <h2>Silverlight parameter</h2>
 <p>All Silverlight applications contain a startup method that has a <code>StartupEventArgs</code>. This class has a InitParam dictionary (<code>IDictionary</code>) that contains all parameters.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> private void Application_Startup(object sender, StartupEventArgs e) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> private void Application_Startup(object sender, StartupEventArgs e) { 
   if (e.InitParams.ContainsKey("debug")) { 
     Debug.WriteLine(e.InitParams["debug"]); 
   } 
 } 
 </code></pre>
 <p>To pass parameters you need to add in the html a new element with the attribute name "initParams".</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">&lt;div id="silverlightControlHost"&gt; 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">&lt;div id="silverlightControlHost"&gt; 
   &lt;object data="data:application/x-silverlight-2," type="application/x-silverlight-2" width="100%" height="100%"&gt; 
     &lt;param name="source" value="ClientBin/MyProject.xap"/&gt; 
     &lt;param name="onError" value="onSilverlightError" /&gt; 
@@ -33,25 +33,25 @@
 <p>As you can see in this example, if you need more than one parameter you need to use a comma between all parameters. The value is automatically a string. You will need to parse it to the desired type inside Silverlight.</p>
 <h2>Silverlight communicate with Javascript</h2>
 <p>The communication between Silverlight and Javascript is straight forward. You need to use the Invoke method of HtmlPage.Window.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> System.Windows.Browser.HtmlPage.Window.Invoke("MyFunction", "Parameter1"); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> System.Windows.Browser.HtmlPage.Window.Invoke("MyFunction", "Parameter1"); 
  System.Windows.Browser.HtmlPage.Window.Invoke("MyFunction", "Parameter1", "Parameter2"); 
 </code></pre>
 <p>The invoke method has a params[] for its second parameter. That let you add has many parameter value that the function in Javascript require.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public virtual object Invoke(string name, params object[] args); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public virtual object Invoke(string name, params object[] args); 
 </code></pre>
 <h2>Javascript to communicate with Silverlight</h2>
 <p>Javascript can also call method inside a Silverlight application. To do, you need to first declare an entry point name.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> System.Windows.Browser.HtmlPage.RegisterScriptableObject("Page123", this); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> System.Windows.Browser.HtmlPage.RegisterScriptableObject("Page123", this); 
 </code></pre>
 <p>This code can be added at the beginning of the constructor of the method that will be called. It specifies a unique identifier that will be used in the Javascript.</p>
 <p>The second thing that need to be done inside Silverlight is to add an attribute to the method that you want to expose to the external.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">[ScriptableMember] 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">[ScriptableMember] 
 public void JavascriptWillCallThisMethod(string textFromJavaScript) { 
   Debug.WriteLine(textFromJavaScript); 
 } 
 </code></pre>
 <p>The third and last step is to call this method from the Javascript code.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var control = document.getElementById("silverlightControl"); 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var control = document.getElementById("silverlightControl"); 
 control.Content.Page123.JavascriptWillCallThisMethod("Hello from Javascript!"); 
 </code></pre>
 <p>As you can see, you find the "Page123" again here. It's the name declared in the Silverlight application when calling the <code>RegisterScriptableObject</code> method.</p>

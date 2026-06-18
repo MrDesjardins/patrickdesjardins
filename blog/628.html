@@ -4,7 +4,7 @@
 <p><img src="/images/blog/Snap-2011-12-13-at-10.41.32-400x238.png" alt="" /></p>
 <p>In my project. I added two resources file: MyRes1.resx and MyRes1.fr.resx. This way, I can have English and French words translated.</p>
 <p>The next logical step is to handle the language selection. In my case, the language came from the Asp.Net page. It was passed as a parameter. In <code>App.xaml.cs</code>, in the <code>Application_Startup()</code> event, I added a call to <code>SetCultureInformation()</code> which I have defined like this:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">private void SetCultureInformation(StartupEventArgs e) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">private void SetCultureInformation(StartupEventArgs e) { 
   var languageInfo = new CultureInfo("en"); 
   if (e.InitParams.ContainsKey("language")) { 
     if (e.InitParams["language"] == "fr") { 

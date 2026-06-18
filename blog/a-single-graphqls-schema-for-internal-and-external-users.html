@@ -10,13 +10,13 @@
 <p>In an ideal world, a single schema exists and we flag the field or entity to be only available internally. That world can exist with the power of GraphQL directive.</p>
 <h1>The GraphQL Directive Idea</h1>
 <p>GraphQL allows enhancing the graph's schema with annotation. Let's start with the end result which should talk more than any explanation.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">type MyTypeA {    
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">type MyTypeA {    
     fieldA: EntityTypeA
     fieldB: EntityTypeA @internalData
 }
 </code></pre>
 <p>The idea is to add "@internalData" to every field that must be only visible to internal usage. The annotation marks field but also can mark a whole type.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">type MyTypeA @internalData {    
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">type MyTypeA @internalData {    
     fieldA: EntityTypeA
     fieldB: EntityTypeA
 }
@@ -27,7 +27,7 @@
 <p>In any .graphql file, you need to specify the directive to let know GraphQL about its existence. I created a file with the name of the directive and added this single line. The directive indicates that it can be applied to a type (<em>OBJECT</em>) or to a field (<em>FIELD_DEFINITION</em>). The directive could also have arguments. For example, we could have a more advanced need to specify which role can access which field.</p>
 <p>directive @internalData on OBJECT | FIELD_DEFINITION</p>
 <p>The second part if to handle the directive. When merging all the resolvers and type definitions you can also specify the collection of directives. What you need to pass is a key-value pair with the directive name and the class of the directive (not the object). It means that you do not instantiate (new) the class, but only give a reference to the class.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const schemas = makeExecutableSchema({
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const schemas = makeExecutableSchema({
     typeDefs: allSchemas,
     resolvers: allResolvers,
     schemaDirectives: {
@@ -36,7 +36,7 @@
 });
 </code></pre>
 <p>The class must inherit <em>SchemaDirectiveVisitor</em>. Then, because we have specified that it can be applied to a field and a type, we need to override two functions: <em>visitFieldDefinition</em> and <em>visitObject</em>.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export class InternalDataDirective extends SchemaDirectiveVisitor {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export class InternalDataDirective extends SchemaDirectiveVisitor {
     private static readonly INTERNAL_APP = ["app1", "app2", "app3"];
 
     public visitObject(object: GraphQLObjectType): GraphQLObjectType | void | null {

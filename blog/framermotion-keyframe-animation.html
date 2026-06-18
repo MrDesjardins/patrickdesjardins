@@ -6,7 +6,7 @@
 <p><a href="https://www.framer.com/motion/">Framer Motion</a> has many ways to perform animation, and one of them is <a href="https://www.framer.com/docs/animation/##keyframes">keyframes</a>. Keyframing is the idea of using an array that defines the values to be used. Each index of that array is a frame. Then, you specify a specific percentage of the total duration for each index.</p>
 <p>For example, you can set 3 values for a left coordinate using the property <code>x</code> and an array of <code>[50, 75, 125]</code>. It means that Framer now has three keyframes. The first one at index 0 mentions that the position of <code>x</code> is 50. Then, later, the second keyframe indicate the position to be 75 and finally to be 125.</p>
 <p>To set these keyframes from a sequential order into a timeline, you need to set in the transition two properties.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">transition={{
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">transition={{
   duration: 2
   times: [0, 0.25, 1]
 }}
@@ -20,7 +20,7 @@
 <video src="/videos/blog/FramerMotionAnimationKeyFrameBad.mp4" controls/>
 <h1>Simplicity Triumph</h1>
 <p>The solution is more straightforward than it seems. Instead of using keyframes on the child or using delay on the child, a more pragmatic solution is to set the timing of the child directly on the transition event (initial/exit). On the <code>animate</code>, we put a delay of 0.9 seconds which is 100ms faster than the parent animation, then set the opacity to 1 in 100ms. It makes the child's content appears right when the parent stops moving.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">&lt;motion.div
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">&lt;motion.div
   initial={{ opacity: 0 }}
   animate={{
     opacity: 1,
@@ -43,7 +43,7 @@
 <iframe src="https://codesandbox.io/embed/framer-motion-keyframe-part-2-e7ob6w" style="width:100%;height:500px;border:0;border-radius:4px;overflow:hidden" title="CodeSandbox example framer-motion-keyframe-part-2-e7ob6w" loading="lazy" allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking" sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"><a href="https://codesandbox.io/s/framer-motion-keyframe-part-2-e7ob6w">Open CodeSandbox example framer-motion-keyframe-part-2-e7ob6w</a></iframe>
 <h1>When</h1>
 <p>So far, so good; ready to close the lid on this animation, but we can do better! The <code>variants</code> property of the Framer Motion element propagates animation by name to children. Meaning there is a relationship. When sharing the same name, a child can redefine a step, for example, the animation or exit with its term. That is great, but it still does not help with the timing issue. That is wrong! Using <code>variants</code> and specifying in the parent's transition a <code>when</code> close can tell Framer Motion to wait to execute the children or the parent animation. A quick modification to use variants:</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">    &lt;motion.div
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">    &lt;motion.div
       className="box"
       variants={variantParent}
       initial="moveOff"
@@ -54,7 +54,7 @@
     &lt;/motion.div&gt;
 </code></pre>
 <p>Moving the previous initial, animate, and exit specifications into objects:</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">const variantParent: Variants = {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">const variantParent: Variants = {
     moveOff: {
       x: 0,
       y: 0,

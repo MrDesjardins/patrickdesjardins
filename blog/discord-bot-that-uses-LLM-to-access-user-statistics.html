@@ -6,7 +6,7 @@
 <p><img src="/images/blog/ai_discord_conversation2.png" alt="Discord Bot Message from the LLMS" /></p>
 <h1>How it Works</h1>
 <p>There are a few details that are important. The first one is that Discord will block and not send a heartbeat if you do a long query. The LLM API might take 20 seconds, which blocks the whole bot. Hence, I used the <code>asyncio</code> library to run the LLM query in a separate thread.</p>
-<pre class="language-python"><code class="language-python code-highlight">response = await asyncio.to_thread(
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">response = await asyncio.to_thread(
             lambda: asyncio.run(
  generate_answer_when_mentioning_bot(
  context, message.content, message.author.display_name, message.author.id
@@ -16,7 +16,7 @@
 </code></pre>
 <p>To give some awareness of the conversation around what a user might ask. I always include the prompt with the context of the previous messages. I used a few messages before the message that the bot replied to. If the bot was mentioned, I also added the few latest messages from the channel mentioned.</p>
 <p>The rest of the prompt is enhanced depending on some keywords. For example, if the user asks about statistics, I have a function that adds all the schema of the statistics tables to the prompt to create an SQL query, which I then perform upon receiving the reply. If no results are found or if there is a SQL query error, that information is sent back to the LLM for another iteration. I limit the iterations to 4 to avoid infinite loops.</p>
-<pre class="language-python"><code class="language-python code-highlight"> try_count = 0
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight"> try_count = 0
  context = "You are a bot that is mentioned in a Discord server. You need to answer to the user who mentioned you."
  context += "You should not mention anything about your name or your purpose, just answer the question."
  context += "Here is the context of some previous message that might help you craft the best response:"
@@ -59,7 +59,7 @@
     return response
 </code></pre>
 <p>The <code>ask_gemini_sql_for_stats</code> function adds the schema and fields. Fortunately, I have the table name and the most common fields in variables!</p>
-<pre class="language-python"><code class="language-python code-highlight">def ask_gemini_sql_for_stats(message_user: str, user_id: int) -&gt; Union[str, None]:
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">def ask_gemini_sql_for_stats(message_user: str, user_id: int) -&gt; Union[str, None]:
     """
  Ask Gemini to generate a SQL query for stats based on the user message.
  """

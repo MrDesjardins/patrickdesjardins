@@ -11,7 +11,7 @@
 <p><img src="/images/blog/useYourDbContext-400x131.png" alt="" /></p>
 <h2>Configure Entity Framework Migration</h2>
 <p>The next step is to make sure the the web.config contain the right provider for the role and membership. Inside web.config, in the <code>system.web</code> section be sure that you have the code below. If not, add it.</p>
-<pre class="language-xml"><code class="language-xml code-highlight"> &lt;roleManager enabled="true" defaultProvider="SimpleRoleProvider"&gt;
+<pre class="language-xml" tabindex="0"><code class="language-xml code-highlight"> &lt;roleManager enabled="true" defaultProvider="SimpleRoleProvider"&gt;
   &lt;providers&gt;
     &lt;clear/&gt;
       &lt;add name="SimpleRoleProvider" type="WebMatrix.WebData.SimpleRoleProvider, WebMatrix.WebData"/&gt;
@@ -26,12 +26,12 @@
 <p>Once done, you need to build the Migration Configuration. This is automatically done if you are using the <strong>Package Manager Console</strong>. This tool can be open by going inside VIEW&gt;Other Windows&gt;Package Manager Console.</p>
 <p><img src="/images/blog/packageConsoleManager-329x400.png" alt="" /></p>
 <p>The next step is to use this command below that will force the creation of the configuration file. This will be required only once. Do not forget to use <code>EnableAutomaticMigration</code>. This will let you update the database later accordingly to changes you made to your model and entity configuration.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">Enable-Migrations –EnableAutomaticMigrations -Force
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">Enable-Migrations –EnableAutomaticMigrations -Force
 </code></pre>
 <p>Since we have removed the <em>UsersContext</em> we won't have any conflict doing the command above. Otherwise, we would have need to specify which DbContext we want the migration to occur. Also, if you already had a database initializer (IDatabaseInitializer) like a <code>DropCreateDatabaseIfModelChanges</code>, this won't work with the <code>DbMigrationsConfiguration</code>.
 In fact, you need to remove any initializer because we are switching to the Migration configuration. Nevertheless, this will give us additionnal control, more manual control but at least the possibility to generate the database automatically and also seed the database with Membership and custom tables.</p>
 <p>The command creates a folder called <em>Migrations</em> with a <em>Configuration.cs</em>. Inside the Seed method, you will be able to create all data you want inside the database. Here is a small snippet of code that create a role, a user and some entities.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> internal sealed class Configuration : DbMigrationsConfiguration&lt;WorkoutPlanner.Database.DatabaseContext&gt; { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> internal sealed class Configuration : DbMigrationsConfiguration&lt;WorkoutPlanner.Database.DatabaseContext&gt; { 
    public Configuration() { AutomaticMigrationsEnabled = true; }
 
 protected override void Seed(WorkoutPlanner.Database.DatabaseContext context) { 
@@ -56,7 +56,7 @@ protected override void Seed(WorkoutPlanner.Database.DatabaseContext context) {
 }
 </code></pre>
 <p>The last step is to create table schema and insert those values from the seed configuration. This is done by this command :</p>
-<pre class="language-sh"><code class="language-sh code-highlight">update-database -verbose -force
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">update-database -verbose -force
 </code></pre>
 <p>The verbose will show you the SQL statement executed and the force will regenerate the table even if data already exist in those tables.</p>
 <h1>Conclusion</h1>

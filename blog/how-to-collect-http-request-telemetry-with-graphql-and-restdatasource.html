@@ -3,7 +3,7 @@
 <h2>RESTDataSource Override</h2>
 <p>In the case of RESTDataSource, it is a matter of overriding the <em>willSendRequest</em> function. It takes a request parameter. We will use the request to add in the HTTP's header a unique identifier that will give the response function a reference to the originator. The second function to override is <em>didReceiveResponse</em>. This one has two parameters: the request and the response.</p>
 <p>The <em>willSendRequest</em> function performs three actions. The first one is to generate a GUID that will serve as a unique identifier. It is added into the HTTP header. Then, the second action is to add in the GraphQL's context a collection of HTTP requests. I created a type that will keep track of the time, the total bytes received, the URL, query string, the starting time and also the unique request identifier (GUID). The unique identifier is needed for the second function.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export interface HttpStatsEndpoints {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export interface HttpStatsEndpoints {
     requestUuid: string;
     url: string;
     urlSearchParams: URLSearchParams;
@@ -12,7 +12,7 @@
 }
 </code></pre>
 <p>The <em>didReceiveResponse</em> function gets a response, but also the request object. Because we have the request, we can peek at the GUID and extract from the GraphQL context the information and subtract the actual time from the time saved when the request started. The number of bytes and the elapsed time is saved in the context until read by the GraphQL Extension.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">public didReceiveResponse(response: Response, request: Request): Promise&lt;any&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">public didReceiveResponse(response: Response, request: Request): Promise&lt;any&gt; {
     return super.didReceiveResponse(response, request).then(result =&gt; {
         const requestId = request.headers.get(HEADER_REQUEST_UUID);
         const startTime = request.headers.get(HEADER_START_TIME);

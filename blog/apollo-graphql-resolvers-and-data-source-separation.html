@@ -2,7 +2,7 @@
 <p><img src="/images/blog/GraphQLServers-DataSource.png" alt="" /></p>
 <p>Resolvers and DataSource Relationship</p>
 <p>Similar to <em>resolvers</em>, <em>datasources</em> is a member is defined in the <em>ApolloServerConfig</em>. The member is a function that returns a map (dictionary) of data sources. The <em>datasources</em> is strongly typed as <code>DataSrouces&lt;T&gt;</code> where T is your custom context.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">dataSources: () =&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">dataSources: () =&gt; {
     const dataSources: DataSources&lt;GraphQLCustomContext&gt; = {
         dataSourceName1: new MyDataSource1()
     };
@@ -15,7 +15,7 @@
 <p>Data Sources and Services</p>
 <p>It worth pointing that a single data source can use more than a single service. A data source class has many functions for different requests and each of the function can request to one or many services.</p>
 <p>Resolvers are now getting access to the data sources by reaching the context which is the third parameters.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export const bookResolversMap = {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export const bookResolversMap = {
     Query: {
         book: async (source: null, args: { bookId: number }, context: GraphQLCustomResolversContext, graphQLResolveInfo: GraphQLResolveInfo) =&gt; {
             try {
@@ -28,7 +28,7 @@
 };
 </code></pre>
 <p>One question might rises. How is the context having the data source? A keen observer might have spotted that resolvers are not using the type <em>GraphQLCustomResolversContext</em> for the context instead of the GraphQLCustomContext has in all the previous article of this series. The type remains like the original context for everywhere in the application, except for the resolvers. The data sources are injected into the context by Apollo. The TypeScript types for GraphQL context is now in three interfaces.  A first one that contains all the data source, one that contain the actual context which we previously defined to contain user's information. Finally, a third one that has the data source and extends the custom context.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export interface GraphQLCustomDataSources {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export interface GraphQLCustomDataSources {
     dataSource1: MyDataSource1;
 }
 

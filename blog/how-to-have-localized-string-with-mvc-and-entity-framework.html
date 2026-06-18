@@ -2,20 +2,20 @@
 <p>This can be the case of a specific name or description. You may want to display the name of the product in French if the user is logged in French but to be able to display in English for other users.</p>
 <p>You have a lot of different way to handle this situation. The one proposed here is simple, it respects the SOC (separation of concern), and doesn't change the database drastically. By not changing the database drastically I mean that I do not have to have a table with association to multiple languages.</p>
 <p>First, let create some model classes. To have relative useful example that is near of a real life example I will re-use the Customer and Avatar classes defined in previous blog post.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class Customer:BaseEntity { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class Customer:BaseEntity { 
   public string FirstName { get; set; } 
   public string LastName { get; set; } 
   public Avatar Avatar { get; set; } 
 } 
 </code></pre>
 <p>The Customer class contain 2 strings that won't be localized and a property of type Avatar. This class contain 2 fields : name and description that require to be translated in multiple languages.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class Avatar : BaseEntity { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class Avatar : BaseEntity { 
   public string Name { get; set; } 
   public string Description { get; set; } 
 } 
 </code></pre>
 <p>Right here, we see something wrong. The Name and Description properties are type of string which can only have one value. So, we need to have Name in 2 languages (or more).</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class Avatar : BaseEntity { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class Avatar : BaseEntity { 
   public string NameFrench { get; set; } 
   public string DescriptionFrench { get; set; }
 
@@ -27,13 +27,13 @@
 </code></pre>
 <p>The problem with this solution is that it goes really out of proportion if you have let say 10 languages to support. It's also a problem when it's the time to bind to the view. Which one is the good to display depend of the user language and you couldn't simply bind to one property.</p>
 <p>This lead us to think that maybe the problem is that we are using a wrong approach. In fact, what we want to use is not a string but a <code>LocalizedString</code>. What we would like is to have the Avatar having only 2 properties, one for the Name and one for the Description.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class Avatar : BaseEntity { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class Avatar : BaseEntity { 
   public LocalizedString Name { get; set; } 
   public LocalizedString Description { get; set; } 
 } 
 </code></pre>
 <p>The <code>LocalizedString</code> is a class that we will create and will handle all different languages that we have. Let say we want French and English. The class could look like the above with 2 properties. If we would need 10 languages, we would have 10 properties. I choose to have 1 property per language because I want to have in the database 1 column per language and not having a table with multiple languages. The reason is that I do not want the overhead of multiple join tables.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">[ComplexType] 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">[ComplexType] 
 public class LocalizedString { 
   public string French { get; set; } 
   public string English { get; set; } 
@@ -64,13 +64,13 @@ public class LocalizedString {
 <p><img src="/images/blog/SharedTemplates.png" alt="" /></p>
 <p>Both DisplayTemplates and EditorTemplates require to be into the Shared folder. You need to create 1 file per folder with the name of your new type. In our case, it's <code>LocalizedString</code>.</p>
 <p>Both of them are very simple. This is of the DisplayTemplates.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> @model EFCodeFirst.General.LocalizedString &lt;p&gt;@Model.Current&lt;/p&gt; 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> @model EFCodeFirst.General.LocalizedString &lt;p&gt;@Model.Current&lt;/p&gt; 
 </code></pre>
 <p>And this is for the <code>EditorTemplates</code>.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> @model EFCodeFirst.General.LocalizedString @Html.TextBoxFor(s =&gt; s.Current) 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> @model EFCodeFirst.General.LocalizedString @Html.TextBoxFor(s =&gt; s.Current) 
 </code></pre>
 <p>If we go into the view, the code use <code>EditorFor</code> for the Name and Description of the Avatar. This will trig in MVC to use the good template for the type <code>LocalizedString</code>.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">&lt;fieldset&gt;
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">&lt;fieldset&gt;
   &lt;legend&gt;Customer&lt;/legend&gt;
   &lt;div class="editor-label"&gt; @Html.LabelFor(model =&gt; model.FirstName) &lt;/div&gt; 
   &lt;div class="editor-field"&gt; @Html.EditorFor(model =&gt; model.FirstName) @Html.ValidationMessageFor(model =&gt; model.FirstName) &lt;/div&gt;
@@ -86,7 +86,7 @@ public class LocalizedString {
 
 </code></pre>
 <p>The generated html contain a valid name that link to the Current property of Avatar.</p>
-<pre class="language-html"><code class="language-html code-highlight">&lt;input id="Avatar_Name_Current" name="Avatar.Name.Current" type="text" value="" /&gt; 
+<pre class="language-html" tabindex="0"><code class="language-html code-highlight">&lt;input id="Avatar_Name_Current" name="Avatar.Name.Current" type="text" value="" /&gt; 
 </code></pre>
 <p>The controller will use the model binding to be able to set the Current value to the good language. This is automatically done because of the setter of Current that check the current language and set the value into the good property.</p>
 <p><img src="/images/blog/controllerLocalizedString-400x120.png" alt="" /></p>
@@ -98,7 +98,7 @@ public class LocalizedString {
 <p>To conclude, alternative solution like using a ViewModel could have been a solution but would add a lot of additional overhead like having to auto-map most of field, having to redo mapping for localized string every new model and the last one would been to have additional testing because you would have a ViewModel with condition which could have lead to possible error. I suggest you to use this approach which is simple, object oriented and work fine with Entity Framework.</p>
 <h2>Edit: Reflection</h2>
 <p>Instead of using a Switch case, you can use reflection to get the good property depending of the thread language. Here is the version with reflection.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">[ComplexType] 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">[ComplexType] 
 public class LocalizedString { 
   public string French { get; set; } 
   public string English { get; set; }

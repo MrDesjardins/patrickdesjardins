@@ -19,7 +19,7 @@
 <h1>Dockerfile</h1>
 <p>You will need two Dockerfile files, one per service, not one per environment. The importance of having two Dockerfile might be confusing at first, but it is the case only because I am making two services into a single repository in this article. Hence, if you have one repository for one service, you would have one Dockerfile.</p>
 <p>In short, you need one Dockerfile per micro-service. However, you might be constrained to have everything in a single repository in many cases. A single place is quite convenient to share code, and it is less moving for small and medium applications. So, in this project, let's have the mindset that we have a single repository with two services.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">Project
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">Project
   |
   ---&gt; services
         |
@@ -34,7 +34,7 @@
 <p>The next critical part is the <code>docker-compose.yml</code> file. The compose file is the glue between all our services. From the compose file, we will instruct what to pass down to the Dockerfile. It is a convenient place to build all services for a specific environment with one command and start all of them simultaneously. The file location is at the project's root, sibling to the <code>services</code> folder.</p>
 <h1>.env</h1>
 <p>At the project's root, we will have an environment file <code>.env</code>. That is a great place to see all configurations. Also, a great place to configure all the environment in one place and then have the rest of all systems, from Docker, NGINX, Vite, and NodeJS, to hydrate from it. For the two services and containers, we need these IP and PORT:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">NODE_ENV=development
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">NODE_ENV=development
 
 CLIENT_IP=127.0.0.1
 CLIENT_PORT=3000
@@ -47,11 +47,11 @@ DOCKER_SERVER_PORT_FORWARD=3500
 <p>Three blocks of variables. The first one will switch between <code>development</code> and <code>production</code>. The second block is all the frontend variables. The third block is all the backend variables. The <code>CLIENT_PORT</code> and <code>SERVER_PORT</code> are the ones used by the service in the container. The <code>DOCKER_CLIENT_PORT_FORWARD</code> and <code>DOCKER_SERVER_PORT_FORWARD</code> are the ones exposed to any consumer of the services outside the container. Hence, you can think about it so that on your computer, you will connect to the port <code>DOCKER_CLIENT_PORT_FORWARD</code>, which Docker will understand and redirect to the service inside its container, the port <code>CLIENT_PORT</code>. SolidJS and React CRA are both using port <code>3000</code> for its hot-reloaded dev server. Hence it is natural to set it to <code>3000</code>. I configured in this file <code>80</code> for the server because NodeJS and NGINX are both by default at port <code>80</code>. However, you can change the value and have these tools operate inside your container to another port. What is remarkable is that you can expose to your computer many web servers to many different ports without worrying about having more than one service running on the same port.</p>
 <h1>Configuring the Frontend Application in Development</h1>
 <p>Let's start with the frontend application. We won't code the frontend other than start the <code>init</code> command on the SolidJS. Similar to the CRA of React, it creates an index page and two commands: one to run when you develop that has a small server and a build command that generate the Javascript. Thus, inside the frontend folder, you can run:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">npx degit solidjs/templates/ts .
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">npx degit solidjs/templates/ts .
 </code></pre>
 <p>You will have a <code>package.json</code> and a <code>tsconfig.json</code>.</p>
 <p>Now, Docker configuration file. Create a <code>Dockerfile</code> that does not have an extension and we will create two sections. Each section represents a <em>stage</em>. In Docker, a <em>stage</em> allows dividing a Docker container into a separate block. Hence, we can have a development stage and a production stage. The power of staging is that a stage can use previously executed stage output. But we won't use that power here. We will keep it simple. Instead, we are using a stage to indicate which piece of code to execute during the <em>build</em> process.</p>
-<pre class="language-yaml"><code class="language-yaml code-highlight"># ---------------------------------------
+<pre class="language-yaml" tabindex="0"><code class="language-yaml code-highlight"># ---------------------------------------
 # Development stage
 # ---------------------------------------
 FROM node:16 AS development
@@ -64,29 +64,29 @@ WORKDIR /node/app
 CMD ["npm", "run", "start:development"]
 </code></pre>
 <p>These are all the configurations required for the frontend (SolidJS) to be hot-reloaded enabled with the <code>node_modules</code> inside the container. First, let's break down the instructions.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">FROM node:16 AS development
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">FROM node:16 AS development
 </code></pre>
 <p>Docker's containers are built upon other containers. In that configuration, the container is built on top of the <code>node</code> container that hosts a NodeJS version 16. That is convenient because it contains NodeJS and NPM. Hence, no need to install and configure anything around these two tools. Next, the <code>AS development</code> is how we label the stage. It is essential to name it properly because inside the <code>docker-compose.yaml</code>, we will specify which stage to call. While not required, it is excellent to have a stage with the same environment variable name that you will use for your environment. In my case, I plan to have the <code>NODE_ENV</code> to be <code>development</code> or <code>production</code>.</p>
 <p><code>WORKDIR /node</code>
 Docker will create a <code>node</code> folder and will set it as the <em>active</em> directory. Later, if you debug your container, you can connect to it and examine its filesystems. You will see a <code>node</code> folder.</p>
 <p><code>COPY package*.json tsconfig.json ./</code>
 Inside the <code>/node</code> folder, we will copy from your computer (first parameter) to Docker's container filesystem (second parameter). In that case, we are copying the file package.json (and lock file) and tsconfig.json. We are not copying every file yet. Also, files from your computer are copied from the root directory determined by the location of the <code>Dockerfile</code>. In that case, the files from <code>services/frontend/</code>. The reason that we are copying only these two files are that at the next step, we will install the packages. For efficiency, Docker caches each command in the Dockerfile. Installing all the NPM packages is costly and only required if the package.json file is changing. Thus, we create an atomic cachable step here. Since we won't copy all the files for the current stage, it does not matter. We do not copy all the files because we will mount Docker to your developer machine. If you modify a file locally and save that, you do not need to stop the Docker container, build the Docker container and start it again. Instead, the Docker container that has the packages and is running the development server remains active in the container, and this one connects to your machine.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">ARG NODE_ENV=development
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">ARG NODE_ENV=development
 ENV NODE_ENV=${NODE_ENV}
 </code></pre>
 <p>These two lines mean that we will receive a <code>NODE_ENV</code> from docker-compose, to set the value to the environment variable. If we do not specify these lines, the <code>NODE_ENV</code> will be taken from the system environment variable (or .env), which is acceptable in some situations. Still, here, we want to push the value to the environment variable, and then all subsequent commands will have the value desired at build time.</p>
 <p>So far, everything is cached, and if you rebuild the Docker container without any change of which file to copy or without changing the version of Node, everything will be super fast. The next step also will be cached. The first time will be slow, then super fast:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">RUN npm install
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">RUN npm install
 </code></pre>
 <p>The following line is <code>WORKDIR /node/app</code>, and it is a hack to work around the mounting of the source file. The hack is to move the current directory once level higher than the project in the <code>app</code> folder. It does not make full of sense now, but we will mount in the <code>docker-compose</code> the developer <code>services/frontend</code> to this <code>node/app</code> folder. It allows the developer to run <code>NPM install</code> on the dev machine. If done, the code will use it; otherwise, it will go to the parent folder to use the <code>node_modules</code> from the container. It is a way to work regardless if performed or not. Because we use TypeScript, we need the types, and we expect the developer to run <code>NPM install</code>, so that will work.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">CMD ["npm", "run", "start:development"]
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">CMD ["npm", "run", "start:development"]
 </code></pre>
 <p>The last instruction is what needs to be executed when the Docker's container is starting. I created a <code>start:development</code> but we could have kept the <code>start</code>. The idea behind having the command having the environment variable string is that we might (not in this article) be able to swap between environments dynamically using the <code>NODE_ENV</code>.</p>
 <p>That's it for the development docker for the frontend.</p>
 <h1>Configuring the Frontend Application in Production</h1>
 <p>The production environment is similar but different. We will rely on the source code in the <code>services/frontend</code> and different because we are not connecting to the developer machine for the source code; we want to have everything contained in the container. Also different because we will host the generated static files from SolidJS (which would be the same for React) using an Nginx server. Nginx is performant to host static files, and it is an excellent exercise to see how to create a Docker container from a different image.</p>
 <p>In the same file that we worked on previously for the frontend development, we are adding the following code.</p>
-<pre class="language-yaml"><code class="language-yaml code-highlight"># ---------------------------------------
+<pre class="language-yaml" tabindex="0"><code class="language-yaml code-highlight"># ---------------------------------------
 # Production stage
 # ---------------------------------------
 FROM nginx:1.21.6 AS production
@@ -115,7 +115,7 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
 </code></pre>
 <p>The first line base the <code>production</code> stage on the Nginx image instead of node. It means that we need to intall <code>npm</code> and <code>node</code> to build the project into this container.</p>
-<pre class="language-yaml"><code class="language-yaml code-highlight">RUN apt-get update &amp;&amp; apt-get install -y \
+<pre class="language-yaml" tabindex="0"><code class="language-yaml code-highlight">RUN apt-get update &amp;&amp; apt-get install -y \
     software-properties-common \
     npm
 RUN npm install npm@latest -g &amp;&amp; \
@@ -123,28 +123,28 @@ RUN npm install npm@latest -g &amp;&amp; \
     n 16
 </code></pre>
 <p>You can observe that it is not straightforward and some Internet research is required to install Node 16 compared to the previous configuration which was simply <code>FROM node:16</code>. Nonetheless, now we have NGINX and Node installed into the container.</p>
-<pre class="language-yaml"><code class="language-yaml code-highlight">WORKDIR /node
+<pre class="language-yaml" tabindex="0"><code class="language-yaml code-highlight">WORKDIR /node
 COPY package*.json tsconfig.json ./
 RUN npm install --include=dev
 </code></pre>
 <p>Like previously, we need to build the dependencies. However, there is a catch! We are under <code>NODE_ENV</code> of <code>production</code>, meaning that running <code>NPM install</code> does not install the <code>devDependencies</code>. Thus, we must specify the <code>--include=dev</code>, which is a must since the SolidJS and Vite are under the <code>devDependencies</code>.</p>
 <p>Then, we copy all the TypeScript files, HTML, and CSS files.</p>
-<pre class="language-yaml"><code class="language-yaml code-highlight">COPY . .
+<pre class="language-yaml" tabindex="0"><code class="language-yaml code-highlight">COPY . .
 RUN npm run build
 </code></pre>
 <p>Again, we do it after the copy of the package.json because if we rebuild the container for production without changing the package.json file, the installation will be cached and run under 1 second instead of many seconds (or minutes when the project grows).</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">RUN rm -rf /usr/share/nginx/html/*
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">RUN rm -rf /usr/share/nginx/html/*
 RUN mv dist/* /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 </code></pre>
 <p>The next block of instruction removes the default HTML file that Nginx installs by default, then we move our NGINX configuration file into the NGINX folder. We have a <code>nginx.conf</code> in the <code>services/frontend</code> to give us some flexibility on the NGINX server. For example, we are able to change the port in the file.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">ENTRYPOINT ["nginx", "-g", "daemon off;"]
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">ENTRYPOINT ["nginx", "-g", "daemon off;"]
 </code></pre>
 <p>Finally, the <code>ENTRYPOINT</code> is similar to the <code>CMD</code>, it tells what to perform when the container starts. It is not executed at build time. The main difference compared to <code>CMD</code> is that the value specified to <code>ENTRYPOINT</code> cannot be overriden. It means that if you run the <code>DOCKER run</code> that anything after <code>run</code> would go after the <code>CMD</code> command allowing you to be flexible. With <code>ENTRYPOINT</code> nothing passed by the <code>CMD</code> is appended to the command. You might ask why I am not using <code>ENTRYPOINT</code> in both stages (development and production), and that is a valid observation: I could. But to illustrate both syntaxes, let's keep them different.</p>
 <h1>Configuring the Backend Application in Development &amp; Production</h1>
 <p>I'll go faster this time because what we learned from the frontend applies to the backend. It is even simpler because we will use Node to host development and production. The two environments are different because the development will continue to rely on mounting volume on the developer machine allowing editing TypeScript files locally and saving to have the container transpile into JavaScript and to host it. In development, we will rely on <code>ts-node</code> and in production we will use <code>node</code> directly and have all the JavaScript files hosted in the container.</p>
 <p>Inside the services/backend, the Dockerfile looks like this:</p>
-<pre class="language-yaml"><code class="language-yaml code-highlight"># ---------------------------------------
+<pre class="language-yaml" tabindex="0"><code class="language-yaml code-highlight"># ---------------------------------------
 # Development stage
 # ---------------------------------------
 FROM node:16 AS development
@@ -184,7 +184,7 @@ CMD ["npm", "run", "start:production"]
 <p>The next step is to orchestrate the two Dockerfile. We want to build by calling a single command for both services. Same when it is the time to run the container. Docker Compose allows configuring every service and passing arguments like the environment variable down to the Dockerfile.</p>
 <h2>docker-compose.yml</h2>
 <p>The file contains three sections: the <code>x-app</code>, which are configuration shared between the services. Then the two services.</p>
-<pre class="language-yaml"><code class="language-yaml code-highlight">x-app: &amp;default-app
+<pre class="language-yaml" tabindex="0"><code class="language-yaml code-highlight">x-app: &amp;default-app
   env_file:
     - ".env"
   restart: "${DOCKER_RESTART_POLICY:-unless-stopped}"
@@ -234,7 +234,7 @@ services:
 <p>The shared about the <code>healthcheck</code>. Each service has some common interval, but they also have specific endpoint to hit which mean each service will also define a <code>test</code> endpoint.</p>
 <p>The frontend configuration starts with <code>&lt;&lt;: *default-app</code>, which means taking the configuration block and using it inside the service. That uses the data from <code>x-app</code>. I commented the <code>depends_on</code>, but once the frontend code calls the backend, it might be a good idea to ensure the backend is running first.</p>
 <p>Then, the build instruction guides Docker to look in the <code>./services/frontend</code> to find the <code>dockerfile</code> named <code>Dockerfile</code>. We also specify a <code>target</code> that is the <em>stage phase</em>. We are relying on the <code>NODE_ENV</code>, which means the value specified in the environment variable direct which build we are making. If you are working on your machine, it will get the value from the <code>.env</code> file. But, if you are running on a continuous integration system (CI), you can set the value to the desired configuration. In fact, you can have a third stage that runs unit tests in the Docker's container and has the CI setting the environment variable to <code>test</code> and once everything passes, create another build with a production target. Besides the <code>target</code> we have <code>args</code>. It injects is the place to inject values down to the Dockerfile. In the Dockerfile, you can access the value from Docker-Compose using <code>ARG NODE_ENV</code></p>
-<pre class="language-yaml"><code class="language-yaml code-highlight">  frontend:
+<pre class="language-yaml" tabindex="0"><code class="language-yaml code-highlight">  frontend:
     &lt;&lt;: *default-app
     # depends_on:
     # - "backend"
@@ -253,7 +253,7 @@ services:
       - "/node/app/node_modules" 
 </code></pre>
 <p>The next section is <code>ports</code>, which are configured from outside the container port to an inside port. In that case, we set <code>DOCKER_CLIENT_PORT_FORWARD</code> to be open to consumers from outside the container, which will be proxied to the internal port <code>CLIENT_PORT</code>.</p>
-<pre class="language-yaml"><code class="language-yaml code-highlight">services:
+<pre class="language-yaml" tabindex="0"><code class="language-yaml code-highlight">services:
   backend:
     &lt;&lt;: *default-app
     build:
@@ -271,24 +271,24 @@ services:
       - "/node/app/node_modules"
 </code></pre>
 <p>The backend is very similar. In both cases, we see that there are two volumes defined. The first one is the developer machine's code, followed by <code>:</code> and where it is mounted. The mounting destination is where the Docker's container will "see" the file. The frontend has :</p>
-<pre class="language-yaml"><code class="language-yaml code-highlight">./services/frontend:/node/app
+<pre class="language-yaml" tabindex="0"><code class="language-yaml code-highlight">./services/frontend:/node/app
 </code></pre>
 <p>It means that the developer folder <code>./services/frontend</code> from the docker-compose.yaml folder will be visible in the Docker's container at this location in the container <code>/node/app</code>. The <code>:delegated</code> at the end is a performance booster for MAC OS (operating system). The second volume is to create an anonymous volume that will hide the <code>node_modules</code>. The <code>node_modules</code> from the developer computer are not being mounted to the container. The reason is that we want the container to have its own node_modules; it is pre-installed at build time, cached, and also on the right OS. If your Docker container is Linux and your developer machine a Windows, you wouldn't want to have the Docker container to mount your Windows dependencies in your Linux docker container. Hence, we anonymize the folder. The anonym tricks go along with the <code>WORKDIR</code> change to <code>/node/app</code>. As you saw earlier in this post, we are installing the NPM module in <code>/node</code> on the Docker's container and then moving one folder higher at <code>/node/app</code>. Then, we mount the developer machine source code into <code>/node_app</code> and then hide the <code>/services/frontend/node_modules</code> from Docker. Thus, Docker sees your TypeScript files, CSS, HTML, etc. but not the node_modules. Node and NPM work because if a folder cannot be found, it searches upward. It means it looks into the <code>/node/</code> folder with a <code>node_modules</code> from the Docker's build step. In the end, the code can be executed with the proper dependencies from the right OS.</p>
 <p>Finally, a file called <code>docker-compose.production.yml</code> must be created in the docker-compose directory that will override the <code>volumes</code> configuration to nothing for the <code>production</code> environment. We do not want anything mounted when we do a production build; we want the Docker contained to be self-sufficient and have all the compiled code ready to be served.</p>
 <h1>Commands</h1>
 <p>From this point few commands are important. First, we need to build the contained for the desired environment.</p>
 <p>The first one, that must be executed in the directory of the <code>docker-compose.yml</code> is the <code>build</code> command.</p>
-<pre class="language-bash"><code class="language-bash code-highlight">docker-compose build 
+<pre class="language-bash" tabindex="0"><code class="language-bash code-highlight">docker-compose build 
 </code></pre>
 <p>You can prefix the command with <code>DOCKER_BUILDKIT=0</code> to get a commit hash at every step.</p>
-<pre class="language-bash"><code class="language-bash code-highlight">DOCKER_BUILDKIT=0 docker-compose build 
+<pre class="language-bash" tabindex="0"><code class="language-bash code-highlight">DOCKER_BUILDKIT=0 docker-compose build 
 </code></pre>
 <p>With the commit hash you can debug Docker's build by using the</p>
-<pre class="language-bash"><code class="language-bash code-highlight">docker run -it &lt;hash here&gt; bash
+<pre class="language-bash" tabindex="0"><code class="language-bash code-highlight">docker run -it &lt;hash here&gt; bash
 </code></pre>
 <p>I found it very useful to get into the container and see the folder and files.</p>
 <p>Once the containers are built, it is time to run them.</p>
-<pre class="language-bash"><code class="language-bash code-highlight">docker-compose up 
+<pre class="language-bash" tabindex="0"><code class="language-bash code-highlight">docker-compose up 
 </code></pre>
 <p>From there you can go in your browser and call <code>http://localhost:port</code> where <code>port</code> need to be replaced with the external port defined in the <code>.env</code> file. For example, the value from <code>DOCKER_CLIENT_PORT_FORWARD</code> for the frontend.</p>
 <p>You can find the whole code in this <a href="https://github.com/MrDesjardins/docker-example">Github Repository</a>.</p>

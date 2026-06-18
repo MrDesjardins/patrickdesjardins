@@ -2,16 +2,16 @@
 <p>First of all, Asp.Net MVC will call the data annotation and if the class inherit from IValidatableObject the method Validate. The problem as you can see is that the ViewModel which is bound to the controller doesn't have data annotation, neither inherit from IValidatableObject. Also, the mapping from the View Model to the Model occurs later in the process. This mean that we will need to manually call the validation to trigger the validation process which has been done to the view model.</p>
 <p>Second, the error which are associated to properties may not be link directly by the model to the view model. For example, your view model may have a property FullName which use the FirstName and LastName property. During the validation process, if an error occur on FirstName or LastName, the error will be associated to those property name and not FullName. This result that the error won't be displayed around the control in the view.</p>
 <p>They are several solution. The easiest is to only display errors in the summary. We simply need to set ExcludePropertyErrors to false in the summary.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> @Html.ValidationSummary(false) 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> @Html.ValidationSummary(false) 
 </code></pre>
 <p>By default, if no parameter is provided, the value is also false. So, you do not need to explicitly write false. Here is the ValidationExtensions.cs code for the two methods.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public static MvcHtmlString ValidationSummary(this HtmlHelper htmlHelper) { return ValidationSummary(htmlHelper, false /* excludePropertyErrors */ ); }
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public static MvcHtmlString ValidationSummary(this HtmlHelper htmlHelper) { return ValidationSummary(htmlHelper, false /* excludePropertyErrors */ ); }
 
 public static MvcHtmlString ValidationSummary(this HtmlHelper htmlHelper, bool excludePropertyErrors) { return ValidationSummary(htmlHelper, excludePropertyErrors, null /* message */); } 
 </code></pre>
 <p>A second solution is to map the property from the model to the view model.</p>
 <p><a href="http://blogs.msdn.com/b/simonince/archive/2010/12/07/view-model-versus-domain-entity-validation-with-mvc.aspx">ScottGu</a> has a post that contain a helper class that does the job.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public static class ControllerExtensions { public static bool TryValidateAndTranslate(this Controller controller, object model, string prefix, object propertyMap) { return TryValidateAndTranslate(controller, model, prefix, new RouteValueDictionary(propertyMap)); }
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public static class ControllerExtensions { public static bool TryValidateAndTranslate(this Controller controller, object model, string prefix, object propertyMap) { return TryValidateAndTranslate(controller, model, prefix, new RouteValueDictionary(propertyMap)); }
 
 public static bool TryValidateAndTranslate(this Controller controller, object model, string prefix, RouteValueDictionary propertyMap) { ModelMetadata metadata = ModelMetadataProviders.Current.GetMetadataForType(() =&amp;gt; model, model.GetType());
 
@@ -25,7 +25,7 @@ return propertyName; } }
 </code></pre>
 <p>From there, you need to call the <code>TryValidateAndTranslate</code> method. The method will loop all validations associated to the object which can be data annotation validation or validation written inside the Validate method of IValidatableObject. The ModelValidator.GetModelValidator method is in fact used by the framework when you are using TryValidateModel.</p>
 <p>The usage of this method should be inside the method of the controller where the form is posted. Just after the mapping from the ViewModel to the Model.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">{ 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">{ 
   //... action method
 
   //... map view model to model

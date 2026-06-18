@@ -2,7 +2,7 @@
 <p>In this article, I'll be looking at the experience in TypeScript. Using JavaScript, destructuring properties explicitly tell the object's available properties. Thus, it has the benefit of documenting the component properties in JavaScript. In TypeScript, the interface already fulfills that role.</p>
 <h1>Reason 1: Component Signature Readability</h1>
 <p>The first reason why property destructuring shouldn't be automatically selected is it makes the component signature-less readable. When you have a function with many parameters, it is hard to know what each parameter is.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export interface MyComponentProps {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export interface MyComponentProps {
   configuration: ConfigType;
   metadata: MetadataType;
   variant: Variant;
@@ -33,7 +33,7 @@ export function MyComponent({
 }
 </code></pre>
 <p>Compared to:</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export interface MyComponentProps {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export interface MyComponentProps {
   configuration: ConfigType;
   metadata: MetadataType;
   variant: Variant;
@@ -54,7 +54,7 @@ export function MyComponent(props: MyComponentProps): ReactElement {
 }
 </code></pre>
 <p>The readability gets worse if the type is not defined in an interface. Here is an example of NodeJS React component:</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export default async function MyComponent({
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export default async function MyComponent({
   params: { segmentId },
 }: {
   params: { segmentId: string };
@@ -62,7 +62,7 @@ export function MyComponent(props: MyComponentProps): ReactElement {
 </code></pre>
 <h1>Reason 2: Variable Origin</h1>
 <p>React component tends to get large with state and effects. When you have a large component, it is hard to know where the variable comes from. Is it a prop, a state, or a variable and the parameters of an event? While looking at the component is the key, it is easier to know where the variable comes from when you don't use property destruction, keeping the object you know with certainty that the variable is coming from the props. The following code is short, but if it had 400 lines, it would be more work to find out where the value is coming from. Doing a pull request review is a case where the whole file is not always visible, and having the object clarify at first glance where the variable is coming from.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export function MyComponent(props: MyComponentProps): ReactElement {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export function MyComponent(props: MyComponentProps): ReactElement {
   return (
     &lt;div&gt;
       &lt;h1&gt;{props.title}&lt;/h1&gt;
@@ -72,7 +72,7 @@ export function MyComponent(props: MyComponentProps): ReactElement {
 </code></pre>
 <h1>Reason 3: Reusability with Children Components and Functions</h1>
 <p>Another reason is that once the properties are out of the object, you must rebuild an object if you need to pass the object to a child component. This is not a big deal, but it is an extra step that is not required. Destructuring can be handy to pass a partial parent prop to a child component.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export function MyComponent(props: MyComponentProps): ReactElement {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export function MyComponent(props: MyComponentProps): ReactElement {
   const childProps: MyChildWithPartialProps = { // Valid destructuring case
     state: props.state,
     title: props.title,
@@ -86,7 +86,7 @@ export function MyComponent(props: MyComponentProps): ReactElement {
 }
 </code></pre>
 <p>On the same line of thought, if you have a function that handles data from the props, instead of passing back several destructed variables to a function, you can pass the whole object.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export function MyComponent(props: MyComponentProps): ReactElement {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export function MyComponent(props: MyComponentProps): ReactElement {
   //...
   const filteredData = filterData(props);
   return (
@@ -96,7 +96,7 @@ export function MyComponent(props: MyComponentProps): ReactElement {
 </code></pre>
 <h1>Reason 4: Name Conflict</h1>
 <p>Using the object prevents property conflict with variables inside the React component. A standard solution is to rename when destructing objects, decreasing readability. Instead, using the object isolate variable, which would use the same name of one of the component properties.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export function MyComponent({
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export function MyComponent({
   configuration,
   metadata,
   variant,
@@ -119,7 +119,7 @@ export function MyComponent(props: MyComponentProps): ReactElement {
 }
 </code></pre>
 <p>Versus:</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export function MyComponent(props: MyComponentProps): ReactElement {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export function MyComponent(props: MyComponentProps): ReactElement {
   //...
   const title = getTitle();
   //..
@@ -133,7 +133,7 @@ export function MyComponent(props: MyComponentProps): ReactElement {
 </code></pre>
 <h1>Reason 5: Abuse of Property Destructuring with Deep Nestling</h1>
 <p>The word abuse is a little intense, but nothing restrains someone from getting deep into an object to extract value.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export function MyComponent({
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export function MyComponent({
   title :{
     translation: {
       image: {
@@ -153,7 +153,7 @@ export function MyComponent(props: MyComponentProps): ReactElement {
 }
 </code></pre>
 <p>Versus:</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export function MyComponent(props: MyComponentProps): ReactElement {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export function MyComponent(props: MyComponentProps): ReactElement {
   return (
     &lt;div&gt;
       &lt;h1&gt;{props.translation.image.alternate.title}&lt;/h1&gt;
@@ -162,7 +162,7 @@ export function MyComponent(props: MyComponentProps): ReactElement {
 }
 </code></pre>
 <p>A bonus issue is that the code will throw an error if the object is null or undefined. With properties, the optional chaining operator will not crash but will set the value to null or undefined.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export function MyComponent(props: MyComponentProps): ReactElement {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export function MyComponent(props: MyComponentProps): ReactElement {
   return (
     &lt;div&gt;
       &lt;h1&gt;{props.translation.image?.alternate?.title ?? "No title"}&lt;/h1&gt;
@@ -178,7 +178,7 @@ export function MyComponent(props: MyComponentProps): ReactElement {
 <p>Each time you are destructuring an object, you create a variable and an object. The variables go into the heap and then are released later. That is not needed. Similarly, suppose you pass down the property to a child component. In that case, every render of the parent component creates variables losing the reference, and thus, the child component needs to evaluate the object each time. The creation of objects is not a big deal, React handles that case well, but it is not needed.</p>
 <h1>Reason 8: Union</h1>
 <p>If you have a React component with a property that is a union, using a discriminator is a good pattern to identify which type of union is the active one. Destructuring a property with a discriminator removes the possibility of accessing a unique property of a type in the union and will not compile.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export type MyComponentProps = {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export type MyComponentProps = {
   kind: "TypeA",
   configuration: string;
   metadata: boolean;
@@ -204,7 +204,7 @@ export function MyComponent({
 }
 </code></pre>
 <p>However, by not destructuring, TypeScript can access the right property:</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export type MyComponentProps = {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export type MyComponentProps = {
   kind: "TypeA",
   configuration: string;
   metadata: boolean;

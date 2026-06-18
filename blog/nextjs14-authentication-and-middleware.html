@@ -2,7 +2,7 @@
 <p>Middleware has changed since NextJS 13. A single middleware file exists at the root, restricting access to the request and response objects. Enforcing authentication for web and API routes fits well in the middleware as they are a required path for each request. The advantage is that authentication becomes transparent to every developer who uses the system. However, the middleware does not allow for the request to be modified. The lack of mutability means that the middleware cannot add user information to the request object. The paucity of modification is a problem because, ideally, the web and API routes receive a user object from the middleware.</p>
 <h1>NextJS Solution</h1>
 <p>The solution is to use HTTP headers. There are some limitations in terms of size, but overall, you can pass serialized information in the request header.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">import { NextResponse } from 'next/server'
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
  
 // This function can be marked `async` if using `await` inside
@@ -20,19 +20,19 @@ export function middleware(request: NextRequest) {
 </code></pre>
 <p>The solution could be better because it requires the user to be deserialized in every route. The friction with NextJS continues to grow as the app route does not expose the request object. Without a request object, the developer must deserialize the header in two ways: one for the web route and one for the API route.</p>
 <p>The app route for the web page can access the header and retrieve the user.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">export default async function DefaultPage() {
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">export default async function DefaultPage() {
   const user = JSON.parse(headers().get('user'));
   // ...
 }
 </code></pre>
 <p>The api route can access the request:</p>
-<pre class="language-ts"><code class="language-ts code-highlight">export async function GET(request: NextRequest) {
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">export async function GET(request: NextRequest) {
   const user = JSON.parse(request.headers.get('user'));
   // ...
 }
 </code></pre>
 <p>For the API route, there is potential for altering the request object. NextJS only blocks the mutation between the middleware and the route. The API route can call a function at the beginning of the route to deserialize the user and add it to the request object. The explicit call to a function is a potential solution to the problem of managing the header differently and making the web route cleaner, as the information remains in the request object for the life of the request.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">function addUserToRequest(request: NextRequest){
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">function addUserToRequest(request: NextRequest){
   const user = JSON.parse(request.headers.get('user'));
   request.user = user;
 }

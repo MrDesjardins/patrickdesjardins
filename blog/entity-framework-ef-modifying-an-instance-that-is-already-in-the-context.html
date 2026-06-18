@@ -5,7 +5,7 @@
 <p><img src="/images/blog/EventViewerEntityFrameworkModifyError-400x157.png" alt="" /></p>
 <p>This is very annoying and unfortunate that Entity Framework (ef) does not have something more intelligent to handle those case. In short, you have to detach the local version and set to modify the entity you are modifying. This scenario is pretty common if you receive the object from a web request and you want to save the entity. Between the request that contains the object and the time you change the state to modify (saving code) you may have loaded a list that contains your entity or you may have loaded a part of this entity for validation purpose. Nonetheless, you have to handle this case if you want to save this entity.</p>
 <p>A way to do it is to navigate inside the <code>local</code> of the <code>DbSet</code> to see if this one is there. If the entity is present, then you <code>detach</code>.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">var local = yourDbContext.Set&lt;YourModel&gt;()
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">var local = yourDbContext.Set&lt;YourModel&gt;()
                          .Local
                          .FirstOrDefault(f =&gt; f.Id == yourModel.Id);
 if (local != null)

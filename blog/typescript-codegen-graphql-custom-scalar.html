@@ -3,14 +3,14 @@
 <p>Relying on number cause issue with a number above <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER">2^53 because of how JavaScript handles number</a>. Hence, above that size, in JavaScript you must create a wrapped type called <code>BigInt</code>. While this article focuses on <code>Long</code> to <code>BigInt</code>, it is the same issue with many other types like <code>Date</code>, <code>Time</code> or more complex scalar.</p>
 <h1>Server Configuration</h1>
 <p>There is a part that you will need to communicate with the GraphQL server owner. The server cannot send the GraphQL <code>Int</code> type, so the server must send the data as a <code>string</code>. Sending the value as a Java <code>Long</code> would create an accuracy issue. The transmission of the data will be a <code>number</code> and causes an issue if the value is above 2^53 bit. The best is to have the server marshaling the value into a <code>string</code>. Hence, inside the <code>string</code>, the value can be above 2^53. It means the value would be in the format:</p>
-<pre class="language-javascript"><code class="language-javascript code-highlight">data : {
+<pre class="language-javascript" tabindex="0"><code class="language-javascript code-highlight">data : {
   YourEntityName: {
     myField: "192381290381209381290839012830918209510257182759817287128371298738928"
   }
 }
 </code></pre>
 <p>To specify to the client that the <code>string</code> is actually not a GraphQL <code>string</code>, the best is to rely on a <a href="https://graphql.org/learn/schema/">custom scalar</a>. For example, the GraphQL server can create a GraphQL <code>Long</code> time.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">scalar Long
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">scalar Long
 </code></pre>
 <p><img src="/images/blog/CustomScalar-ScalarLong.png" alt="" /></p>
 <p>Therefore, the client knows that type is a <code>Long</code>, the data is transmitted as a string, and we can tackle the next step with these two pieces of information.</p>
@@ -18,7 +18,7 @@
 <p>On the client-side, there is some work to do. First, I assume you are using TypeScript and <a href="https://www.graphql-code-generator.com/">Codegen</a> to generate your TypeScript from the GraphQL files.</p>
 <p><img src="/images/blog/CustomScalar-GenTs.png" alt="" /></p>
 <p>I assume you have somehow the whole Graphql Schema and several files in your client repository that have queries, mutations, inputs, and types. Something like:</p>
-<pre class="language-yml"><code class="language-yml code-highlight">schema: "output/introspectionResult.json"
+<pre class="language-yml" tabindex="0"><code class="language-yml code-highlight">schema: "output/introspectionResult.json"
 documents: "./src/**/*.graphql"
 overwrite: true
 generates:
@@ -34,11 +34,11 @@ generates:
 <p>So, you need to add a couple of details to tell Codegen how to generate the proper type for the custom scalar <code>Long</code> and to tell Codegen how to convert the <code>string</code> into a BigInt`.</p>
 <h2>TypeScript: Converting the Custom Scalar to Your Type</h2>
 <p>Inside your codegen.yml you can define a <code>scalars</code> option. For a <code>Long</code> to a <code>BigInt</code> you can have:</p>
-<pre class="language-yml"><code class="language-yml code-highlight">scalars:
+<pre class="language-yml" tabindex="0"><code class="language-yml code-highlight">scalars:
     Long: BigInt
 </code></pre>
 <p>If you execute the generation, you will see that anywhere in your queries that you are fetching a type of <code>Long</code> that the TypeScript generated will have the type <code>BigInt</code>. So, the codegen.yml file looks like this:</p>
-<pre class="language-yml"><code class="language-yml code-highlight">schema: "output/introspectionResult.json"
+<pre class="language-yml" tabindex="0"><code class="language-yml code-highlight">schema: "output/introspectionResult.json"
 documents: "./src/**/*.graphql"
 overwrite: true
 generates:
@@ -58,7 +58,7 @@ generates:
 <h2>Apollo Client: Converting Value to the Proper Type</h2>
 <p>The second part is the trickiest. It requires having a custom plugin for Codegen. The plugin's goal is to generate a type policy for the Apollo Client. On every GraphQL request, Apollo will inject the response into the <code>InMemoryCache</code>. There is a way with the Apollo Client to have custom logic when data enters the cache. The plugin's goal is to automatically generate these functions for all the fields from your custom scalar. Codegen is the best to know since it analyzes the schema and knows which field is being used in your GraphQL files. Thus, know which field to create the custom policy.</p>
 <p>Before diving into the plugin, let's see the <code>typePolicies</code> property of Apollo Client (version 3).</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const cache = new InMemoryCache({
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const cache = new InMemoryCache({
     typePolicies: {
         YourEntityName: {
             fields: {
@@ -69,7 +69,7 @@ generates:
 });
 </code></pre>
 <p>The example shows that add manually a function called <code>longBigIntPolicy</code> for the <code>YourEntityName.field</code> that is of type <code>Long</code>. While you can do that case by case, a plugin would allow you to handle it for you systematically and have the following code instead.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const cache = new InMemoryCache({
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const cache = new InMemoryCache({
     typePolicies: {
       ...scalarTypePolicies,
       // You can still define here custom policies
@@ -81,7 +81,7 @@ generates:
 <p><img src="/images/blog/CustomScalar-Plugin.png" alt="" /></p>
 <p>First, a configuration for the plugin that maps the <code>scalarTypePolicies</code> types. In that example, there is one type: <code>Long</code> and it is mapped to <code>longBigIntPolicy#longBigIntPolicy</code> which mean  check in the <code>longBigIntPolicy</code> file for the function <code>longBigIntPolicy</code>.</p>
 <p>Second, there is the plugin that must be a <code>.js</code> file. Here it points to <code>generateScalarPolicies.js</code></p>
-<pre class="language-yml"><code class="language-yml code-highlight">schema: "output/introspectionResult.json"
+<pre class="language-yml" tabindex="0"><code class="language-yml code-highlight">schema: "output/introspectionResult.json"
 documents: "./src/**/*.graphql"
 overwrite: true
 generates:
@@ -100,16 +100,16 @@ generates:
             - typescript-operations
 </code></pre>
 <p>The tricky part is the plugin. We need something that scans all your types against the server's GraphQL schema and identifies where to create an entry for each field. The good news is that there is an <a href="https://github.com/homebound-team/graphql-typescript-scalar-type-policies/blob/main/src/index.ts">unsupported repository with the plugin</a>, and it is written in TypeScript! The bad news is that the NPM is not usable, and the project is not supported. So, we need to copy the code and have a script to run the TypeScript into a JavaScript file before executing the Codegen. You can create a bash script that runs TypeScript and use it before one NPM command you have for your project.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">#Content of ./plugins/generate.sh 
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">#Content of ./plugins/generate.sh 
 npx tsc plugins/generateScalarPolicies.ts --target es2018 --module commonjs --moduleResolution node --lib esnext --skipLibCheck true --outDir "./plugings/output/"
 </code></pre>
 <p>Inside your package.json:</p>
-<pre class="language-javascript"><code class="language-javascript code-highlight">"scripts": {
+<pre class="language-javascript" tabindex="0"><code class="language-javascript code-highlight">"scripts": {
   "gen": "./plugins/generate.sh &amp;&amp; graphql-codegen --config codegen.yml"
 }
 </code></pre>
 <p>The result is that along with your typical generated types, inside <code>allTypes.ts</code> (as defined in the <code>codegen.yml</code> file), you will have a <code>const</code> variable.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export const scalarTypePolicies = {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export const scalarTypePolicies = {
   // ...
 }
 </code></pre>

@@ -1,13 +1,13 @@
 <!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Patrick Desjardins Blog - TypeScript vs Flow (Part 3 of 3) - Syntax Difference</title><meta name="description" content="TypeScript vs Flow (Part 3 of 3) - Syntax Difference"><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-CZbWyyk4.css"><link rel="stylesheet" href="/assets/static-modules.css"></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><header><h1 class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</h1><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main class="app_blog__components_BlogBody__main"><h2 class="app_blog__components_BlogBody__heading">TypeScript vs Flow (Part 3 of 3) - Syntax Difference</h2><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: 2017-08-30</p><p>This is part three of three of TypeScript vs Flow. We previously saw the fundamental differences between TypeScript and Flow, then we saw some high-level differences in terms of features. Now, we will see at a much lower level the differences at the syntax.</p>
 <h1>Declaration</h1>
 <p>TypeScript and Flow are exactly the same.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">Const 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">Const 
 let 
 var
 </code></pre>
 <h1>Primitive</h1>
 <p>Again, no difference.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">Number 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">Number 
 Boolean 
 String 
 Null 
@@ -16,12 +16,12 @@ Void
 </code></pre>
 <h1>Array</h1>
 <p>And again, no difference.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">[] 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">[] 
 Array&lt;T&gt;
 </code></pre>
 <h1>Enum</h1>
 <p>TypeScript is shorted:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">// Language file:
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">// Language file:
 export enum Language {
  English,
  French
@@ -37,13 +37,13 @@ export class LocaleManager {
 }
 </code></pre>
 <p>Flow requires the value in const, and special import. It's more verbose.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">// Language file:
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">// Language file:
 // @flow
 export const LANGUAGES_VALUE = {
  FRENCH: "French",
  ENGLISH: "English"
 };
-</code></pre><pre class="language-typescript"><code class="language-typescript code-highlight">export type Language = $Values&lt;typeof LANGUAGES_VALUE&gt;;
+</code></pre><pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export type Language = $Values&lt;typeof LANGUAGES_VALUE&gt;;
 // Use of Language file:
 import type { Language } from "../general/Language";
 import { LANGUAGES_VALUE } from "../general/Language";
@@ -58,36 +58,36 @@ export class LocaleManager {
 </code></pre>
 <h1>Maybe Argument</h1>
 <p>Watch out the question mark in the few next examples. Flow distinguishes null and undefined between optional and maybe.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">TypeScript:
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">TypeScript:
 
 { propertyName?: string } //Allow null &amp; undefined
 
 </code></pre>
 <p>Flow:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">{ propertyName: ?string } //Allow null &amp; undefined 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">{ propertyName: ?string } //Allow null &amp; undefined 
 
 </code></pre>
 <h1>Optional Property</h1>
 <p>TypeScript:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">{ propertyName?: string } //Allow null &amp; undefined 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">{ propertyName?: string } //Allow null &amp; undefined 
 
 </code></pre>
 <p>Flow:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">{ propertyName?: string } //Allow undefined 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">{ propertyName?: string } //Allow undefined 
 
 </code></pre>
 <h1>Optional Argument</h1>
 <p>TypeScript:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight"> ( propertyName?: string ) //Allow null &amp; undefined
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight"> ( propertyName?: string ) //Allow null &amp; undefined
 
 </code></pre>
 <p>Flow:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">( propertyName?: string ) //Allow undefined 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">( propertyName?: string ) //Allow undefined 
 
 </code></pre>
 <h1>Literal value as type</h1>
 <p>In both cases, same syntax. For example, the code below only accepts the value of two. The difference is that TypeScript allows us to pass null or undefined. Flow doesn’t. To have Flow accept null you need to use the maybe concept which is to put a question mark right before the two.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function funct(value: 2) {}
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function funct(value: 2) {}
 // Flow to accept 2 and null and undefined:
 function funct(value: ?2) { }
 // Flow to accept 2 and undefined by not null:
@@ -96,14 +96,14 @@ function funct(value?: 2) { }
 </code></pre>
 <h1>Union type</h1>
 <p>Union type are supported by both and have the same syntax. Indeed, TypeScript allows to pass null and undefined while Flow doesn't.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function funct(arg1: "a" | "b" | "c") { }
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function funct(arg1: "a" | "b" | "c") { }
 // Flow to have also null and undefined:
 function funct(arg1?: "a" | "b" | "c" | null) { }
 
 </code></pre>
 <h1>Union primitive type</h1>
 <p>Union with primitive work the same. TypeScript is consistent by letting null and undefined as well.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">
 function funct(arg1: number | string) { }
 // Flow to accept null and undefined:
 function funct(arg1?: number | ?string) { }
@@ -112,41 +112,41 @@ function funct(arg1?: number | string | null) { }
 </code></pre>
 <h1>Mixed keyword</h1>
 <p>Mixed doesn’t exist with TypeScript, so here is how it’s written in Flow. In TypeScript, you would use <code>any</code> or an empty definition with the curly brace: {}. The difference is that with <code>any</code> or curly brackets you can redefine the variable with any type once initialized. With Flow and the use of mixed, it’s any type until it’s defined. Once defined, the type is set for the life of the variable. Nice addition to the language, it’s a “dynamic any”.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function funct(arg1: mixed) { }
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function funct(arg1: mixed) { }
 
 </code></pre>
 <h1>Any type</h1>
 <p>Same syntax.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function funct(arg1: any) { }
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function funct(arg1: any) { }
 </code></pre>
 <h1>Define return type</h1>
 <p>Returning value is with the semi-colon followed by the type. If nothing, return void.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function funct(): string { }
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function funct(): string { }
 </code></pre>
 <h1>Function type</h1>
 <p>The signature of a method is exactly the same. It uses the JavaScript keyword “function” with parentheses that contain the name followed by the type. After the semicolon, the type is returned.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function funct(p1: string, p2?: boolean): void { }
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function funct(p1: string, p2?: boolean): void { }
 </code></pre>
 <h1>Function w/o type</h1>
 <p>Function returns void by default in both.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function funct(p1, p2) { } 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function funct(p1, p2) { } 
 </code></pre>
 <h1>Function fat arrow</h1>
 <p>Fat arrow is a copy and paste between the two.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">let funct = (p1, p2) =&gt; { }
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">let funct = (p1, p2) =&gt; { }
 </code></pre>
 <h1>Function with callback</h1>
 <p>Callback arguments are written the same way in TypeScript or Flow.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function funct(cb: (e: string | null, v: string | number) =&gt; void) { }
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function funct(cb: (e: string | null, v: string | number) =&gt; void) { }
 </code></pre>
 <h1>Funct with rest</h1>
 <p>Both support the long and short version.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function funct(...args: Array&lt;number&gt;) {}
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function funct(...args: Array&lt;number&gt;) {}
 function funct2(...args: number[]) {}
 </code></pre>
 <h1>Type Alias</h1>
 <p>Aliases are written the same way in both case.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var obj1: { foo: boolean } = { foo: true };
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var obj1: { foo: boolean } = { foo: true };
 // or
 type MyType = { value: boolean };
 var obj2: MyType;
@@ -154,7 +154,7 @@ var obj2: MyType;
 </code></pre>
 <h1>Type Alias with Generic</h1>
 <p>Generic doesn't change anything. TypeScript and Flow stays the same.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">type MyObject&lt;A, B, C&gt; = {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">type MyObject&lt;A, B, C&gt; = {
  property: A,
  method(val: B): C,
 };
@@ -164,15 +164,15 @@ true;}}
 </code></pre>
 <h1>Subtype</h1>
 <p>Defining your own type is the same in Flow or TypeScript.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">type TypeLetters = "A" | "B" | "C";
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">type TypeLetters = "A" | "B" | "C";
 </code></pre>
 <h1>Object as map</h1>
 <p>The first part is the same. You can use a string between square bracket to access in read or write a member of an object.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var o: { foo?:number } = {};
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var o: { foo?:number } = {};
 o["foo"] = 0;
 </code></pre>
 <p>However, TypeScript won’t allow dynamic adding of a member. In TypeScript, once a type is set to a variable, this one cannot change. The exception is the "any" type.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var o: { foo?:number } = {};
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var o: { foo?:number } = {};
 o["foo"] = 0;
 o[“bar”] = 2; //This will work in Flow, but not in TypeScript
 
@@ -180,31 +180,31 @@ o[“bar”] = 2; //This will work in Flow, but not in TypeScript
 <p>This is interesting since Flow is looser in this regard, and TypeScript is looser in term of the null/undefined. The justification of TypeScript to be strict is its structural typing.</p>
 <h1>Array</h1>
 <p>Pretty similar except the case of allowing Null. Here are all the similar scenarios.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var x = [];
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var x = [];
 var y = [1, 2, 3];
 var z = new Array();
 var w: boolean[] = [true, false, true];
 var v: Array&lt;boolean&gt; = [true, false, true];
 </code></pre>
 <p>Here is how TypeScript does with null (nothing to do) and how to add the possibility of null in Flow.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var s: number[] = [1, 2, null];
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var s: number[] = [1, 2, null];
 var s: (?number)[] = [1, 2, null];
 </code></pre>
 <h1>Tuple</h1>
 <p>Same syntax for tuple.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var tuple: [number, boolean, string] = [1, true, "three"];
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var tuple: [number, boolean, string] = [1, true, "three"];
 </code></pre>
 <h1>Key interpolation</h1>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var obj1: { foo: boolean } = { foo: true };
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var obj1: { foo: boolean } = { foo: true };
 obj1["foo"] = false;
 </code></pre>
 <h1>Opaque Type</h1>
 <p>With Flow you can define a type detail to be only available to a module. Here is an example. It can be used by an external module by importing it. However, the other file that imports won’t be able to assign it as Number, only as “MyType”. This feature can be interesting for people to enforce the use of their type. This is not available for TypeScript.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">opaque type MyType = number;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">opaque type MyType = number;
 </code></pre>
 <h1>Interface and Implementation</h1>
 <p>Implementing an interface is the same in Flow or TypeScript.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">interface Serializable {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">interface Serializable {
  serialize(): string;
 }
 class Foo implements Serializable {
@@ -213,7 +213,7 @@ class Foo implements Serializable {
 </code></pre>
 <h1>Interface as map</h1>
 <p>Both share the same syntax.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">interface MyInterface {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">interface MyInterface {
  [key: string]: number;
 }
 var x: MyInterface;
@@ -221,7 +221,7 @@ x.key = 3;
 </code></pre>
 <h1>Interface and object</h1>
 <p>Both are the same for the first part.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">interface MyInterface{
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">interface MyInterface{
   foo: string,
   bar: number
 }
@@ -232,14 +232,14 @@ var x: MyInterface = {
 
 </code></pre>
 <p>However, TypeScript is more permissive since you do not have to define both members. You can just define the type, without defining any value at all, and later assign the value. By default, the value will be undefined.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var x: MyInterface;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var x: MyInterface;
 x.foo = "foo";
 x.bar = 1;
 
 </code></pre>
 <h1>Covariance property (readonly)</h1>
 <p>The syntax is a little bit different. TypeScript is using a longer approach, similar to C# with the keyword "readonly". Flow is using the plus symbol.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">interface MyInterface{
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">interface MyInterface{
  readonly foo: string
 }
 var x: MyInterface = { foo: "bar" };
@@ -247,7 +247,7 @@ x.foo = "123"; // Blocked!
 
 </code></pre>
 <p>Flow:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">interface MyInterface{
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">interface MyInterface{
  +foo: string
 }
 var x: MyInterface = { foo: "bar" };
@@ -256,13 +256,13 @@ x.foo = "123"; // Blocked!
 </code></pre>
 <h1>Contravariance</h1>
 <p>TypeScript needs to have the type to be defined to all possible value. In the following example, the field is of type number. However, in the code, it can be a number or a string. TypeScript blocks the code to compile since there is a possibility of being a string, so it says that it must be a number or a string.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">interface Contravariant { writeOnly: number; }
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">interface Contravariant { writeOnly: number; }
 var numberOrString = Math.random() &gt; 0.5 ? 42 : 'forty-two';
 var value2: Contravariant = { writeOnly: numberOrString }; // Doesn't work. Need to change the type number to be : number | string
 
 </code></pre>
 <p>With Flow, with the same syntax, you get the same result. However, with the sign minus, you can make the code to be contravariant.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">interface Contravariant { -writeOnly: number; }
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">interface Contravariant { -writeOnly: number; }
 var numberOrString = Math.random() &gt; 0.5 ? 42 : 'forty-two';
 var value2: Contravariant = { writeOnly: numberOrString }; // Works!
 
@@ -270,7 +270,7 @@ var value2: Contravariant = { writeOnly: numberOrString }; // Works!
 <p>Again, this is a small syntax difference. At the end, isn't just simpler to just mark the type to "string | number" in both case?</p>
 <h1>Generic Class</h1>
 <p>Exact same syntax.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">class Item&lt;T&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">class Item&lt;T&gt; {
  prop: T;
  constructor(param: T) {
  this.prop = param;
@@ -281,50 +281,50 @@ let item1: Item&lt;number&gt; = new Item(42);
 </code></pre>
 <h1>Generic Interface</h1>
 <p>As we saw earlier, TypeScript allows to declare a type and not instantiated completely or completely. Flow must declare and instantiate.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">interface MyInterface&lt;A, B, C&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">interface MyInterface&lt;A, B, C&gt; {
  foo: A,
  bar: B,
  baz: C,
 }
 </code></pre>
 <p>// Flow and TypeScript:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var x: MyInterface&lt;string, number, boolean&gt; = {foo:"1", bar:4, baz:true};
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var x: MyInterface&lt;string, number, boolean&gt; = {foo:"1", bar:4, baz:true};
 
 </code></pre>
 <p>// Only TypeScript:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var x: MyInterface&lt;string, number, boolean&gt;; // Notice that we only declare.
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var x: MyInterface&lt;string, number, boolean&gt;; // Notice that we only declare.
 x.foo = "123";
 
 </code></pre>
 <h1>Generic Type</h1>
 <p>Both allows to have generic type in the same syntax.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">type Item&lt;T&gt; = {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">type Item&lt;T&gt; = {
  prop: T,
 };
 </code></pre>
 <h1>Generic Function</h1>
 <p>Generic function share the same syntax between Flow and TypeScript.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function funct1&lt;T&gt;(p1: T, p2 = "Smith") { }
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function funct1&lt;T&gt;(p1: T, p2 = "Smith") { }
 
 </code></pre>
 <h1>Default parameter value</h1>
 <p>Default parameter use the equal sign followed by the value in both cases.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function funct1(p1: string, p2 = "Smith") { }
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function funct1(p1: string, p2 = "Smith") { }
 </code></pre>
 <h1>Generic Type with default type and value</h1>
 <p>TypeScript uses the keyword extends to have a generic type from a particular type. Default value is the same.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">Type Item&lt;T extends number = 1&gt; = {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">Type Item&lt;T extends number = 1&gt; = {
  prop: T,
 };
 </code></pre>
 <p>Flow uses the semicolon to enforce the generic type and equal sign for default.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">type Item&lt;T: number = 1&gt; = {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">type Item&lt;T: number = 1&gt; = {
  prop: T,
 };
 </code></pre>
 <h1>Cast</h1>
 <p>Cast is different. Require having parentheses and a semi colon in Flow. TypeScript uses "as" like in C#. Flow is a little bit more verbose and can become harder to see in a situation within the inner function with many parentheses and curly braces.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var x: number = otherVariable as number;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var x: number = otherVariable as number;
 var x: number = (othervariable: number);
 
 </code></pre>

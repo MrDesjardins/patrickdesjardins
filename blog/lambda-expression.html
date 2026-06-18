@@ -5,15 +5,15 @@
 </ul>
 <p>The <strong>Code Delegate</strong> is used a lot with Linq. Almost all extension like Where is a delegate function that is compiled into IL code. It's very fast because it's compiled. On the other hand, some situation when the data is not evaluate against direct memory or require some reflection against what is passed requires Expression Tree Object Lambda.</p>
 <p>In the code, you can know if it's a Code Delegate or Expression Tree with the declaration of the parameter. If the method you call use:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> Func&lt;T,bool&gt; predicate //bool can be something else 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> Func&lt;T,bool&gt; predicate //bool can be something else 
 </code></pre>
 <p>It's because it's a code delegate. In fact, the Func method is a predefined delegate that take one or more parameter with a return value. This can be compiled. Conversely, Expression Tree Object uses:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> Expression&lt;Fun&lt;T,bool&gt;&gt; predicate //bool can be something else 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> Expression&lt;Fun&lt;T,bool&gt;&gt; predicate //bool can be something else 
 </code></pre>
 <p>Instead of compiling into IL, this generate code to let the framework analyse the expression. It lets the developer know the type, the name of the object and the value of it. This is why Linq To Sql requires to use expression instead of compiled because it needs to read the delegate information and translate it into SQL statement.</p>
 <h2>Real Life Example</h2>
 <p>I think a simple example could be the one of <code>INotifiedPropertyChanged</code>. This interface give a method that has for parameter a string that must be the name of the property that has changed. When using straight from this implementation, some problem may arise like not entering the name of the property correctly or when refactoring, the tool may not check the string value to change it. To solve this issue, you can use Expression Tree Object to get all methods of the current object and to select one of it.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">protected virtual void OnPropertyChanged(string propertyName) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">protected virtual void OnPropertyChanged(string propertyName) { 
   PropertyChangedEventHandler handler = this.PropertyChanged; 
   if (handler != null) { 
     var e = new PropertyChangedEventArgs(propertyName); 
@@ -29,7 +29,7 @@ protected void OnPropertyChanged&lt;T&gt;(Expression&lt;Func&lt;T&gt;&gt; proper
 } 
 </code></pre>
 <p>The line 11 contain the Expression Tree Object that contain the delegate Func. This mean that it doesn't take any parameter and return a value of type .</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">private MyObject myObject; 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">private MyObject myObject; 
 public MyObject MyObject { 
   get { 
     return myObject; 

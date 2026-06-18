@@ -9,7 +9,7 @@ This is located when you open the Microsoft Sql Server Management Studio under t
 <p>Altering existing schema components is not allowed. There was an attempt to modify an existing XML Schema component, component namespace</p>
 </blockquote>
 <p>To fix this, you will need to change the column type to remove the XSD validation. After, you will need to drop the validation and create a new one to finally apply again the new validation.</p>
-<pre class="language-sql"><code class="language-sql code-highlight">ALTER TABLE my_table ALTER COLUMN xml_column XML
+<pre class="language-sql" tabindex="0"><code class="language-sql code-highlight">ALTER TABLE my_table ALTER COLUMN xml_column XML
 
 DROP XML SCHEMA COLLECTION xml_collection
 

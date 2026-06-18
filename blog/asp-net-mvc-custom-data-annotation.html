@@ -2,7 +2,7 @@
 <p>Data Annotation is used by Asp.Net MVC <strong>Data Binder</strong> that convert Html input value back into your model. During this process, it calls every validations from Data Annotation. In fact, it use the <strong>IValidatableObject</strong> interface that you can even have your model inherit to have validation inside a method if you want.</p>
 <p>At some point, you may have some validation that are repeated across multiple classes. This is the case for required field. Instead of validating with a IF statement in the Validate method provided by IValidatableObject or to have your setter check of the value of the property, an alternative is the Data Annotation. It has the advantage to be productive for you because you just need to add the attribute over the property and the validation is done. It can also be unit tested once and you can be sure that for every properties that use it that it is executed. Another point for Data Annotation is the possibility to have easily the Javascript doing the same thing for you. This mean that with a single Data Annotation you can have client side and server side validation.</p>
 <p>Before going any further in the theory, let's create a small project with a simple model class the custom Data Annotation is used.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public class MyClass { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public class MyClass { 
   [PrimeNumberOnly] 
   [Display(Name = "Prime Number")]
    public int PrimeNumber { get; set; } 
@@ -13,7 +13,7 @@
 </code></pre>
 <p>This is the model class. I have created the PrimeNumberOnly attribut which is my custom Data Annotation. I used the Display attribute because will use this instead of the property name in the custom Data Annotation for error. But, this is not required. If it is not declared, the property name is used.</p>
 <p>The controller is very simple. It checks for the ModelState to see if it has error, if yes, it displays back the form otherwise it redirects to the list of my class.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">[HttpPost] 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">[HttpPost] 
 public ActionResult Create(MyClass myClass) { 
   if (ModelState.IsValid) { 
     return RedirectToAction("Index"); 
@@ -23,7 +23,7 @@ public ActionResult Create(MyClass myClass) {
 } 
 </code></pre>
 <p>Here come what is interesting, the custom Data Annotation.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class PrimeNumberOnly : ValidationAttribute {
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class PrimeNumberOnly : ValidationAttribute {
   protected override ValidationResult IsValid(object value, ValidationContext validationContext) {
       if (value != null) { 
       int valueInteger; 
@@ -49,17 +49,17 @@ public ActionResult Create(MyClass myClass) {
 <p>This interface lets override a method named <strong>IsValid</strong> that take two parameters. The first one is the value non-typed. The second is information about the context. The property name, the instance of the the class being validated is also available and the pretty name too (the one that use the display attribute). The IsValid must return Validation.Success if everything is fine. However, if something is wrong, it must return a <strong>ValidationResult</strong> object. The ValidationResult accepts a message that will be used by Asp.Net MVC to acknowledge. It is also possible to mark not only the property that is being tested but to mark other properties of the class with ValidationResult with the same error.</p>
 <p><img src="/images/blog/DataAnnotationError-400x101.png" alt="" /></p>
 <p>If you want to pass the ErrorMessage to the attribute, you can. By default, it use the the FormatErrorMessage method that takes the property name. So, if you pass a custom error with a <code>{0}</code> the parameter is substitute. In the code above, the property display name is used and replaced in the error message.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> return new ValidationResult(base.FormatErrorMessage(validationContext.DisplayName)) 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> return new ValidationResult(base.FormatErrorMessage(validationContext.DisplayName)) 
 </code></pre>
 <p>If you want to add the member name you have to supply a second parameter.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> return new ValidationResultbase.FormatErrorMessage(validationContext.DisplayName,new []{ validationContext.MemberName})) 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> return new ValidationResultbase.FormatErrorMessage(validationContext.DisplayName,new []{ validationContext.MemberName})) 
 </code></pre>
 <p>In the case you want to have multiple parameters like having numbers or property names to shows, it is possible to combine resource files and formatting. To do, do not use FormatErrorMessage but use the ErrorMessageString and do by yourself the formatting.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> return new ValidationResult(string.Format(this.ErrorMessageString,"One", "Two", DateToBeAfter), new[] { validationContext.MemberName); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> return new ValidationResult(string.Format(this.ErrorMessageString,"One", "Two", DateToBeAfter), new[] { validationContext.MemberName); 
 </code></pre>
 <p>So far, half of the job is done because if we erase the number and type a valid entry, the error will not go away before the form is submitted again. This is normal, we have coded only the server side aspect of the Data Annotation. A second interface is required to be inherited to have client side validation. This time, it is named <strong>IClientValidatable</strong>. This interface come from the <code>System.Web.Mvc interface</code>. This mean that if you are using View Model, do not inherit the model from this attribute but the view model. Otherwise, you are mixing back end classes and front end classes. For the purpose of this exercise, I am mapping directly the model class to the view, which mean that it is acceptable to have my model class inherit of <code>System.Web.Mvc.IClientValidatable</code>. Please, do not copy and paste that if you are developing serious application.</p>
 <p>The IClientValidatable interface comes with the <strong>GetClientValidationRules</strong> method. This give us the possibility to extend the html generated for property. When Asp.Net MVC generates the input, it can add additional data- tag. These tag are required for the client side. They are called unobtrusive since it adds information to the Html input without attaching the Javascript. This mean that we have a third step to do which will be to tell Javascript to use those added attribute. But first, why adding data- to our Html input that has the custom Data Annotation? It is required for several reasons. First, if the logic is in error, we need an error message. It cannot be hard coded into the Javascript because this message can be localized. Adding a <code>data-</code>tag with the error message gives you the possibility to get the message and to expose it to your user if the error occurs. Second, you can add additional information to the Html input by attribute like value to be used in the Javascript validation. Here is an example.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public class PrimeNumberOnly : ValidationAttribute, IClientValidatable { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public class PrimeNumberOnly : ValidationAttribute, IClientValidatable { 
   protected override ValidationResult IsValid(object value, ValidationContext validationContext) { 
     //... 
   }
@@ -87,14 +87,14 @@ public ActionResult Create(MyClass myClass) {
 <p>Validation type names in unobtrusive client validation rules must consist of only lowercase letters. Invalid name: "primeNumber", client rule type: System.Web.Mvc.ModelClientValidationRule This generate this Html output:</p>
 </blockquote>
 <p>The result of the Html is :</p>
-<pre class="language-html"><code class="language-html code-highlight">&lt;div class="col-md-10"&gt; 
+<pre class="language-html" tabindex="0"><code class="language-html code-highlight">&lt;div class="col-md-10"&gt; 
   &lt;input class="text-box single-line" data-val="true" data-val-number="The field Prime Number must be a number." data-val-primenumber="The field Prime Number is invalid." data-val-primenumber-primenumberparam1="Value1" data-val-primenumber-primenumberparam2="Value2" data-val-required="The Prime Number field is required." id="PrimeNumber" name="PrimeNumber" type="number" value=""&gt; 
   &lt;span class="field-validation-valid" data-valmsg-for="PrimeNumber" data-valmsg-replace="true"&gt; 
   &lt;/span&gt; 
 &lt;/div&gt; 
 </code></pre>
 <p>This need also to have some libraries installed and referenced in your Html page.</p>
-<pre class="language-html"><code class="language-html code-highlight">&lt;script src="~/Scripts/jquery.validate.js"&gt;&lt;/script&gt; 
+<pre class="language-html" tabindex="0"><code class="language-html code-highlight">&lt;script src="~/Scripts/jquery.validate.js"&gt;&lt;/script&gt; 
 &lt;script src="~/Scripts/jquery.validate.unobtrusive.js"&gt;&lt;/script&gt; 
 &lt;script src="~/Scripts/PrimeNumberOnlyValidation.js"&gt;&lt;/script&gt; 
 </code></pre>
@@ -102,7 +102,7 @@ public ActionResult Create(MyClass myClass) {
 <p><img src="/images/blog/UnobstructiveJQuery-400x99.png" alt="" /></p>
 <p>The <code>validate.js</code> must be before the <code>unobstructive.js</code> file.</p>
 <p>The <code>PrimeNumberOnlyValidation.js</code> file contains the validation in Javascript. It is required to be configured once than you just need to have the script added to your file. Here is the complete file:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">$.validator.addMethod("primenumber", function (value, element, params) { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">$.validator.addMethod("primenumber", function (value, element, params) { 
   if (value) { 
     if (value == 1) return false;
     if (value == 2) return false;

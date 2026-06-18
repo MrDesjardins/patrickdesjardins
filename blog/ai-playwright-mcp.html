@@ -2,7 +2,7 @@
 <p>For a long time, people created unit tests using Jest or other UI frameworks and, with utility functions, could test React components without a browser. However, nothing beats loading the application in a browser to see the final result.</p>
 <p>The cost has always been large: hard to create, hard to maintain, slow to run, and flaky. The rise of AI changed a few variables: fast to create and easier to maintain. The improvement is not perfect, but it goes a long way.</p>
 <p>Here is part of an execution:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">• Called
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">• Called
   └ playwright-headed.browser_run_code({"code":"async (page) =&gt; {\n  const lane = page.locator('[data-timeline-row-index=\"12\"]
         [class*=\"timelineLane\"]').first();\n  const box = await lane.boundingBox();\n  if (!box) return { error: 'no lane box' };\n  const startX =
         box.x + 1180;\n  const endX = box.x + 1280;\n  const y = box.y + box.height / 2;\n  await page.mouse.move(startX, y);\n  await page.mouse.down();
@@ -32,7 +32,7 @@
 </code></pre>
 <p>Using Codex, Cursor, or Claude, you can install the <a href="https://github.com/microsoft/playwright-mcp">Playwright MCP</a>, which gives the AI access to a headless (or headful) browser. It can generate Playwright tests on the fly or create them traditionally in files. I am developing a new product and changing the UI and behavior quite often, so asking the AI to run automated tests and validate that the new feature I just coded does not break the existing UI simply means letting the AI use Playwright to try the features that are already implemented. It understands the features automatically by reading the markdown and the code.</p>
 <p>Here is one result from a heavy drag-and-drop user interface:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">• I verified the delete-window behavior live on the target page while the populated V-Stream was loaded.
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">• I verified the delete-window behavior live on the target page while the populated V-Stream was loaded.
 
   What I checked:
 
@@ -54,7 +54,7 @@
 <p>While there are still many issues, the friction of manually going to the browser to test everything is reduced. The friction to build and maintain tests is becoming a story of the past.</p>
 <p>I am not a developer who connects many MCPs or extensions to AI tools, but I highly recommend the Playwright MCP if you are developing web systems.</p>
 <p>Here is another response with an "honest note":</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">• I fixed the three timeline issues you called out.
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">• I fixed the three timeline issues you called out.
 
   What changed:
 

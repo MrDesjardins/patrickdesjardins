@@ -3,7 +3,7 @@
 <p>The core of this post is to find a quick way to reach the feed of streaming video from the HDMI display card. When the device is connected, it starts a new camera. Next, we need a piece of software to record the stream into a video file that we will later read with our Rust code to find the beginning and end of the file and extract the content back for consumption.</p>
 <h1>Finding the Web Camera</h1>
 <p>There are several commands using <code>ffmpeg</code> to get the list of web camera.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">ffmpeg -sources device
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">ffmpeg -sources device
 
 ffmpeg -y -f vfwcap -i list
 
@@ -12,10 +12,10 @@ ffmpeg -list_devices true -f dshow -i dummy
 </code></pre>
 <p>The last one is the recommended for the latest version (at the moment version 6). However, the output might be not as expected.</p>
 <p>Using WSL, ffmpeg could not find the camera. There is a way to get the camera, but it requires <a href="https://www.youtube.com/watch?v=t_YnACEPmrM">another tool called usbipd</a>. Because the target will be a Windows in my case, I will not use usbipd but will install ffpmeg for Windows.</p>
-<pre class="language-powershell"><code class="language-powershell code-highlight">choco install ffmpeg-full
+<pre class="language-powershell" tabindex="0"><code class="language-powershell code-highlight">choco install ffmpeg-full
 </code></pre>
 <p>Using Windows, the <code>-list_devices</code> has too many devices in my case because I have virtual audio, videos, and many cameras. Here is a snippet of the output.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">ffmpeg -list_devices true -f dshow -i dummy
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">ffmpeg -list_devices true -f dshow -i dummy
 
 libavutil      58.  2.100 / 58.  2.100
 libavcodec     60.  3.100 / 60.  3.100
@@ -31,7 +31,7 @@ libpostproc    57.  1.100 / 57.  1.100
 [dshow @ 0000024773070100]   Alternative name "@device_sw_{860BB310-5D01-11D0-BD3B-00A0C911CE86}\{A3FCE0F5-3493-419F-958A-ABA1250EC20B}"
 </code></pre>
 <p>The <code>USB Video</code> is the one from the capture card. We can connect to the camera to get the supported resolution and fps. Here is a snippet of the output. The list contained over a dozen of resolution and fps. Here are four options using the HD resolution.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">ffmpeg -f dshow -list_options true -i video="USB Video"
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">ffmpeg -f dshow -list_options true -i video="USB Video"
 [dshow @ 0000022277b00100]   vcodec=mjpeg  min s=1920x1080 fps=10 max s=1920x1080 fps=60.0002
 [dshow @ 0000022277b00100]   vcodec=mjpeg  min s=1920x1080 fps=10 max s=1920x1080 fps=60.0002 (pc, bt470bg/bt709/unknown, center)
 [dshow @ 0000022277b00100]   pixel_format=yuyv422  min s=1920x1080 fps=5 max s=1920x1080 fps=5
@@ -39,7 +39,7 @@ libpostproc    57.  1.100 / 57.  1.100
 </code></pre>
 <h1>Downloading the Content from the Web Camera to a File</h1>
 <p>Once we have these options, we can connect to the camera and get the data:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">ffmpeg -r 30 -f dshow -s 1920x1080 -vcodec mjpeg -i video="USB Video" -r 30 out.mp4
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">ffmpeg -r 30 -f dshow -s 1920x1080 -vcodec mjpeg -i video="USB Video" -r 30 out.mp4
 </code></pre>
 <p>For detail see the <a href="https://ffmpeg.org/ffmpeg-all.html#dshow">ffmpeg option documentation</a>.</p>
 <p>The one selected are:</p>
@@ -52,7 +52,7 @@ libpostproc    57.  1.100 / 57.  1.100
 <p>At this point, something might trigger some questioning. We are streaming an uncompressed video using the <code>fourcc</code> of <code>png</code> and not the describe format by the capture card <code>mjpeg</code>.</p>
 <h1>Testing the Hypothesis</h1>
 <p>To fully test the current solution, we need to stream the video from another computer. I have a laptop where I got the code, encoded a text with the Rust project, and ran in full screen in the HDMI card to display the content. On the other side, on my computer, I used the <code>ffmeg</code> command above and then used the Rust code to extract the text. The output:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">❯ cargo run -- -m extract -i outputs/out_from_hdmi.avi -o outputs/text_from_hdmi.txt --fps 30 --height 1080 --width 1920 --size 1
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">❯ cargo run -- -m extract -i outputs/out_from_hdmi.avi -o outputs/text_from_hdmi.txt --fps 30 --height 1080 --width 1920 --size 1
 warning: unused manifest key: build
 warning: unused manifest key: doc
     Finished dev [unoptimized + debuginfo] target(s) in 0.05s

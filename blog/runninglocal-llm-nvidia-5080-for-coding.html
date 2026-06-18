@@ -4,7 +4,7 @@
 <p>I started with QWEN 2.5 and the result was horrible in term of connection with tools like simply reading and writing files. It was fine with general question but that wasn't the goal.</p>
 <p>Moving to Qwen3-8B-AWQ did the job but with some tweaking, otherwise it was crashing or returning response too slow.</p>
 <p>Installation:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">sh
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">sh
 nvidia-smi
 pip install --upgrade pip
 pip install torch torchvision torchaudio \
@@ -15,7 +15,7 @@ pip install huggingface_hub
 huggingface-cli login
 </code></pre>
 <p>Everytime to use:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">cd ~/llm/llm
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">cd ~/llm/llm
 pyenv activate vllm
 
 unset VLLM_ATTENTION_BACKEND
@@ -36,7 +36,7 @@ vllm serve \
   --reasoning-parser qwen3
 </code></pre>
 <p>Loading everything takes less than 30 seconds:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">(EngineCore_DP0 pid=36318) INFO 02-03 19:53:24 [default_loader.py:291] Loading weights took 4.14 seconds
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">(EngineCore_DP0 pid=36318) INFO 02-03 19:53:24 [default_loader.py:291] Loading weights took 4.14 seconds
 (EngineCore_DP0 pid=36318) INFO 02-03 19:53:24 [gpu_model_runner.py:3905] Model loading took 5.71 GiB memory and 5.326229 seconds
 (EngineCore_DP0 pid=36318) INFO 02-03 19:53:30 [backends.py:644] Using cache directory: /home/miste/.cache/vllm/torch_compile_cache/252055f4c9/rank_0_0/backbone for vLLM's torch.compile
 (EngineCore_DP0 pid=36318) INFO 02-03 19:53:30 [backends.py:704] Dynamo bytecode transform time: 5.01 s
@@ -67,10 +67,10 @@ Capturing CUDA graphs (decode, FULL): 100%|████████████�
 (APIServer pid=36148) INFO 02-03 19:53:53 [api_server.py:1346] Starting vLLM API server 0 on http://0.0.0.0:7555
 </code></pre>
 <p>Configuring OpenCode:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">nano ~/.config/opencode/config.json
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">nano ~/.config/opencode/config.json
 </code></pre>
 <p>By copying:</p>
-<pre class="language-json"><code class="language-json code-highlight">{
+<pre class="language-json" tabindex="0"><code class="language-json code-highlight">{
   "$schema": "https://opencode.ai/config.json",
   "provider": {
     "vllm_local": {
@@ -106,7 +106,7 @@ Capturing CUDA graphs (decode, FULL): 100%|████████████�
 <video src="/videos/blog/LocalLLM.mp4" controls/>
 <p>The full answer took 2 minutes and 22 seconds.</p>
 <p>Here is the full transcript:</p>
-<pre class="language-md"><code class="language-md code-highlight">
+<pre class="language-md" tabindex="0"><code class="language-md code-highlight">
 ## User
 
 How many tests in this repository?
@@ -617,7 +617,7 @@ There are **20 test files** in the repository, matching the pattern `test_*.py` 
 <p>It took three prompts, with me explicitly telling the model that files starting with <code>test_</code> are test files and that inside those files there are many test functions also starting with <code>test_</code>. From there, I finally got <code>427</code> tests, which is a good answer.</p>
 <h1>Speed</h1>
 <p>Here is a copy of the logs of the LLM during the previous talk with OpenCode:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">(APIServer pid=21042) INFO:     127.0.0.1:38596 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">(APIServer pid=21042) INFO:     127.0.0.1:38596 - "POST /v1/chat/completions HTTP/1.1" 200 OK
 (APIServer pid=21042) INFO 02-03 20:23:46 [loggers.py:257] Engine 000: Avg prompt throughput: 1682.8 tokens/s, Avg generation throughput: 9.4 tokens/s, Running: 1 reqs, Waiting: 0 reqs, GPU KV cache usage: 48.4%, Prefix cache hit rate: 0.0%
 (APIServer pid=21042) INFO 02-03 20:23:56 [loggers.py:257] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 11.3 tokens/s, Running: 1 reqs, Waiting: 0 reqs, GPU KV cache usage: 48.7%, Prefix cache hit rate: 0.0%
 (APIServer pid=21042) INFO 02-03 20:24:07 [loggers.py:257] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 8.5 tokens/s, Running: 1 reqs, Waiting: 0 reqs, GPU KV cache usage: 49.0%, Prefix cache hit rate: 0.0%

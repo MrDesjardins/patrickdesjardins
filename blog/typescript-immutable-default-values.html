@@ -1,18 +1,18 @@
 <!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Patrick Desjardins Blog - A Safe Way to Define Immutable Default Values in TypeScript</title><meta name="description" content="A Safe Way to Define Immutable Default Values in TypeScript"><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-CZbWyyk4.css"><link rel="stylesheet" href="/assets/static-modules.css"></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><header><h1 class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</h1><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main class="app_blog__components_BlogBody__main"><h2 class="app_blog__components_BlogBody__heading">A Safe Way to Define Immutable Default Values in TypeScript</h2><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: 2022-02-24</p><p>Regardless of the framework you are using, you will end up having some area of code that relies on default values. When the state relies on an object, there is a way to ensure that the default values are not mutated in the future.</p>
 <p>The simplest way to define a set of default values is to assign an object's value. TypeScript infers the object to be of two properties. The <code>p1</code> to be a <code>boolean</code> and the <code>p2</code> to be a <code>number</code>.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const defaultValues = { p1: true, p2: 100 };
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const defaultValues = { p1: true, p2: 100 };
 defaultValues.p1 = false;
 </code></pre>
 <p>A step further is to ensure the type does not change and be as narrow as possible using <code>as const</code>. In that case, <code>p1</code> type is not a boolean but <code>true</code>, and <code>p2</code> is if type <code>100</code>.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const defaultValues = { p1: true, p2: 100 } as const;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const defaultValues = { p1: true, p2: 100 } as const;
 defaultValues.p1 = false; // Error!
 </code></pre>
 <p>That is great for design time, but JavaScript has the <code>Object.freeze</code> that ensure that at runtime you cannot change an object. Using the <code>Object.freeze</code> generates a type of <code>ReadOnly&lt;&gt;</code> between the inferred type.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const defaultValues = Object.freeze({ p1: true, p2: 100 });
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const defaultValues = Object.freeze({ p1: true, p2: 100 });
 defaultValues.p1 = false; // Error!
 </code></pre>
 <p>This is the same as:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">interface MyValueType {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">interface MyValueType {
   p1: boolean;
   p2: number;
 }
@@ -20,16 +20,16 @@ const defaultValues: Readonly&lt;MyValueType&gt; = Object.freeze({ p1: true, p2:
 defaultValues.p1 = false; // Error!
 </code></pre>
 <p>I like the explicit interface because we can use it around the application for a parameter. However, also possible to extract the type using <code>typeof</code>.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">type MyValueType = typeof defaultValues;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">type MyValueType = typeof defaultValues;
 </code></pre>
 <p>But, that is not right. We cannot use that type around the application because the extraction results to the type:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">interface MyValueType {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">interface MyValueType {
   readonly p1: boolean;
   readonly p2: number;
 }
 </code></pre>
 <p>A more accurate extraction would be to use a mapped type.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">type UnReadonly&lt;T&gt; = { -readonly [P in keyof T]: T[P] };
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">type UnReadonly&lt;T&gt; = { -readonly [P in keyof T]: T[P] };
 type MyValueType = UnReadonly&lt;typeof defaultValues&gt;;
 </code></pre>
 <p>The right approach is the one you defined with your team. Regardless, what is interesting is that you can have a safe type at runtime and design time and still be able to use the type in mutable are of your code when needed.</p>

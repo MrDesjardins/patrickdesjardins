@@ -2,7 +2,7 @@
 <p>The main goal of this new library is to simplify the use of user-password application. It also gives the possibility to extend more how to store the information. Sql Server is still behind but you can now use easily Azure storage if desired. It also simplify by a lot the number of tables and views requires in the past by SqlMembershipProvider. Now, the tables are limited to only few and you can customize their schema, the name of the tables and also fields names.</p>
 <p><img src="/images/blog/sqlSimpleProviderTables.png" alt="" /></p>
 <p>As you can see in the image above, you can add a Language field. This require only to add a property and let Entity Framework handle the rest.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> [Table("UserProfile")] public class UserProfile : ICurrentUser { public UserProfile() { this.UserName = "Anonymous"; this.Language = "en-US"; }
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> [Table("UserProfile")] public class UserProfile : ICurrentUser { public UserProfile() { this.UserName = "Anonymous"; this.Language = "en-US"; }
 
 [Key] [DatabaseGenerated(DatabaseGeneratedOption.Identity)] public int UserId { get; set; }
 
@@ -13,11 +13,11 @@ public string Email { get; set; }
 public string Language { get; set; } } 
 </code></pre>
 <p>If you are using Entity Framework with the migration tool, you just need to add in your seed method a one liner.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> WebSecurity.InitializeDatabaseConnection( "DefaultConnection", "UserProfile", "UserId", "UserName", autoCreateTables: true); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> WebSecurity.InitializeDatabaseConnection( "DefaultConnection", "UserProfile", "UserId", "UserName", autoCreateTables: true); 
 </code></pre>
 <p>The first parameter is the Entity Framework connection string to your database, the second is the table name for the user then the column id for the user following by the name that is required when we logon.</p>
 <p>If you need to have default role and user in your seed you can add them by using the Api.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> protected override void Seed(DatabaseContext context) { base.Seed(context);
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> protected override void Seed(DatabaseContext context) { base.Seed(context);
 
 WebSecurity.InitializeDatabaseConnection( "DefaultConnection", "UserProfile", "UserId", "UserName", autoCreateTables: true);
 

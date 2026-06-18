@@ -1,14 +1,14 @@
 <!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Patrick Desjardins Blog - Understand basic navigation with Entity Framework Code First (4.3) with 1 to many relationship</title><meta name="description" content="Understand basic navigation with Entity Framework Code First (4.3) with 1 to many relationship"><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-CZbWyyk4.css"><link rel="stylesheet" href="/assets/static-modules.css"></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><header><h1 class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</h1><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main class="app_blog__components_BlogBody__main"><h2 class="app_blog__components_BlogBody__heading">Understand basic navigation with Entity Framework Code First (4.3) with 1 to many relationship</h2><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: 2012-09-07</p><p>Like <a href="./understand-basic-navigation-with-entity-framework-code-first-4-3-with-1-to-0-1-relationship">configuring Entity Framework Code First for 1 to 1 or 1 to 0</a> relation, you need to go in your DbContext and to configure your entities.</p>
 <p>For 1 to many, the syntax is quite the same but is changed to fill up the need of one to many. First, of all, unlike 0 to 1 or 1 to 1 the choice of the relation is simpler. The foreign key is always at the "1" side. That mean that if you have a Dealer that sale many car, every car will have a reference in the database the its seller.</p>
 <p>Lets use the same objects that we did previously with 1 to 1 relation.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class Dealer:BaseEntity { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class Dealer:BaseEntity { 
   public string Name { get; set; }
   public ICollection&lt;Car&gt; CarToSale { get; set; } //Relationship: Many to one (one side) 
   public ICollection&lt;Customer&gt; Customers { get; set; }//Relationship: Many to many (two side) 
 } 
 </code></pre>
 <p>and the car is like :</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class Car:BaseEntity { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class Car:BaseEntity { 
   public decimal Price { get; set; } 
   public CarBrand Brand { get; set; } //Relationship : One to one 
   public Customer CurrentOwner { get; set; } //Relationship : One to (zero or one) 
@@ -16,7 +16,7 @@
 </code></pre>
 <p>As you can see, I only put the CarToSale property which is the one that will link to the Car. This is a little bit the reverse of what I just said about having the Car table having the reference to the Dealer right? Well, in fact, the way we will configure the DbContext will still put the Foreign Key of the table the way we previously stated.</p>
 <p>First, lets configure the dealer by stating that we have many cars associated to its.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class DealerConfiguration : EntityTypeConfiguration&lt;Dealer&gt; { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class DealerConfiguration : EntityTypeConfiguration&lt;Dealer&gt; { 
   public DealerConfiguration() { 
     HasMany(x =&gt; x.CarToSale); //One to many 
   } 
@@ -25,7 +25,7 @@
 <p><img src="/images/blog/fkDealerOfCars-241x400.png" alt="" /></p>
 <p>But, let say that we want to add in our model the property Dealer inside the car. For the car, the relation is <strong>1 to 0..1</strong>.</p>
 <p>So, it's now possible to join to the car the dealer by setting the car to the dealer or to set the dealer to the car.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> //Add to the database from the car 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> //Add to the database from the car 
  using (var db = new DatabaseContext()) { 
   var dealer = new Dealer() {Name = "Patrick"}; 
   var car = new Car {Brand = new CarBrand(), Seller = dealer}; 
@@ -35,7 +35,7 @@
 </code></pre>
 <p><img src="/images/blog/dealerSeller-400x265.png" alt="" /></p>
 <p>or</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> //Add to the database from the Dealer 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> //Add to the database from the Dealer 
  using (var db = new DatabaseContext()) { 
   var car = new Car { Brand = new CarBrand() }; 
   var dealer = new Dealer() {Name = "Melodie", CarToSale = new Collection&lt;Car&gt;{car}}; 
@@ -47,7 +47,7 @@
 <p>For the moment, if we take a look at the database, the generated table contain a NULL at the dealer_id foreign key.</p>
 <p><img src="/images/blog/CarDealerOptional.png" alt="" /></p>
 <p>Let say that we want to have this field has a required field. We want <strong>"Not NULL"</strong> to be generated into the table column property.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public CarConfiguration() { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public CarConfiguration() { 
   HasRequired(x =&gt; x.Seller); //One to many is now a required field. It's really 1 to * and not 0 to * 
  
  } 
@@ -55,7 +55,7 @@
 <p>Will produce:</p>
 <p><img src="/images/blog/notnullseller.png" alt="" /></p>
 <p>Not bad! Now we have what we want, a required field for the Dealer (called seller from the car perspective). Could we have configure this from the Dealer's entity instead of using the Car configuration? Of course!</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class DealerConfiguration : EntityTypeConfiguration&lt;Dealer&gt; { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class DealerConfiguration : EntityTypeConfiguration&lt;Dealer&gt; { 
   public DealerConfiguration() { 
     HasMany(x =&gt; x.CarToSale).WithRequired(e=&gt;e.Seller); //One to many (1 to *) 
   } 

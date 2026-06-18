@@ -1,6 +1,6 @@
 <!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Patrick Desjardins Blog - JavaScript Four Patterns to Invoke a Function</title><meta name="description" content="JavaScript Four Patterns to Invoke a Function"><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-CZbWyyk4.css"><link rel="stylesheet" href="/assets/static-modules.css"></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><header><h1 class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</h1><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main class="app_blog__components_BlogBody__main"><h2 class="app_blog__components_BlogBody__heading">JavaScript Four Patterns to Invoke a Function</h2><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: 2017-05-25</p><p>There are four ways to call a function in JavaScript. In this article, we will see them all and see the pros and cons of each of them.</p>
 <p><strong>Function invocation pattern</strong> This is when a function is not attached to anything, it's floating which in fact is attached to "window" when in a browser if this one is created not within an object. Here is two examples:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var f1 = function () {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var f1 = function () {
   console.log("F1");
 };
 f1();
@@ -12,7 +12,7 @@ f2();
 window.f2();
 </code></pre>
 <p>However, if a function is not bound to an object but created withing a function, this one belong to the function. Still, it is not attached to anything.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var myObject = {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var myObject = {
   function2: function () {
     console.log("Function2");
     var function2_1 = function () {
@@ -24,7 +24,7 @@ window.f2();
 myObject.function2();
 </code></pre>
 <p><strong>Method invocation pattern</strong> Method invocation pattern is when a function is attached to an object that is not instantiated with the "new" keyword.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var myObject = {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var myObject = {
   function2: function () {
     console.log("Function2");
   },
@@ -32,7 +32,7 @@ myObject.function2();
 myObject.function2();
 </code></pre>
 <p><strong>Constructor invocation pattern</strong> I already covered in previous article about prototype. Invoking with a constructor trigger the prototype chain for the created object. Constructor function are created with the keyword "new".</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var MyClass1 = function () {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var MyClass1 = function () {
   this.function2 = function () {
     return "F2";
   };
@@ -51,7 +51,7 @@ console.log(instance.function2());
 <p>The last pattern is to use a function to call a function! This is possible because every object has some default function attached to their prototype, like the one that interest us which is "apply".</p>
 <p>The following example shows how to invoke with apply. Both call to the apply function uses the class' prototype which call the function and apply. The difference is that one pass the method which has a member assigned with <code>this</code>, while the second call an anonymous object. The importance is to have a "m1" member because function1 access it in its prototype.</p>
 <p>The important detail about "apply" is the parameter. The first one is the pointer <code>this</code>, the others are the the function arguments.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var MyClass1 = function () {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var MyClass1 = function () {
   this.m1 = "Member Value";
 };
 

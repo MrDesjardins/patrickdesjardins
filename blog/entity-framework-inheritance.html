@@ -3,7 +3,7 @@
 <h1>Table per hierarchy (TPH) Inheritance Mapping Strategy</h1>
 <p>This is the simplest strategy. It takes all properties of the base class and all properties of the inherited class and merge them into a single table. This mean if 10 classes inherit a single class, all properties of these 10 classes plus the one of the inheritance one will be merged in 1 table.</p>
 <p>For example you have 3 classes. Two sub-classes that inherit a single base class.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class Book { public string ISBN { get; set; } public int PageCount { get; set; } }
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class Book { public string ISBN { get; set; } public int PageCount { get; set; } }
 
 public class Magazine : Book { public string MagazineProperty { get; set; } }
 
@@ -13,7 +13,7 @@ public class Encyclopedia:Book { public string EncyclopediaProperty { get; set; 
 <p><img src="/images/blog/ClassDiagram-400x318.png" alt="" /></p>
 <p>This will result to a single table with all property nullable for those who are from subclass.</p>
 <p>To create a short test, simply add these three classes to a .Net project. Then, you need to setup the database context.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class TestContext:DbContext { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class TestContext:DbContext { 
   public TestContext() : base("TestContext") {
   } 
   public DbSet&lt;Magazine&gt; Magazines { get; set; } 
@@ -26,16 +26,16 @@ public class Encyclopedia:Book { public string EncyclopediaProperty { get; set; 
 } 
 </code></pre>
 <p>Do no forget to add Entity Framework with Nuget and setup the web.config with a good connection string. To get entity framework you can do a search inside Nuget manager or in the package console.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight"> Menu Project&gt;Manage NuGet Packages Select the Online tab Select the EntityFramework package Click Install 
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight"> Menu Project&gt;Manage NuGet Packages Select the Online tab Select the EntityFramework package Click Install 
 </code></pre>
 <p>or</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight"> PM&gt; install-package entityframework 
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight"> PM&gt; install-package entityframework 
 </code></pre>
 <p>The configuration file should have a config section (which are added from Nuget) and the connection string to be setup to the Sql instance you have and the database you want to use.</p>
-<pre class="language-xml"><code class="language-xml code-highlight"> &lt;configuration&gt; &lt;configSections&gt; &lt;section name="entityFramework" type="System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false" /&gt; &lt;/configSections&gt; &lt;connectionStrings&gt; &lt;add name="TestContext" connectionString="Data Source=PATRICK-I7\\SQLEXPRESS;Initial Catalog=TestContextDatabase;Integrated Security=SSPI;" providerName="System.Data.SqlClient"/&gt; &lt;/connectionStrings&gt; ... 
+<pre class="language-xml" tabindex="0"><code class="language-xml code-highlight"> &lt;configuration&gt; &lt;configSections&gt; &lt;section name="entityFramework" type="System.Data.Entity.Internal.ConfigFile.EntityFrameworkSection, EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" requirePermission="false" /&gt; &lt;/configSections&gt; &lt;connectionStrings&gt; &lt;add name="TestContext" connectionString="Data Source=PATRICK-I7\\SQLEXPRESS;Initial Catalog=TestContextDatabase;Integrated Security=SSPI;" providerName="System.Data.SqlClient"/&gt; &lt;/connectionStrings&gt; ... 
 </code></pre>
 <p>This is the most basic setup possible, we simply set the primary key to the base class. We do not set anything for sub-classes . Then, we need to let Entity Framework create the database. For that, just instanciate the dbcontext and do something to the query. We could also generate the database with the migration tool but for simplicity, let's just add a new Encyclopedia in the main method.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">using (var context = new DataAccessLayer.TestContext()) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">using (var context = new DataAccessLayer.TestContext()) { 
   context.Encyclopedia.Add(new Models.Encyclopedia { ISBN = "123" }); 
   context.SaveChanges(); 
 } 
@@ -50,7 +50,7 @@ public class Encyclopedia:Book { public string EncyclopediaProperty { get; set; 
 <p><img src="/images/blog/TPTTablets.png" alt="" /></p>
 <p>Entity Framework performs more inner join to be able to know which table to use for subclass when information are gathered from the database. This result to be less performing than the previous approach. Nevertheless, tables are more clean because they doesn't have a huge amount of nullable of property.</p>
 <p>To configure table per type (TPT) it requires to set the table for the subclass.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class TestContext : DbContext { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class TestContext : DbContext { 
   public TestContext() : base("TestContext") { }
 
   public DbSet&lt;Book&gt; Book { get; set; } 
@@ -71,7 +71,7 @@ public class Encyclopedia:Book { public string EncyclopediaProperty { get; set; 
 <p><img src="/images/blog/TableTPC.png" alt="" /></p>
 <p>As you can see in the example above, the ISBN and PageCount are repeated in both of the sub classes' table. You can also notice that they are no table for the base class. The reason is that all fields of the base are already in all sub classes.</p>
 <p>The configuration is more complex.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class TestContext:DbContext { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class TestContext:DbContext { 
   public TestContext() : base("TestContext") {
   } 
 

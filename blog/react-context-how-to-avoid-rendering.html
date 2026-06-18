@@ -7,7 +7,7 @@
 <p>Before talking, let's establish a code baseline to illustrate the context of the multi-layer components that rely on context.</p>
 <iframe src="https://codesandbox.io/embed/react-context-re-render-part1-wqpp64" style="width:100%;height:500px;border:0;border-radius:4px;overflow:hidden" title="CodeSandbox example react-context-re-render-part1-wqpp64" loading="lazy" allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking" sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"><a href="https://codesandbox.io/s/react-context-re-render-part1-wqpp64">Open CodeSandbox example react-context-re-render-part1-wqpp64</a></iframe>
 <p>The <code>MyUniqueContext</code> has an interval function that increments a number every second. The change modifies the state, making the context change.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export const MyContextProvider = (
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export const MyContextProvider = (
   props: MyContextStateContextProviderProps
 ): ReactElement =&gt; {
   const [counter, setCounter] = useState&lt;number&gt;(0);
@@ -26,7 +26,7 @@
 };
 </code></pre>
 <p><code>Layer1</code> and <code>Layer2</code> do not need to be re-render because they do not consume the context. Only <code>Layer3</code>.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export const Layer1 = () =&gt; {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export const Layer1 = () =&gt; {
   console.log("Render: Layer 1");
   return (
     &lt;div&gt;
@@ -47,7 +47,7 @@ export const Layer2 = () =&gt; {
 };
 </code></pre>
 <p><code>Layer3</code> component calls <code>useContext</code>, making it aware of changes, and re-rendering every counter change. Therefore, it is expected that it renders the value of the counter.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export const Layer3 = () =&gt; {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export const Layer3 = () =&gt; {
   console.log("Render: Layer 3");
   const contextState = useContext(MyContextStateContext);
   return (
@@ -60,14 +60,14 @@ export const Layer2 = () =&gt; {
 </code></pre>
 <h1>No Problem?</h1>
 <p>If you are running the code, you notice that it works as expected. Only the Layer3.tsx has in the console the text about being rendered.</p>
-<pre class="language-json"><code class="language-json code-highlight">1: Render: Layer 1
+<pre class="language-json" tabindex="0"><code class="language-json code-highlight">1: Render: Layer 1
 1: Render: Layer 2
 694: Render: Layer 3 // Here we see 694 updates
 </code></pre>
 <h1>Changing the Example</h1>
 <p>The example needs to be more realistic. Most of the time, a context will have several values. Many values are essential to <code>Layer1</code> and <code>Layer2,</code> but only the <code>counter</code> value is noisy, with many updates. We would still want only <code>Layer3</code> to be re-render on the counter change. Let's adapt our example. Now, the name of each layer is inside the context. Each layer renders the value from the context into its header tag.</p>
 <p>For example, <code>Layer1</code> looks like this:</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export const Layer1 = () =&gt; {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export const Layer1 = () =&gt; {
   console.log("Render: Layer 1");
   const contextState = useContext(MyContextStateContext);
   return (
@@ -81,7 +81,7 @@ export const Layer2 = () =&gt; {
 <p><code>Layer2</code> is similar but connect to <code>layer2Name</code></p>
 <iframe src="https://codesandbox.io/embed/react-context-re-render-part2-wt6qys" style="width:100%;height:500px;border:0;border-radius:4px;overflow:hidden" title="CodeSandbox example react-context-re-render-part2-wt6qys" loading="lazy" allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking" sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"><a href="https://codesandbox.io/s/react-context-re-render-part2-wt6qys">Open CodeSandbox example react-context-re-render-part2-wt6qys</a></iframe>
 <p>If you run the code, the console output looks different now:</p>
-<pre class="language-json"><code class="language-json code-highlight">2: Render: Layer 2
+<pre class="language-json" tabindex="0"><code class="language-json code-highlight">2: Render: Layer 2
 2: Render: Layer 3
 2: Render: Layer 1
 2: Render: Layer 2
@@ -92,15 +92,15 @@ export const Layer2 = () =&gt; {
 <h1>Context Object Reference</h1>
 <p>The problem is that we are changing the <code>value</code> reference every second which includes the unchanged strings. It would be smart to return the same reference for the unchanged portion of the state. By having a different reference, React think the whole object change (with reason). Before modifying the context, you may think that because we are consuming the <strong>whole</strong> context instead of only the string that React render the entire layer.</p>
 <p>In a nutshell, changing:</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">const contextState = useContext(MyContextStateContext);
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">const contextState = useContext(MyContextStateContext);
 </code></pre>
 <p>to:</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">const { layer1Name } = useContext(MyContextStateContext);
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">const { layer1Name } = useContext(MyContextStateContext);
 </code></pre>
 <p>does not fix the problem -- we are destructing a new object with a new reference.</p>
 <h1>Optimizing the Context: Breaking the Context Root State</h1>
 <p>A first instinct is to break the state into several objects, which can be memoized in memory. Then, if a part of the object does not change, it will continue to receive the same object -- same reference. Hence, if we have a new object with two paths: the titles and the dynamic data, the titles ones will not change and hence the Layer1 and Layer 2 should not be re-render.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export const MyContextProvider = (
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export const MyContextProvider = (
   props: MyContextStateContextProviderProps
 ): ReactElement =&gt; {
   const [counter, setCounter] = useState&lt;number&gt;(0);
@@ -132,7 +132,7 @@ export const Layer2 = () =&gt; {
 <iframe src="https://codesandbox.io/embed/react-context-re-render-part3-1vu9k0" style="width:100%;height:500px;border:0;border-radius:4px;overflow:hidden" title="CodeSandbox example react-context-re-render-part3-1vu9k0" loading="lazy" allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking" sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"><a href="https://codesandbox.io/s/react-context-re-render-part3-1vu9k0">Open CodeSandbox example react-context-re-render-part3-1vu9k0</a></iframe>
 <h1>Optimizing the Consumer: React Hook</h1>
 <p>An idea might be to isolate the portion of the state into a hook. Then, the hook could have memorization of the interested part. For example, a <code>useTitles</code> could track the reference of the <code>titles</code> branch of the state. Because the object reference of titles does not change in our example, the reference remains the same, meaning the hook returns a unique reference.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export const useTitles = () =&gt; {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export const useTitles = () =&gt; {
   console.log("Render: useTitles hook");
   const fullState = useContext(MyContextStateContext);
 
@@ -144,7 +144,7 @@ export const Layer2 = () =&gt; {
 };
 </code></pre>
 <p>Changing <code>Layer1</code> and <code>Layer2</code> to use the hook looks like the following:</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export const Layer2 = () =&gt; {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export const Layer2 = () =&gt; {
   console.log("Render: Layer 2");
   const titles = useTitles();
   return (
@@ -158,7 +158,7 @@ export const Layer2 = () =&gt; {
 <p>However, running the code does produce little change. The code still has re-rendering for <code>App</code>, <code>Layer1</code>, <code>Layer2</code> and <code>Layer3</code>. The positive is that the <code>console.log</code> into the memo ran once, meaning the reference to the object within the hook remains the same.</p>
 <iframe src="https://codesandbox.io/embed/react-context-re-render-part4-eb9b1h" style="width:100%;height:500px;border:0;border-radius:4px;overflow:hidden" title="CodeSandbox example react-context-re-render-part4-eb9b1h" loading="lazy" allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking" sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"><a href="https://codesandbox.io/s/react-context-re-render-part4-eb9b1h">Open CodeSandbox example react-context-re-render-part4-eb9b1h</a></iframe>
 <p>The output:</p>
-<pre class="language-json"><code class="language-json code-highlight">Render: Layer 1 
+<pre class="language-json" tabindex="0"><code class="language-json code-highlight">Render: Layer 1 
 Render: useTitles hook 
 Render: Layer 1 
 Render: useTitles hook 
@@ -175,7 +175,7 @@ Render: useTitles hook
 <h1>Optimizing the Components</h1>
 <p>The problem remains that the <code>Layer1</code> is using the content of the context. The documentation on <a href="https://reactjs.org/docs/react-api.html#reactmemo">React.memo</a> specifies that is memoize the component but still re-render if a <code>useState</code> or <code>useContext</code>, which does indirectly with the <code>useTitles</code>. There is a deep <a href="https://github.com/facebook/react/issues/15156#issuecomment-474590693">Git thread</a> about <code>useContext</code> and performance. The first tip is to break the context into several contexts. It makes sense until you get into so many contexts.</p>
 <p>The second recommendation is to split your components. In our example, the context is used for the title only. Creating a <code>Title</code> component that pass by property the name would ensure with <code>React.memo</code> that this component only changes when the value of the title change.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export interface TitleProps {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export interface TitleProps {
   title: string;
 }
 export const Title = React.memo((props: TitleProps) =&gt; {
@@ -184,7 +184,7 @@ export const Title = React.memo((props: TitleProps) =&gt; {
 });
 </code></pre>
 <p>And <code>Layer1</code>:</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export const Layer1 = React.memo(() =&gt; {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export const Layer1 = React.memo(() =&gt; {
   console.log("Render: Layer 1");
   const titles = useTitles();
   return (

@@ -2,7 +2,7 @@
 <p>An other way to clone is to serialize and deserialize your object. By using this mechanism all references are not there but the value are. The problem, is that Silverlight does not have the <em>System.Runtime.Serialization</em> has you may know in the .Net standard framework. You won't fine the the <em>IFormatter</em> interface neither the <em>BinaryFormatter</em> class.</p>
 <p>So, how to clone an object in Silverlight?</p>
 <p>Here is a cloning method that is an extension for every object. It uses reflection to do it's cloning. This is not a deep copy!</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public static class CloningExtension {
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public static class CloningExtension {
   public static T Clone&lt;T&gt;(this T source) {
     T cloned = (T) Activator.CreateInstance(source.GetType());
     foreach (PropertyInfo curPropInfo in source.GetType().GetProperties()) {

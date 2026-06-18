@@ -6,7 +6,7 @@
 <h1>Website and Blog Page</h1>
 <p>My website has a default loading page that briefly introduces who I am. Then, a <code>/blog</code> goes into the last ten blog posts. Then, the user can navigate to a specific year using <code>/blog/for/2024,</code> for example. Or, the user can navigate by page using <code>/blog/page/2</code>. Finally, there is a route for the blog post itself.</p>
 <p>The right way with the latest version is to use a folder for each segment of the route and a <code>page.tsx</code> for the content.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">src/
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">src/
   app/
     blog/
       page.tsx
@@ -20,13 +20,13 @@
 </code></pre>
 <h1>Generating One Page Per Blog Post</h1>
 <p>The trickiest part was understanding the correct pattern with NextJS 14 for static-generated pages (at build time). The pattern is quite simple once you know it. The first step is to define a function called <code>generateStaticParams</code>. The function returns an array of objects. Each object is a key-value pair. The key is the route's name, and the value is the value of the route. In my case, for the blog post, the route is <code>/blog/[slug]</code>, and the value is the slug of the blog post. In that case, this function returns over 800 objects.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export async function generateStaticParams() {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export async function generateStaticParams() {
   const posts = await getAllPosts();
   return posts.map((p) =&gt; ({ slug: p.metadata.slug }));
 }
 </code></pre>
 <p>The second part is to define the page. The property has the slug from the route, and the React component uses the value to fetch the post.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export default async function Page(props: { params: { slug: string } }) {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export default async function Page(props: { params: { slug: string } }) {
   const posts = await getAllPosts();
   const post = posts.find((post) =&gt; post.metadata.slug === props.params.slug);
   if (post === undefined) {
@@ -36,7 +36,7 @@
 }
 </code></pre>
 <p>Most online tutorials are using <code>getStaticProps</code> and <code>getStaticPaths</code>. The combination of these two functions is the old way of doing things. The new way is to use <code>generateStaticParams</code> and then use the <code>params</code> from the default function. Also, most tutorials emphasize doing an API call. You do not have to do so. The <code>getAllPosts</code> is a simple function that reads the file system and returns the content. I'm reading once at build time and storing the content in a variable for efficient reading without parsing all the files many times.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">let getAllPostsResult: MdxData[] | undefined = undefined;
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">let getAllPostsResult: MdxData[] | undefined = undefined;
 export async function getAllPosts(): Promise&lt;MdxData[]&gt; {
   if (getAllPostsResult === undefined) {
     let post: Promise&lt;MdxData&gt;[] = [];
@@ -74,7 +74,7 @@ export function getAllMdxFilesWithoutContent(): FileMetadata[] {
 </code></pre>
 <h1>Year and Pagination</h1>
 <p>Both pages have a similar pattern. The difference is the <code>generateStaticParams</code>. Once will return an array of possible years. I have a folder of content from 2011 up to now. The other one produces a variety of possible pages. I know I have ten blog posts per page and know the total number of blog posts, so I can calculate the number of pages I return in an array.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export const FIRST_YEAR = 2011;
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export const FIRST_YEAR = 2011;
 export const LAST_YEAR = new Date().getFullYear();
 // ...
 export async function generateStaticParams() {
@@ -88,13 +88,13 @@ export async function generateStaticParams() {
 </code></pre>
 <h1>Page Title (browser)</h1>
 <p>The page title appears in the browser's tab. There are two cases to take into account. When the page title is static, like my main page, you can use the simple version:</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export const metadata: Metadata = {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export const metadata: Metadata = {
   title: 'Patrick Desjardins Blog',
   description: 'Patrick Desjardins Blog',
 }
 </code></pre>
 <p>When the page title is dynamic, like each blog post, you can use:</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">type Props = {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">type Props = {
   params: { slug: string }
   searchParams: { [key: string]: string | string[] | undefined }
 }
@@ -121,7 +121,7 @@ export async function generateMetadata(
 <p>The second step is to move all images and videos into the <code>public</code> folder. The public folder serves static files in NextJS. On the contrary, NextJS does not serve the content in the <code>src</code> folder. In my case, the images were in a folder next to the MDX file. I moved them into the <code>public</code> folder and then changed the MDX file's path. The good news is that videos are working out of the box. It was a relief to see that the video was working without any change since Gatsby was a bit more complex to handle video, with a build step to transcode the video.</p>
 <h1>NextJS Configuration</h1>
 <p>Few configurations are required to make NextJS generate a static website. The first one is <code>unoptimized</code> for the images to remain the same as their source. NextJS optimizes images when served by the server by providing the best size for the device. The second configuration is <code>output</code>. The output is set to <code>export</code>. The configuration creates HTML, JS, and CSS files. The files are created in the <code>out</code> folder. The <code>out</code> folder is the folder GitHub uses.</p>
-<pre class="language-json"><code class="language-json code-highlight">{
+<pre class="language-json" tabindex="0"><code class="language-json code-highlight">{
   "images": {
     "unoptimized": true
   },

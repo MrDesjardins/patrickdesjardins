@@ -11,7 +11,7 @@
 <p>The reality is that even with some improvement in term of wire management that without PCB it gets messy.</p>
 <p><img src="/images/blog/water_project_1.webp" alt="" /></p>
 <p>The brain or the "sender" relies on the DF9 sensor, which, when you push on the sensor, varies the values. It works well in theory and when I push with my finger. The idea was that the brain would be potentially not close to an electric outlet, thus would be powered by three AAA batteries using an MP1584EN for moving the voltage down (4.5v to 3.3v). The electronic schema looks like:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">┌────────────────┐
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">┌────────────────┐
 │                │
 │     3x AAA     │
 │ +           -  │
@@ -47,7 +47,7 @@
 <p>The other side is the screen. I decided to explore e-paper. This part contains another ESP that stays connected all the time since it is connected to the electricity via USB-C. Contrary to the sender who stays on for 1 reading then go into deep sleep for 30 minutes to preserve power, this one remains always online. The two parts communicate using ESP-Now, an efficient protocol to communicate that does not require Internet. It is fast, efficient and save the battery.</p>
 <video src="/videos/blog/water_project_3.mp4" controls/>
 <p>The code is relatively simple because of existing library to write to the e-paper. Here is 75% of the code:</p>
-<pre class="language-c"><code class="language-c code-highlight">void updateDisplay()
+<pre class="language-c" tabindex="0"><code class="language-c code-highlight">void updateDisplay()
 {
   if (!hasChanged){
     return;

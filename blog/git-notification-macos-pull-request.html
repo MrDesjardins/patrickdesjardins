@@ -4,7 +4,7 @@
 <p>The minimum configuration is the Git token that allows access to your private Git repository. You need to <a href="https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens">generate a token</a> in the developer setting under your profile photo and setting. Once you have it, save it under a <code>.env</code> file which will keep it outside your code repository.  Once you have it, save it in a <code>.env</code> file, which will keep it outside your code repository. Also, once you share your Python script, you can have anyone use their own token without modifying the code.</p>
 <p>Another configuration is the Git username you want to receive notifications for. I keep this configuration optional as I lead the team and want to be notified of all pull requests regardless of whether I am assigned to them.</p>
 <p>In addition to the environment variables, there are a few options that you can tweak with constants in your code, like the frequency of pulling the information from Git. The script we will create does not have a push notification from Git but instead pulls the active pull requests.</p>
-<pre class="language-python"><code class="language-python code-highlight">load_dotenv()
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">load_dotenv()
 GIT_TOKEN = os.getenv("GIT_TOKEN")
 GIT_USERNAME = os.getenv("GIT_USERNAME")
 allPr = os.getenv("GIT_ALL_PR_FROM_TEAM")
@@ -23,7 +23,7 @@ if GIT_USERNAME == None:
 </code></pre>
 <h1>Connections</h1>
 <p>The code will perform many HTTP requests and in case of failure, we want the code to retry. I am using the HTTPAdapter library to provide this capability:</p>
-<pre class="language-python"><code class="language-python code-highlight">from requests.adapters import HTTPAdapter
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">from requests.adapters import HTTPAdapter
 retry_strategy = Retry(
     total=4,  # Maximum number of retries
     backoff_factor=2,  # Exponential backoff factor (1,2,4,8 seconds)
@@ -33,7 +33,7 @@ adapter = HTTPAdapter(max_retries=retry_strategy)
 <p>The HTTP request will use <code>adapter</code> later when performing the request.</p>
 <h1>HTTP Request</h1>
 <p>The heart of the system fetches information from Git. It requires more than a single HTTP request because some information is in the pull requests endpoint and others in the review endpoint. The first part of the function prepares the HTTP headers and session information to perform the request to get the pull request:</p>
-<pre class="language-python"><code class="language-python code-highlight">    url = f"{REPO_BASE_URL}/pulls"
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">    url = f"{REPO_BASE_URL}/pulls"
     headers = {
         "Accept": "application/vnd.github+json",
         "Authorization": f"Bearer {GIT_TOKEN}",
@@ -51,7 +51,7 @@ adapter = HTTPAdapter(max_retries=retry_strategy)
 </code></pre>
 <h1>Analyzing the pull requests</h1>
 <p>The next step is looping the pull request and filtering what is relevant. For example, you can skip a particular pull request with specific keywords and use the <code>GIT_USERNAME</code> to filter to the pull request assigned to your name. The following code removes pull requests not only keywords but also any pull request with the <code>draft</code> attribute to <code>true</code> as the pull request is not yet ready for feedback. We also check to ensure the pull request creator is not you, the <code>GIT_USERNAME</code>, as you should not review your pull request.</p>
-<pre class="language-python"><code class="language-python code-highlight">ignoreTitleStrings = ["(dnr)", "do not review"]
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">ignoreTitleStrings = ["(dnr)", "do not review"]
 for pr in responseJson:
 	skip = False
 	pullRequestTitle = pr["title"].lower()
@@ -70,7 +70,7 @@ for pr in responseJson:
 return filtered_list
 </code></pre>
 <p>At this step, the logic about determining if you need to dive into the pull request is not yet there. The only thing we know is that this pull request is relevant for you. The next step is determining if you already have commented or approved the pull request.</p>
-<pre class="language-python"><code class="language-python code-highlight">from string import Template
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">from string import Template
 urlTemplatePullRequest = Template(
 	f"{BASE_URL}/pulls/$number/reviews"
 )
@@ -109,7 +109,7 @@ filtered_list.append(
 <p>The result is a list that contains the pull request number, title, full URL, and whether it needs your attention. We also specify what attention is needed between commenting on the pull request and approving it.</p>
 <h1>Creating the Message</h1>
 <p>The next function executes the fetching function and acts on the list of pull requests. The function counts the amount of review and creates a <code>text</code> variable. The function calls <code>sendEvent</code> that will create the popup. The text contains two rows. One is about the need to review, and the other is for approval.</p>
-<pre class="language-python"><code class="language-python code-highlight">def create_message():
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">def create_message():
     try:
         prs = fetchGitHub()
     except Exception as e:
@@ -144,7 +144,7 @@ filtered_list.append(
 </code></pre>
 <h1>Notification</h1>
 <p>The sendEvent is what uses the macOS native notification system:</p>
-<pre class="language-python"><code class="language-python code-highlight">def sendEvent(title, text):
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">def sendEvent(title, text):
     os.system(
         """
               osascript -e 'display notification "{}" with title "{}"'
@@ -156,7 +156,7 @@ filtered_list.append(
 <p>The notification function could use any other mechanism if this one is unsuitable for your needs.</p>
 <h1>Scheduling the pulls</h1>
 <p>The last part is executing the code every few minutes. You can import <code>schedule</code> and set a time to pull the reviews.</p>
-<pre class="language-python"><code class="language-python code-highlight">schedule.every(8).minutes.do(create_message)
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">schedule.every(8).minutes.do(create_message)
 while True:
     schedule.run_pending()
     time.sleep(10)

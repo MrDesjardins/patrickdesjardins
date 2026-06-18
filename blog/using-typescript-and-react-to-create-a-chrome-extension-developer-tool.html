@@ -5,10 +5,10 @@
 <p>The build folder content can be copied and pasted into your distribution folder along with the manifest.json, the contentScript.js, and background.js files that has been discussed in the <a href="using-typescript-and-react-to-create-a-chrome-extension-developer-tool">communication article between your code and Chrome extension</a>.</p>
 <p>What is very interesting is, you can develop your Chrome's extension without being inside the developer tool. By staying outside, it increases your development velocity because you do not need to build which use Webpack -- this is slow. It also requires to close and open the extension which at the end consume time for every little change. Instead, you can mock the data and leverage the hot-reload mechanism of create-react-app by starting the server (npm run start) and run the Chrome's extension as we independent website until you are ready to test the full fledge extension with communication coming from outside your extension.</p>
 <p>Running the website with creat-react-app is a matter of running a single command (start), however, you need to indicate to the panel's code that you do not expect to receive a message from Chrome's runtime. I handle the two modes by passing an environment variable in the command line. In the package.json file I added the following code:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight"> "start": "REACT_APP_RUNENV=web react-scripts-ts start", 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight"> "start": "REACT_APP_RUNENV=web react-scripts-ts start", 
 </code></pre>
 <p>Inside the React, app.tsx file, I added a check that decides whether to subscribe to Chrome's runtime message listener or to be injected with fake data for the purpose of web development.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">if (process.env.REACT_APP_RUNENV === "web") { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">if (process.env.REACT_APP_RUNENV === "web") { 
   // Inject fake data in the state 
 } 
 else { 
@@ -16,7 +16,7 @@ else {
 } 
 </code></pre>
 <p>Finally, using TypeScript and React is a great combination. It clarifies the message that is expected at every point in the communication but also simplifies the code by removing any potential confusion about what is required. Also, React is great in term of simplification of the UI and the state. While the Data Access Gateway Chrome's extension is small and does not use Redux or another state management, it can leverage the React's state at the app.tsx. It means that to save and load the user's data is a matter of simply dumping the state in the Chrome's localstorage and to restore it -- that is it. Nothing more.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">public persistState(): void { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">public persistState(): void { 
    const state = this.state; 
    chrome.storage.local.set({ [SAVE_KEY]: state }); 
 } 

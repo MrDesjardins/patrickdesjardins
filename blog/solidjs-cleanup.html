@@ -6,7 +6,7 @@
 <h1>UnMount</h1>
 <p>In React, unmounting code was once upon a time the job of a dedicated method of the component class <code>componentWillUnmount</code>. With React Hooks, the unmounting moved into a function returned by an effect that is executed when mounting. It means that the <code>useEffect</code> does have an empty array of dependencies. In SolidJS, the <code>useEffect</code> does not exist. It is replaced with <code>createEffect</code> and it does not have a return value. Instead, we must add inside the <code>createEffect</code> an <code>onCleanup</code> function that will be executed when the component is removed from the DOM.</p>
 <p>A short example is when a value changes from <code>1</code> that the component is not rendered anymore, but <code>null</code> is passed.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const ChildToUnMount = () =&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const ChildToUnMount = () =&gt; {
   onCleanup(() =&gt; {
     console.log("ChildToUnMount UnMounted");
   });
@@ -14,7 +14,7 @@
 };
 </code></pre>
 <p>The component has a straightforward <code>onCleanup</code> function executed only when the parent component removes it from the render function. For example:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const App: Component = () =&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const App: Component = () =&gt; {
   const [val, setVal] = createSignal(0);
   return (
     &lt;div&gt;
@@ -38,7 +38,7 @@
 <p>There is a possibility to return a function in each effect. The function runs when you need to clean up. It is similar to the <code>componentWillUnmount</code> but runs every time the render is about to start again. It allows cleaning up some data before a new render, with new data (new state or props) occurs.</p>
 <p>You can visualize the flow being: Mount -&gt; clean effect -&gt; render -&gt; effect</p>
 <p>With SolidJS, it is a little bit different. There is no function to return to the <code>createEffect</code>. Instead, you must use the <code>onCleanup</code> function that you can put directly inside your component or inside a <code>createEffect</code> depending on if you want the cleanup to occur during unmounting or before a new render. Here is an example that illustrates the pipeline of events.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">import { Component, createEffect, createSignal, onCleanup } from "solid-js";
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">import { Component, createEffect, createSignal, onCleanup } from "solid-js";
 import { render } from "solid-js/web";
 export interface ChildProps {
   val: number;
@@ -73,7 +73,7 @@ const App: Component = () =&gt; {
 render(() =&gt; &lt;App /&gt;, document.getElementById("app"));
 </code></pre>
 <p>The logs output this way:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">During render 
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">During render 
 CreateEffect 
 0
 CreateEffect Cleanup 

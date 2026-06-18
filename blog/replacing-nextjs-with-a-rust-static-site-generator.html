@@ -3,22 +3,22 @@
 <p>Over six days, the change touched 120 files with 7,032 insertions and 2,373 deletions. There were 22 commits in that window. That sounds large, but the important part is that the site moved from a framework-driven build to a content-driven build.</p>
 <h2>What Changed</h2>
 <p>The most visible change is in <code>package.json</code>.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">before: pnpm build -&gt; next build
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">before: pnpm build -&gt; next build
 after:  pnpm build -&gt; node scripts/build-site.mjs
 </code></pre>
 <p>The NextJS dependencies are gone from the package:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">next
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">next
 next-mdx-remote
 @next/third-parties
 eslint-config-next
 </code></pre>
 <p>The new build script compiles a Rust binary and runs it:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">scripts/build-site.mjs
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">scripts/build-site.mjs
   -&gt; cargo build --release --manifest-path tools/sitegen/Cargo.toml
   -&gt; tools/sitegen/target/release/sitegen
 </code></pre>
 <p>The Rust generator is now the center of the static site build. It reads the content, computes routes, hashes dependencies, decides what is stale, renders supported markdown and MDX natively, and writes the static output.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">content
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">content
   -&gt; Rust route discovery
   -&gt; dependency hashing
   -&gt; stale route selection
@@ -27,7 +27,7 @@ eslint-config-next
   -&gt; GitHub Pages
 </code></pre>
 <p>This is the new division of responsibilities:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">┌──────────────────────────┬──────────────────────┬────────────────────────────┐
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">┌──────────────────────────┬──────────────────────┬────────────────────────────┐
 │ Responsibility           │ Before               │ After                      │
 ├──────────────────────────┼──────────────────────┼────────────────────────────┤
 │ Build entrypoint         │ NextJS               │ Node wrapper + Rust binary │
@@ -52,7 +52,7 @@ eslint-config-next
 <p>Another improvement is local development. With NextJS, opening or editing individual MDX posts was slow. The site had thousands of pages, and even when I wanted to look at one article, the development server often felt like it was preparing much more than the page I needed.</p>
 <p>That matters when writing. A blog post is not a complex application flow. I want to save the file, refresh, and continue writing. Waiting on the framework for every MDX page breaks that loop.</p>
 <p>The new development path is much closer to instant. The generator can rebuild the changed content, and the local server can show the updated page immediately. Hot reload now feels like editing a static file again, which is exactly what most blog writing should feel like.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">Local writing loop
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">Local writing loop
 
 NextJS dev path      save -&gt; wait -&gt; route compiles -&gt; page appears
 Rust/Vite dev path   save -&gt; stale file regenerates -&gt; hot reload
@@ -61,7 +61,7 @@ Rust/Vite dev path   save -&gt; stale file regenerates -&gt; hot reload
 <h2>CI Changed Too</h2>
 <p>The CI pipeline changed almost as much as the generator. Before, the workflow had one broad job that generated search output, installed dependencies, linted, tested, built, deployed, and posted socially.</p>
 <p>Now the workflow is split:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">detect-changes
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">detect-changes
 quality
 search-index
 build-site
@@ -82,7 +82,7 @@ social-post
 <p>The result is not just a faster build. It is a build that does less unnecessary work.</p>
 <h2>The Numbers</h2>
 <p>The GitHub Actions history shows the shape of the improvement.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">┌────────────┬────────────────────────────────────┬──────────────┬───────────────┐
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">┌────────────┬────────────────────────────────────┬──────────────┬───────────────┐
 │ Date       │ Run                                │ Total Time   │ Notes         │
 ├────────────┼────────────────────────────────────┼──────────────┼───────────────┤
 │ 2026-06-13 │ Old generate-and-deploy job        │ 4m40s        │ One large job │
@@ -92,15 +92,22 @@ social-post
 └────────────┴────────────────────────────────────┴──────────────┴───────────────┘
 </code></pre>
 <p>The old June 13 run reached deployment around 3m25s and finished the job around 4m40s because social posting was part of the same job. The June 18 workflow dispatch completed the full deploy path in about 2m20s.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">Deploy-ready runtime
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">Deploy-ready runtime
 
 Old path, June 13    3m25s
 New path, June 18    2m20s
 
 Approximate reduction: 65 seconds, about 32%
 </code></pre>
-<p>The more interesting number is inside the new workflow:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">┌────────────────────┬──────────┐
+<p>The first real post published with the new pipeline felt even better than the workflow average. From pushing the article to seeing it published, the whole loop took less than 45 seconds. That is the number that matters most when writing: not the theoretical build time, but how long it takes to correct a sentence, publish, and move on.</p>
+<p>For comparison, two similar pre-migration content pushes through the old NextJS path took 3m15s and 3m38s end-to-end in GitHub Actions.</p>
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">Real article publishing loop
+
+Old NextJS path      3m15s to 3m38s
+Rust generator path  less than 45 seconds observed
+</code></pre>
+<p>The more interesting number is inside the new workflow for the whole site:</p>
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">┌────────────────────┬──────────┐
 │ Job                │ Duration │
 ├────────────────────┼──────────┤
 │ quality            │ 34s      │
@@ -111,7 +118,7 @@ Approximate reduction: 65 seconds, about 32%
 </code></pre>
 <p>Those jobs do not all need to run sequentially. <code>quality</code> and <code>search-index</code> can run in parallel. <code>build-site</code> waits for the useful outputs, and <code>deploy</code> only runs after a successful build.</p>
 <p>That is why the total workflow is smaller than adding every job duration together. The pipeline stopped being a single line and became a small dependency graph.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">Old:
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">Old:
 
 checkout -&gt; generate search -&gt; install node -&gt; lint -&gt; test -&gt; build -&gt; deploy -&gt; social
 

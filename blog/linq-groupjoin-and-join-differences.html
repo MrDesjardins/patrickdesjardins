@@ -4,12 +4,12 @@
 <p><img src="/images/blog/customersandordersNorthwind-257x300.png" alt="" /></p>
 <p>The Customers can contain multiple Orders. The Order contain a link to the Customer.</p>
 <p>We could have been used any type of project, but to be short I have used a ASP.NET Webform and have created a ASPX page with the containing HTML:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">&lt;/pre&gt; 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">&lt;/pre&gt; 
 &lt;h1&gt;Group EntityFramework&lt;/h1&gt; 
 &lt;pre&gt; 
 </code></pre>
 <p>On the code-behind the code is executed:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">NorthwindEntities db = new NorthwindEntities();
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">NorthwindEntities db = new NorthwindEntities();
 
 var source = db.Customers.Where(c =&gt; c.CustomerID.StartsWith("A"))  
   .GroupJoin(db.Orders, c =&gt; c.CustomerID, o =&gt; o.CustomerID, (c, o) =&gt; new { Customer = c, Order = o });
@@ -32,7 +32,7 @@ sqlGroupef.Text = (source as ObjectQuery).ToTraceString();
 <p>The output look like this:</p>
 <p><img src="/images/blog/join-139x300.png" alt="" /></p>
 <p>This is generated with almost the same code as before but instead of using GroupJoin only the Join is used. Also, since no grouping is done, the second foreach is not needed.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">NorthwindEntities db = new NorthwindEntities(); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">NorthwindEntities db = new NorthwindEntities(); 
 var source = db.Customers.Where(c =&gt; c.CustomerID.StartsWith("A")) 
   .Join(db.Orders, c =&gt; c.CustomerID, o =&gt; o.CustomerID, (c, o) =&gt; new { Customer = c, Order = o }); 
 string html = string.Empty; 
@@ -46,7 +46,7 @@ this.groupEF.Controls.Add(new LiteralControl(html));
 sqlGroupef.Text = (source as ObjectQuery).ToTraceString(); 
 </code></pre>
 <p>The output produce a cross join without any grouping. This is why we can see the Customer repeated in the output. If we want to group the result of the join without using GroupJoin it's possible. In fact, it's possible to create the same output with Join if using On statement and Equal the 2 entities together. Here is the change required :</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">NorthwindEntities db = new NorthwindEntities(); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">NorthwindEntities db = new NorthwindEntities(); 
 var source = from c in db.Customers where c.CustomerID.StartsWith("A") join o in db.Orders on c.CustomerID equals o.CustomerID into g select new { Customer = c, Order = g }; 
 string html = string.Empty; foreach(var cust in source) {
   html+="&lt;/pre&gt; &lt;h2&gt;"+cust.Customer.CompanyName+"&lt;/h2&gt; "; 
@@ -61,15 +61,15 @@ this.groupEF.Controls.Add(new LiteralControl(html));
 sqlGroupef.Text = (source as ObjectQuery).ToTraceString(); 
 </code></pre>
 <p>To be sure that what we state is real, let compare the generated MSIL for the two Linq. The first one is the GroupJoin and the second one is the Join with a On and Into.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> var source = db.Customers.Where(c =&gt; c.CustomerID.StartsWith("A")) 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> var source = db.Customers.Where(c =&gt; c.CustomerID.StartsWith("A")) 
  .GroupJoin(db.Orders, c =&gt; c.CustomerID, o =&gt; o.CustomerID, (c, o) =&gt; new { Customer = c, Order = o }); 
-</code></pre><pre class="language-csharp"><code class="language-csharp code-highlight"> var source2 = from c in db.Customers 
+</code></pre><pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> var source2 = from c in db.Customers 
   where c.CustomerID.StartsWith("A") 
   join o in db.Orders on c.CustomerID equals o.CustomerID 
   into g select new { Customer = c, Order = g }; 
 </code></pre>
 <p>Both generate the exact same MSIL:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> IQueryable arg_244_0 = db.Customers; 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> IQueryable arg_244_0 = db.Customers; 
  ParameterExpression parameterExpression = Expression.Parameter(typeof(Customers), "c"); 
  IQueryable arg_381_0 = arg_244_0.Where(Expression.Lambda&gt;(Expression.Call(Expression.Property(parameterExpression, (MethodInfo)MethodBase.GetMethodFromHandle(ldtoken(get_CustomerID()))), (MethodInfo)MethodBase.GetMethodFromHandle(ldtoken(StartsWith())), new Expression[] { Expression.Constant("A", typeof(string)) }), new ParameterExpression[] { parameterExpression })); IEnumerable arg_381_1 = db.Orders; 
  parameterExpression = Expression.Parameter(typeof(Customers), "c"); 

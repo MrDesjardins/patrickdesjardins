@@ -4,7 +4,7 @@
 <p>The first step is to call the base class constructor with the the this parameter. This is done by using the name of the function (the class) followed by "call" with <code>this</code> as parameter.</p>
 <p>The second step is to set the prototype of the child class to an instance of a new base object. This is done my calling assigning the prototype to <code>Object.Create(.prototype)</code>. An important detail is that this must be set before you associate any new prototype to the object, otherwise, every prototype defined will be overridden.</p>
 <p>The third step is to set the prototype of the child class to be setup to the childclass. That is that the Object.create set the prototype to the base class which need to set back to the child. We can see that without setting this constructor that the value of <code>console.log(ChildClass1.prototype.constructor)</code> is the base class instead of the child class.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var BaseClass1 = function () {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var BaseClass1 = function () {
   this.memberbase = "base";
   this.function4 = function () {
     return "return function4 from base instance";
@@ -51,7 +51,7 @@ console.log("instance1.function4: " + instance1.function4()); // Use base class 
 //console.log(ChildClass1.prototype.constructor) // uncomment to see what step 3 change.
 </code></pre>
 <p>The output is :</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">"instance1.function1: return from child"
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">"instance1.function1: return from child"
 "instance1.function2: return function2 from child"
 "instance1.function3: return function3 from base prototype"
 "instance1.function4: return function4 from base instance"
@@ -60,7 +60,7 @@ console.log("instance1.function4: " + instance1.function4()); // Use base class 
 <p>What we can see is that the chain of priority when calling a function start with the child instance function, move up to the child prototype function, then to the base prototype function. So, it's possible to redefine a base member in 3 different levels.</p>
 <p>The priority will always be : Child instance, Base instance, Child prototype, Base prototype.</p>
 <p>We can prove it with this example:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var BaseClass1 = function () {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var BaseClass1 = function () {
   this.function1 = function () {
     return "Base Instance";
   };
@@ -91,7 +91,7 @@ console.log("instance1.function1: " + instance1.function1());
 <p>If we remove the base instance function, this will print: "instance1.function1: Child Prototype"</p>
 <p>If we remove the base prototype function, this will print: "instance1.function1: Base Prototype"</p>
 <p>In this last example, we were using <code>Object.create</code>, but also <code>new</code> to create the instance that we manipulate the data. If we want to avoid completely the <code>new</code>, we need to create the child class with Object.Create. This is possible, but will require to change the child class. For example, we won't specify function 1 inside ChildClass1 function, neither call BaseClass with call. The code would look like:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var BaseClass1 = function () {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var BaseClass1 = function () {
   this.function1 = function () {
     return "Base Instance";
   };

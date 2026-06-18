@@ -4,44 +4,44 @@
 <ol>
 <li>SSH into the Raspberry Pi</li>
 </ol>
-<pre class="language-sh"><code class="language-sh code-highlight">ssh pi@10.0.0.192
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">ssh pi@10.0.0.192
 </code></pre>
 <ol start="2">
 <li>Clone the repository</li>
 </ol>
-<pre class="language-sh"><code class="language-sh code-highlight">git clone https://github.com/MrDesjardins/python-discord-scheduler-bot.git
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">git clone https://github.com/MrDesjardins/python-discord-scheduler-bot.git
 </code></pre>
 <ol start="3">
 <li>Create the Python environment</li>
 </ol>
-<pre class="language-sh"><code class="language-sh code-highlight">python3 -m venv .venv
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">python3 -m venv .venv
 </code></pre>
 <ol start="4">
 <li>Activate the Python environment</li>
 </ol>
-<pre class="language-sh"><code class="language-sh code-highlight">source .venv/bin/activate
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">source .venv/bin/activate
 </code></pre>
 <ol start="5">
 <li>Install the dependencies</li>
 </ol>
-<pre class="language-sh"><code class="language-sh code-highlight">python3 -m pip install -r requirements.txt
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">python3 -m pip install -r requirements.txt
 </code></pre>
 <ol start="6">
 <li>Edit the environment variables file to setup Discord key and environment</li>
 </ol>
-<pre class="language-sh"><code class="language-sh code-highlight">sudo nano /etc/environment
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">sudo nano /etc/environment
 ENV=prod
 BOT_TOKEN=&lt;bot token&gt;
 </code></pre>
 <ol start="7">
 <li>Configure systemctl</li>
 </ol>
-<pre class="language-sh"><code class="language-sh code-highlight">sudo cp /home/pi/python-discord-scheduler-bot/systemd/gametimescheduler.service /etc/systemd/system/gametimescheduler.service
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">sudo cp /home/pi/python-discord-scheduler-bot/systemd/gametimescheduler.service /etc/systemd/system/gametimescheduler.service
 sudo systemctl enable gametimescheduler.service
 sudo systemctl start gametimescheduler.service
 </code></pre>
 <p>The systemctl configuration waits for dependencies like the network and some delay to avoid starting issues:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">[Unit]
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">[Unit]
 Description=Discord Scheduler Bot
 After=network.target
 Requires=network.target

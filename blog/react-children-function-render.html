@@ -2,7 +2,7 @@
 <p>If you have a hierarchy of components, you may have one or more components that wrap HTML elements around something else. For example, you can have a <code>Layout</code> component that wraps a child component. The child can be anything from now to the future- it does not matter.</p>
 <p><img src="/images/blog/ReactChildrenFunctionRender.png" alt="" /></p>
 <p>React uses the term <a href="https://reactjs.org/docs/react-api.html#reactchildren">children</a> to inject another component inside your component. So, in the following example, we have a basic <code>Layout</code> component with a single property, <code>children</code>.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function Layout(props: { children: ReactNode }) {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function Layout(props: { children: ReactNode }) {
   return (
     &lt;div&gt;
       &lt;h1&gt;Layout&lt;/h1&gt;
@@ -12,7 +12,7 @@
 }
 </code></pre>
 <p>The component wraps any other component. For example, the following React <code>App</code> component render a <code>div</code> that has the <code>Layout</code> component, and between <code>&lt;Layout&gt;</code> and <code>&lt;/Layout&gt;</code> is what is injected inside the component.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export default function App() {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export default function App() {
   return (
     &lt;div className="App"&gt;
       &lt;Layout&gt;
@@ -23,7 +23,7 @@
 }
 </code></pre>
 <p>The result is an HTML output with a <code>div</code> defined under the <code>App</code> into the <code>Layout</code> component.</p>
-<pre class="language-html"><code class="language-html code-highlight">&lt;div className="App"&gt;
+<pre class="language-html" tabindex="0"><code class="language-html code-highlight">&lt;div className="App"&gt;
   &lt;div&gt;
     &lt;h1&gt;Layout&lt;/h1&gt;
     &lt;main&gt;
@@ -41,7 +41,7 @@
 <p>The trap with React props is the number of renderings. Here is a small example that shows that if a parent React component passes a function down that the whole tree of componenst is rendered when the parent change.</p>
 <iframe src="https://codesandbox.io/embed/react-children-function-render-part1-q83h9r" style="width:100%;height:500px;border:0;border-radius:4px;overflow:hidden" title="CodeSandbox example react-children-function-render-part1-q83h9r" loading="lazy" allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking" sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"><a href="https://codesandbox.io/s/react-children-function-render-part1-q83h9r">Open CodeSandbox example react-children-function-render-part1-q83h9r</a></iframe>
 <p>If you open the <em>Console</em> of the CodeSandbox you see many renders.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">// Initial render (mounting)
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">// Initial render (mounting)
 App Render 
 UserContextProvider Render 
 Layout Render 
@@ -68,15 +68,15 @@ SmallChildUsingContext Render
 <p>The gain is that <code>Layout</code> is not changing, which makes sense since it does not rely on any state of the context.</p>
 <h1>The Solution</h1>
 <p>The solution needs to be clarified for many. The following lines:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const fn = useMemo(() =&gt; props.children(inc), [props, inc]);
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const fn = useMemo(() =&gt; props.children(inc), [props, inc]);
 return &lt;UserContext.Provider value={value}&gt;{fn}&lt;/UserContext.Provider&gt;;
 </code></pre>
 <p>Cannot be:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const fn = useCallback(() =&gt; props.children(inc), [props, inc]);
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const fn = useCallback(() =&gt; props.children(inc), [props, inc]);
 return &lt;UserContext.Provider value={value}&gt;{fn()}&lt;/UserContext.Provider&gt;;
 </code></pre>
 <p>The reason is that the function passed down is the same but not the <em>output</em> of the function. Hence, only <code>useMemo</code> is memoizing the <code>children</code> property, in that example, the <code>Layout</code>. The final output is now:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">// Initial render (mounting)
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">// Initial render (mounting)
 App Render 
 UserContextProvider Render 
 Layout Render 

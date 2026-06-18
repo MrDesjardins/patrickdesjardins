@@ -6,7 +6,7 @@
 <h1>Using IValidatableObject</h1>
 <p>This interface lets you have a single method called <em>Validate</em> which lets you return error message linked to a property method. If you want a general error, you can also specify an empty string for the property name. Simple? Yes. Powerful? Even more! The framework know this interface and it automatically uses the validation when the model is bound from a Http request to your view model by the Model Binder. The .Net framework automatically call this method when Entity Framework try to save entities to the database. This mean that you have nothing to do, but to add your business logic validation.</p>
 <p>From here, it's interesting to force every model to have this interface and this is why a good place to inherit from <em>IValidatableObject</em> is in the BaseModel.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public abstract class BaseModel : IValidatableObject { public const int NOT_INITIALIZED = -1; public int Id { get; set; }
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public abstract class BaseModel : IValidatableObject { public const int NOT_INITIALIZED = -1; public int Id { get; set; }
 
 #region Implementation of IValidatableObject
 
@@ -17,7 +17,7 @@ public abstract IEnumerable&lt;ValidationResult&gt; Validate(ValidationContext v
 }
 </code></pre>
 <p>Every model have to define the <em>Validate</em> method. If no validation is required, the method is simply empty. Let's go back with the Workout entity and add some validations.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class Workout : BaseModel, IUserOwnable {
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class Workout : BaseModel, IUserOwnable {
   public DateTime StartTime { get; set; }
   public DateTime? EndTime { get; set; }
   public string Name { get; set; }
@@ -46,7 +46,7 @@ public abstract IEnumerable&lt;ValidationResult&gt; Validate(ValidationContext v
 <h1>The first layer of validation : Model Binding inside the controller</h1>
 <p>We have implemented the <code>IValidatableObject</code> and when a Http request is done to the server, the controller bind the data to the model. Since we are using the ViewModel approach, this validation is not triggered! But, since we have a BaseController and already have defined the new approach of having the model to be automapped automatically it hooks the validation and apply it when the ViewModel is mapped to the Model. (You have to go read previous post of "Business" category to understand why it's automatically mapped.)</p>
 <p>The first modification occurs in the override method <em>OnActionExecuting</em> that should be already overrided with the modification of the mapper. We simply need to check if the model bound is really a IValidatableObject and to trig the validation mechanism.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">protected override void OnActionExecuting(ActionExecutingContext filterContext) {
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">protected override void OnActionExecuting(ActionExecutingContext filterContext) {
   base.OnActionExecuting(filterContext); if(filterContext.ActionParameters.Any()) {
     var possibleViewModel = filterContext.ActionParameters.FirstOrDefault(x =&gt; x.Value.GetType() == typeof(TViewModel));
     if (possibleViewModel.Value!=null) {
@@ -72,12 +72,12 @@ private void ApplyErrorsToModelState() {
 </code></pre>
 <p>What we are doing is a general method that works for any entities. We verify if the Model bound from the ViewModel is really inherited from a <code>IValidatableObject</code>. From here, we do what the framework would do if we weren't using view model : calling the Validate method of the interface. We then loop all error and assign everything to the ModelState. This will give us the possibility to act like if no view model has been used.</p>
 <p>The code above about the method "ApplyErrorsToModelState" could be replaced with the code below to be able to validate the <code>data annotation</code> AND also the <code>IValidatableObject</code> interface.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> private void ApplyErrorsToModelState() { ModelMetadata metadata = ModelMetadataProviders.Current.GetMetadataForType(() =&gt; Model, Model.GetType());
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> private void ApplyErrorsToModelState() { ModelMetadata metadata = ModelMetadataProviders.Current.GetMetadataForType(() =&gt; Model, Model.GetType());
 
 foreach (ModelValidationResult validationResult in ModelValidator.GetModelValidator(metadata, this.ControllerContext).Validate(null)) { var propertyName = validationResult.MemberName; ModelState.AddModelError(propertyName, validationResult.Message); } }
 </code></pre>
 <p>The code above validate the data annotation and the IValidatableObject. This can be used in a scenario where you need to have deeper validation process. For example here is the same code as above with enhanced validation on the mapping. This required to have split both validation.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">private void ApplyErrorsToModelState(TModel model, TViewModel viewModel) {
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">private void ApplyErrorsToModelState(TModel model, TViewModel viewModel) {
   //Data Annotation validation
   ICollection&lt;ValidationResult&gt; result;
   ValidateDataAnnotation(model, out result);
@@ -118,7 +118,7 @@ foreach (ModelValidationResult validationResult in ModelValidator.GetModelValida
     results = new List&lt;ValidationResult&gt;();
     return Validator.TryValidateObject(entity, context, results, true);
   }
-</code></pre><pre class="language-csharp"><code class="language-csharp code-highlight"> [HttpPost] public ActionResult Create(WorkoutViewModel viewModel) { 
+</code></pre><pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> [HttpPost] public ActionResult Create(WorkoutViewModel viewModel) { 
   if (ModelState.IsValid) //This is the default Asp.Net MVC way to validate entity 
   { 
     //Save the entity
@@ -126,7 +126,7 @@ foreach (ModelValidationResult validationResult in ModelValidator.GetModelValida
 <p>This is great because it's the default way to validate object that has been bound in MVC. The <em>IsValid</em> doesn't only validate our business logic but also validate all data annotation that could have been set. It's even greater because people that are used to use the ModelState for validation won't have to learn a new way to act with controllers because it's the same.</p>
 <h1>The second layer of validation : Service layer</h1>
 <p>So far, the validation works fine but it doesn't handle the case that you need to validate across many entities. You can have case that you need to validate an entity dependently of the value of others entities. It can also be a validation from some value that are inside the database. Since Model doesn't have access to the repository, at this moment, we couldn't validate. To solve this problem, the second layer of validation is required and the perfect place it's in the Service layer. The reason is that this layer does have access to all entities and also have access to all repositories. Contrary to the first layer of validation, this one will require some manual explicit call for validation. The concrete implementation of this second layer of validation will be done with the Workout entity. What we want to implement is a validation that the active user cannot create more than 3 workouts per month without a premium account. That mean that we need to go check in the database the amount of workout for a specific user for a specific month. This couldn't be validate in the Workout class because it doesn't have access to the database.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public int Create(Workout model) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public int Create(Workout model) { 
   int amountWorkout = Repository.Workout.GetAmountWorkoutForCurrentMonth(); 
   if (amountWorkout&gt;3)//More than 3 workouts done without premium account 
   { 
@@ -137,7 +137,7 @@ foreach (ModelValidationResult validationResult in ModelValidator.GetModelValida
 </code></pre>
 <p>This get the amount of workout for the month and if it's over a certain threshold will raise the error.</p>
 <p>The error is handled by the controller that verify that the action executed has been completed without error. Here is the Create action of the Workout controller with the first layer validation and with the catch for the second layer.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">[HttpPost] 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">[HttpPost] 
 public ActionResult Create(WorkoutViewModel viewModel) { 
   if (ModelState.IsValid) { 
     try {_service.Create(Model); } 
@@ -153,13 +153,13 @@ public ActionResult Create(WorkoutViewModel viewModel) {
 <p>The persistence layer is where the call to the database is done. This is an automatic validation with Entity Framework that call the <code>IValidatableObject</code> interface of the entity before save it to the database.</p>
 <p>But, since we do not want to raise a <code>DbEntityValidationResult</code> up to the controller (because it's a class that belong to Entity Framework (System.Data.Entity.Validation), we will use our own exception classes.</p>
 <p>We will create an interface that will hold the property name in error and also the error message.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public interface IBaseError { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public interface IBaseError { 
   string PropertyName { get; } 
   string PropertyExceptionMessage { get; } 
 }
 </code></pre>
 <p>Two classes will inherit from this interface. One for a property error and one for a general error.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public class PropertyError:IBaseError { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public class PropertyError:IBaseError { 
   public string PropertyName { get; set; } 
   public string PropertyExceptionMessage { get; set; } 
   public PropertyError(string propertyName, string errorMessage) { this.PropertyName = propertyName; this.PropertyExceptionMessage = errorMessage; } 
@@ -176,10 +176,10 @@ public class GeneralError:IBaseError {
 }
 </code></pre>
 <p>Then, we add the interface <em>IValidationErrors</em> which holds all <em>IBaseError</em> to be send back through all layers.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public interface IValidationErrors { List&lt;IBaseError&gt; Errors { get; set; } }
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public interface IValidationErrors { List&lt;IBaseError&gt; Errors { get; set; } }
 </code></pre>
 <p>The first implementation can be used anywhere, like in the service layers.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class ValidationErrors : Exception, IValidationErrors { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class ValidationErrors : Exception, IValidationErrors { 
   public List&lt;IBaseError&gt; Errors { get; set; } 
   public ValidationErrors() { Errors = new List&lt;IBaseError&gt;(); }
 
@@ -190,7 +190,7 @@ public class GeneralError:IBaseError {
 }
 </code></pre>
 <p>The second is more specific to database.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class DatabaseValidationErrors : ValidationErrors { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class DatabaseValidationErrors : ValidationErrors { 
   public DatabaseValidationErrors(IEnumerable&lt;DbEntityValidationResult&gt; errors):base() { 
     foreach (var err in errors.SelectMany(dbEntityValidationResult =&gt; dbEntityValidationResult.ValidationErrors)) { 
       Errors.Add(new PropertyError(err.PropertyName,err.ErrorMessage)); 
@@ -200,18 +200,18 @@ public class GeneralError:IBaseError {
 </code></pre>
 <p>The last one is used by the repository. In fact, when we <code>SaveChanges()</code> to the database, we need to validate before Entity Framework executes the <code>SaveChanges</code>. Of course, we could let Entity Framework but we would have to catch the exception. Since they are a way without having to catch an exception, I prefer to use it.</p>
 <p>If you remember correctly, our <code>DatabaseContext</code> inherits from <code>IDatabaseContext</code> which have <code>SaveChanges()</code> method. We simply need to override this one instead of relying on the one from <code>DbContext</code> and call the DbContext one if everything is fine.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public override int SaveChanges() { var errors = this.GetValidationErrors(); if (!errors.Any()) { return base.SaveChanges(); } else { throw new DatabaseValidationErrors(errors); } }
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public override int SaveChanges() { var errors = this.GetValidationErrors(); if (!errors.Any()) { return base.SaveChanges(); } else { throw new DatabaseValidationErrors(errors); } }
 </code></pre>
 <p>The exception thrown will loop all errors and be trig to a higher level. In fact, this exception is raised to the service layer which doesn't handle the exception. So, the exception will be raised to the controller layer. This is the same patch of exception than having an exception thrown from the service in the layer 2 because of business logic validation! We are reusing the same mechanism and this is possible because of the exceptions classes we have created which are abstracted with interface.</p>
 <h1>Model State and custom exceptions classes</h1>
 <p>If you remember, the controller does have a catch for ValidationErrors.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> //... 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> //... 
 catch (ValidationErrors propertyErrors) { 
   ModelState.AddValidationErrors(propertyErrors); 
 }
 </code></pre>
 <p>By default, the model state doesn't have this method that accept our interface IValidationErrors. This is an extension method.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public static class ControllersExtensions { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public static class ControllersExtensions { 
   public static void AddValidationErrors(this ModelStateDictionary modelState, IValidationErrors propertyErrors) { 
     foreach (var databaseValidationError in propertyErrors.Errors) { 
       modelState.AddModelError(databaseValidationError.PropertyName, databaseValidationError.PropertyExceptionMessage); 

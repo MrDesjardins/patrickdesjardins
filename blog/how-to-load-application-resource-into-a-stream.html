@@ -5,12 +5,12 @@
 <h2>Application.GetResourceStream Methods</h2>
 <p>After, the only code required will be to read this resource from your C# code. To extract the content of this resource you need to use the <em>GetResourceStream</em> method of the <em>System.Windows.Application</em>. Don't worry if you are a Silverlight user, you still have access to this namespace. This method take a URI as parameter. This is where it can be tricky. First, you need to use a syntax that will define the namespace and then a relative path to the file.</p>
 <p>Let say that my project name is Project1 and the file is in Folder1/Folder2. The file name is Test.xml. You have a URI that would look like this.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> ... = new Uri("Project1;component/Folder1/Folder2/Test.xml", UriKind.Relative) 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> ... = new Uri("Project1;component/Folder1/Folder2/Test.xml", UriKind.Relative) 
 </code></pre>
 <p>Has you can see, the path needs to have the "component" before all directories.</p>
 <h2>Example of using XML with file resource</h2>
 <p>So, if you want to load a text file you will need to write:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">//... 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">//... 
 StreamResourceInfo sr1 = Application.GetResourceStream(new Uri("Project1;component/Folder1/Folder2/Test.xml", UriKind.Relative)); 
 var file = new StreamReader(sr1.Stream); 
 return file.ReadToEnd(); 

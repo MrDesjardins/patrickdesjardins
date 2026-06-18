@@ -9,7 +9,7 @@
 <p>To have insight into what is happening, I created a second <a href="https://github.com/MrDesjardins/dataaccessgatewaychromeextension">side-project that is a Chrome Extension.</a>. This is not released yet, but the code is available. It gives information about the quantity of call done at each level (HTTP request, IndexDb, Memory) and what is actually used. It has insight into the size of data fetching by each source. Finally, you can see all the logs and a summary of the percentile of all the fetches.</p>
 <video src="/videos/blog/AnimatedDAGExtension.mp4" controls/>
 <p>So, how does it looks? While it might sound complicated it is actually easy to use. There is the initialization portion that is done once in your single-page application, and after the request.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">// Initialization
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">// Initialization
 export const DATABASE_BASE_WITH_VERSION = "DB_V1";
 export const DataAccess = DataAccessGateway(DATABASE_BASE_WITH_VERSION);
 

@@ -6,7 +6,7 @@
 <p><img src="/images/blog/pnp_logo.png" alt="" /></p>
 <p>First of all, you need to get both library, the Unity and Unity MVC3 (which work perfectly with MVC4).</p>
 <p>Then, you need to configure the dependency to your container. This need to be done in the application start of the application which is inside Global.ascx.cs.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">protected void Application_Start() { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">protected void Application_Start() { 
   AreaRegistration.RegisterAllAreas();
 
   WebApiConfig.Register(GlobalConfiguration.Configuration); 
@@ -20,7 +20,7 @@
 } 
 </code></pre>
 <p>The line 13 initialize Unity. This class is a custom one that take the connection string that will be injected for the database. If we go inside the <code>UnityConfiguration</code> class we will see that all my interface are mapped to concrete type.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public static class UnityConfiguration { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public static class UnityConfiguration { 
   public static void Initialize(string connectionString) { 
     IUnityContainer container = new UnityContainer() 
     .RegisterType&lt;IDatabaseContext, DatabaseContext&gt;(new InjectionConstructor(connectionString)) 

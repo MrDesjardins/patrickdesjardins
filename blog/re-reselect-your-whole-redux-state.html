@@ -2,14 +2,14 @@
 <p><img src="/images/blog/reselect-and-re-reselect.png" alt="" /></p>
 <h1>Reselect versus Re-Reselect</h1>
 <p>I am using Re-Reselect at Netflix in the Partner Portal application for denormalizing many entities. For example, I have selector for each of our organization we serve and each of them have sites around the world. Each site has appliances as well. When I am receiving information from the backend, depending of the endpoint, I need to invalidate more than one cache. So far, Re-Select is working well. However, I have custom logic to denormalize to handle cases that are beyond that blog post. These one require to access specific Redux store directly to compute information with different functions. It means that during the invalidation of the cache, and while a new value to be memoized I need to have an access to the Redux's state and pass this one to functions.</p>
-<pre class="language-javascript"><code class="language-javascript code-highlight">public denormalizeSitePerformanceExpensive(appReduxState: AppReduxState,
+<pre class="language-javascript" tabindex="0"><code class="language-javascript code-highlight">public denormalizeSitePerformanceExpensive(appReduxState: AppReduxState,
   site: SiteNormalized | undefined,
   org: OrgNormalized | undefined,
   contactSelector: GenericMap&lt;ContactNormalized&gt;,
   deepDenormalize: boolean = true ): SiteDenormalized | undefined {
 </code></pre>
 <p>The function signature above is an example that to denormalize a site we need to pass the application "head" Redux state. The problem the memoization get invalidate on every change. The reason is not obvious if you never used ReSelect (or Re-Reselect). Because it is an input and because the reference of the head of Redux state will change at any change, then it invalidates the site cache. Here is the cache creation that shows the input that are used to invalidate the cache.</p>
-<pre class="language-javascript"><code class="language-javascript code-highlight">private denormalizeSiteFunction = createCachedSelector(
+<pre class="language-javascript" tabindex="0"><code class="language-javascript code-highlight">private denormalizeSiteFunction = createCachedSelector(
     (state: AppReduxState) =&gt; state,
     (state: AppReduxState, siteNormalized: SiteNormalized | undefined) =&gt; siteNormalized,
     (state: AppReduxState, siteNormalized: SiteNormalized | undefined, orgNormalized: OrgNormalized | undefined) =&gt; orgNormalized, this.contactSelector, this.applianceSelector,
@@ -20,12 +20,12 @@
 </code></pre>
 <p>The quandary is to find a way to pass the state without having this one invalidating the selector when a change is done but keep having the function invalidated if any other selector in the parameter change. In the example posted, we want the site to denormalize to change if the normalized site change, or the organization the site belong change or a contact change or if an appliance change but not for all other selectors we have in the system, neither any data of the store.</p>
 <p>The idea is to build a custom input instead of relying on the shallow comparer that comes by default. It is possible to pass to the <em>createCachedSelector</em> an optional object with a <em>selectorCreator</em></p>
-<pre class="language-javascript"><code class="language-javascript code-highlight">{
+<pre class="language-javascript" tabindex="0"><code class="language-javascript code-highlight">{
   selectorCreator: this.createShallowEqualSelector;
 }
 </code></pre>
 <p>In my situation, it was a good opportunity to also have a feature to turn off completely the memoization. I always have an off switch to all my caching mechanism. It helps to debug and to preclude any issue with caching. To avoid impacting the memoization with the Redux's store, I am looking for specific children reducer and if they are present, I know that it is the head and I return true which mean that the parameter is equal and it will not invalidate the cache.</p>
-<pre class="language-javascript"><code class="language-javascript code-highlight">private createShallowEqualSelector = createSelectorCreator( defaultMemoize,
+<pre class="language-javascript" tabindex="0"><code class="language-javascript code-highlight">private createShallowEqualSelector = createSelectorCreator( defaultMemoize,
   (previous: any, next: any, index: number): boolean =&gt; {
     if (this.isCacheEnabled) {
       // 1) Check if head of Redux state

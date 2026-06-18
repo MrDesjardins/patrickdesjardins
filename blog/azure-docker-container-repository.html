@@ -7,14 +7,14 @@
 <h1>Uploading the images</h1>
 <p>I have the Dockerfiles on my Github repository (and locally). As a new user of Azure, I automatically thought that I could probably use many ways to push the image definition (Dockerfile). Probably by command line (Azure Command line tool) or by using <a href="https://docs.microsoft.com/en-us/azure/container-instances/container-instances-github-action">Github action</a>. Because, at this stage, I am looking to debug and explore, I do not want yet to have something automated. Browsing the Azure portal, I found a <em>Quick Start</em> that gives instructions using Docker.</p>
 <p>The first step is to log in with Docker to the Azure container registry we just created.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">docker login realtimepixel.azurecr.io
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">docker login realtimepixel.azurecr.io
 </code></pre>
 <p>The command asks for a user name. That step is confusing. The help mentions a login URI and credentials from the Access keys page. The Access page does not guide much, but a checkbox allows you to enable <code>Admin user</code>. Clicking the button reveals a user name and two passwords! Exactly what is needed! I got an error after pasting the password:</p>
 <blockquote>
 <p>Error response from daemon: Get "https:///v2/": http: no Host in request URL</p>
 </blockquote>
 <p>So, I did it again. It worked! Once you login it is time to tag an image. I also got some questions at that step since I am usually not tagging with <code>docker-compose</code> starting in dev always the latest version. A quick way to know what image you have built locally is to perform <code>docker images</code>. If there is none, you need to build your images. In my case, I am using <code>docker-compose build,</code> and it creates the three images.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">docker tag realtimepixel_redis realtimepixel.azurecr.io/realtimepixel_redis:latest
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">docker tag realtimepixel_redis realtimepixel.azurecr.io/realtimepixel_redis:latest
 docker tag realtimepixel_backend realtimepixel.azurecr.io/realtimepixel_backend:latest
 docker tag realtimepixel_frontend realtimepixel.azurecr.io/realtimepixel_frontend:latest
 </code></pre>
@@ -24,7 +24,7 @@ docker tag realtimepixel_frontend realtimepixel.azurecr.io/realtimepixel_fronten
 <p>After:</p>
 <p><img src="/images/blog/azure_container_docker_images_after.png" alt="" /></p>
 <p>Once the image id and tag are created for the containers, and they are linked to the Azure container registry, it is the type to push the image. Before, ensure that the images you tagged are from the right environment. For example, in my project, I am using multi-stage for development and production. Because we are uploading to Azure, in my case, it is production. Hence the environment variable must be set accordingly to my multi-stage configuration. Then, run <code>docker-compose build</code> and then the tag commands.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">docker push realtimepixel.azurecr.io/realtimepixel_redis
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">docker push realtimepixel.azurecr.io/realtimepixel_redis
 docker push realtimepixel.azurecr.io/realtimepixel_backend
 docker push realtimepixel.azurecr.io/realtimepixel_frontend
 </code></pre>

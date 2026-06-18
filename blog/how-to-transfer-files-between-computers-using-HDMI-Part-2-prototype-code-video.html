@@ -3,11 +3,11 @@
 <h1>Code</h1>
 <p>The Rust project has a CLI (terminal) application and a library. A user can use <code>cargo</code> to use the tool in the secured system. The CLI uses the library portion of the project. The library has two paths: injecting a file into a video and extracting the file from a video. Thus, we have the entire loop.</p>
 <p>The code takes a file with an input, asks for a few parameters, and a file to export the video. Here is an example of injecting a text file.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">hdmifiletransporter -m inject -i testAssets/text1.txt -o outputs/out1.avi --fps 30 --height 1080 --width 1920 --size 1
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">hdmifiletransporter -m inject -i testAssets/text1.txt -o outputs/out1.avi --fps 30 --height 1080 --width 1920 --size 1
 </code></pre>
 <p>In this example, the file <code>text1.txt</code> is injected into a file <code>out1.avi</code> that Rust creates using <code>OpenCV</code>. Other optional parameters, like the resolution and frame per second, can be added. However, these parameters should match the data found by the capture card. In the following article, we will use <code>ffmpeg</code> to extract the supported resolution and frame per second.</p>
 <p>The following command reads the video and produces the original file.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">hdmifiletransporter  -m extract -i outputs/out1.avi -o outputs/text1.txt --fps 30 --height 1080 --width 1920 --size 1
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">hdmifiletransporter  -m extract -i outputs/out1.avi -o outputs/text1.txt --fps 30 --height 1080 --width 1920 --size 1
 </code></pre>
 <p>The parameters are similar and should match the original value.</p>
 <h1>Injection Logic</h1>

@@ -18,7 +18,7 @@
 <li>A REST endpoint to list the services</li>
 <li>A WebSocket endpoint to stream logs for a specific systemd unit</li>
 </ul>
-<pre class="language-python"><code class="language-python code-highlight">@app.get("/api/services")
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">@app.get("/api/services")
 async def get_services() -&gt; JSONResponse:
     return JSONResponse([{"name": s.name, "unit": s.unit} for s in config.services])
 
@@ -38,7 +38,7 @@ async def ws_journal(websocket: WebSocket, unit: str) -&gt; None:
         pass
 </code></pre>
 <p>And a Python function to stream:</p>
-<pre class="language-python"><code class="language-python code-highlight">async def stream_journal(unit: str, lines: int) -&gt; AsyncGenerator[str, None]:
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">async def stream_journal(unit: str, lines: int) -&gt; AsyncGenerator[str, None]:
     process = await asyncio.create_subprocess_exec(
         "journalctl",
         "-u",
@@ -60,7 +60,7 @@ async def ws_journal(websocket: WebSocket, unit: str) -&gt; None:
         await process.wait()
 </code></pre>
 <p>On the client side, the application opens one WebSocket connection per service. There is additional UI logic, but the core behavior looks like this:</p>
-<pre class="language-js"><code class="language-js code-highlight">function connectWebSocket(service, logContainer, statusLine, indicator) {
+<pre class="language-js" tabindex="0"><code class="language-js code-highlight">function connectWebSocket(service, logContainer, statusLine, indicator) {
   const proto = location.protocol === "https:" ? "wss:" : "ws:";
   const ws = new WebSocket(`${proto}//${location.host}/ws/${service.unit}`);
 

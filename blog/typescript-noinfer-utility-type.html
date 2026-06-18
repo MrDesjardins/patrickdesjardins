@@ -2,7 +2,7 @@
 <h2>Why Use NoInfer?</h2>
 <p>The <code>NoInfer</code> is a utility type that narrowly scopes the type inference. The use case is when a generic has many options, and a second argument needs to be part of the first type.</p>
 <p>For example, let's have two functions: <code>countBefore</code> and <code>count</code>. Both functions take an array and a value to count. The <code>countBefore</code> function uses <code>T[]</code> and <code>T</code>. The <code>count</code> function uses <code>T[]</code> and <code>NoInfer&lt;T&gt;</code>. The <code>NoInfer</code> utility type prevents TypeScript from inferring the type of <code>T</code>. Meanwhing that the second argument must be a subset of the first argument and not inferring that it can be <em>any</em> type of the first argument. In the example below, the <code>count()</code> does not compile.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">type SetValue = 1|2|3|4|5;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">type SetValue = 1|2|3|4|5;
 
 function countBefore&lt;T extends SetValue&gt;(s:T[], p:T): void{
  console.log(s.filter(f=&gt;f ===p).length);

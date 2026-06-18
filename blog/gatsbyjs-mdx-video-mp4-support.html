@@ -2,19 +2,19 @@
 <h1>Pre-requisite</h1>
 <p>You need to have the <code>ffmpeg</code> open-source software installed on your local machine and on your deployment server (for example, Github Action).</p>
 <p>Depending on your configuration, it can mean different things. For example, here are the two lines for a Github Action for a <code>ubuntu-20.04</code>.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">- run: sudo apt update
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">- run: sudo apt update
 - run: sudo apt install ffmpeg
 </code></pre>
 <p>I'm developing on a MacOS; thus I had to run this command locally one time:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">brew install ffmpeg
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">brew install ffmpeg
 </code></pre>
 <h1>GastbyJS Configuration</h1>
 <p>The hardest part was figuring out how to configure the MDX file to load a video using a simple tag. For example, using something like:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">![](/videos/blog/myVideoHere.mp4)
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">![](/videos/blog/myVideoHere.mp4)
 </code></pre>
 <p>The first step is to have at the root of the <code>plugins</code> an entry for <code> "gatsby-plugin-ffmpeg"</code>. This will allow the auto-generation of optimized video formats.</p>
 <p>The second step is to have <strong>inside</strong> the <code>gatsby-plugin-mdx</code> plugin an option that will have itself plugin. The option must be under <code>gatsbyRemarkPlugins</code>. Here is a copy-paste:</p>
-<pre class="language-javascript"><code class="language-javascript code-highlight">"gatsby-plugin-ffmpeg",
+<pre class="language-javascript" tabindex="0"><code class="language-javascript code-highlight">"gatsby-plugin-ffmpeg",
     {
       resolve: `gatsby-plugin-mdx`,
       options: {

@@ -6,7 +6,7 @@
 <h1>What is the Similitude with TypeScript Iterable?</h1>
 <p>The main similitude is that the TypeScript Generator Functions rely on an object with a <code>next</code> function.</p>
 <p>Before elaborating on TypeScript Generator, let's define a simple example. In the <a href="/blog/understand-typeScript-iterator-and-iterable">TypeScript Iterator and Iterable</a> article, the first example was to iterate on a random amount of data.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">const myIterable: Iterable&lt;number&gt; = {
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">const myIterable: Iterable&lt;number&gt; = {
   [Symbol.iterator]: () =&gt; {
     let index = 0;
     const end = 3 + Math.random() * 7; // Max will be 10
@@ -35,7 +35,7 @@ for (const c of myIterable) {
 }
 </code></pre>
 <p>Let's migrate this example with a TypeScript generator function.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">function* myGenerator() {
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">function* myGenerator() {
   let index = 0;
   const end = 3 + Math.random() * 7; // Max will be 10
 
@@ -59,7 +59,7 @@ for (const c of myGenerator()) {
 <li>There is a bug in the code above!</li>
 </ol>
 <p>The bug in the function above is that the last index is never displayed by the <code>for of</code> loop. So let's change the code to clarify the bug.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">// Generator Function
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">// Generator Function
 function* myGenerator() {
   let index = 0;
   const end = 5;
@@ -88,7 +88,7 @@ console.log(g.next().value); // 5
 console.log(g.next().value); // undefined
 </code></pre>
 <p>The first time, the code prints with the loop. The console shows:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">Automatically
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">Automatically
 Value is: 0
 Value is: 1
 Value is: 2
@@ -96,7 +96,7 @@ Value is: 3
 Value is: 4
 </code></pre>
 <p>The second part shows that we manually call the <code>next().value</code>. The output shows the value <code>5</code>.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">Manually
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">Manually
 0
 1
 2
@@ -106,7 +106,7 @@ Value is: 4
 </code></pre>
 <h1>Injection of Values inside the Generator Function</h1>
 <p>In the <a href="/blog/understand-typeScript-iterator-and-iterable">TypeScript Iterator and Iterable</a> previous article, we discovered that a sibling function to  <code>next</code>, named <code>return</code>, allows to inject data back into the iterator. Similarly, the generator function has a mechanism to inject value inside the iterator. However, it is with the <code>yield</code> function this time. The following code demonstrates that we can alter the previous example and provide a value to the <code>next</code>. In this modification, when the <code>next</code> has a value, it is used as the incrementor instead of incrementing of <code>1</code>.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">function* myGenerator() {
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">function* myGenerator() {
   let index = 0;
   const end = 8;
 
@@ -130,7 +130,7 @@ console.log(g.next().value); // 8
 <h1>Injecting an Error Inside the Generator Function</h1>
 <p>Similarly to injecting value inside the generator function, it is possible has the consumer to notify the function that something is wrong by calling the <code>throw</code> function. Again, the goal is to inject logic when something goes wrong. For example, if your server crashes you should close the connection to the source that is yielding results.</p>
 <p>Here is a simple example: if there is an exception, the index returns to zero.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">function* myGenerator() {
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">function* myGenerator() {
   let index = 0;
   const end = 8;
 
@@ -165,7 +165,7 @@ console.log(g.next().value); // 2
 <p>Using an iterable/iterator approach or the generator function is a matter of preference. The generator function offers a syntactic shortcut to achieve the same goal. With the generator function, you avoid having to worry about <code>Symbol</code> and define up to three functions (next, throw, return) and work with the object that has the value and state of the iterator.</p>
 <h1>Performance</h1>
 <p>A glance suggests that an infinite data stream may cause the system to fall into a stack overflow or take all the computer resources. However, generator functions are lazily evaluated. A lazily evaluated code means that the execution of the code only happens when the code is actively invoked. In the case of the generator function, the code is only executed when someone calls <code>next</code>. Indeed, if we are running inside a <code>for of</code> loop, it would result in some performance issues as the code will continually call the <code>yield</code>. However, the following code is fine if the consumer calls it at a reasonable pace.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">function* myGenerator() {
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">function* myGenerator() {
   let index = 0;
 
   while (true) {
@@ -175,12 +175,12 @@ console.log(g.next().value); // 2
 }
 </code></pre>
 <p>The reason is that the loop goes into an iteration only when the consumer call the <code>next</code></p>
-<pre class="language-ts"><code class="language-ts code-highlight">const g = myGenerator();
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">const g = myGenerator();
 console.log(g.next().value); // 0
 console.log(g.next().value); // 1
 </code></pre>
 <p>Thus, the code is looping twice and not infinitely. Using the same generator function, we can loop for ten milliseconds and see hundreds of iteration before the generator stop yielding and wait for a future call.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">const g = myGenerator();
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">const g = myGenerator();
 const t = Date.now();
 while (Date.now() - t &lt; 10) {
   console.log(g.next().value);

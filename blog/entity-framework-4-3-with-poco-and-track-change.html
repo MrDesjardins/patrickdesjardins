@@ -2,7 +2,7 @@
 <p>The version 4.3 of EF contain a property Configuration where you can set the LazyLoading, the ProxyCreation, the AutoDetectChange and the ValidateOnSave. By default, all these options are to True.</p>
 <p><img src="/images/blog/dbContextAllTrue-400x77.png" alt="" /></p>
 <p>Here is an example that I have disable the Lazy Loading and also disable the Proxy Creation.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">var dbContext = new MyDbContext(connectionString); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">var dbContext = new MyDbContext(connectionString); 
 dbContext.Configuration.LazyLoadingEnabled = false; 
 dbContext.Configuration.ProxyCreationEnabled = false; 
 dbContext.Configuration.AutoDetectChangesEnabled = true; 
@@ -17,14 +17,14 @@ foreach (var c in myObjects) {
 dbContext.SaveChanges(); 
 </code></pre>
 <p>This will automatically update the field UpdateDate to the database. If AutoDetectChange is to False, the DbContext won't be notified that a change is been made.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">dbContext.Configuration.LazyLoadingEnabled = false; 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">dbContext.Configuration.LazyLoadingEnabled = false; 
 dbContext.Configuration.ProxyCreationEnabled = false; 
 dbContext.Configuration.AutoDetectChangesEnabled = true; 
 dbContext.Configuration.ValidateOnSaveEnabled = false; 
 </code></pre>
 <p>The code above won't update to the database when executing <code>dbContext.SaveChanges()</code>.</p>
 <p>If you want to do it manually, you will need to call the <code>dbContext.ChangeTracker.DetectChanges()</code>.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">var dbContext = new MyDbContext(connectionString); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">var dbContext = new MyDbContext(connectionString); 
 dbContext.Configuration.LazyLoadingEnabled = false; 
 dbContext.Configuration.ProxyCreationEnabled = false; 
 dbContext.Configuration.AutoDetectChangesEnabled = false; 
@@ -39,7 +39,7 @@ dbContext.SaveChanges();
 </code></pre>
 <p>As you can see at the line 12, we need to call it explicitly.</p>
 <p>You can see the state of each object object by looping into the ChangeTracker.Entries().</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">var e = dbContext.ChangeTracker.Entries(); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">var e = dbContext.ChangeTracker.Entries(); 
 foreach (var dbEntityEntry in e) { 
   Console.WriteLine(dbEntityEntry.State); 
 } 

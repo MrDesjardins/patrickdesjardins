@@ -9,7 +9,7 @@
 <p><img src="/images/blog/complextypewithproperties.png" alt="" /></p>
 <p>Once the complex type is created, it's possible to add it as a complex property. Right clicking on the entity and selecting add and complex property. The last step is to select the complex property and to go to the property window to select the type of the created type.</p>
 <p>From here, it's possible to access the complex property and will be even in the Intellisense.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">var db = new AdventureWorks_DataEntities(); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">var db = new AdventureWorks_DataEntities(); 
 var aSingleDepartment = db.DepartmentList.Where(dept =&gt; dept.DepartmentID == 1).FirstOrDefault&lt;Department&gt;(); 
 int theIntegerPropertyOfMyComplexPropertyOfDepartment = aSingleDepartment.MyComplexProperty.MyFirstIntProperty; 
 </code></pre>

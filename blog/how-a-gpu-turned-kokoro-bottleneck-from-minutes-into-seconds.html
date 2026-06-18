@@ -13,10 +13,10 @@
 <li>Introduction to Ethics</li>
 </ol>
 <p>Each lesson went through the same staged pipeline:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">  collect -&gt; normalize -&gt; script -&gt; flashcards -&gt; audio -&gt; video -&gt; upload
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">  collect -&gt; normalize -&gt; script -&gt; flashcards -&gt; audio -&gt; video -&gt; upload
 </code></pre>
 <p>The completed production timing totals were:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">  ┌────────────────────┬────────────┐
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">  ┌────────────────────┬────────────┐
   │ Stage              │ Total Time │
   ├────────────────────┼────────────┤
   │ Audio / Kokoro TTS │   94.9 min │
@@ -31,7 +31,7 @@
 <p>Audio synthesis alone accounted for roughly 83% of the measured pipeline time. Everything else was comparatively small.</p>
 <h2>Per-Lesson Runtime</h2>
 <p>The slowest lessons were also the ones with longer narration:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">  ┌───────────────────────────────────────────┬─────────────────────┐
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">  ┌───────────────────────────────────────────┬─────────────────────┐
   │ Lesson                                    │ Total Pipeline Time │
   ├───────────────────────────────────────────┼─────────────────────┤
   │ Intro Descartes I think, therefore I am   │            19.7 min │
@@ -47,14 +47,14 @@
 <h2>The Benchmark</h2>
 <p>To test that, I took one real production script: "Intro Plato Allegory of the Cave." In production on the mini-pc, its Kokoro audio stage took 478.6 seconds. The generated audio was 302.675 seconds long, just over five minutes.</p>
 <p>Then I copied the exact same script and ran Kokoro locally on a machine with an NVIDIA GeForce RTX 5080, using the same Kokoro settings:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">  voice: af_heart
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">  voice: af_heart
   language code: a
   speed: 1.0
   script length: 837 words
   audio duration: 302.675 seconds
 </code></pre>
 <p>The result was dramatic.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">  ┌─────────────────────────────────────────────────────────────┬────────┐
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">  ┌─────────────────────────────────────────────────────────────┬────────┐
   │ Environment                                                 │   Time │
   ├─────────────────────────────────────────────────────────────┼────────┤
   │ Mini-pc CPU production audio stage                          │ 478.6s │
@@ -85,7 +85,7 @@
 <li>Sources: GPT-4o mini <a href="https://developers.openai.com/api/docs/models/gpt-4o-mini-tts">TTS model pricing</a>, <a href="https://openai.com/api/pricing/">OpenAI API pricing</a></li>
 </ul>
 <p>For our 7 generated lessons, production audio durations were:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">  ┌────────────────────┬──────────────┐
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">  ┌────────────────────┬──────────────┐
   │ Lesson             │ Audio Length │
   ├────────────────────┼──────────────┤
   │ What is Philosophy │     8.98 min │
@@ -99,10 +99,10 @@
 </code></pre>
 <p>Total generated audio: about 62.66 minutes.</p>
 <p>Estimated <code>gpt-4o-mini-tts</code> output cost:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">  62.66 min * $0.015/min = $0.94
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">  62.66 min * $0.015/min = $0.94
 </code></pre>
 <p>Input text cost is tiny. The 7 scripts total about 59,761 characters / 9,429 words. Roughly estimating 12k-15k input tokens:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">  ~15,000 tokens * $0.60 / 1,000,000 = ~$0.009
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">  ~15,000 tokens * $0.60 / 1,000,000 = ~$0.009
 </code></pre>
 <p>So the full 7-lesson batch would be roughly:</p>
 <p>~$0.95 total</p>

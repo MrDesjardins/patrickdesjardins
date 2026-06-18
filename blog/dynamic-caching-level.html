@@ -2,7 +2,7 @@
 <p>The dynamic lookup is performed at runtime with 3 different ways. First, it checks if the last dynamic methods and arguments type correspond to the last call. If yes, it will reuse the compiled code. This is very fast, as fast as using something not dynamic minus the little extra step of validation.</p>
 <p>The second way is to check into the complete list of dynamic code that has been called to find a method signature corresponding. This is also very fast. If it found something, it will update the last called method to be faster next time otherwise, it will goes into the last step.</p>
 <p>The last step is so build the method call and to update the list of methods. The pseudo code of the logic is like that:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">if (lastMethod = currentOneInvoked) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">if (lastMethod = currentOneInvoked) { 
   Invoke(currentOneInvoked); 
 } else if(listMethod.Find(currentOneInvoked)) { 
   Invoke(currentOneInvoked); 

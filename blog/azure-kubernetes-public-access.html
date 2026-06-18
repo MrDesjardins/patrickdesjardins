@@ -9,10 +9,10 @@
 <p>The backend and Redis services are of type <code>NodePort</code>, and the frontend service is of type <code>LoadBalancer</code>. That is one key point in allowing the frontend server to be accessible outside your controlled Kubernetes environment. In the Azure portal, you can see the IP if you go under your Kubernetes Service, and click <em>Services and ingresses</em>.</p>
 <p><img src="/images/blog/azure_services_external_ip.png" alt="" /></p>
 <p>It is also possible to get the same information with the <code>kubectrl</code>:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">kubectl get services -n realtimepixel-prod
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">kubectl get services -n realtimepixel-prod
 </code></pre>
 <p>Which should give something in this format:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">NAME               TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)          AGE
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">NAME               TYPE           CLUSTER-IP     EXTERNAL-IP     PORT(S)          AGE
 backend-service    NodePort       10.0.232.135   &lt;none&gt;          80:30606/TCP     10d
 frontend-service   LoadBalancer   10.0.208.65    20........ .6   80:30194/TCP     10d
 redis-service      NodePort       10.0.172.49    &lt;none&gt;          6379:30408/TCP   10d
@@ -20,7 +20,7 @@ redis-service      NodePort       10.0.172.49    &lt;none&gt;          6379:3040
 <p>If your code is working well on all your pods under all these services, the IP will provide your web application. Same thing if you use the frontend to perform an API call using the <code>/api</code>; it will work. However, if one pod is in a bad state, it will not work but still provide you with an IP. I was stubborn, and though I had a Kubernetes issue while I had a code issue. In my case, environment variables were not properly passed. If the link (ip and port) is not providing your the expected result, it is important to not assume that the code is executing properly. Maybe the pod is not crashing but the actual code is not executing the server as expected.</p>
 <h1>Static IP for the frontend service</h1>
 <p>In this step, we will assign a static IP to the frontend. The IP is still not using an ingress but shows how to have permanent access to the frontend.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">az aks show \
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">az aks show \
   --resource-group realtimepixel_resourcegroup \
   --name realpixelask2 \
   --query nodeResourceGroup \
@@ -38,7 +38,7 @@ az network public-ip create \
 <p>On the Microsoft Azure Portal, we can see the new entry under the <em>Public IP addresses</em> service.</p>
 <p><img src="/images/blog/azure_publicip.png" alt="" /></p>
 <p>Update the frontend service Helm chart to receive a new annotation and the new IP.</p>
-<pre class="language-yml"><code class="language-yml code-highlight">apiVersion: v1
+<pre class="language-yml" tabindex="0"><code class="language-yml code-highlight">apiVersion: v1
 kind: Service
 metadata:
   {{- with .Values.frontend.annotations }}
@@ -59,7 +59,7 @@ spec:
     app: {{ .Values.frontendContainerName }}
 </code></pre>
 <p>and inside the value.yml file:</p>
-<pre class="language-yml"><code class="language-yml code-highlight">frontend:
+<pre class="language-yml" tabindex="0"><code class="language-yml code-highlight">frontend:
   annotations: {
     "service.beta.kubernetes.io/azure-load-balancer-resource-group": "MC_realtimepixel_resourcegroup_realpixelask2_eastus"
   }
@@ -68,15 +68,15 @@ azureLoadBalancerIP: "20.121.6.121"
 <p>The change will make the frontend service IP remain static regardless of any other new deployment that would have changed the service IP. Still, at this point, who still does not have a domain (DNS) attached to the service? Nor do we have an HTTPS certificate (TLS/SSL).</p>
 <h1>Set an Azure DNS address to the static IP</h1>
 <p>Let's find the unique id of the public IP created in the previous step.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">az network public-ip list \
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">az network public-ip list \
   --query "[?ipAddress!=null]|[?contains(ipAddress, '20.121.6.121')].[id]" \
   --output tsv
 </code></pre>
 <p>The result:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">/subscriptions/972d99d7-1ce0-4e2a-881b-43969768a358/resourceGroups/mc_realtimepixel_resourcegroup_realpixelask2_eastus/providers/Microsoft.Network/publicIPAddresses/realtimepixel_public_ip_ingress
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">/subscriptions/972d99d7-1ce0-4e2a-881b-43969768a358/resourceGroups/mc_realtimepixel_resourcegroup_realpixelask2_eastus/providers/Microsoft.Network/publicIPAddresses/realtimepixel_public_ip_ingress
 </code></pre>
 <p>Apply the DNS <code>realtimepixel</code> for the ip:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">az network public-ip update \
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">az network public-ip update \
   --ids /subscriptions/972d99d7-1ce0-4e2a-881b-43969768a358/resourceGroups/mc_realtimepixel_resourcegroup_realpixelask2_eastus/providers/Microsoft.Network/publicIPAddresses/realtimepixel_public_ip_ingress \
   --dns-name realtimepixel
 </code></pre>

@@ -10,7 +10,7 @@
 <h1>Scaling</h1>
 <p>The problem with the actual code is that we have Box 1 and Box 2 that are swapping. However, it does not scale well if we have 10 boxes which has two states meaning 20 configurations.</p>
 <p>Let's change our TypeScript interface, our model, to support a collection of Box that has two states.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export interface BoxInfo {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export interface BoxInfo {
   left: number;
   top: number;
   width: number;
@@ -28,7 +28,7 @@ export interface BoxProps {
 }
 </code></pre>
 <p>Creating two differents boxes can be done using a collection:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const data = {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const data = {
   boxInfos: [
     {
       name: "Alpha",
@@ -64,7 +64,7 @@ export interface BoxProps {
 };
 </code></pre>
 <p>and the mounting and unmounting</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">&lt;div className="Main"&gt;
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">&lt;div className="Main"&gt;
   &lt;div className="BoxContainer"&gt;
     {data.boxInfos.map((box, index) =&gt; {
       return box1 ? (
@@ -81,7 +81,7 @@ export interface BoxProps {
 <p>Still, something is off. First, the initial/animate/exit is repetitive regardless of the unique feature of each box. The next step will be to extract the commonality between the two.</p>
 <p><img src="/images/blog/framermotion-reverted-code.png" alt="" /></p>
 <p>The wrapper is called <code>BoxWrapper</code> and has the role to handle the position and dimension of the actual React component.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export default function App() {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export default function App() {
   const [firstState, setFirstState] = useState(true);
   return (
     &lt;div className="App"&gt;
@@ -105,7 +105,7 @@ export interface BoxProps {
 </code></pre>
 <h1>Improving React Framer Motion Translation</h1>
 <p>There is still quite a bit of redundancy in the <code>BoxWrapper</code> and a loading animation that is not needed. Let's take a look of the component:</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export interface BoxWrapperProps {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export interface BoxWrapperProps {
   firstState: boolean;
   boxState: BoxState;
 }
@@ -141,7 +141,7 @@ export const BoxWrapper = (props: PropsWithChildren&lt;BoxWrapperProps&gt;) =&gt
 };
 </code></pre>
 <p>The redundancy part is between <code>initial</code> and <code>exit</code> are the same. We can extract the boundary information outside the <code>&lt;motion.div&gt;</code>. Actually, Framer Motion has the concept of <code>variants</code> that we can leverage in that particular case.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export const BoxWrapper = (props: PropsWithChildren&lt;BoxWrapperProps&gt;) =&gt; {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export const BoxWrapper = (props: PropsWithChildren&lt;BoxWrapperProps&gt;) =&gt; {
   const init = props.firstState ? props.boxState.state1 : props.boxState.state2;
   const ani = props.firstState ? props.boxState.state2 : props.boxState.state1;
   const variants: Variants = {
@@ -175,7 +175,7 @@ export const BoxWrapper = (props: PropsWithChildren&lt;BoxWrapperProps&gt;) =&gt
 };
 </code></pre>
 <p>To fix the first mounting animation that start from the state 2 toward state 1, we need to not have an <code>initial</code> state. Instead, setting to <code>false</code> will skip the animation and go directly to the <code>animate</code> end result.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export const BoxWrapper = (props: PropsWithChildren&lt;BoxWrapperProps&gt;) =&gt; {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export const BoxWrapper = (props: PropsWithChildren&lt;BoxWrapperProps&gt;) =&gt; {
   const init = props.firstState ? props.boxState.state2 : props.boxState.state1;
   const ani = props.firstState ? props.boxState.state1 : props.boxState.state2;
 

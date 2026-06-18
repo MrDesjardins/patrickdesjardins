@@ -6,13 +6,13 @@
 <p>The last step is to create the Object Context. This is required because we have removed previously the generation of it. To do, you need to create a new class that inherit the base class <code>ObjectContext</code>. Don't forget to add <code>using System.Data.Objects;</code> at the top of the file to be able to see <code>ObjectContext</code>.</p>
 <p>So, here is the code.</p>
 <p>Region class:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class Region { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class Region { 
    public Int32 RegionID { get; set; } 
    public string RegionDescription { get; set; } 
 } 
 </code></pre>
 <p>The Object Context class:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class NorthwindObjectContext:ObjectContext { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class NorthwindObjectContext:ObjectContext { 
   private ObjectSet&lt;Region&gt;_Region;
 
   public NorthwindObjectContext() : base("name=NorthwindEntities", "NorthwindEntities") { 
@@ -30,7 +30,7 @@
 } 
 </code></pre>
 <p>Finally, to test, I added a page with a paragraph and showed the first region description:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">NorthwindObjectContext db = new NorthwindObjectContext(); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">NorthwindObjectContext db = new NorthwindObjectContext(); 
 TextBlock.InnerText = db.Regions.Where(region =&gt; region.RegionID == 1).FirstOrDefault().RegionDescription; 
 </code></pre>
 <p>They are two errors that can appear to you if you try this code :</p>

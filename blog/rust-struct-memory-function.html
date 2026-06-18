@@ -1,13 +1,13 @@
 <!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Patrick Desjardins Blog - Rust: Structure Memory when Using a Function</title><meta name="description" content="Rust: Structure Memory when Using a Function"><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-CZbWyyk4.css"><link rel="stylesheet" href="/assets/static-modules.css"></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><header><h1 class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</h1><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main class="app_blog__components_BlogBody__main"><h2 class="app_blog__components_BlogBody__heading">Rust: Structure Memory when Using a Function</h2><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: 2022-11-04</p><p>I recently learned about the tool called <code>clippy</code> that is available if you use <code>cargo</code>. It provides lint information on your Rust code to ensure you are using good practices but also helps to use Rust idiomatic and consistent code. For example, one recommendation was to not use <code>.clone()</code> on one of my structures. The suggestion made me think. I was passing the structure into a few functions, and I wanted to ensure no function was modifying the content.</p>
 <p>Coming from a JavaScript/TypeScript background, I am cloning and passing the clone to have immutability. However, in Rust, passing a structure in a function does not give a reference in memory to that structure. Nor that passing a structure into a function allows the function to mutate. Rust has two explicit keywords: <code>mut</code> and <code>&amp;</code> to allow mutation and to pass by reference.</p>
 <p>Here is a short code that illustrates how a structure is preserved. But, first, let's create a structure.</p>
-<pre class="language-rust"><code class="language-rust code-highlight">#[derive(Copy, Clone)]
+<pre class="language-rust" tabindex="0"><code class="language-rust code-highlight">#[derive(Copy, Clone)]
 struct Test {
     x: u32
 }
 </code></pre>
 <p>Second, let's create a <code>main</code> function that will create a structure we do not want to modify.</p>
-<pre class="language-rust"><code class="language-rust code-highlight">fn main() {
+<pre class="language-rust" tabindex="0"><code class="language-rust code-highlight">fn main() {
     // Create value and print its memory address
     let t = Test {x:1};
     println!("Original t: {:p}", &amp;t);
@@ -21,7 +21,7 @@ struct Test {
 }
 </code></pre>
 <p>The <code>main</code> function calls the <code>mutate</code> and returns a new instance of the struct. The expectation is that <code>t</code> remains with the value <code>1</code> and that the returned value will be <code>100</code>.</p>
-<pre class="language-rust"><code class="language-rust code-highlight">fn mutate(t_param: Test) -&gt;Test {
+<pre class="language-rust" tabindex="0"><code class="language-rust code-highlight">fn mutate(t_param: Test) -&gt;Test {
     // Create a variable that is `x` but marked that it can be mutated
     let mut new_test = t_param;
 
@@ -36,7 +36,7 @@ struct Test {
 </code></pre>
 <p>The <code>mutate</code> function cannot change the value of <code>t_param.x</code> without the <code>mut</code> keyword. Rust will throw a compilation error saying that the variable must be mutable. Adding <code>mut</code> to a new variable creates new variables. The memory prints below the assignment show two addresses, which means that the variable passed by the parameter (<code>t_param</code>) is not using the same memory as <code>new_test</code>.</p>
 <p>The program prints:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">Original t: 0x7ffcc6ba0e94
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">Original t: 0x7ffcc6ba0e94
 t_param:    0x7ffcc6ba0dc0
 new_test:   0x7ffcc6ba0dc4
 1
@@ -44,16 +44,16 @@ new_test:   0x7ffcc6ba0dc4
 </code></pre>
 <h1>Moving Ownership</h1>
 <p>In the <code>mutate</code> function, we moved ownership to another variable by assigning the parameter to a new variable.</p>
-<pre class="language-rust"><code class="language-rust code-highlight">let mut new_test = t_param;
+<pre class="language-rust" tabindex="0"><code class="language-rust code-highlight">let mut new_test = t_param;
 </code></pre>
 <p>The ownership is not transferred because of <code>mut</code></p>
 <p>The same occurs when we assign a variable to a function by parameter. For example, moves ownership in the following code:</p>
-<pre class="language-rust"><code class="language-rust code-highlight">let new_test = t_param;
+<pre class="language-rust" tabindex="0"><code class="language-rust code-highlight">let new_test = t_param;
 </code></pre>
 <p>The reason is to avoid having two or more variables with a pointer to a space in memory. It avoids bugs.</p>
 <p>The consequence of moving the ownership is that the former variable cannot access anything from the object.</p>
 <p>Let's modify the former example and see:</p>
-<pre class="language-rust"><code class="language-rust code-highlight">fn main() {
+<pre class="language-rust" tabindex="0"><code class="language-rust code-highlight">fn main() {
     let mut t = Test {x:1};
     let mut new_test = t;
     println!("t_param: {}", t.x);
@@ -69,7 +69,7 @@ new_test:   0x7ffcc6ba0dc4
 }
 </code></pre>
 <p>The output is:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">t_param: 1
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">t_param: 1
 new_test: 1
 t_param: 2
 new_test: 1000
@@ -79,14 +79,14 @@ new_test: 0x7ffd03e227f4
 <p>We can see that the <code>t_param</code> and <code>new_test</code> can adjust the <code>x</code> without affecting each other.</p>
 <h1>Function Parameter</h1>
 <p>What small detail that may have gone unnoticed is the trait above the struct <code>#[derive(Copy, Clone)]</code>. This is required to pass the structure in a function otherwise would create a compilation error with a <code>borrow of moved value</code> message. The <code>copy</code> trait is required because, unlike primitive types, they are copied by default. The <code>clone</code> is required because of the <code>copy</code> trait. You can quickly see what I am saying by clicking in VSCode on the <code>copy</code>, which will lead you to the source code of the trait, and you will see:</p>
-<pre class="language-rust"><code class="language-rust code-highlight">#[rustc_unsafe_specialization_marker]
+<pre class="language-rust" tabindex="0"><code class="language-rust code-highlight">#[rustc_unsafe_specialization_marker]
 #[rustc_diagnostic_item = "Copy"]
 pub trait Copy: Clone {
     // Empty.
 }
 </code></pre>
 <p>We can step back and have the code (without trait on the struct). Then, we realize the code does not comply with the <code>borrow of moved value</code>.</p>
-<pre class="language-rust"><code class="language-rust code-highlight">struct Test {
+<pre class="language-rust" tabindex="0"><code class="language-rust code-highlight">struct Test {
     x: u32
 }
 
@@ -99,12 +99,12 @@ fn main() {
 </code></pre>
 <p>Adding <code>#[derive(Copy, Clone)]</code> makes the compiler happy. Once again, the reason is that we are moving from <code>t</code> to <code>new_test</code>, which does a copy.</p>
 <p>The output is with two different addresses:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">t_param: 0x7ffda950bdb0
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">t_param: 0x7ffda950bdb0
 new_test: 0x7ffda950bdb4
 </code></pre>
 <h1>Reference a.k.a. borrowing</h1>
 <p>Sometimes, you may want to pass more than one variable without making copies. For example, you are giving a reference, or in the Rust's lingo, is to borrow, which cause an alias to the source of truth. However, there are some additional rules. For example, borrowing into a mutable variable with <code>&amp;mut</code> is only possible once per scope, a.k.a. lifetime. So, for example, you can <code>&amp;mut</code> in a function once and do it again in another function.</p>
-<pre class="language-rust"><code class="language-rust code-highlight">#[derive(Copy, Clone)]
+<pre class="language-rust" tabindex="0"><code class="language-rust code-highlight">#[derive(Copy, Clone)]
 struct Test {
     x: u32
 }
@@ -125,7 +125,7 @@ fn display(new_test: &amp;mut Test){
 }
 </code></pre>
 <p>In this example, the output of add the addresses is the same:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">t_param: 1
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">t_param: 1
 t_param: 0x7ffc5187bd64
 Function x value: 1000
 Function struct ref address: 0x7ffc5187bd64

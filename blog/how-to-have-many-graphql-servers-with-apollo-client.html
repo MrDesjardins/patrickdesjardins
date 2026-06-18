@@ -1,6 +1,6 @@
 <!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Patrick Desjardins Blog - How to have many GraphQL server with Apollo Client?</title><meta name="description" content="How to have many GraphQL server with Apollo Client?"><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-CZbWyyk4.css"><link rel="stylesheet" href="/assets/static-modules.css"></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><header><h1 class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</h1><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main class="app_blog__components_BlogBody__main"><h2 class="app_blog__components_BlogBody__heading">How to have many GraphQL server with Apollo Client?</h2><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: 2023-02-09</p><h1>Introduction</h1>
 <p>Apollo client and React are two popular libraries and an excellent combination for fetching GraphQL data from a server into a web application. The well-documented approach is to use the Apollo Client and then the Apollo React Context.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">const client = new ApolloClient({
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">const client = new ApolloClient({
   uri: "//yourgraphqlserver_1/graphql",
   cache: new InMemoryCache(),
 });
@@ -19,25 +19,25 @@ root.render(
 <p>Unfortunately, you cannot define more than one <code>ApolloProvider</code> on the client-side library. At runtime, you will stumble to an exception. It makes sense to have all the hooks read to the client. Having several providers would need to be clearer for the hook to decide which client to connect without incrementing the complexity of each hook with some further knowledge on which client to connect. Ultimately, it does not work out of the box -- we need another solution.</p>
 <h1>How to Configure React Apollo Client to Communicate to Many GraphQL server?</h1>
 <p>The solution is within the ApolloClient object. The <code>uri</code> must be dynamic. Instead of defining a hardcoded <code>uri</code>, you define a function. On each call, the function will be called.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">const client = new ApolloClient({
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">const client = new ApolloClient({
   ...: getGraphQLServerURI(),
   cache: new InMemoryCache(),
 });
 </code></pre>
 <p>The function to determine which GraphQL server is up to you, but I found an excellent way to keep it simple: operation name. The idea is to rely on prefixes. For example, if you have two GraphQL servers, one for your CRM and one for your Orders. You can have a rule that if an operation starts with <code>CRM_</code> that it connects to the CRM GraphQL and if it begins with <code>ORDERS_</code> that it goes to the other GraphQL server.</p>
 <p>A challenge is to get the operation name to the function. I did not set the function to a specific property in the previous code snippet. The reason is that instead of using the <code>uri</code> property, we will rely on the <code>link</code> property, which is dynamic with more options to read to extract the operation name.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">const client = new ApolloClient({
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">const client = new ApolloClient({
   link: getGraphQLServerlink()
   cache: new InMemoryCache(),
 });
 </code></pre>
 <p>Then, the function can return an <code>ApolloLink</code> instead of a string.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">export function getGraphQLServerURI(): ApolloLink {
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">export function getGraphQLServerURI(): ApolloLink {
   // Snip
 }
 </code></pre>
 <p>The function can use the <code>createHttpLink</code> that the Apollo library has to craft the Link.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">import { ApolloLink, createHttpLink } from "@apollo/client";
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">import { ApolloLink, createHttpLink } from "@apollo/client";
 export function getGraphQLServerURI(): ApolloLink {
   return createHttpLink({
     // Snip
@@ -45,7 +45,7 @@ export function getGraphQLServerURI(): ApolloLink {
 }
 </code></pre>
 <p>The object you need to pass to the <code>createHttpLink</code> is the one that determines how and where to perform the HTTP request. The "how" is interesting because we will override the <code>fetch</code> method to achieve the POST request. It looks like a more significant task than it is.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">import { ApolloLink, createHttpLink } from "@apollo/client";
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">import { ApolloLink, createHttpLink } from "@apollo/client";
 export function getGraphQLServerURI(): ApolloLink {
   return createHttpLink({
     fetch: (input: RequestInfo | URL, options?: RequestInit) =&gt; {
@@ -56,7 +56,7 @@ export function getGraphQLServerURI(): ApolloLink {
 }
 </code></pre>
 <p>In the code above, we are creating the <code>ApolloLink</code> but performing no logic; we are passing through the <code>input</code> without manipulating the <code>uri</code>. However, it solves the "how". Now, let's define "where" to fetch the data among our GraphQL server. First, we need to read the request to get the body which contains several elements like the query, the variables, and the operation name.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">import { ApolloLink, createHttpLink } from "@apollo/client";
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">import { ApolloLink, createHttpLink } from "@apollo/client";
 export function getGraphQLServerURI(): ApolloLink {
   return createHttpLink({
     fetch: (input: RequestInfo | URL, options?: RequestInit) =&gt; {

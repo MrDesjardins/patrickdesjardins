@@ -3,7 +3,7 @@
 <p>The topic of map is controversal in GraphQL because the GraphQL standard does <a href="https://github.com/graphql/graphql-spec/issues/101">not support the idea of a key-value</a> structure. In some language it is called a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map">Map</a>, in some other it is called a <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.dictionary-2?view=net-6.0">Dictionary</a>.</p>
 <h1>Example</h1>
 <p>Before getting into a concrete solution, let's define a structure of the types that will help us determine what a request and a response would look like for each solution.</p>
-<pre class="language-graphql"><code class="language-graphql code-highlight">type City {
+<pre class="language-graphql" tabindex="0"><code class="language-graphql code-highlight">type City {
   name: String!
   citizens: [Person!]
   # Need a map from PersonID -&gt; House
@@ -27,14 +27,14 @@ type Person {
 <p>Finally, the <code>Person</code> entity has few properties but can also have a <code>House</code> optionally.</p>
 <h1>Solution #1: Store the Map into a Single String</h1>
 <p>A solution is to store the whole map in a single string. The concept is to mark the map as a string and serialize the entire map into a string.</p>
-<pre class="language-graphql"><code class="language-graphql code-highlight">type City {
+<pre class="language-graphql" tabindex="0"><code class="language-graphql code-highlight">type City {
   name: String!
   citizens: [Person!]
   personToHouse: String!
 }
 </code></pre>
 <p>From the GraphQL server-side point of view, it is simple: you serialize the whole map. For example, if you are using Java:</p>
-<pre class="language-java"><code class="language-java code-highlight">ObjectMapper mapper = new ObjectMapper();
+<pre class="language-java" tabindex="0"><code class="language-java code-highlight">ObjectMapper mapper = new ObjectMapper();
 String jsonResult = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
 </code></pre>
 <p>If you are building the GraphQL server is TypeScript, you take the whole map and call <code>JSON.stringify()</code> if you are using a JS Object or use <a href="https://stackoverflow.com/questions/29085197/how-do-you-json-stringify-an-es6-map">something more complex</a> if you are using the ES6 Map. In all cases, it is pretty straightforward.</p>
@@ -43,12 +43,12 @@ String jsonResult = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(m
 <p>From the GraphQL client-side, it gets tricky.</p>
 <h3>Limitation #1: Un-Document the Graph</h3>
 <p>First of all, you need <em>to know</em> that the string is a structure that must be deserialized. Suddenly, the concept breaks one of the strengths of GraphQL. There is always the possibility to create a custom scalar to differentiate a JSON structure from a String. The problem is that their JSON can still be from any shape, and without performing the query and observing, it is impossible to know from the client-side. Also, if the structure changes depending on external factors, nasty surprises can occur on the consumption side.</p>
-<pre class="language-graphql"><code class="language-graphql code-highlight">scalar JSON
+<pre class="language-graphql" tabindex="0"><code class="language-graphql code-highlight">scalar JSON
 </code></pre>
 <p>Furthermore, the client-side must deserialize the content of the string properly. Beyond executing the deserialization, it implies handling the <code>JSON</code> scalar with a custom CodeGen policy and using a <code>typePolicies</code> for Apollo <code>InMemoryCache</code> if you want a clean solution does not make the client-side have custom management of the <code>JSON</code> type at each server calls. In this previous article, you can read more about <a href="typescript-codegen-graphql-custom-scalar">CodeGen and Apollo Custom Scalar</a>. The one-liner is: that it is not simple for the consumer, and the solution varies depending on the consumer technologies to query the GraphQL server.</p>
 <h3>Limitation #2: Reduce Discovery and Remove Fields Picking</h3>
 <p>Second, there is a typing issue. The generated type of <code>City</code> will have a property <code>personToHouse</code> of <code>String</code>. It is impossible to specify which property you want to consume.</p>
-<pre class="language-graphql"><code class="language-graphql code-highlight">query SolutionOne {
+<pre class="language-graphql" tabindex="0"><code class="language-graphql code-highlight">query SolutionOne {
   city(name: "SanJose") {
     personToHouse { # 🛑 Error
       name # 🛑 Error
@@ -62,14 +62,14 @@ In this image, the server-side engineer can cut in many places the tree. A decis
 <p>As you can see, there are many ways not to return the whole graph, which in many cases is not practical. The consequence is an inconsistency for the consumers. Depending on the map, the returned payload will have a different granularity of information. Removing the power to pick which field desire in the response payload is against GraphQL mentality. It is also prone to error and forces the consumer to perform additional queries to get the assemble of information needed -- it brings us back to the REST API style of consumer patterns.</p>
 <h3>Limitation #3: No Generated Type</h3>
 <p>Third, Suppose you are using <a href="how-to-automatically-generate-typescript-for-consumer-of-your-graphql">CodeGen</a> to generate your TypeScript from your GraphQL to have all your type generated for you. In that case, you will be out of luck. Of course, you can coarse the return value of the <code>JSON.parse</code> to the generated type of <code>Person</code> but that is wrong. The actual type of the map should be what the user picked. In GraphQL, it could be an explicit fragment or a subset of fields but rarely the complete list of properties.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const { data } = useQuery&lt;MyQuery, MyQueryVariables&gt;(GRAPHQL_DOC);
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const { data } = useQuery&lt;MyQuery, MyQueryVariables&gt;(GRAPHQL_DOC);
 const payload: string = data.city.personToHouse;
 const mapData = JSON.parse(payload) as { [key: string]: House }; // Coarse to House
 </code></pre>
 <p>Because of limitation #2, The query assumes the client request all the person's properties. The reality is that the server might not return the entire <code>Person</code> but a shallow version of the <code>Person</code>. For example, <code>Person</code> has a reference to <code>House</code>. Because the consumer cannot specify the structure desired, the server must decide where to cut the graph. Otherwise, it can be very deep. In that example, the relationship can be infinite with a <code>Person</code>→<code>House</code>→<code>Person</code>→<code>House</code>→...</p>
 <h3>Limitation #4: Runtime Exception</h3>
 <p>With the data in a string, it opens an issue if the schema evolves. If a field is removed on the server-side, the generated code will not indicate to the client that the type has changed until the code is executed. It opens the door to bugs at run time.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const { data } = useQuery&lt;MyQuery, MyQueryVariables&gt;(GRAPHQL_DOC);
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const { data } = useQuery&lt;MyQuery, MyQueryVariables&gt;(GRAPHQL_DOC);
 const payload: string = data.city.personToHouse;
 const mapData = JSON.parse(payload) as { [key: string]: House }; // Coarse to House
 console.log(mapData["123"].owners[0].name); // Work well
@@ -84,7 +84,7 @@ console.log(mapData["123"].owners[0].name); // Work well
 </tbody></table>
 <h1>Solution #2: Strongly Typed Type per Map</h1>
 <p>The second solution is to create a wrapper type with a key and a value. The key can be of <code>String</code> or <code>Int</code> and the value of the kind you want to map.</p>
-<pre class="language-graphql"><code class="language-graphql code-highlight">type City {
+<pre class="language-graphql" tabindex="0"><code class="language-graphql code-highlight">type City {
   name: String!
   citizens: [Person!]
   personToHouse: [MapPersonHouse!]!
@@ -97,7 +97,7 @@ type MapPersonHouse {
 </code></pre>
 <p>You see the main inconvenience in the code above: we need to create a <code>MapPersonHouse</code>. If you expect to have 100 maps to different key-value within your application, you will need to have 100 additional types. The concept is to transform the map from the server-side into a list of strongly typed key-value. The benefices are many. First of all, it is well defined: we know which fields are available.</p>
 <p>Secondly, the user can query the exact field desired. For example, the following snippet of code shows that in that case, we only want the <code>address</code> of the <code>House</code>.</p>
-<pre class="language-graphql"><code class="language-graphql code-highlight">query SolutionTwo {
+<pre class="language-graphql" tabindex="0"><code class="language-graphql code-highlight">query SolutionTwo {
   city(name: "SanJose") {
     personToHouse {
       address
@@ -106,7 +106,7 @@ type MapPersonHouse {
 }
 </code></pre>
 <p>The third benefit is that we can continue to leverage GraphQL subtype selection and that the server-side does not have to decide how deep to send to the client.</p>
-<pre class="language-graphql"><code class="language-graphql code-highlight">query SolutionTwo {
+<pre class="language-graphql" tabindex="0"><code class="language-graphql code-highlight">query SolutionTwo {
   city(name: "SanJose") {
     personToHouse {
       address
@@ -124,7 +124,7 @@ type MapPersonHouse {
 </code></pre>
 <p>In that query, we fetch for the city of <code>SanJose</code> a map of people that gives the address of each house and the list of owners and go deeper and deeper until the client decides to stop diving.</p>
 <p>The fourth benefit is that CodeGen can generate a proper type to consume.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const { data } = useQuery&lt;MyQuery, MyQueryVariables&gt;(GRAPHQL_DOC);
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const { data } = useQuery&lt;MyQuery, MyQueryVariables&gt;(GRAPHQL_DOC);
 const list: MapPersonHouse = data.city.personToHouse;
 const map = new Map();
 for (const element of list) {
@@ -148,7 +148,7 @@ const houseId123 = map.get(123); // Type here is not House, it is a subset of Ho
 </tbody></table>
 <h1>Solution #3: Primitive Map</h1>
 <p>Another solution is to use a map for only primitive types. It entails defining a <code>KeyValues</code> type. The type has one property per different values. For example, if you expect a map from key to boolean, you will need a <code>BooleanKeyValue</code>. If you desire a map to a type, you need to add another property.</p>
-<pre class="language-graphql"><code class="language-graphql code-highlight">type KeyValues {
+<pre class="language-graphql" tabindex="0"><code class="language-graphql code-highlight">type KeyValues {
   booleanKeyValues: [BooleanKeyValue!]
   intKeyValues: [IntKeyValue!]
   stringKeyValues: [StringKeyValue!]
@@ -168,7 +168,7 @@ type StringKeyValue {
 }
 </code></pre>
 <p>Unfortunatelly, this solution breaks many scenarios. First of all, it only works with primitive types. In fact, it is impossible to get our example using this structure without polluting the <code>KeyValues</code> and then getting into the rabbit hole of adjusting the schema in such a way that it is questionable. For example, we would need alter the <code>KeyValue</code> with an optional <code>houseKeyValues</code></p>
-<pre class="language-graphql"><code class="language-graphql code-highlight">type KeyValues {
+<pre class="language-graphql" tabindex="0"><code class="language-graphql code-highlight">type KeyValues {
   booleanKeyValues: [BooleanKeyValue!]
   intKeyValues: [IntKeyValue!]
   stringKeyValues: [StringKeyValue!]
@@ -185,7 +185,7 @@ type City {
 }
 </code></pre>
 <p>You can see two issues right here: You need to create an additional type, hence not better than the previous solution. Second, the <code>KeyValues</code> will grow quite a lot. If you have 100 maps in your system, this type will be hard to understand for the server and client. The problem is that the client will need to <em>guess</em> which property of <code>KeyValues</code> to use. Having to <em>guess</em> defeats the purpose of GraphQL, which is a protocol that steward the client toward writing a proper request.</p>
-<pre class="language-graphql"><code class="language-graphql code-highlight">query SolutionThree {
+<pre class="language-graphql" tabindex="0"><code class="language-graphql code-highlight">query SolutionThree {
   city(name: "SanJose") {
     personToHouse {
       houseKeyValues {
@@ -199,7 +199,7 @@ type City {
 }
 </code></pre>
 <p>The problem is the client could have written:</p>
-<pre class="language-graphql"><code class="language-graphql code-highlight">query SolutionThree {
+<pre class="language-graphql" tabindex="0"><code class="language-graphql code-highlight">query SolutionThree {
   city(name: "SanJose") {
     personToHouse {
       intKeyValues {

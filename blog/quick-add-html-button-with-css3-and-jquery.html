@@ -1,9 +1,9 @@
 <!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Patrick Desjardins Blog - Quick Add Html Button with CSS3 and JQuery</title><meta name="description" content="Quick Add Html Button with CSS3 and JQuery"><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-CZbWyyk4.css"><link rel="stylesheet" href="/assets/static-modules.css"></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><header><h1 class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</h1><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main class="app_blog__components_BlogBody__main"><h2 class="app_blog__components_BlogBody__heading">Quick Add Html Button with CSS3 and JQuery</h2><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: 2015-08-04</p><p>This is a small JavaScript and CSS control that allows to have some edition from a textbox in a fashion that this one is only a button to minimize space and once clicked become a more extended version. The goal is to have a way to add information in a quick way without taking too much space. This is perfect for situation where adding information is not the main task. The use case is that a user want to add information which require a text box. The user click the button to open the edition which reveal a text box. The button does not need to stay there because we want to save space so the button transforms into a closing button which cancel the operation if required. When the user starts to type, a save button is added. From there, the user can click the cancel button or hit save. In both case, the text box is rolling back and the user interface come back to the initial state. This design is intended to be minimal. There is not label. This is why we need to use a watermark, also known as placeholder in the text box. Since we want to limit button, the expand button and cancel (collapse) button is the same. To make sure that the user knows what the button is doing we display a tooltip but also we have an animation that transform visually the button to its intend.</p>
 <p>To keep it simples, let's start with a division that will hold all our Html elements.</p>
-<pre class="language-html"><code class="language-html code-highlight">&lt;div id="container"&gt; &lt;/div&gt; 
+<pre class="language-html" tabindex="0"><code class="language-html code-highlight">&lt;div id="container"&gt; &lt;/div&gt; 
 </code></pre>
 <p>Next, we need to create our three main controls. The first one is the input where the user will write any information that will be saved. The second one is the toggle button that expand or collapse the input box and the third one is the save button that will be displayed only when the user save.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var $controlContainer = $('#container');
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var $controlContainer = $('#container');
 
 var $inputBox = $("&lt;input&gt;") 
   .attr('id', 'inline-editor-textbox') 
@@ -39,12 +39,12 @@ $buttonOk.appendTo($controlContainer);
 
 </code></pre>
 <p>The next step is to add events. The toggle will open and close the input. It will also change the icon of the button from a <code>+</code> to a <code>x</code>. The okay button will save the information and collapse the input if everything is fine. The keyup is there to show the save button if the text box contains text.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">$buttonToggle.click({ input: $inputBox, buttonToggle: $buttonToggle, buttonOk: $buttonOk},onToggle); 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">$buttonToggle.click({ input: $inputBox, buttonToggle: $buttonToggle, buttonOk: $buttonOk},onToggle); 
 $buttonOk.click({ input: $inputBox, buttonToggle: $buttonToggle, buttonOk: $buttonOk},onOk); 
 $inputBox.keyup( { input: $inputBox, buttonOk: $buttonOk }, onKeyUp); 
 </code></pre>
 <p>The toggle function has reference to some of our controls. This is a great way to pass reference without having to communicate through JQuery selector. Depending of the state of the toggle, which is the class "hide-input-inline" we make it appears or not. We add a delay because we have CSS3 animation and we want everything to be smooth together.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function onToggle(jqueryEvent) { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function onToggle(jqueryEvent) { 
   var data = jqueryEvent.data; 
   var $input = data.input; 
   var $buttonToggle = data.buttonToggle; 
@@ -71,7 +71,7 @@ if (isHidden) {
 } 
 </code></pre>
 <p>The key up is to check the length but we could also check for "Enter" to be pressed and invoke the Ok code. The code is adding or removing classes, with a delay to let CSS animation to be executed.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function onKeyUp(jqueryEvent) { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function onKeyUp(jqueryEvent) { 
   var data = jqueryEvent.data; 
   var $input = data.input; 
   var $buttonOk = data.buttonOk; 
@@ -88,7 +88,7 @@ if (isHidden) {
 } 
 </code></pre>
 <p>This helper method is used to mark the save icon into a disable state. At this moment, this is not really used but if validation is added we could still have the button add without having to remove it until the user fix the problem.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">
 function htmlElementWithIconState($element, disabled) { 
   $element.prop("disabled", disabled); 
   $element.find('.glyphicon').css('opacity', (disabled === true) ? .4 : 1); 
@@ -96,13 +96,13 @@ function htmlElementWithIconState($element, disabled) {
 
 </code></pre>
 <p>Finally, we have the okay button hit which close up the text box and every buttons. In real life, a callback into a real save or okay code would be executed. If successful than close, otherwise keep everything open for the user to adjust his or her input.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function onOk(jqueryEvent) { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function onOk(jqueryEvent) { 
   var data = jqueryEvent.data; 
   var $input = data.input; 
   var $buttonOk = data.buttonOk; 
   onToggle(jqueryEvent); 
 } 
-</code></pre><pre class="language-css"><code class="language-css code-highlight">#toggleButton, #okButton { 
+</code></pre><pre class="language-css" tabindex="0"><code class="language-css code-highlight">#toggleButton, #okButton { 
    padding:0 2px 4px 2px; 
    margin-left:3px; 
    height: 22px; 

@@ -4,7 +4,7 @@
 <p><img src="/images/blog/DiagnosticTool-782x1024.png" alt="" /></p>
 <p>Visual Studio Diagnostic tools events include Entity Framework SQL statements. This is where I realized that the user's table was updated but also hundred of others which looks to be a table linked to this one. Here was the performance bottleneck, the culprit! I never expected to update anything related to that table -- just the main user's table.</p>
 <p>Entity Framework code was like this:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public void Update(ApplicationUser applicationModel) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public void Update(ApplicationUser applicationModel) { 
   //Update the password IF necessary 
   var local = UnitOfWork.Set&lt;ApplicationUser&gt;().Local.FirstOrDefault(f =&gt; f.Id == applicationModel.Id); 
   if (local != null) { 

@@ -9,7 +9,7 @@
 <p>I’m starting with this one because it is one of the first that will trigger a chain of reaction. The way Redux works is that an action triggers and then middlewares can generate more actions (with Thunk), and in the end, many mappings can occur to finally have many components involved. It makes sense to try to optimize at the source.</p>
 <p>The idea is limited to a set of actions and cannot be applied to every action. This pattern works well, e.g., where you are fetching data and need to dispatch several actions or where you have a graph of an object that needs to be normalized by several reducers. In both cases, you want to have all reducers with all the data well saved in the Redux store to continue to lifecycle (mapping, rendering). The batch notion enters when you receive the payload or you have the result of the normalization. Instead of dispatching several actions, you batch them.</p>
 <p>In the following code, without batching, every five actions that are calling five different reducers would call the mapping code. Since the normalized data changes the store, it would trigger the denormalization code and the component to render because the data has changed. However, in reality, we want to have the UI to change once after all entities are well positioned in the Redux store.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">batchNotifications(next,         
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">batchNotifications(next,         
 	Actions.normalizedEntityA(normalizedResponse.entities.A),     
 	Actions.normalizedEntityB(normalizedResponse.entities.B),
 	Actions.normalizedEntityC(normalizedResponse.entities.C),     
@@ -18,7 +18,7 @@
 ); 
 </code></pre>
 <p>I wrote a simple implementation for the batch notification that sets a variable to “on” before executing the first element of the batch and turn it off at the last element.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export function batchNotifications&lt;S&gt;(next: Dispatch&lt;S&gt;,
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export function batchNotifications&lt;S&gt;(next: Dispatch&lt;S&gt;,
 	...batchOfActions: Action[]): void {
 	next(SharedActions.actionUiBatchOn());
 	try {
@@ -33,7 +33,7 @@
 <p>Because the batch is executed at the middleware level, I can create a <a href="how-to-have-a-hook-before-a-redux-store-notify-its-subscriber-with-typescript">Redux Store Enhancer</a> wasted.</p>
 <h3>Short-circuit Redux mapping</h3>
 <p>If you are using the React-Redux library, you are probably using the <em>connect</em> function to create the link between the Redux store notification and your component.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export default connect&lt;YourModel, YourDispatch, {}, {},
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export default connect&lt;YourModel, YourDispatch, {}, {},
      YourStoreModel&gt;(
     (s) =&gt; model.mapStateToProps(s),
     (s) =&gt; model.mapDispatchToProps(s),

@@ -2,20 +2,20 @@
 <p>The CSDL file is in fact a XML with three distinct sections. If we open the NorthWind database .csdl file (the conceptual entity model has been generated from the Microsoft Northwind database) we can see these 3 sections:</p>
 <p><img src="/images/blog/csdl3part-400x290.png" alt="" /></p>
 <p>The first section is the <strong>Entity Container</strong>. This section contain some information concerning the global container. In the example I created with the NorthWind database, I had chosen to call the NorthWind Conceptual Model "NorthWinContainer". This is the name that we would use inside the project to get the Object Context.</p>
-<pre class="language-xml"><code class="language-xml code-highlight"> &lt;EntityContainer Name="NorthWindContainer" annotation:LazyLoadingEnabled="true"&gt; 
+<pre class="language-xml" tabindex="0"><code class="language-xml code-highlight"> &lt;EntityContainer Name="NorthWindContainer" annotation:LazyLoadingEnabled="true"&gt; 
 </code></pre>
 <p>Inside the code would have been called this way :</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">var db = new NorthWindContainer(); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">var db = new NorthWindContainer(); 
 var collectionData = db.Territories; 
 </code></pre>
 <p>The second attribute of the XML is the <strong>LazyLoading</strong> that is enable in that case. This option in code can be found in the <code>ContextOption</code>.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">var db = new NorthWindContainer(); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">var db = new NorthWindContainer(); 
 Console.WriteLine("Lazy loading : " + db.ContextOptions.LazyLoadingEnabled);
 </code></pre>
 <p>This value can be set also in the Conceptual Entity Model.</p>
 <p><img src="/images/blog/lazyloadingenabled.png" alt="" /></p>
 <p>This first part of the CSDL file contains also all entities and associations definition. It's not in this part of the files that properties of theses entities are defined. In fact, it contains only the name and namespace. For the associations, it also only contain the two entity related.</p>
-<pre class="language-xml"><code class="language-xml code-highlight">&lt;EntitySet Name="Categories" EntityType="northwndModel.Categories" /&gt; 
+<pre class="language-xml" tabindex="0"><code class="language-xml code-highlight">&lt;EntitySet Name="Categories" EntityType="northwndModel.Categories" /&gt; 
 &lt;EntitySet Name="CustomerDemographics" EntityType="northwndModel.CustomerDemographics" /&gt; 
 &lt;EntitySet Name="Customers" EntityType="northwndModel.Customers" /&gt;
 &lt;AssociationSet Name="FK_Products_Categories" Association="northwndModel.FK_Products_Categories"&gt; 
@@ -24,7 +24,7 @@ Console.WriteLine("Lazy loading : " + db.ContextOptions.LazyLoadingEnabled);
 &lt;/AssociationSet&gt;
 </code></pre>
 <p>The second section of the CSDL file contain more meat about the entity. The unique identifier (key) of the entity is defined there and also all properties. Each property contains its meta data like the type, if the value can be nullable and other meta data depending of the type. For example, an integer does not have a MaxLength attribute but a String does.</p>
-<pre class="language-xml"><code class="language-xml code-highlight">&lt;EntityType Name="Categories"&gt; 
+<pre class="language-xml" tabindex="0"><code class="language-xml code-highlight">&lt;EntityType Name="Categories"&gt; 
   &lt;Key&gt; 
     &lt;PropertyRef Name="CategoryID" /&gt; 
   &lt;/Key&gt; 
@@ -44,7 +44,7 @@ Console.WriteLine("Lazy loading : " + db.ContextOptions.LazyLoadingEnabled);
 &lt;/EntityType&gt; 
 </code></pre>
 <p>The last section of the file contains detail about the association previously described in the first section. The association name concord with the <code>AssociationSet_FK</code> name of the first section. This will defined both ending point and their multiplicity. Also, the property reference is defined.</p>
-<pre class="language-xml"><code class="language-xml code-highlight">&lt;Association Name="FK_Products_Categories"&gt;
+<pre class="language-xml" tabindex="0"><code class="language-xml code-highlight">&lt;Association Name="FK_Products_Categories"&gt;
   &lt;End Role="Categories" Type="northwndModel.Categories" Multiplicity="0..1" /&gt; 
   &lt;End Role="Products" Type="northwndModel.Products" Multiplicity="*" /&gt; 
   &lt;ReferentialConstraint&gt; 

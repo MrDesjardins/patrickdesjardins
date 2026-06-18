@@ -6,7 +6,7 @@
 <h1>Derived Signal</h1>
 <p>The first case is called a <a href="https://www.solidjs.com/tutorial/introduction_derived">derived signal</a>. It is a well-documented case where you have a computed value that depends on another. However, the documentation is around derived signals and not props. But, the reality is that it behaves the same way hence the same mindset should be observed. By that, the derived value will automatically be recomputed when the property changes.</p>
 <p>If we use an example with a single component that passes a single property, we can change the name every second.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">interface HelloWorldProps {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">interface HelloWorldProps {
   name: string;
 }
 
@@ -31,13 +31,13 @@ const App: Component = () =&gt; {
 render(() =&gt; &lt;App /&gt;, document.getElementById("app"));
 </code></pre>
 <p>A derived property could be added in the <code>HelloWorld</code> component.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const HelloWorld = (props: HelloWorldProps) =&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const HelloWorld = (props: HelloWorldProps) =&gt; {
   const derivedName = () =&gt; `[${props.name}]`;
   return &lt;h1&gt;Hello, {derivedName()}!&lt;/h1&gt;;
 };
 </code></pre>
 <p>In this example, the component will have the <code>derivedName</code> function called every time the property is changing. However, the <code>HelloWorld</code> itself is rendered only once. For example, writing this variation:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const HelloWorld = (props: HelloWorldProps) =&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const HelloWorld = (props: HelloWorldProps) =&gt; {
   console.log("HelloWorld Rendered");
   const derivedName = () =&gt; {
     console.log("Derived Name Called");
@@ -47,31 +47,31 @@ render(() =&gt; &lt;App /&gt;, document.getElementById("app"));
 };
 </code></pre>
 <p>The console output looks like this:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">HelloWorld Rendered 
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">HelloWorld Rendered 
 Derived Name Called (67 times)
 </code></pre>
 <p>So, the function is not re-created every second; only the function is called because it derives from the changing property.</p>
 <h1>Executing code</h1>
 <p>In the previous case, we were computing a value, but what if you need to execute a piece of code if the a property change? Similar to React, it is possible using an <em>effect</em>. With SignalJS, we need to use <code>createEffect</code>. What is excellent and confusing if you are coming from React Hooks, is that you do not need to explicitly specify in the creation of the effect which variable to look at. SolidJS framework handles the reactivity based on what is being used within the effect.</p>
 <p>For example:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">createEffect(() =&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">createEffect(() =&gt; {
   document.bgColor = document.bgColor === "red" ? "white" : "red";
 });
 </code></pre>
 <p>The background will flip to red since the effect will be executed once when the <code>HelloWorld</code> is rendered (first execution of the component). What if we want to change the color every time the <code>props.name</code> change? For that, we need to <em>use</em> the <code>props.name</code> inside the <code>createEffect</code>. For example, adding a <code>console.log</code> using the property causes the SignalJS framework to know about the property. And, every change of the property must run the effect and hence make the color swap.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">createEffect(() =&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">createEffect(() =&gt; {
   console.log(props.name); // Make the createEffect to be called at every change of the property "name"
   document.bgColor = document.bgColor === "red" ? "white" : "red";
 });
 </code></pre>
 <p>So, there is a caveat here, what if we want to change the background without using <code>console.log</code>? Removing the <code>console.log</code> makes the component renders once, as we saw earlier. So, you can cheat your way to use the variable without assigning.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">createEffect(() =&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">createEffect(() =&gt; {
   props.name; // Make the effect to depend on the property
   document.bgColor = document.bgColor === "red" ? "white" : "red";
 });
 </code></pre>
 <p>However, there is an utility function that can be used that make the code cleaner.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">  createEffect(
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">  createEffect(
     on(
       () =&gt; props.name,
       () =&gt; {

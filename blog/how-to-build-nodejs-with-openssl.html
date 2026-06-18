@@ -2,39 +2,39 @@
 <p>The quick solution was to fall back to Node 14, which was built (the binary) in a way that it was still working. The three years old version of Node does not use the newest OpenSSL libs that support RFC5764 and is compatible with the environment I am developing. However, the production version of Node worked fine with the latest LTS (18+). The described solution explains how to build your version of Node on your machine using a specific OpenSSL version and then use NVM to use the binary without renegotiation problems.</p>
 <h1>The Problem</h1>
 <p>Upon network and security changes, the communication using MSAL started to fail with the following error:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">error in secret or public key callback: write EPROTO ......... routines:final_renegotiate:unsafe legacy renegociation disabled.
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">error in secret or public key callback: write EPROTO ......... routines:final_renegotiate:unsafe legacy renegociation disabled.
 </code></pre>
 <p>The error might sound that changing some switches on Node, like adding the <code>--tls-max=v1.2</code> or <code>--openssl-config</code> with a configuration file, fix the issue, but in my case, it wasn't. The main culprit is my MacOS is configured to use <code>LibreSSL</code>. Other tentative using <code>HTTPS</code> <code>secureOptions</code> with <code>SSL_OP_ALLOW_UNSAFE_LEGECY_RENEGOTIATION</code> does not work. The problem is around OpenSSL.</p>
 <h1>The Solution: Building NodeJS with OpenSSL</h1>
 <p>The current environment is rigorous and only allows a little change. However, using Homebrew, we can install OpenSSL. That is the first step that allows us to get OpenSSL instead of LibreSSL.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">brew install openssl@1.1
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">brew install openssl@1.1
 </code></pre>
 <p>Then, the idea is to get NodeJS source code, and build the code to have a binary that uses the insalled <code>openssel@1.1</code>.</p>
 <p>Getting the source code is a single GIT command. Then, you need to target the tag of the version you desire. In my case, I wanted to run version 18.17.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">git clone https://github.com/nodejs/node.git
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">git clone https://github.com/nodejs/node.git
 git checkout v18.17.0
 </code></pre>
 <p>Then you need to export a few flags that will tell the C++ compiler to use the OpenSSL library during compilation:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">export LDFLAGS="-L/opt/homebrew/opt/openssl@1.1/lib"
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">export LDFLAGS="-L/opt/homebrew/opt/openssl@1.1/lib"
 export CPPFLAGS="-I/opt/homebrew/opt/openssl@1.1/include"
 </code></pre>
 <p>Before building, you need to call a Python script to configure OpenSSL. The script is in the source code.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">./configure --shared-openssl
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">./configure --shared-openssl
 </code></pre>
 <p>Finally, time to build. This step is time-consuming. In my case, it takes about 1 hour.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">make -j4
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">make -j4
 </code></pre>
 <p>The <code>j4</code> switch allows a performance boost using a parallelist build.</p>
 <h1>Using the Binary</h1>
 <p>Once the build is completed, you can try the binary using <code>./out/release/node -v</code>. That should output the version you used, in my case 18.17.</p>
 <p>However, the binary is still inside the folder that you compiled Node. There are many options. You can create a symbolic link to the binary. However, I was already using NVM. NVM enable switching between different NodeJS version. Handy if you work on many projects. The solution I found is hacky but works well.</p>
 <p>First, install the official version into your project (not the NodeJS source code project).</p>
-<pre class="language-sh"><code class="language-sh code-highlight">nvm install v18.17.0
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">nvm install v18.17.0
 nvm use v18.17.0
 </code></pre>
 <p>That will download into your <code>~/.nvm/versions/node</code> folder, a cache version of the official version. The folder of the version contains more than just Node. It includes NPM and other libraries.</p>
 <p>Then, copy the binary to overwrite the one in the cache:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">cp ./out/Release/node /Users/pdesjardins/.nvm/versions/node/v18.17.0/bin/node
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">cp ./out/Release/node /Users/pdesjardins/.nvm/versions/node/v18.17.0/bin/node
 </code></pre>
 <p>Then, anytime you use <code>nvm use</code> on version 18.17.0, regardless of where on your machine, it will use the binary you compiled.</p>
 <h1>Conclusion</h1>

@@ -17,13 +17,13 @@ However, I am slowly taking only notes by text as it becomes more efficient to u
 <li>Copy the unique secret key that allows sending an HTTP request to update the IP</li>
 <li>Install a cron job that sends the IP periodically.</li>
 </ol>
-<pre class="language-sh"><code class="language-sh code-highlight">#!/bin/bash
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">#!/bin/bash
 echo url="https://www.duckdns.org/update?domains=&lt;REVOKED&gt;&amp;token=&lt;REVOKED&gt;&amp;ip=" | curl -k -o ~/duckdns/duck.log -K -
 chmod +x duck.sh
 (crontab -l ; echo "*/5 * * * * ~/duckdns/duck.sh &gt;/dev/null 2&gt;&amp;1") | crontab -
 </code></pre>
 <p>The second phase is setting up the Trilium server with Docker.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">sudo apt update
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">sudo apt update
 sudo apt install -y ca-certificates curl gnupg lsb-release
 sudo mkdir -p /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
@@ -36,7 +36,7 @@ mkdir -p ~/trilium/data
 cd ~/trilium
 </code></pre>
 <p>Docker configuration:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">version: "3.8"
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">version: "3.8"
 services:
   trilium:
     image: zadam/trilium:latest
@@ -47,11 +47,11 @@ services:
       - ./data:/root/trilium-data
 </code></pre>
 <p>Start the Docker:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">docker compose up -d
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">docker compose up -d
 </code></pre>
 <p>The third phase is setting the secure virtual private network (VPN). It requires installing on the Mini-PC WireGuard, which open a new network interface that allows a specific peer to connect. In our case, the WireGuard client will have a secure key that the server can decrypt using a private and public key pair.</p>
 <p>On the server:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">sudo apt update
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">sudo apt update
 sudo apt install -y wireguard qrencode
 cd /etc/wireguard
 sudo wg genkey | sudo tee server_private.key | sudo wg pubkey | sudo tee server_public.key
@@ -63,10 +63,10 @@ sudo mkdir -p /etc/wireguard
 sudo nano /etc/wireguard/wg0.conf
 </code></pre>
 <p>Then client keys:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">wg genkey | tee ~/client_private.key | wg pubkey &gt; ~/client_public.key
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">wg genkey | tee ~/client_private.key | wg pubkey &gt; ~/client_public.key
 </code></pre>
 <p>The configuration will depend on your setup, but it should be roughly similar to this. Use the private and public key from the previous step.</p>
-<pre class="language-yaml"><code class="language-yaml code-highlight">[Interface]
+<pre class="language-yaml" tabindex="0"><code class="language-yaml code-highlight">[Interface]
 Address = 10.66.66.1/24
 ListenPort = 51820
 PrivateKey = &lt;REDACTED&gt;
@@ -80,17 +80,17 @@ PublicKey = &lt;REDACTED&gt;
 AllowedIPs = 10.66.66.2/32,10.66.66.1/32
 </code></pre>
 <p>Enable IP forwarding and UFW firewall access to the UDP protocol on port 51820. The port is chosen for WireGuard to communicate.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">sudo sysctl -w net.ipv4.ip_forward=1
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">sudo sysctl -w net.ipv4.ip_forward=1
 
 sudo ufw allow 51820/udp
 sudo ufw allow in on wg0
 sudo ufw reload
 </code></pre>
 <p>Add the peer section in the WireGuard server. The peer configuration is the secure way to allow a specific client, like my phone.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">nano /etc/wireguard/wg0.conf
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">nano /etc/wireguard/wg0.conf
 </code></pre>
 <p>The interface part remains the same, but the peer is new and contains the PublicKey that is from the <code>wg genkey</code>.</p>
-<pre class="language-yaml"><code class="language-yaml code-highlight">[Interface]
+<pre class="language-yaml" tabindex="0"><code class="language-yaml code-highlight">[Interface]
 Address = 10.66.66.1/24
 ListenPort = 51820
 PrivateKey = &lt;REDACTED&gt;
@@ -106,7 +106,7 @@ AllowedIPs = 10.66.66.2/32
 <p><code>AllowedIPs = 10.66.66.2/32</code> means only the peer (client, the mobile) needs routing.</p>
 <p>The next step is to configure the WireGuard mobile app. There is an easy way to generate a QR code that will move all the configuration to the phone:</p>
 <p>Phone:</p>
-<pre class="language-yaml"><code class="language-yaml code-highlight">[Interface]
+<pre class="language-yaml" tabindex="0"><code class="language-yaml code-highlight">[Interface]
 PrivateKey = &lt;client_private_key&gt;
 Address = 10.66.66.2/32
 DNS = 1.1.1.1
@@ -123,16 +123,16 @@ PersistentKeepalive = 25
 <p>Understanding the Configuration</p>
 <p>The ip <code>10.66.66.1</code> is the Mini-PC IP in the virtual private network (VPN). The <code>10.66.66.2</code> is the IP of the client (phone) in the VPN.
 Here is a visual:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">[Phone wg0: 10.66.66.2] &lt;--encrypted--&gt; [wg0 on Mini-PC: 10.66.66.1] --&gt; [Docker: 10.0.0.181:8080]
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">[Phone wg0: 10.66.66.2] &lt;--encrypted--&gt; [wg0 on Mini-PC: 10.66.66.1] --&gt; [Docker: 10.0.0.181:8080]
 </code></pre>
 <p>The client configuration of <code>1.1.1.1</code> means the phone uses the Cloudflare DNS for any DNS resolving URL.</p>
 <p>The endpoint <code>&lt;REDACTED&gt;.duckdns.org:51820</code> is to find the IP to establish a connection with WireGuard to the Mini-PC.</p>
 <p>The <code>AllowedIPs = 0.0.0.0/0</code> means that once the VPN is on, all the traffic goes to the VPN.</p>
 <p>In short, it means the traffic goes from the mobile to outside:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">Phone → WireGuard Tunnel → Mini-PC → Trilium (if port 8080)
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">Phone → WireGuard Tunnel → Mini-PC → Trilium (if port 8080)
 </code></pre>
 <p>Internet traffic (not Trilium)</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">Phone → WireGuard tunnel → Mini-PC → Internet → Cloudflare
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">Phone → WireGuard tunnel → Mini-PC → Internet → Cloudflare
 Cloudflare → Internet → Mini-PC → WireGuard tunnel → Phone
 </code></pre>
 <p>Using <code>AllowedIPs = 10.66.66.1/32</code> tunnels only traffic destined to the Trilium server’s VPN IP. WireGuard routes by IP address, not by application or port, so this works because Trilium is accessed exclusively via 10.66.66.1.  Also, if we do so, we might want to remove the DNS entry, avoiding DNS resolution to go through the tunnel.</p>

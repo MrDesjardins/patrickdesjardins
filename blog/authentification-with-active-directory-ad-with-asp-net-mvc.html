@@ -7,7 +7,7 @@
 <p>And that's it.</p>
 <p>You can also do it more manually. It's good to know because if you have to configure IIS, you will have to do some configuration. First, you need to disable anonymous authentication and allow windows authentication.</p>
 <p>The web.config also need to tell that we use windows authentication.</p>
-<pre class="language-xml"><code class="language-xml code-highlight">&lt;system.web&gt; &lt;authentication mode="Windows" /&gt;
+<pre class="language-xml" tabindex="0"><code class="language-xml code-highlight">&lt;system.web&gt; &lt;authentication mode="Windows" /&gt;
   &lt;roleManager enabled="true" defaultProvider="AspNetWindowsTokenRoleProvider"&gt; 
     &lt;providers&gt; 
     &lt;clear /&gt; 
@@ -17,16 +17,16 @@
 &lt;/system.web&gt; 
 </code></pre>
 <p>This allow the use of the <strong>Authorize</strong> attribute over controllers and methods.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">[Authorize(Roles = "YOURDOMAIN\\\\Group1, YOURDOMAIN\\\\Group2")] 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">[Authorize(Roles = "YOURDOMAIN\\\\Group1, YOURDOMAIN\\\\Group2")] 
 public ActionResult YourMethod() { 
   //... 
 } 
 </code></pre>
 <p>If you want to allow the user to log with the form instead of being automatically logged in, you need to specify a connection string in the web.config.</p>
-<pre class="language-xml"><code class="language-xml code-highlight"> &lt;connectionStrings&gt; &lt;add name="ADConn" connectionString="LDAP://YourConnection" /&gt; &lt;/connectionStrings&gt; 
+<pre class="language-xml" tabindex="0"><code class="language-xml code-highlight"> &lt;connectionStrings&gt; &lt;add name="ADConn" connectionString="LDAP://YourConnection" /&gt; &lt;/connectionStrings&gt; 
 </code></pre>
 <p>Then, you need to setup the membership provider.</p>
-<pre class="language-xml"><code class="language-xml code-highlight">&lt;membership defaultProvider="ADMembership"&gt; 
+<pre class="language-xml" tabindex="0"><code class="language-xml code-highlight">&lt;membership defaultProvider="ADMembership"&gt; 
   &lt;providers&gt; 
   &lt;add name="ADMembership" type="System.Web.Security.ActiveDirectoryMembershipProvider, System.Web, Version=2.0.0.0, Culture=neutral, PublicToken=b03f5f7f11d50a3a" connectionStringName="ADConn" connectionUsername="domain/user" connectionPassword="pwd" /&gt; 
   &lt;/providers&gt; 

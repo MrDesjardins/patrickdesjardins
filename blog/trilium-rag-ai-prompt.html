@@ -3,7 +3,7 @@
 <p>Trilium has a BETA feature that allows you to provide a ChatGPT API key to perform AI prompting. Unfortunately, it never worked reliably for me. As a result, I decided to create a simple vector database–based solution and use it as a RAG (Retrieval-Augmented Generation) system. When a question is asked, the system finds relevant notes and uses them as context for the LLM.</p>
 <h1>The Plan</h1>
 <p>After some research, I found the open-source vector database <a href="https://weaviate.io/">Weaviate</a>. From there, I needed to create a Python-based indexer that would extract data from Trilium and push it into Weaviate. On top of that, I planned to build a small website that communicates with an LLM gateway. This gateway queries Weaviate for relevant context and then calls the LLM (ChatGPT).</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">                  ┌────────────────────────────┐
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">                  ┌────────────────────────────┐
                   │        Trilium             │
                   │     SQLite Database        │
                   │ (notes, tree, tags, attrs) │
@@ -49,7 +49,7 @@
 <p>What is great is that Trilium is hosted on my Mini-PC behind a secure VPN (see my <a href="/blog/trilium-note-taking-with-mini-pc-server-host">Trilium post</a>). This means all parts of the architecture are locally available. The proximity simplifies security and makes it easy for the indexer to directly access the Trilium database. The website is also hosted on the Mini-PC and can communicate directly with the Docker container running Weaviate.</p>
 <h1>The Project</h1>
 <p>The project is written entirely in Python, with basic JavaScript and HTML for the query input UI. At a high level, the structure looks like this:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">trilium-ai/
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">trilium-ai/
 ├── src/trilium_ai/
 │   ├── indexer/          # SQLite reader, chunker, embedder
 │   ├── gateway/          # LLM integration and retrieval
@@ -75,10 +75,10 @@
 <p>The initial indexing takes about 10 minutes for roughly 3,000 notes. After that, updates are very fast since I am not constantly adding or modifying notes.</p>
 <h1>Querying</h1>
 <p>The primary way to interact with the system is through the web interface. Before building the UI, however, I relied entirely on the Python CLI. For example:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">uv run trilium-ai query "your question"
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">uv run trilium-ai query "your question"
 </code></pre>
 <p>The web interface is thin and relies on an API endpoint that performs an HTTP POST request with the following payload:</p>
-<pre class="language-json"><code class="language-json code-highlight">{
+<pre class="language-json" tabindex="0"><code class="language-json code-highlight">{
   "query": "What are my notes about Python?",
   "top_k": 5,
   "provider": "openai",  // optional
@@ -86,7 +86,7 @@
 }
 </code></pre>
 <p>For development purposes, you can also use <code>curl</code>:</p>
-<pre class="language-bash"><code class="language-bash code-highlight">curl -X POST http://localhost:3000/api/query \
+<pre class="language-bash" tabindex="0"><code class="language-bash code-highlight">curl -X POST http://localhost:3000/api/query \
   -H "Content-Type: application/json" \
   -d '{"query": "What are my project goals?"}'
 </code></pre>
@@ -94,7 +94,7 @@
 <p>I relied on Claude for the indexing portion to avoid spending too much time learning Weaviate internals. Weaviate runs in a Docker container and has a dedicated collection for Trilium notes. A YAML configuration file exposes several options, including the embedding provider.</p>
 <p>In my case, I use <code>sentence-transformers</code>, which runs locally and splits text by sentence boundaries with a configurable maximum chunk size. Running embeddings locally keeps costs low. Only the final LLM call, containing the user question and the retrieved context is sent to OpenAI. Since I query the system infrequently, the overall cost remains minimal.</p>
 <p>The querying logic is similar to a standard ChatGPT request. It includes a system prompt, followed by contextual note excerpts retrieved from Weaviate, and finally the user’s question:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">System: You are an AI assistant with access to the user's Trilium notes.
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">System: You are an AI assistant with access to the user's Trilium notes.
 
 Context from notes:
 [Note: {title}]

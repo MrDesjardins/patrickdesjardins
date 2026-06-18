@@ -3,7 +3,7 @@
 <p>We will start with the model binding, which is the first step of any request.</p>
 <h1>Auto-mapping</h1>
 <p>In Asp.Net Mvc, the transformation of HTTP Get parameter or HTTP Post parameters into C# code is called <strong>Model Binding</strong>. The Model binding by default try to convert any data to primitive type or try to instantiate your model object if the request contain a Json object that fit the schema of your classes. That mean that you can simply use Asp.Net MVC to send back all properties values of your model back to the server and Asp.Net MVC is bright enough to build a new object for you.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> [HttpPost] public ActionResult Create(WorkoutModel model) { //1)Validate model //2)Do manipulation //3)Save into the database
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> [HttpPost] public ActionResult Create(WorkoutModel model) { //1)Validate model //2)Do manipulation //3)Save into the database
 
 return View("Create);//4)Return a response to the client } 
 </code></pre>
@@ -14,7 +14,7 @@ return View("Create);//4)Return a response to the client }
 <p>We will modify the BaseController and override the method <strong>OnActionExecuting</strong>. This will give us the opportunity to modify the code before entering the code of the action defined inside the controller.</p>
 <p><img src="/images/blog/workoutcontroller1.png" alt="" /></p>
 <p>This is an overview of what we are going to do. First, we will have a concrete controller for every entity. In our case, the WorkoutController. Each controller inherit of the BaseController which is generic with 2 types. The first one is the model type, and the second is the view model type. The BaseController contain a reference to a IMapperFactory, which is a layer of abstraction to the AutoMapper implementation. We will come back later with the IMapperFactory. Finally, the BaseController contain a property of TModel type. That mean that for the WorkoutController that we will be able to use "this.Model" to get the model from the view model. For another entity, the Model will be of the entity type because it will use the TModel type defined by the BaseController. Here is the code that reflect the illustration above.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public class WorkoutController : BaseController&lt;Workout, WorkoutViewModel&gt; {
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public class WorkoutController : BaseController&lt;Workout, WorkoutViewModel&gt; {
 
 public WorkoutController(IMapperFactory mapperFactory):base(mapperFactory) { }
 
@@ -42,14 +42,14 @@ protected override void OnActionExecuting(ActionExecutingContext filterContext) 
 <h1>Service layer</h1>
 <p>Now that we have the data from the view, we need to do some manipulation. We will skip the validation process because it will be in another part of this series. Let's jump to the service layers. The service layer is a layer between the service layer is above the controller and could be used not only by the web controller but by the web api controller or any other application. It's the layer between the user interaction and the repository. It's the one that can contact the repository, the cache, or manipulate many entity to return a unique one. The service layer will be used by the controller to access the repository and to build the view model. For example, it will load a specific workout if the user call the Edit action of the Workout controller. Not only it will load the workout, but it will give us the view model filled correctly with the extra properties that could contain additional choices to be selected (like a list of exercise) and additional localized text for example.</p>
 <p>So, we need to modify the WorkoutController to have a service reference.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public class WorkoutController : BaseController&lt;Workout, WorkoutViewModel&gt; { public WorkoutController(IMapperFactory mapperFactory):base(mapperFactory) { } //... 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public class WorkoutController : BaseController&lt;Workout, WorkoutViewModel&gt; { public WorkoutController(IMapperFactory mapperFactory):base(mapperFactory) { } //... 
 </code></pre>
 <p>will become:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public class WorkoutController : BaseController&lt;Workout, WorkoutViewModel&gt; { private readonly IWorkoutService_service; public WorkoutController(IWorkoutService service, IMapperFactory mapperFactory):base(mapperFactory) {_service = service; } //... 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public class WorkoutController : BaseController&lt;Workout, WorkoutViewModel&gt; { private readonly IWorkoutService_service; public WorkoutController(IWorkoutService service, IMapperFactory mapperFactory):base(mapperFactory) {_service = service; } //... 
 </code></pre>
 <p>As you can see, the IWorkoutService has been added. This will give us the possibility to inject the service into the controller. Every controller will have its own service.</p>
 <p>Because most of the service will look the same we can create a base service class, that I'll call IService. The IService will contain the primitive call that are concerning getting the model, saving the model and deleting the model.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public interface IService&lt;TModel, TViewModel&gt; { IEnumerable&lt;TViewModel&gt; GetAll(); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public interface IService&lt;TModel, TViewModel&gt; { IEnumerable&lt;TViewModel&gt; GetAll(); 
 TViewModel Get(TModel model); 
 int Create(TModel model); 
 int Update(TModel model);
@@ -59,7 +59,7 @@ public interface IWorkoutService : IService&lt;Workout, WorkoutViewModel&gt; { }
 </code></pre>
 <p>We could add in IWorkoutService more specific method. For example, one could require to have a specicial Get that will return a extended view model with more data. Or, someone might want to have to model from the Get instead of the view model. This type of architecture let a flexibility.</p>
 <p>If we check the concrete implementation of IWorkoutService we will see all repository access and the automapper to convert the model to view model.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class WorkoutService : BaseService, IWorkoutService { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class WorkoutService : BaseService, IWorkoutService { 
   public WorkoutService(IRepositoryFactory repositoryFactory, IMapperFactory mapperFactory) : base(repositoryFactory, mapperFactory) { }
 
   #region Implementation of IService&lt;Workout&gt;

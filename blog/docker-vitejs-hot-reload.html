@@ -3,7 +3,7 @@
 <h1>ViteJS Configuration File</h1>
 <p>Most of the heavy work is done by modifying the ViteJS configuration file <code>vite.config.ts</code>, which should be at the root of your frontend project. If the file is not present, it is time to create it.</p>
 <p>I have removed in the following code a lot of SolidJS configurations as well as other needed configurations. The goal is to highlight the vital part of having ViteJS accessible outside your container but mainly to keep the capability of modifying a <code>.tsx</code> file and seeing the change within a few milliseconds occurring on the browser.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">export default (conf: any) =&gt; {
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">export default (conf: any) =&gt; {
   return defineConfig({
     server: {
       host: "0.0.0.0",
@@ -20,13 +20,13 @@
 </code></pre>
 <p>The first part is under <code>server</code> is the host. It needs to be <code>0.0.0.0</code> to make every IP accessible. A value of <code>localhost</code> or <code>127.0.0.1</code> is not enough when you are inside a Docker container.</p>
 <p>The second part is the ports. The first port is under <code>hmr</code>, which stands for "hot module reload". The <code>clientPort</code> must be set to the port your Docker container exposes. My <code>Docker-compose.yaml</code> has for the frontend server that configuration:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">ports:
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">ports:
       - "${OUTER_PORT_FRONTEND}:${INNER_PORT_FRONTEND}"
 </code></pre>
 <p>Which take the <code>OUTER_PORT_FRONTEND</code> to an <code>INNER_PORT_FRONTEND</code>. So, if you are exposing outside port <code>80</code> but that inside your are running on port <code>3000</code> it means that the <code>hmr</code> must be the <code>80</code> value. That is the value that the browser will use to access the website.</p>
 <p>The third part is the port of the internal ViteJS server. The value you see of <code>INNER_PORT_FRONTEND_DEV</code> is the default <code>3000</code> port for a SolidJS application.</p>
 <p>At this point, the configuration should work, and you should see your web application if you go on port <code>80,</code> but a change does not reload the site. I notice that even a refresh of the browser is not performing any changes but that if I connect to the container, the JavaScript is generated. So, TypeScript is being transpiled, but for some reason, something blocks. The secret is to enable the polling.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">watch: {
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">watch: {
   usePolling: true,
 },
 </code></pre>

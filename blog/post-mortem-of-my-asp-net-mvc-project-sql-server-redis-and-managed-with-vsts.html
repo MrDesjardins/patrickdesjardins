@@ -45,14 +45,14 @@
 <p>If you look at the trend graph, you can see that around march 2015 (sprint 14) the coverage fell from 78% to now 70%. I can blame no one else than myself. That said, I was reaching little down in motivation (my first and only one among the first 30 months) by seeing that I was not even half way through that project, I just had a new baby and was working a lot of hours at Microsoft. I cheated on the unit tests instead of cutting features. I definitely plan to increase them slowly. The major area where unit tests are missing at this point is the all controllers and few repository classes. The choice was deliberated to focus on the <em>services</em> and <em>models</em> classes which hold the core of the logic and are more incline to fail.</p>
 <h2>Integration tests</h2>
 <p>Integration tests started to be a way to have a persistence experience covered without having to do heavy testing with framework that click the UI. To cut the work and scope down, since we have unit tests, the only integration tests that was done was about the repository layer. The idea is good, but it was still time consuming. I have two formats for those code which rely on the same architecture : the tests initialize by creating a transaction and rollback the transaction once the test is done. The difference from the older version and the newest version is that the older one has a lot of utility methods to arrange the code. For example, "CreateUserThatHasNotValidatedEmail". The second one is using a Builder model with a fluent syntax. For example, I could do :</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> var data = this.DatabaseModelBuilder 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> var data = this.DatabaseModelBuilder 
  .InsertNewUser(1, (applicationUser, index) =&gt; { 
   applicationUser.CanReceiveEmailWhenContestInscriptionStart = true; 
   applicationUser.ValidationDateTime = null; 
  });
 </code></pre>
 <p>Or more complex:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> var s = this.DatabaseModelBuilder 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> var s = this.DatabaseModelBuilder 
  .InsertNewFullContest() 
  .InsertNewPortefolio() 
  .InsertSymbolToRenameRequest() 
@@ -61,7 +61,7 @@
 </code></pre>
 <p>While these examples may look just "okay" they are replacing a huge amount of work. Each of these methods are not just building the object but save them in the database, recuperate the generated ID, do associations, etc. This allowed me to avoid having hundreds of utility method for every cases but having a syntax that is reusable and can built-up. It also allowed to have cleaner methods.</p>
 <p>Here is a shameful real code of the old way :</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> [TestMethod]
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> [TestMethod]
 public void GivenBatchSymbolsRenameInOrders_WhenListHasStockToBeRenamed_ThenOnlySpecificStocksAreRenamed() {
     // Arrange var uow = base.GetNewUnitOfWorkDapper();
     var userId = this.runningContext.Object.GetUserId();
@@ -118,7 +118,7 @@ public void GivenBatchSymbolsRenameInOrders_WhenListHasStockToBeRenamed_ThenOnly
 }
 </code></pre>
 <p>A similar test with the new version:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> [TestMethod] 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> [TestMethod] 
  public void GivenAListOfStocks_WhenRequestFirstPageAndThisOneHasLessThanTheFixedPageAmount_ThenReturnLessThanTheFixedAmountOfContests() { 
   // Arrange 
   const int ACTIVE_ORDER = 2; const int INACTIVE_ORDER = 2; const int PAGE_NUMBER = 0; const int NUMBER_CONTEST_PER_PAGE = 10; var allDatabaseOrders = new List&lt;StockOrder&gt;(); 

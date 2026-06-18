@@ -4,11 +4,11 @@
 <h1>TypeScript Benchmark Code</h1>
 <p>The first step is to create a benchmark. You can see a benchmark as a unit test suite that contains many unit tests. Github uses a workflow action that supports many benchmark libraries. For example, the currently supported one for JavaScript relies on the <a href="https://benchmarkjs.com/">Benchmarkjs library</a>.</p>
 <p>I am using TypeScript, hence use the <code>@types/benchmark</code> library as well.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">npm install --save-dev benchmarke@latest
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">npm install --save-dev benchmarke@latest
 npm install --save-dev @types/benchmark@latest
 </code></pre>
 <p>Then, creating a benchmark test is a matter of defining what you want the library to perform several times. In my case, I wanted to benchmark the algorithm of a function with a specific parameter. Hence, I am creating one function (<code>.add</code>) per scenario for this function.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const Benchmark = require("benchmark");
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const Benchmark = require("benchmark");
 const suite = new Benchmark.Suite();
 const { HilbertAlgorithm } = require("../dist/lib/es5/hilbertAlgorithm");
 
@@ -25,14 +25,14 @@ suite
 <p>You can see the <a href="https://github.com/MrDesjardins/hilbert-curve-ts/blob/master/benchmarks/benchmarks.ts">full benchmark TypeScript file here</a>.</p>
 <h1>TypeScript Benchmark Script</h1>
 <p>Once the benchmark functions are created, we need to have an entry point in the package.json. I added one command.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">"benchmarks": "ts-node benchmarks/benchmarks.ts --project tsconfig.benchmarks.json",
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">"benchmarks": "ts-node benchmarks/benchmarks.ts --project tsconfig.benchmarks.json",
 </code></pre>
 <p>As you can see, the command relies on <code>ts-node</code> because the benchmark is in a TypeScript file. Hence, you need to add the dependency in your package.json.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">npm install --save-dev ts-node@latest
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">npm install --save-dev ts-node@latest
 </code></pre>
 <h1>Github Workflow</h1>
 <p>I'll assume you already have a workflow action that builds and run some unit tests (or not). Hence, we will need to add a step to your current workflow. Here is the full code of the two steps:</p>
-<pre class="language-yaml"><code class="language-yaml code-highlight">- name: Run benchmarks
+<pre class="language-yaml" tabindex="0"><code class="language-yaml code-highlight">- name: Run benchmarks
     run: npm run benchmarks | tee output.txt
     if: matrix.os == 'ubuntu-latest' &amp;&amp; matrix.node-version == '16.x'
 
@@ -50,7 +50,7 @@ suite
 <p>The first step, named <code>Run benchmarks</code>, which calls the NPM command created earlier. It uses a <code>|</code> to send the output into a file using the Unix <code>tee</code> command. The command redirects the output to a file. The file name is important and will be used later in the second step. The <code>if</code> is optional. In my workflow, I have a matrix of different compilations under different NodeJS versions and operating systems (OS). I want to run the performance test only in 1 particular combination, which is under Ubuntu and NodeJS 16. The reason is that it increases the process and also that I do not mind about performance between NodeJS version and OS.</p>
 <p>The second step, named <code>Store benchmark result</code>, which uses <code>benchmark-action/github-action-benchmark@v1</code>. The action takes the generated benchmark output from the file specified in the previous step and knows how to interpret the result. Then, it uses the Github token provided and pushes the result into another branch called <code>gh-pages</code>. The branch contains one folder with <code>data.js</code>. The folder contains the historical data of each time the benchmark was executed. Also, a file named <code>index.html</code> is the entry point to read the result.</p>
 <p>To create the <code>gh-pages</code> branch, you need to execute:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">git switch --orphan gh-pages
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">git switch --orphan gh-pages
 git commit --allow-empty -m "initial commit"
 git push -u origin gh-pages
 </code></pre>

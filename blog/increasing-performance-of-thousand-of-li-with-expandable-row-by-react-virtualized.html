@@ -6,13 +6,13 @@
 <p><img src="/images/blog/VirtualizedDAGConsole.png" alt="" /></p>
 <p>The division of the component satisfy my needs and I desired to alter the composition as little as possible. It ended that I only had to add two different components from the <a href="https://github.com/bvaughn/react-virtualized">React-Virtualized library</a> without having to change the UL&gt;LI&gt;DIV composition.</p>
 <p>The first step is to get the library. This is straightforward if you are using NPM. Indeed, I am using TypeScript and the library has a @type package.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">npm install react-virtualized --save npm install @type/react-virtualized --save-dev 
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">npm install react-virtualized --save npm install @type/react-virtualized --save-dev 
 </code></pre>
 <p>However, with TypeScript 3.0rc, I had an issue with the definition file. It has some conflicting type which required me to indicate to TypeScript to forgo analyzing the definition file. It doesn't remove the strength of having types, but TypeScript won't use it when compiling. In your tsconfig.json file, you shall add and enable "skipLibCheck".</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight"> "skipLibCheck": true 
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight"> "skipLibCheck": true 
 </code></pre>
 <p>The next step is to add the AutoSizer and the List component from the library to the existing code. Few important details. First, you must have a "ref" to the list. The reference gives us a pointer to force redraw when we know the user change the height of an existing component. We will see the code later. Second, we must provide a function that will return the row height. The property "rowHeight" is a must in the situation where the row can change depending of some characteristic of this one. In my case, the row will be either 15px or 300px depending if this one is collapsed or expanded.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">&lt;ul className="ConsoleMessage-items"&gt; 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">&lt;ul className="ConsoleMessage-items"&gt; 
   &lt;AutoSizer&gt; 
     {
       ({ width, height }) =&gt; ( 
@@ -29,10 +29,10 @@
 &lt;/ul&gt; 
 </code></pre>
 <p>The AutoSizer component has an unusual way to use its children by allowing a width and a height. You can see an extract of the definition file under this paragraph. The Size type has a width and a height determined by the AutoSizer.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">children: (props: Size) =&gt; React.ReactNode; 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">children: (props: Size) =&gt; React.ReactNode; 
 </code></pre>
 <p>The List component is wrapping our rows and will generate one row for every rowCount provided in the properties. It means that I had to modify my code because I was mapping my collection to render a ConsoleMessagesLine and that now it will to a for-loop and I'll have to indicate by index what element to render.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">&lt;ul className="ConsoleMessage-items"&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">&lt;ul className="ConsoleMessage-items"&gt; {
   this.props.listMessages.filter((m) =&gt; this.logics
     .filterConsoleMessages(m, this.state.consoleMessageOptions.performance, this.state.consoleMessageOptions.size))
     .map((m: MessageClient) =&gt; &lt;ConsoleMessagesLine key={this.logics.getMessageKey(m)} 
@@ -42,19 +42,19 @@
 &lt;/ul&gt; 
 </code></pre>
 <p>The first modification from the code above was that I was filtering in the rendering. Instead, I have to have this list somewhere to be sure to be able to refer by index to it. I leveraged the static React function to derive from the props into the state of the components a filtered collection.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">public static getDerivedStateFromProps( props: ConsoleMessagesProps, state: ConsoleMessagesState ): ConsoleMessagesState { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">public static getDerivedStateFromProps( props: ConsoleMessagesProps, state: ConsoleMessagesState ): ConsoleMessagesState { 
   const allData = props.listMessages.filter(m =&gt; 
     ConsoleMessages.logics.filterConsoleMessages( m, state.consoleMessageOptions.performance, state.consoleMessageOptions.size ) ); 
   return { ...state, filteredData: allData }; 
 } 
 </code></pre>
 <p>The next step was to create two functions. One for the dynamic height determination of each row and one to the actual render function of a single line that will use the data we just stored in the component's state. The dynamic height is a single line function, that use on its turn the list as well.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">private calculateRowHeight(params: Index): number { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">private calculateRowHeight(params: Index): number { 
   return this.openMessages[this.state.filteredData[params.index].uuid] === undefined ? 15 : 300; 
 } 
 </code></pre>
 <p>As you can see, it goes into the filtered list, it uses the parameter that has an index and determines whether the unique identifier of the object is in a map that we populate when the user clicks the row. I have a uuid field, but it could be anything that is proper to your logic and code. For the curious about the "openMessages" map, it is a private member of the component that adds and remove element depending on the toggle of each row. Small but important detail, because we are modifying the height of an element of the virtualization, we must expliclity and manually invoke a recalculus of the rows. This is possible by calling "recomputeRowHeights" from the list. The reference to the list is handy because we can invoked in the function that toggle the height.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">private lineOnClick(msg: MessageClient, isOpen: boolean): void { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">private lineOnClick(msg: MessageClient, isOpen: boolean): void { 
   const unique = msg.uuid; 
   if (isOpen) { 
     this.openMessages[unique] = unique; 
@@ -67,7 +67,7 @@
 } 
 </code></pre>
 <p>The last crucial piece is the render of the element. Similarly to the function to determine the height of the row, the parameter gives the index of the element to render.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">private renderRow(props: ListRowProps): React.ReactNode { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">private renderRow(props: ListRowProps): React.ReactNode { 
   const index = props.index; 
   const m = this.state.filteredData[index]; 
   return ( &lt;ConsoleMessagesLine key={m.uuid} 

@@ -2,7 +2,7 @@
 <p>Before debugging using Visual Studio Code (VSCode), you need to have VsCode and <a href="https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb">CodeLLDB extension</a>.</p>
 <h1>Launch File</h1>
 <p>VsCode's debug configuration file is under <code>.vscode/launch.json</code>. You need two entries: one for your executable (command line) to test the <em>cli</em> and one for the unit tests.</p>
-<pre class="language-json"><code class="language-json code-highlight">{
+<pre class="language-json" tabindex="0"><code class="language-json code-highlight">{
   "version": "0.2.0",
   "configurations": [
     {
@@ -49,7 +49,7 @@
 }
 </code></pre>
 <p>One detail that is not obvious is how to have default arguments for your executable. The configuration has a <code>args</code> property that allows an array of arguments. Each element of the array must be what you would separate by a space. For example, if you type normally <code>myApp.exe --argument1 value1</code>, then in the <code>args</code>, you write:</p>
-<pre class="language-json"><code class="language-json code-highlight">"args": [
+<pre class="language-json" tabindex="0"><code class="language-json code-highlight">"args": [
   "--argument1",
   "value1",
 ]

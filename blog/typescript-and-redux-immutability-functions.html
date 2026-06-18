@@ -3,10 +3,10 @@ I am using pure JavaScript cloning mechanism and have unit tests for each of my 
 It works great, it's easy to understand, and doesn't require any dependencies.
 However, few utility functions ease the whole process mostly when using dictionary which is present everywhere since I an normalizing my data in the Redux store to avoid having any duplicated values.</p>
 <p>First, I am using an alias for the index signature just to avoid repeating the square brackets syntax everywhere. This doesn't provide much but is worth mentioning because all the future function I'll share use this interface.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export interface GenericMap&lt;T&gt; { [id: string]: T; } 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export interface GenericMap&lt;T&gt; { [id: string]: T; } 
 </code></pre>
 <p>The first useful function is to add into an array an object without mutating this one. This function relies on the array's function <code>slice</code> to return a copy of the array.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export function addInArrayIfNotPresent&lt;T&gt;(array: T[], item: T): T[] { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export function addInArrayIfNotPresent&lt;T&gt;(array: T[], item: T): T[] { 
   let returnArray: T[] = []; 
   if (array !== undefined) { 
     returnArray = array.slice(); 
@@ -21,7 +21,7 @@ However, few utility functions ease the whole process mostly when using dictiona
 const newReferenceArrayWithItemsAdded = addInArrayIfNotPresent(existingArray, itemsToAdd); 
 </code></pre>
 <p>The second function is to add a new element in a map without mutating the existing dictionary. This is useful because it handles the cloning and swap the value into the cloned dictionary.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export function alterImmutablyMap&lt;T&gt;(stateMap: GenericMap&lt;T&gt;, key: number | undefined, modelMember: T): GenericMap&lt;T&gt; { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export function alterImmutablyMap&lt;T&gt;(stateMap: GenericMap&lt;T&gt;, key: number | undefined, modelMember: T): GenericMap&lt;T&gt; { 
   if (key !== undefined) { 
     const cloneStateMap = Object.assign({}, stateMap); 
     cloneStateMap[key] = modelMember; 
@@ -34,7 +34,7 @@ const newReferenceArrayWithItemsAdded = addInArrayIfNotPresent(existingArray, it
 const newDictionary = alterImmutablyMap(existingDictionary, key, value); 
 </code></pre>
 <p>The third function allows changing a property of an existing object in a dictionary. The function is useful if the user change a single property and you do not want to change to extract the current object and manually clone it to set the new value into a new clone of the object.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export function alterImmutablyMapMember&lt;T, K extends keyof T&gt;(stateMap: GenericMap&lt;T&gt;, key: number | undefined, modelMember: K, value: T[K]): GenericMap&lt;T&gt; { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export function alterImmutablyMapMember&lt;T, K extends keyof T&gt;(stateMap: GenericMap&lt;T&gt;, key: number | undefined, modelMember: K, value: T[K]): GenericMap&lt;T&gt; { 
   if (key !== undefined) { 
     if (stateMap[key] !== undefined) { 
       const cloneStateMap = Object.assign({}, stateMap); 

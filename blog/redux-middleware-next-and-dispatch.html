@@ -2,7 +2,7 @@
 <p>Before digging into the main topic, let's illustrate the flow on which we will analyze the question.</p>
 <p><img src="/images/blog/MiddlewareNextDispatch.png" alt="" /></p>
 <p>The illustration works from top to bottom. A component dispatches an action with the <code>dispatch**</code>function from Redux library. The action contains a type (string) and a payload (data). Middlewares are injected in the flow with Redux at the configuration stage of Redux with the function <code>applyMiddleware</code>. For the hypothetic case illustrated, the configuration would be like the following code.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">import { createStore, applyMiddleware } from "redux";
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">import { createStore, applyMiddleware } from "redux";
 const appliedMiddleware = applyMiddleware(
   middleware1,
   middleware2,

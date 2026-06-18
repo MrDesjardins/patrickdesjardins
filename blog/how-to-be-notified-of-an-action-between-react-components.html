@@ -2,7 +2,7 @@
 <p>First of all, the application remains almost the same as previously in terms of actors. The following image shows the user interface. Each green rectangle illustrates a component. <code>div</code> inside a component are purple.</p>
 <p><img src="/images/blog/ReactSiblingsCommunication.png" alt="" /></p>
 <p>I've removed all the superfluous properties from the two siblings of the previous article. It still has the context provider at the top, allowing it to perform changes and have the underlying component to be notified.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export default function App() {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export default function App() {
   return (
     &lt;div className="App"&gt;
       &lt;CommunicationContextProvider&gt;
@@ -17,7 +17,7 @@
 </code></pre>
 <p>The goal is that the button residing in <code>&lt;Sibling2 /&gt;</code> makes the <code>&lt;Sibling1 /&gt;</code> textbox to change to its initial value.</p>
 <p>The component that initiates the action to reset uses the context. So in that example, it calls <code>context.reset</code>.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export const Sibling2 = () =&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export const Sibling2 = () =&gt; {
   const context = useContext(CommunicationContext);
   return (
     &lt;div id="sibling2"&gt;
@@ -36,14 +36,14 @@
 };
 </code></pre>
 <p>The context has the following contract:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export interface Communication {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export interface Communication {
   reset: () =&gt; void;
   isResetting: boolean;
 }
 </code></pre>
 <p>The reset function invokes the action to reset the text box in the other component. We need to add a second property in the interface: <code>isResetting</code> to indicate to the consumer the reset to reset its text box. The whole idea sits on the <code>boolean</code> value. We will toggle the value at each action. Changing the value from <code>false</code> to <code>true</code> and then <code>false</code> and so on will change the context's value, making the components rely on the context to re-render.</p>
 <p>The consumer of the action, the first sibling that has the text box, has a listener on the boolean value of the context.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export const Sibling1 = () =&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export const Sibling1 = () =&gt; {
   const DEFAULT_VALUE = "Sibling 1 default value";
   const [val, setVal] = useState(DEFAULT_VALUE);
   const context = useContext(CommunicationContext);

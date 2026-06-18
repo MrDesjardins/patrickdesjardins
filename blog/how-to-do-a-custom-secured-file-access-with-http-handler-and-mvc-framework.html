@@ -1,12 +1,12 @@
 <!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Patrick Desjardins Blog - How to do a custom secured file access with Http Handler and MVC framework</title><meta name="description" content="How to do a custom secured file access with Http Handler and MVC framework"><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-CZbWyyk4.css"><link rel="stylesheet" href="/assets/static-modules.css"></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><header><h1 class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</h1><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main class="app_blog__components_BlogBody__main"><h2 class="app_blog__components_BlogBody__heading">How to do a custom secured file access with Http Handler and MVC framework</h2><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: 2012-09-15</p><p>In diverse scenario you could require to give to your user files. You can let them access them directly by having a directory of files and give the complete path to the file but this can lead to different issue. First of all, this will bind the server folders/files structures to the url that you give the the user which might not be interesting. Second, it doesn't give you any control over the files shared. Third, you may want to add algorithm for caching or give expiry to some files. All those customs code can't be done by giving a direct access to files, the solution : using Http Handler.</p>
 <p><a href="./how-to-access-session-information-from-httphandler-ashx-file%22">HttpHandler was there in Asp.Net traditional</a> and in Asp.Net MVC is even easier because not configuration is required for IIS.</p>
 <p>First, you need to add a new route to let know the MVC routing system that the url sent is not going to go to a traditional controller but to go to your http handler.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class ExternalFileRouteHandler : IRouteHandler { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class ExternalFileRouteHandler : IRouteHandler { 
   public IHttpHandler GetHttpHandler(RequestContext requestContext) { } 
 } 
 </code></pre>
 <p>Inside the Global.asax.cs you need to add your route. You need to put the new route BEFORE the default route because otherwise it won't trig the route. The reason is that because the default route has default parameter that 2 parameters will automatically goes inside the Default route. But, if you set the FilesRoute before, the condition will match and this one will be executed.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public static void RegisterRoutes(RouteCollection routes) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public static void RegisterRoutes(RouteCollection routes) { 
   routes.IgnoreRoute("{resource}.axd/{*pathInfo}"); 
   routes.Add("FilesRoute", new Route("files/{uniqueidentifier}", new ExternalFileRouteHandler())); 
   routes.MapRoute( "Default", 
@@ -20,7 +20,7 @@
 } 
 </code></pre>
 <p>At this moment, the code doesn't compile because our <code>IRouteHandler</code> doesn't return anything from the <code>GetHttpHandler</code>. This is why we need to create a class that will inherit of <code>IHttpHandler</code>.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class ExternalFileHandler : IHttpHandler {
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class ExternalFileHandler : IHttpHandler {
 
 public void ProcessRequest(HttpContext context) { }
 
@@ -35,7 +35,7 @@ public class ExternalFileRouteHandler : IRouteHandler {
 <p>At this point, we have nothing to do anymore from the perspective of the url. Every call will look like this:</p>
 <p><code>http://yourwebsite.com/files/yourIdenfierHere.abc</code></p>
 <p>Now, you need to get the file but first let's get some information about the request like the request itself, the response where we will send back the image and some information about the server and what file is requested.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class ExternalFileHandler : IHttpHandler { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class ExternalFileHandler : IHttpHandler { 
   public void ProcessRequest(HttpContext context) {
 
     var response = context.Response; 
@@ -51,7 +51,7 @@ public class ExternalFileRouteHandler : IRouteHandler {
 <p><img src="/images/blog/ExternalFileHandlerSimple-400x123.png" alt="" /></p>
 <p>The next step is to check if the file really exist. In fact, we need to check if the unique identifier match a file. If it's not the case, in a scenario of a people trying to get some body else file, it should return a message.</p>
 <p><img src="/images/blog/filenotfound.png" alt="" /></p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public void ProcessRequest(HttpContext context) {
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public void ProcessRequest(HttpContext context) {
 
   var response = context.Response; 
   var request = context.Request; 
@@ -66,7 +66,7 @@ public class ExternalFileRouteHandler : IRouteHandler {
 </code></pre>
 <p>As you can see, the file came from GetFromPersistenceStorage method. This method in reality would go into the database and search the file from the unique file identifier. This field in the database should be indexed and unique.</p>
 <p>The next step is to check if the file is really on the server. It might be stored correctly into the database but not available on the server.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public void ProcessRequest(HttpContext context) {
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public void ProcessRequest(HttpContext context) {
 
   var response = context.Response; 
   var request = context.Request; 
@@ -99,7 +99,7 @@ public class ExternalFileRouteHandler : IRouteHandler {
 <p><img src="/images/blog/messagefromfile.png" alt="" /></p>
 <p>You can now secure the file. This can be done in many ways. First, I suppose that the database table that contain every files will have some kind of relation between the user and files. Let say that every files has the possibility to allow many users, that mean the you should have 3 tables : User, UsersFiles and Files. UsersFiles table contain the id of the User that can access the file and the id of the file.</p>
 <p>So the FileInformation class that we have defined earlier would have a List that can access the file. A small modification will be required to get the current user from the session and to check if the file allow the user.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public void ProcessRequest(HttpContext context) {
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public void ProcessRequest(HttpContext context) {
 
   var response = context.Response; 
   var request = context.Request; 

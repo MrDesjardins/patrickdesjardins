@@ -5,7 +5,7 @@
 <p><img src="/images/blog/mappingstoredprocedure-400x340.png" alt="" /></p>
 <p>This will popup the "Mapping Details". From there, it will be possible to select a function for each functions. If nothing is present in the dropdown, you'll need to add the stored procedure to the entity model. To do, right click on the model, select to generate the model from the database and select under Stored Procedure the desired one. After, come back to the mapping details.</p>
 <p>To test, lets use the Microsoft Northwind database and add inside the Sql server manager this new stored procedure:</p>
-<pre class="language-sql"><code class="language-sql code-highlight">CREATE PROCEDURE UpdateRegion ( @id INT ,@txt VARCHAR(50) ) AS BEGIN
+<pre class="language-sql" tabindex="0"><code class="language-sql code-highlight">CREATE PROCEDURE UpdateRegion ( @id INT ,@txt VARCHAR(50) ) AS BEGIN
  UPDATE region SET RegionDescription = @txt WHERE RegionID = @id 
 END 
 </code></pre>
@@ -13,7 +13,7 @@ END
 <p><img src="/images/blog/mappingUpdateStoredProcedure-400x132.png" alt="" /></p>
 <p>Also, you do not need to modify all of the 3 functions, only those you want.</p>
 <p>To see the difference. Lets try to change the region without the stored procedure mapped and with to see how the generated SQL change.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">var db = new NorthWindContainer(); var region = db.Region.First(); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">var db = new NorthWindContainer(); var region = db.Region.First(); 
 Console.WriteLine("The first region description is : " + region.RegionDescription); 
 region.RegionDescription = "Est"; 
 db.SaveChanges(); region = db.Region.First(); 
@@ -21,10 +21,10 @@ Console.WriteLine("The first region description is : " + region.RegionDescriptio
 Console.ReadLine(); 
 </code></pre>
 <p>This produce without the stored procedure mapped:</p>
-<pre class="language-sql"><code class="language-sql code-highlight"> exec sp_executesql N'update [dbo].[Region] set [RegionDescription] = @0 where ([RegionID] = @1) ',N'@0 nchar(50),@1 int',@0=N'Est',@1=1 
+<pre class="language-sql" tabindex="0"><code class="language-sql code-highlight"> exec sp_executesql N'update [dbo].[Region] set [RegionDescription] = @0 where ([RegionID] = @1) ',N'@0 nchar(50),@1 int',@0=N'Est',@1=1 
 </code></pre>
 <p>And with:</p>
-<pre class="language-sql"><code class="language-sql code-highlight"> exec [dbo].[UpdateRegion] @id=1,@txt='Est' 
+<pre class="language-sql" tabindex="0"><code class="language-sql code-highlight"> exec [dbo].[UpdateRegion] @id=1,@txt='Est' 
 </code></pre>
 <p>Before going to the next part of this post, in the mapping details theirs 2 columns that we have not talk yet. The first one is "Use Original Value" and the second one is "Rows Affected Parameter". The original value is a boolean that is to false by default. If you change it to true, this will pass to the database the original loaded value of the entity. This can be used in situation where multiple concurrences could have changed the value and you want the original one. The second columns is the "Rows Affected Parameter". This one can be used if you have an integer parameter with an output specification in the stored procedure that will return the number of rows that has been changed. In the example above, that would be the value 1 that would have been passed if we had changed the stored procedure to have an additional parameter of type <code>Int ( @paramReturnValue integer OUTPUT)</code>.</p>
 <h2>Executing a function in Sql Server with Entity Framework</h2>
@@ -33,7 +33,7 @@ Console.ReadLine();
 <p>Once added, the stored procedure is set under the Function Imports of the Entity Framework Model.</p>
 <p><img src="/images/blog/addedfunction.png" alt="" /></p>
 <p>When it's added, you can do the call by using directly the object context followed by the name of the function. At anytime you can change the name of it by going in the Model Browser and going in the property of the function.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> db.UpdateRegion(1, "Estern!"); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> db.UpdateRegion(1, "Estern!"); 
 </code></pre>
 <p>If the stored procedure return a complex entity, the wizard will let you create the complex entity and you will be able to use it from the code. If it's a scalar, the wizard will let you select the good one and you will be able to use it.</p>
 </div></main><footer><div class="app_blog__components_BlogBody__paginationBar"><div class="app_blog__components_BlogBody__paginationTitle">Chronological Blog Articles by Page</div><div class="app_blog__components_BlogBody__paginationLinks"><a href="/blog/page/1">1</a><a href="/blog/page/2">2</a><a href="/blog/page/3">3</a><a href="/blog/page/4">4</a><a href="/blog/page/5">5</a><a href="/blog/page/6">6</a><a href="/blog/page/7">7</a><a href="/blog/page/8">8</a><a href="/blog/page/9">9</a><a href="/blog/page/10">10</a><a href="/blog/page/11">11</a><a href="/blog/page/12">12</a><a href="/blog/page/13">13</a><a href="/blog/page/14">14</a><a href="/blog/page/15">15</a><a href="/blog/page/16">16</a><a href="/blog/page/17">17</a><a href="/blog/page/18">18</a><a href="/blog/page/19">19</a><a href="/blog/page/20">20</a><a href="/blog/page/21">21</a><a href="/blog/page/22">22</a><a href="/blog/page/23">23</a><a href="/blog/page/24">24</a><a href="/blog/page/25">25</a><a href="/blog/page/26">26</a><a href="/blog/page/27">27</a><a href="/blog/page/28">28</a><a href="/blog/page/29">29</a><a href="/blog/page/30">30</a><a href="/blog/page/31">31</a><a href="/blog/page/32">32</a><a href="/blog/page/33">33</a><a href="/blog/page/34">34</a><a href="/blog/page/35">35</a><a href="/blog/page/36">36</a><a href="/blog/page/37">37</a><a href="/blog/page/38">38</a><a href="/blog/page/39">39</a><a href="/blog/page/40">40</a><a href="/blog/page/41">41</a><a href="/blog/page/42">42</a><a href="/blog/page/43">43</a><a href="/blog/page/44">44</a><a href="/blog/page/45">45</a><a href="/blog/page/46">46</a><a href="/blog/page/47">47</a><a href="/blog/page/48">48</a><a href="/blog/page/49">49</a><a href="/blog/page/50">50</a><a href="/blog/page/51">51</a><a href="/blog/page/52">52</a><a href="/blog/page/53">53</a><a href="/blog/page/54">54</a><a href="/blog/page/55">55</a><a href="/blog/page/56">56</a><a href="/blog/page/57">57</a><a href="/blog/page/58">58</a><a href="/blog/page/59">59</a><a href="/blog/page/60">60</a><a href="/blog/page/61">61</a><a href="/blog/page/62">62</a><a href="/blog/page/63">63</a><a href="/blog/page/64">64</a><a href="/blog/page/65">65</a><a href="/blog/page/66">66</a><a href="/blog/page/67">67</a><a href="/blog/page/68">68</a><a href="/blog/page/69">69</a><a href="/blog/page/70">70</a><a href="/blog/page/71">71</a><a href="/blog/page/72">72</a><a href="/blog/page/73">73</a><a href="/blog/page/74">74</a><a href="/blog/page/75">75</a><a href="/blog/page/76">76</a><a href="/blog/page/77">77</a><a href="/blog/page/78">78</a><a href="/blog/page/79">79</a><a href="/blog/page/80">80</a><a href="/blog/page/81">81</a><a href="/blog/page/82">82</a><a href="/blog/page/83">83</a><a href="/blog/page/84">84</a></div></div></footer></div></div><script type="module" src="/assets/client-DqHn2B8k.js"></script></body></html>

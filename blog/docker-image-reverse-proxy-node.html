@@ -11,7 +11,7 @@
 <p>The image illustrates the development and production Docker images. At the top, the development where NGINX is fronting all the requests and deciding whether to direct the request to the Node Dev Server (CRA, ViteJs, etc). It redirects the request to the backend. At the bottom of the illustration is the production environment. NGINX remains the one taking all the requests and redirecting, that time, no need to have inside the Docker container a second Node Dev Server, only serving the built files.</p>
 <h1>Docker Configuration</h1>
 <p>In my case, I was migrating a project relying on the Node Docker image for development and an NGINX image for production. So, that is the first change. Both now depend on the NGINX docker image, but the development one will have to install Node and run it inside the container.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">FROM nginx:1.21.6 AS development
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">FROM nginx:1.21.6 AS development
 
 # Install Python and NPM
 RUN apt-get update &amp;&amp; apt-get install -y \
@@ -35,7 +35,7 @@ CMD npm run start:development &amp; nginx -g "daemon off;"
 <p>Before building the code, a copy of NGINX configuration must be done. The file <code>nginx.development.conf</code> is unique for development and contains different reverse proxy instructions than in production. I'm skipping some tasks you can add between your configuration and starting because it is irrelevant. What is essential is the <code>CMD</code> that starts the Node Dev server and, in parallel, starts NGINX.</p>
 <p><img src="/images/blog/reverseproxy-dev-port.png" alt="" /></p>
 <p>The Node Dev Server runs on port <code>3000</code>, NGINX runs on port <code>80</code>. The Docker image port is set to : <code>80:80</code>. So, it means that any request that reach the Docker container on port 80 is redirected to the NGINX server. Then, NGINX can move that request to the backend API (different IP and port) or redirect it internally to port <code>3000</code>. The redirection is called reverse proxy and is all performed inside the <code>nginx_developement.conf</code> file.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">upstream backendupstream {
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">upstream backendupstream {
     server backend:80;
 }
 
@@ -75,7 +75,7 @@ server {
 <p>An important detail is the trailing <code>/</code> at the end of the <code>proxy_pass</code>. It allows trimming the <code>/api/</code> from the URL when sending the request to the backend API. That way, the backend API is unaware that it was a reverse proxy using an URL different than the expected one. The backend API expects the request to reach with <code>/endpoint1/...</code> format and not <code>/api/endpoints1/...</code>. Avoiding the <code>/</code> would make the backend receive the full original URL sent from the browser with the <code>api</code> prefix. Most of the time, you want to avoid it because the routing system of your backend shouldn't mingle in the business of custom reverse proxy URL logic.</p>
 <h1>Docker Configuration Production</h1>
 <p>Some detail must be adjusted for production. First, NGINX configuration needs to redirect to a different upstream. The Docker service name is not possible anymore as (in my case) I'm deploying with Kubernetes. Fortunately, a similar concept exists, and referring to a Kubernetes service (load-balancer) does the trick. The second modification is the <code>/</code> proxy_pass that must not redirect to a local Node Dev Server but serve the JavaScript/Html/CSS static files.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">upstream backendupstream {
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">upstream backendupstream {
     server backend-service:80;
 }
 

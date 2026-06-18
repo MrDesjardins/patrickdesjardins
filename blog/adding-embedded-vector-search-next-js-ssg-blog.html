@@ -6,7 +6,7 @@
 <h1>Generation of the Vector File</h1>
 <p>The generation of the vector file is less than 25 lines of Python code. The code leverages the <a href="https://www.sbert.net/">Sentence Transformers</a> library to convert the content of each blog post into a vector representation. The vectors are stored in a JSON file along with the metadata of each post (path, filename, and title). The metadata index is the same as the vector index, so the client can easily find the post corresponding to the vector search result. The metadata is used to display the search results in the React component.</p>
 <p>Here is a snippet of the code that generates the vector file:</p>
-<pre class="language-Python"><code class="language-Python code-highlight">def generate_index():
+<pre class="language-Python" tabindex="0"><code class="language-Python code-highlight">def generate_index():
  model = SentenceTransformer(MODEL)
  index = []
  embeddings = []
@@ -39,7 +39,7 @@
 <h1>Searching on the Client-Side</h1>
 <p>The search runs on the browser, but the blog is static. Thus, we need to split the TypeScript file into two parts: the client-side code that runs in the browser and the server-side code that runs at build time.</p>
 <p>For the SSG, we instruct Next.js to Use the "next/dynamic" import, ensuring the component is only rendered on the client side.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">import dynamic from "next/dynamic";
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">import dynamic from "next/dynamic";
 
 // Only rendered client-side - never during `next build`
 const SearchClient = dynamic(async () =&gt; await import("./SearchClient"), {
@@ -52,7 +52,7 @@ export default function Page(): React.ReactElement {
 </code></pre>
 <p>The <code>SearchClient</code> component is responsible for handling the user input, converting it into a vector, and searching the local JSON file for similar posts. It uses the same model as the one used to generate the vector file.</p>
 <p>The core of the code is to use the <code>@xenova/transformers</code> library to load the model and perform the vector search.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">  useEffect(() =&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">  useEffect(() =&gt; {
     const loadAll = async (): Promise&lt;void&gt; =&gt; {
       const [indexRes, embRes] = await Promise.all([
         fetch("/output/index.json"),
@@ -78,7 +78,7 @@ export default function Page(): React.ReactElement {
   }, []);
 </code></pre>
 <p>Once the index and embeddings are loaded, the next function reads the user input, converts it into a vector, and searches the local JSON file for similar posts:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">  const handleSearch = useCallback(async (): Promise&lt;void&gt; =&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">  const handleSearch = useCallback(async (): Promise&lt;void&gt; =&gt; {
     if (embedder === null || query === "") {
       return;
     }
@@ -104,7 +104,7 @@ export default function Page(): React.ReactElement {
 </code></pre>
 <h1>Challenges</h1>
 <p>I had several issues building the code using Next.js. The problem is a few dependencies that are not compatible with the browser. The solution was to use Webpack override for Next.js to exclude the problematic dependencies. The code below is added in the <code>next.config.js</code> file:</p>
-<pre class="language-js"><code class="language-js code-highlight">    config.module.rules.unshift({
+<pre class="language-js" tabindex="0"><code class="language-js code-highlight">    config.module.rules.unshift({
       test: /\.node$/,
       use: "null-loader",
     });
@@ -126,7 +126,7 @@ export default function Page(): React.ReactElement {
 </code></pre>
 <p>The code resolves a few problematic dependencies using a loop fake implementation. The <code>noop-onnxruntime-node</code> and <code>noop-sharp</code> directories contain a single file that exports an empty object.</p>
 <p>The <code>null-loader</code> is used to ignore the <code>.node</code> files that are not compatible with the browser.</p>
-<pre class="language-js"><code class="language-js code-highlight">export default {};
+<pre class="language-js" tabindex="0"><code class="language-js code-highlight">export default {};
 </code></pre>
 <h1>Automating with GitHub Actions</h1>
 <p>When I wrote this blog article, I had not modified the Github Action because I had an amazing 1 minute 40 seconds build time. I was foreseeing that the vector search would add a significant amount of time. Not because the execution is slow but because the Python code needs to run and the model needs to be downloaded. I was surprised that the build time was only 2 minutes 30 seconds. The Python code takes approximately 50 seconds to run, but it includes 90 seconds of download and installation time for the Python dependencies. I decided to keep the GitHub Action since it does everything in 4 minutes and 10 seconds, which is a reasonable time for a personal website.</p>

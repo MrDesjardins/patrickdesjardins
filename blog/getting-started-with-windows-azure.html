@@ -4,7 +4,7 @@
 <p>To upload your website, you have several option. One of these is to use Visual Studio with a Web Publish. Windows Azure gives an automatically generated publish file.</p>
 <p><img src="/images/blog/DownloadPublishProfileWindowsAzure-400x261.png" alt="" /></p>
 <p>This profile can be imported inside your solution once downloaded on you development environment. Right click the web project and select publish, the first time you need to select import and select the downloaded file. Later, you will just need to select the configuration. The publish file is an Xml file.</p>
-<pre class="language-xml"><code class="language-xml code-highlight"> &lt;publishData&gt;
+<pre class="language-xml" tabindex="0"><code class="language-xml code-highlight"> &lt;publishData&gt;
 
 &lt;publishProfile profileName="workoutplanner - Web Deploy" publishMethod="MSDeploy" publishUrl="waws-prod-blu-003.publish.azurewebsites.windows.net:443" msdeploySite="workoutplanner" userName="$workoutplanner" userPWD="XXX" destinationAppUrl="http://workoutplanner.azurewebsites.net" SQLServerDBConnectionString="" mySQLDBConnectionString="" hostingProviderForumLink="" controlPanelLink="http://windows.azure.com"&gt;&lt;databases/&gt;&lt;/publishProfile&gt;
 
@@ -27,10 +27,10 @@
 <p>Msg 40514, Filegroup reference and partitioning scheme' is not supported in this version of SQL Server</p>
 </blockquote>
 <p>This is because you might have in you create table statement <code>ON [PRIMARY]</code> keywork which is not supported.</p>
-<pre class="language-sql"><code class="language-sql code-highlight">CREATE TABLE [dbo].[Exercises]( [Id] [int] IDENTITY(1,1) NOT NULL, [Name_French] [nvarchar](max) NULL, [Name_English] [nvarchar](max) NULL, [Muscle_Id] [int] NULL, CONSTRAINT [PK_dbo.Exercises] PRIMARY KEY CLUSTERED ( [Id] ASC )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY] ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY] 
+<pre class="language-sql" tabindex="0"><code class="language-sql code-highlight">CREATE TABLE [dbo].[Exercises]( [Id] [int] IDENTITY(1,1) NOT NULL, [Name_French] [nvarchar](max) NULL, [Name_English] [nvarchar](max) NULL, [Muscle_Id] [int] NULL, CONSTRAINT [PK_dbo.Exercises] PRIMARY KEY CLUSTERED ( [Id] ASC )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY] ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY] 
 </code></pre>
 <p>Should become</p>
-<pre class="language-sql"><code class="language-sql code-highlight">CREATE TABLE [dbo].[Exercises]( [Id] [int] IDENTITY(1,1) NOT NULL, [Name_French] [nvarchar](max) NULL, [Name_English] [nvarchar](max) NULL, [Muscle_Id] [int] NULL, CONSTRAINT [PK_dbo.Exercises] PRIMARY KEY CLUSTERED ( [Id] ASC ) ) 
+<pre class="language-sql" tabindex="0"><code class="language-sql code-highlight">CREATE TABLE [dbo].[Exercises]( [Id] [int] IDENTITY(1,1) NOT NULL, [Name_French] [nvarchar](max) NULL, [Name_English] [nvarchar](max) NULL, [Muscle_Id] [int] NULL, CONSTRAINT [PK_dbo.Exercises] PRIMARY KEY CLUSTERED ( [Id] ASC ) ) 
 </code></pre>
 <p>From there, open your solution and change the connection string to setup your new database in the Release version. This need to have a connection string to the database your just created. With Windows Azure, it's easy because it generates for you the connection string.</p>
 <p><img src="/images/blog/ConnectionStringWindowsAzureDatabase-400x386.png" alt="" /></p>

@@ -3,7 +3,7 @@
 <p>The parent renders the child that renders the list of elements, and each element is animated in a staggered fashion. The tricky part is how do you animate when the parent component is unmounted to have the children unmounted that trigger the list of elements to be animated oppositely from the mounted animation?</p>
 <h1>Structure of the Prototype</h1>
 <p>First, let's define what we need. The application needs to host a component that will remain mounted. This mounted component is called <code>Parent</code>.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export default function App() {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export default function App() {
   return (
     &lt;div className="App"&gt;
       &lt;div className="Main"&gt;
@@ -16,7 +16,7 @@
 }
 </code></pre>
 <p>The parent contains a component that will be mounted and unmounted. The component is named <code>Child</code>. That is the one we want to have an animation on many items to fade in and out as the component mount and unmount.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export const Parent = () =&gt; {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export const Parent = () =&gt; {
   const [mountParentCount, setParentMountCount] = useState(0);
   useEffect(() =&gt; {
     console.log("Parent Mounting");
@@ -42,7 +42,7 @@
 </code></pre>
 <p>The <code>Parent</code> component has a <code>useEffect</code> to have some insight into whether the <code>Parent</code> component mounts and unmounts. Otherwise, it has a <code>useState</code> that will force a render of the <code>Parent</code>. Also, there is a button. Every click changes the state making a new render of the <code>Parent</code>. At that point, the <code>Child</code> remains the same as it does not have any change and hence does not mount and unmount on the button click. We will change that soon.</p>
 <p>Finally, we need to define the <code>Child</code>. Similarly, we will have a <code>useEffect</code> to see when the component mounts and unmounts.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">export const Child = () =&gt; {
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export const Child = () =&gt; {
   useEffect(() =&gt; {
     console.log("Child Mounting");
     return () =&gt; {
@@ -66,14 +66,14 @@
 </code></pre>
 <h1>Mounting and Unmounting</h1>
 <p>To perform the desired effect of mounting and unmounting the <code>Child</code> component on the button click, React must know that the <code>Child</code> has changed. The usage of <code>key</code> does the trick. Hence, in the <code>Parent</code> container, we will assign a unique <code>key</code> property to the <code>Child</code> component that is crafted with the incremental state.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">&lt;Child key={"unique_" + mountParentCount} /&gt;
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">&lt;Child key={"unique_" + mountParentCount} /&gt;
 </code></pre>
 <h1>Animation</h1>
 <p>The animation occurs inside the <code>Child</code> components. The idea is to have each <code>li</code> having an opacity change from 0 to 1 and simultaneously have the <code>li</code> move from right to left with a rotating effect.</p>
 <video src="/videos/blog/FramerMotionAnimationMountUnmount.mp4" controls/>
 <p>React Framer Motion has the concept of <code>Variants</code> that define specific animation by name. We will define two sets of variants. One set that will take care of the opacity, movement and rotation on each <code>LI</code>. The second variant will take care of the <code>UL</code> to ensure each <code>LI</code> animation is not coinciding: we want each ``LI<code>to stagger its animation. That way, the visualization is more fluid with each</code>LI` starting with a slight delay between each other.</p>
 <p>The variants for the <code>LI</code> are called <code>inScreen</code> and <code>outScreen</code>. The name can be anything you like, but you need to be consistent between all your animation sets to ensure they are performed together. In the <code>LI</code> case, we see we are setting the <code>x</code> position to 0, and when the component leaves the screen, it moves to the right of 40 pixels in half a second.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">  const variantsList: Variants = {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">  const variantsList: Variants = {
     inScreen: {
       x: 0,
       rotate: 0,
@@ -87,7 +87,7 @@
   };
 </code></pre>
 <p>The other set of variants is more complex because it has a staggering effect.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">  const variants: Variants = {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">  const variants: Variants = {
     inScreen: {
       opacity: 1,
       transition: {
@@ -117,7 +117,7 @@
 <p>The illustration above shows when each of the <code>UL</code> and <code>LI</code> gets animated with the above variants.</p>
 <h1>Framer Motion</h1>
 <p>To apply the variant, we need to rely on Framer Motion and it means some adjustment. First of all, we cannot use the <code>UL</code> and <code>LI directly.</code> The <code>Child</code> needs to use the <code>motion.ul</code> and <code>motion.li</code>, which has additional property like setting the variant and which step to use.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">&lt;motion.ul
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">&lt;motion.ul
   className="Child"
   variants={variants}
   initial="outScreen"
@@ -133,7 +133,7 @@
 &lt;/motion.ul&gt;
 </code></pre>
 <p>At this point, the animation works halfway. It should mount with the animation, but when unmounting, no animation occurs. The reason is that we need to tell Framer Motion that we need to execute the animation and not unmount the component directly. Wrapping the <code>Child</code> with <code>AnimatedPresence</code> triggers the <code>exit</code> animation. Here is the modified parent:</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">&lt;div className="Parent"&gt;
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">&lt;div className="Parent"&gt;
 &lt;AnimatePresence exitBeforeEnter={true}&gt;
   &lt;Child key={"unique_" + mountParentCount} /&gt;
 &lt;/AnimatePresence&gt;

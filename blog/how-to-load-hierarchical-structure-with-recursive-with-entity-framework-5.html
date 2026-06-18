@@ -2,7 +2,7 @@
 <p><img src="/images/blog/hiearchicalStructure-400x400.png" alt="" /></p>
 <p>In the graphic above, you can see that we have two types of container. One is green and the other one is having a white background. In fact, the green container is a node that can have either children of a specify entity which cannot contain any other structural entity or can contain an other green container which are those who contain a list of children.</p>
 <p>So, since we do not know how the tree is structured, it's not possible to use eager loading as we do normally by including property desired.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">_context.Parent .Include(d =&gt; d.OtherProperty)
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">_context.Parent .Include(d =&gt; d.OtherProperty)
 .Include(d =&gt; d.Children)
 .Include(d =&gt; d.Children.Select(dd=&gt;dd.OtherProperty)
 .Include(d =&gt; d.Children.Select(dd=&gt;dd.Children)
@@ -12,7 +12,7 @@
 </code></pre>
 <p>This give us the option to load the Children, if this one has children then load it the way we just load the parent since every child become a parent. This require recursive method. The problem is that it work but every load will create a new parent. We need to map every values to the first parent to have at the end a single hierarchical tree.</p>
 <p>Here is how we can do it with eager loading. We need to every property set back to the object that we have receive to, at the end, have a tree fully loaded.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">private Parent RecursiveLoad(Guid id) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">private Parent RecursiveLoad(Guid id) { 
   var ParentFromDatabase =_context.Parent 
   .Include(d =&gt; d.Children) 
   .Include(d =&gt; d.Children.Select(dd =&gt; dd.OtherProperty)) 
@@ -32,7 +32,7 @@
 } 
 </code></pre>
 <p>But, we can do better with explicit loading. One of the positive characteristic of explicit loading is that it load itself. No need to map the loaded object to the existing one, it's already been loaded into it.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">private Parent RecursiveLoad(Parent parent) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">private Parent RecursiveLoad(Parent parent) { 
   var ParentFromDatabase =_context.Entry(parent).Collection(d=&gt;d.Children);
   //Children are loaded, we can loop them now 
   foreach (var child in parent.Children) {

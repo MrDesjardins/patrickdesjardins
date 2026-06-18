@@ -13,17 +13,17 @@
 <p>The most important thing with a submodule is that you are making a copy while staying connected to the submodule's repository, allowing you to pull an updated version in the future.</p>
 <h1>Steps to Create the SubModule Relationship</h1>
 <p>The first step is to add the submodule to the parent project. If you have two projects that consume the share repository it means that you need to call that command in both parent projects. We define <em>parent</em> the consumer of the shared library. The shared library is defined as the <em>child</em>.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">git submodule add https://github.com/MrDesjardins/demo_submodule_child ./packages/demo_submodule_child
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">git submodule add https://github.com/MrDesjardins/demo_submodule_child ./packages/demo_submodule_child
 </code></pre>
 <p>The second step is to modify the <code>tsconfig.json</code> to have an alias. It is not <em>required</em> but make the code from the <code>src</code> folder of the parent repository to access any submodule package easily.</p>
-<pre class="language-JSON"><code class="language-JSON code-highlight">"paths": {
+<pre class="language-JSON" tabindex="0"><code class="language-JSON code-highlight">"paths": {
   "@demo_submodule_child": ["packages/demo_submodule_child/src"],
   "@demo_submodule_child/*": ["packages/demo_submodule_child/src/*"]
 }
 </code></pre>
 <p><img src="/images/blog/typescript-git-submodule-alias.png" alt="" /></p>
 <p>The third step is to add two registries to Node. The following command compiles Typescript into JavaScript and then it calls Node with the two registrys following with the JavaScript entry file.</p>
-<pre class="language-JSON"><code class="language-JSON code-highlight">"start": "npx tsc &amp;&amp; node -r ts-node/register/transpile-only -r tsconfig-paths/register build/src/index.js"
+<pre class="language-JSON" tabindex="0"><code class="language-JSON code-highlight">"start": "npx tsc &amp;&amp; node -r ts-node/register/transpile-only -r tsconfig-paths/register build/src/index.js"
 </code></pre>
 <h1>How to Modify the SubModule Code</h1>
 <p>There are several patterns. You can have the repository in a completely different folder and make a change, then push the change. Then come back to the consumer folder and pull the changes. However, that is a lot of steps.</p>
@@ -31,13 +31,13 @@
 <h1>Good to Know</h1>
 <h2>GitModule File</h2>
 <p>Within your parent repository, when the <code>git submodule</code> was performed, it created a hidden file called <code>.gitmodules</code>. In our example, it contains:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">[submodule "packages/demo_submodule_child"]
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">[submodule "packages/demo_submodule_child"]
   path = packages/demo_submodule_child
   URL = https://github.com/MrDesjardins/demo_submodule_child
 </code></pre>
 <h2>Pushing Changes From SubModule</h2>
 <p>When performing changes into a SubModule folder (our <code>package/demo_submodule_child</code>) you will notice that the <code>git status</code> at the root of the parent repository shows the changes <strong>with</strong> your repository changes. For example, here I modified the <code>readme.md</code> from the parent and changed the content of the <code>index.ts</code> of the child:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">❯ git status
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">❯ git status
 On branch master
 Your branch is ahead of 'origin/master' by 1 commit.
   (use "git push" to publish your local commits)
@@ -55,7 +55,7 @@ no changes added to commit (use "git add" and/or "git commit -a")
 <p>Performing at the root of the parent project <code>git add .</code> <strong>only</strong> adds the file from the parent.</p>
 <p><img src="/images/blog/typescript-git-module-push.png" alt="" /></p>
 <p>Performing <code>git status</code> after the add result to:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">❯ git status
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">❯ git status
 On branch master
 Your branch is ahead of 'origin/master' by 1 commit.
   (use "git push" to publish your local commits)
@@ -71,11 +71,11 @@ Changes not staged for commit:
         modified:   packages/demo_submodule_child (modified content)
 </code></pre>
 <p>To commit and push the change for the Submodule, you need to go to the Submodule folder and perform the git commands desired.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">cd packages/demo_submodule_child 
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">cd packages/demo_submodule_child 
 git status
 </code></pre>
 <p>As the output:</p>
-<pre class="language-sh"><code class="language-sh code-highlight"> /mnt/c/code/demo_submodule_parent  master ⇡1 +1 ─────────────────────────────────────────────────── base  
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight"> /mnt/c/code/demo_submodule_parent  master ⇡1 +1 ─────────────────────────────────────────────────── base  
 ❯ cd packages/demo_submodule_child 
 
 /mnt/c/code/demo_submodule_parent/packages/demo_submodule_child  master !1 ───────────────────────── base   
@@ -94,7 +94,7 @@ no changes added to commit (use "git add" and/or "git commit -a")
 <h1>Version</h1>
 <p>Each commit in the submodule is tracked with the parent. Because the commit version is part of the submodule system, it allows a parent to refer to a previous version. Hence, there is no obligation to be on the latest version of the submodule.</p>
 <p>For example, if there are two commits on the submodule and the parent is still on the first one. A <code>git log</code> in the submodule folder gives:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">commit d9024dbcc10578f18abb1c29fa08f43929f80f6c (HEAD -&gt; master, origin/master, origin/HEAD)
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">commit d9024dbcc10578f18abb1c29fa08f43929f80f6c (HEAD -&gt; master, origin/master, origin/HEAD)
 
     Small change from the parent repository to the submodule
 
@@ -103,7 +103,7 @@ commit 795569b2fa0111b1db23424722793795a6f9ec4a
     First commit
 </code></pre>
 <p>Moving to the root of the project (parent) we notice that because the change was performed within the parent project that the parent knows that he is pointing to a new version (commit). A diff shows:</p>
-<pre class="language-diff"><code class="language-diff code-highlight">diff --git a/packages/demo_submodule_child b/packages/demo_submodule_child
+<pre class="language-diff" tabindex="0"><code class="language-diff code-highlight">diff --git a/packages/demo_submodule_child b/packages/demo_submodule_child
 index 795569b..d9024db 160000
 --- a/packages/demo_submodule_child
 +++ b/packages/demo_submodule_child
@@ -114,7 +114,7 @@ index 795569b..d9024db 160000
 <p>However, any other project that uses the submodule is still refering to <code>795569b2fa0111b1db23424722793795a6f9ec4a</code> which allows to have your project free to update at any time.</p>
 <h1>Loading a Project with Submodules</h1>
 <p>The first time you are cloning a project (or pulling a project) from Git, the submodules are not automatically initialized. You must update the code by initializing the project locally to fetch the submodule's git repositories. A single command is necessary even if you have several submodules.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">git submodule update --init
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">git submodule update --init
 </code></pre>
 <p>At the root of your project, execute the command. The <code>git submodule</code> commands read the package configuration and start to fetch the code.</p>
 <h1>External Dependencies</h1>
@@ -127,16 +127,16 @@ index 795569b..d9024db 160000
 <p>The second solution is viable if you want to not manage dependencies from many submodules.</p>
 <h2>Solution 1: Install Child Dependencies into Parent Dependencies</h2>
 <p>You can use the <code>npm install</code> using the <code>file:</code> format or to add the dependencies manually.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">npm install --save file:packages/demo_submodule_child
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">npm install --save file:packages/demo_submodule_child
 </code></pre>
 <p>More often than not, in private repositories that need sharing code, all the repositories have about the same dependencies. Thus, it is manageable to rely on manually taking the dependencies.</p>
 <h2>Solution 2: Install Submodule Dependencies</h2>
 <p>You can move into the submodule directory with the current demo and perform <code>npm install</code>.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">cd packages/demo_submodule_child/
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">cd packages/demo_submodule_child/
 npm install
 </code></pre>
 <p>Then running the parent <code>npm run start</code> works as it can compile because during compilation, it finds the <code>node_modules</code> directory of the submodule. You can confirm by using <code>npx typescript --traceResolution | grep "trim"</code>. The last line shows that it fines the <code>trim</code> into <code>demo_submodule_parent/packages/demo_submodule_child/node_modules/trim</code>.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">❯ npx tsc --traceResolution | grep "trim"
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">❯ npx tsc --traceResolution | grep "trim"
 ======== Resolving module 'trim' from '/mnt/c/code/demo_submodule_parent/packages/demo_submodule_child/src/index.ts'. ========
 'baseUrl' option is set to '/mnt/c/code/demo_submodule_parent', using this value to resolve non-relative module name 'trim'.
 'paths' option is specified, looking for a pattern to match module name 'trim'.

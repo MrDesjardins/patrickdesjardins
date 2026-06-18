@@ -4,7 +4,7 @@
 <p>The screenshot above shows some information you can get with a simple call to a controller. As you can see, we have information about the MVC routing and also about what SQL Query has been sent to the database. This allow you to not have to use a SQL profiler to know what is sent to the database.</p>
 <p><img src="/images/blog/intellitraceSQL-400x251.png" alt="" /></p>
 <p>If you double click the line an entry in the Intellitrace, you see the whole detail but also the code window is going to the line where the data has been gathered. In the example above, the code selected is the line that call the repository:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public IEnumerable&lt;Workout&gt; GetAll() { var listModel = Repository.Workout.GetAll().ToList(); return listModel; } 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public IEnumerable&lt;Workout&gt; GetAll() { var listModel = Repository.Workout.GetAll().ToList(); return listModel; } 
 </code></pre>
 <p>To enable the IntelliTrace or to change some option, go in the Tools&gt;Options&gt;Intellitrace.</p>
 <p><img src="/images/blog/IntellitraceOption-400x238.png" alt="" /></p>

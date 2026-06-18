@@ -2,13 +2,13 @@
 <p>ESQL looks more like SQL query. Even if ESQL is not SQL, it will let developer use SQL query to the database. So, they are 2 ways to use ESQL : using <em>EntityCommand</em> or using the generic <em>ObjectQuery</em> class.</p>
 <p>The first thing to do is to create a EDMX file like we would do with Linq to Entity. The generated connection string that it will provides in the web.config (or app.config) will be used after that with the <strong>EntityConnection</strong>. For that, you will need to use the <em>System.Data.EntityClient</em> namespace (Add System.Data.Entity).</p>
 <p>The connection string will look like this:</p>
-<pre class="language-xml"><code class="language-xml code-highlight">&lt;add name="NorthwindEntities1" connectionString="metadata=res://*/NorthwindModel.csdl|res://*/NorthwindModel.ssdl|res://*/NorthwindModel.msl;provider=System.Data.SqlClient;provider connection string=&amp;quot;Data Source=PATRICK-PC\\SQLEXPRESS;Initial Catalog=Northwind;Integrated Security=True;MultipleActiveResultSets=True&amp;quot;" 
+<pre class="language-xml" tabindex="0"><code class="language-xml code-highlight">&lt;add name="NorthwindEntities1" connectionString="metadata=res://*/NorthwindModel.csdl|res://*/NorthwindModel.ssdl|res://*/NorthwindModel.msl;provider=System.Data.SqlClient;provider connection string=&amp;quot;Data Source=PATRICK-PC\\SQLEXPRESS;Initial Catalog=Northwind;Integrated Security=True;MultipleActiveResultSets=True&amp;quot;" 
  providerName="System.Data.EntityClient" /&gt;
 &lt;/connectionStrings&gt; 
 </code></pre>
 <p>You need to have this syntax with the metadata and provider connection. Traditional ADO.NET connection string won't work.</p>
 <p>To try your connection string for ESQL you can use this kind of code:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">string connectionString = ConfigurationManager.ConnectionStrings["NorthwindEntities1"].ConnectionString; 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">string connectionString = ConfigurationManager.ConnectionStrings["NorthwindEntities1"].ConnectionString; 
 using (EntityConnection conn = new EntityConnection(connectionString)) { 
   conn.Open(); 
   System.Diagnostics.Debug.WriteLine("Connected"); 
@@ -17,7 +17,7 @@ using (EntityConnection conn = new EntityConnection(connectionString)) {
 </code></pre>
 <p>In the code above, we can see the use of <code>EntityConnection</code>. This derive from <code>DbConnection</code> like <code>SqlConnection</code> do it with ADO.NET. It will also use a <code>EntityCommand</code> that also inherit from an ADO.NET object, the <code>DbCommand</code>.</p>
 <p>ESQL is more error prone than Linq to Entity because the query is in a string. You do not have Intellisense, neither the compiler to tell you that you have error. Here is an example of showing with ESQL all regions of the Northwind database.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> string connectionString = ConfigurationManager.ConnectionStrings["NorthwindEntities1"].ConnectionString; 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> string connectionString = ConfigurationManager.ConnectionStrings["NorthwindEntities1"].ConnectionString; 
  using (EntityConnection conn = new EntityConnection(connectionString)) { 
   conn.Open(); 
   string sqlQuery = @"SELECT reg.RegionId , reg.RegionDescription FROM NorthwindEntities1.Region as reg"; 
@@ -36,7 +36,7 @@ using (EntityConnection conn = new EntityConnection(connectionString)) {
 <h2>Object Context</h2>
 <p>The previous section show that ESQL let you have a very tight control over the query by using a SQL type of statement. But, on the other hand, it's not very interesting because we could just use ADO.NET object to almost do the same. Wherefore, that is why ESQL has more under the hood.</p>
 <p>ESQL can use Object Context to retrieve Entity Object without having to build them like with the ADO.NET. This start to be interesting. Let check an example.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">using System.Data.Objects; //... string 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">using System.Data.Objects; //... string 
 connectionString = ConfigurationManager.ConnectionStrings["NorthwindEntities1"].ConnectionString; 
 using (EntityConnection conn = new EntityConnection(connectionString)) { 
   using (ObjectContext objectContext = new ObjectContext(connectionString)) { 

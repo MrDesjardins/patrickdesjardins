@@ -7,7 +7,7 @@
 <p>Preparing your unit tests should be clean. You shouldn't have to write 20 lines of code in each of your test to create your scenario to test. Divide that arrange code into builder class. This way, they can be reused across several tests. A bonus is that by doing so, you can use those building method to seed your development database.</p>
 <p>Naming your test is something important. The reason is that other developer won't be able to find specific scenario and might duplicate test or not look at them. If you have thousand and thousand of tests, it become even more important. I like following the name with GivenXXX_WhenXXX_ThenXXX. It forces to have a structure of <strong>Given</strong> a specific case <strong>When</strong> specific configuration is provided <strong>Then</strong> you expect a specific result.</p>
 <p>Here is a simple code. How many test should be created?</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class SimpleCode { public string Value { get; set; }
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class SimpleCode { public string Value { get; set; }
 
 public SimpleCode Merge(SimpleCode parameter) { 
   var mergedObject = new SimpleCode(); 
@@ -19,7 +19,7 @@ public SimpleCode Merge(SimpleCode parameter) {
 } 
 </code></pre>
 <p>Most people might see two or three tests, but the answer is six.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">[TestMethod] 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">[TestMethod] 
 public void GivenSimpleCode_WhenMainInstanceValueNull_AndParameterValueNull_ThenValueNull() { 
   // Arrange 
   var mainInstance = new SimpleCode() {Value= null}; 
@@ -94,7 +94,7 @@ public void GivenSimpleCode_DefaultValue_ValueNull() {
 } 
 </code></pre>
 <p>Often, people do not test the default value of a class. This is something everyone should do. What happen if at some point a default value change but was required to be a specific value depending of the scenario. Without this test, you are not notified that something is breaking from the expected value. In that example, the expected value is NULL. If someone change it to an empty string, this might break other scenario that rely to compare on NULL to determine some state. Another testing scenario that I see often is about passing wrong value has parameter. In that particular example, null will break and return a null reference exception. Creating the test make you realize that you should probably handle that case and have a better code, like the following one:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public SimpleCode Merge(SimpleCode parameter) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public SimpleCode Merge(SimpleCode parameter) { 
   if (parameter == null) { 
     throw new ArgumentNullException(nameof(parameter)); 
   } 

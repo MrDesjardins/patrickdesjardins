@@ -1,6 +1,6 @@
 <!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Patrick Desjardins Blog - Dissecting Redux Compose Function</title><meta name="description" content="Dissecting Redux Compose Function"><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-CZbWyyk4.css"><link rel="stylesheet" href="/assets/static-modules.css"></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><header><h1 class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</h1><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main class="app_blog__components_BlogBody__main"><h2 class="app_blog__components_BlogBody__heading">Dissecting Redux Compose Function</h2><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: 2018-01-23</p><p>Redux is one of the most popular state management in the JavaScript ecosystem since few months. In this article, we will dissect the method that composes all middleware named "compose". The role of this method is to aggregate all functions that will have the opportunity to be executed everytime an action is being dispatched. It's a door open to do something before passing to the next function (middleware). It's the only opportunity to modify data before reaching the reducers and the store. The method is used once. It is in the popular method <code>applyMiddleware</code> that we will see in a future article. For the moment, just keep in mind that compose function is taking all middleware to place them in a queue where the data will flow sequentially before reaching</p>
 <p>Before analyzing the method, let's look at all of it.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export default function compose(...funcs) { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export default function compose(...funcs) { 
   if (funcs.length === 0) { 
     return arg =&gt; arg;
   }
@@ -13,18 +13,18 @@
 } 
 </code></pre>
 <p>That's it!. And this can be even simpler because the two first ifs are for cases that are rarely used which is composing nothing (no middleware) or composing a single middleware. In the first case, we return a new function that returns the first parameter. For example:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">compose()("a", "b", "c") // Return "a" 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">compose()("a", "b", "c") // Return "a" 
 </code></pre>
 <p>This example composes nothing. It might seem that we have 3 parameters, but in fact, compose returns a function that has three arguments. When composing middleware, we will place the middleware inside the compose function, not using the middleware as a parameter of the returned function. This is important to understand that the compose function returns a new function and not a value. The condition statement that looks for a length of one simply return the first parameter of the compose function. This is also rarely used as having a single middleware is rare and wouldn't require using at all the compose function at the first place -- you could just use the middleware directly.</p>
 <p>Having the two ifs analyzed let's jump on the last line which is the confusing one. The last line is the line that is mostly to be used because most application using Redux has several middlewares. The first thing to notice is the use of the JavaScript function <code>reduce</code>. The reduce function is applied to an array and call a callback with two parameters which are the accumulated value followed by the value of the array. The callback is executed the same amount of the length of the array. So, if you have 3 middlewares, the reduce function will call three times the callback. Here is a simple example to grasp the concept. The example takes an array and reduces it by summing every number. The callback function is anonymous and will be called 3 times (<code>length-1</code>). The first time the parameter "acc" and "value" will be 0,1; then 1,2; then 3,3. When every element of the array has proceeded, it returns the value which is 6.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">console.log([0, 1, 2, 3].reduce( function(acc, value){
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">console.log([0, 1, 2, 3].reduce( function(acc, value){
    return acc + value; 
    } 
   ) 
 ); 
 </code></pre>
 <p>The first confusion with the compose function is that the reduce function is returning (...args) which is not clear. It's a little bit simpler to remove the arrow function to use traditional functions. Here is the same function written with functions.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">export default function compose(...funcs) { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">export default function compose(...funcs) { 
   if (funcs.length === 0) { 
     return arg =&gt; arg;
   }
@@ -45,7 +45,7 @@ function combineMiddleware(functionWrapper, middlewareToAdd){
 </code></pre>
 <p>The compose function is calling reduce on a named function "combineMiddleware". At that point, it should be clear that compose method returns a function since the reduce function returns an aggregation of an array and that the array is an array of function hence the result will be a single function. What remains unclear is how we aggregate since we won't be summing numbers this time.</p>
 <p>The combineMiddleware function will return a new function. Since the reduce function takes the return of the callback for the accumulation, this new function will be used on the next invocation. At that point, invoking compose with 3 functions would return a function returned by combineMiddleware. Nothing would happen. Let's create three fake functions and add some log statements to follow what is really happening.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function compose(...funcs) { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function compose(...funcs) { 
   if (funcs.length === 0) { 
     return arg =&gt; arg;
   }
@@ -98,7 +98,7 @@ console.log("Compose Output", compose(a, b, c));
 <p>We have the same compose, this time with a <code>console.log</code> that will output what is the next function.
 There are also three functions that return a function. This is how middlewares are constituted and since the compose function takes a function it is compatible.
 The idea is that each function takes a <code>next</code> parameter which is a pointer to the "next middleware" allowing the actual middleware, the inner function to be executed and returning the value transformed to the next one. In this example, we compose A-B-C. The compose will wrap the function to have C wrapping B wrapping A which will start with the value passed down (not provided yet). So, it is actually doing: <code>return function(A(B(C("Data here))))</code>. The console output looks like the following:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">  //Combined!!! 
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">  //Combined!!! 
   ƒ (next){ 
    console.log("Outside B", next); 
    return function(previousReturnedValue) { 
@@ -122,11 +122,11 @@ The idea is that each function takes a <code>next</code> parameter which is a po
 </code></pre>
 <p>So, what is <code>nextFunction</code> is the final function passed as a parameter to the returned function of "compose". In Redux, the <code>applyMiddleware</code> function will use it to pass the store.dispatch down (we will see in a future article). As expected, the combineMiddleware method output twice since we have 3 functions. We can see the final output being the function returned by combineMiddleware function. The next function returns the <code>functionWrapper</code> which is the function A, that call the function B with .<code>..nextFunction</code> that is function C.</p>
 <p>If change the last output statement to have the compose function execute the returned function, we will see more the flow of the execution.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">console.log("Compose Output", compose(a, b, c)); // Change this line by: 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">console.log("Compose Output", compose(a, b, c)); // Change this line by: 
 console.log("Compose Output", compose(a, b, c)(final)); 
 </code></pre>
 <p>The output is different this time but calls twice "What is next function" since we have 4 functions having the "final" one that will be wrapped also but executed. The major change is that every function gets called.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">  //Combined!!! 
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">  //Combined!!! 
   ƒ (next){ 
     console.log("Outside B", next); 
     return function(previousReturnedValue) { 
@@ -180,14 +180,14 @@ console.log("Compose Output", compose(a, b, c)(final));
 </code></pre>
 <p>The last output is still a function, but this time, not the combine wrapper but the function A. This is interesting since every function was also a function but with a pointer to the next one. It means that that the returned function "A" will be executed and since this one call next (which in that case is "B") the cascade will continue until the "final" function is called. The final function also calls next and for the moment doesn't do much. In fact, we can remove the "return next" from function "final" and to have the same output.</p>
 <p>Let's alter another time the last line.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">console.log("Compose Output", compose(a, b, c)(final)("!")); 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">console.log("Compose Output", compose(a, b, c)(final)("!")); 
 </code></pre>
 <p>This time, we execute the composition of functions completely. We are passing down the exclamation point. As we saw in the last trace, the <code>previousReturnedValue</code> is added before the function, hence we can expect to have the result "!ABC";</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">  // Same trace until the last output Inside A ! Inside B !a Inside C !ab Final !abc Compose Output !abc 
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">  // Same trace until the last output Inside A ! Inside B !a Inside C !ab Final !abc Compose Output !abc 
 </code></pre>
 <p>As we notice, the function A is called first and call the function B and C and final. Removing the "return next" from the final function will print <code>undefined</code>.</p>
 <p>If we move back to Redux and how it uses the compose function we see that the applyMiddleware use it this way:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">dispatch = compose(...chain)(store.dispatch) 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">dispatch = compose(...chain)(store.dispatch) 
 </code></pre>
 <p>This allows having the consumer of a configured Redux to call <code>dispatch(ACTION)</code> and have action passed down. As we can see, the compose takes "chain" which is an array of the middleware configured and pass down as the "final" the <code>store.dispatch</code>. It means that the <code>store.dispatch</code> will call the result of all the middleware.</p>
 <p>In this article, we have dissected the small function <code>compose</code> of Redux. We saw that its goal is to wrap multiple functions and weave them together with a callback that allows chaining the result of each of them to finally be able to execute a final function on the cascade of results. For Redux, it will allow developers to dispatch action to reducers and having the dispatched action to alter the flow between the time the action is executed and persisted.</p>

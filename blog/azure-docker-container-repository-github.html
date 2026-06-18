@@ -4,7 +4,7 @@
 <h2>Azure Cli</h2>
 <p>A few pieces of information is required that were built when we created our Azure Docker Image Repository.
 You need to use the Azure resource group name after <code>--resource-group</code>. The name of the Kubernetes service is after <code>--name</code>. The <code>--attach-acr</code> is the name of the Azure Container Registry (acr).</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">az aks create --resource-group realtimepixel_resourcegroup --name realpixelask --location eastus --attach-acr realtimepixel --generate-ssh-keys
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">az aks create --resource-group realtimepixel_resourcegroup --name realpixelask --location eastus --attach-acr realtimepixel --generate-ssh-keys
 </code></pre>
 <p>There are a few things to know:</p>
 <ol>
@@ -18,7 +18,7 @@ You need to use the Azure resource group name after <code>--resource-group</code
 <h1>Configure Github Workflow</h1>
 <p>You can edit the existing Github workflow defined <a href="./azure-docker-container-repository-github">previously</a> that was building the image and pushing it into Azure Container Registry (ACR). However, I created a new workflow to manually decide when to push the image into production.</p>
 <p>Here is the entire Github workflow that I store in the repository in <code>.github/workflows/k8sdeploy.yml</code></p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">name: Kubernetes Prod Deployment
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">name: Kubernetes Prod Deployment
 on:
   workflow_dispatch:
 
@@ -122,11 +122,11 @@ jobs:
 <p>Everything should be running as expected! The screenshot shows three orange symbols next to my three deployments because there is an issue with the Kubernetes configuration, which is outside the goal of this post. However, it is still interesting to know that you can drill and see the error reason being: <code>ErrImageNeverPull</code>.</p>
 <h2>Debug Azure Kubernetes ErrImageNeverPull</h2>
 <p>The first steps are to access the reason the image is not pulling. You need to get one of the pods under the deployment that is falling.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">kubectl get pods -n realtimepixel-prod
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">kubectl get pods -n realtimepixel-prod
 kubectl describe pod redis-deployment-6495cd48cc-fhzjg -n realtimepixel-prod
 </code></pre>
 <p>The last command gives more information saying the policy is to <code>Never</code></p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">Events:
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">Events:
 Type     Reason             Age                    From               Message
 ----     ------             ----                   ----               -------
 Normal   Scheduled          59m                    default-scheduler  Successfully assigned realtimepixel-prod/redis-deployment-6495cd48cc-fhzjg to aks-agentpool-28884595-vmss000002
@@ -134,15 +134,15 @@ Warning  Failed             57m (x12 over 59m)     kubelet            Error: Err
 Warning  ErrImageNeverPull  4m36s (x260 over 59m)  kubelet            Container image "realtimepixel.azurecr.io/realtimepixel_redis:67dfbf27b868bd0b9e7c77aefafb596f2adb3ca0" is not present with pull policy of Never
 </code></pre>
 <p>So, once we know the problem is the <code>Never</code>, we can see what is happening between Helm and Azure Kubernetes. Trying to see what is sent to Kubernetes is by using the <code>template</code> command of Helm.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">helm template realtimepixel ./kubernetes/realtimepixel --set namespace=realtimepixel-prod --set image.pullPolicy=Always --set image.redis.repository=realtimepixel.azurecr.io/realtimepixel_redis --set image.redis.tag=123123 --set image.backend.repository=realtimepixel.azurecr.io/realtimepixel_backend --set image.backend.tag=123123 --set image.frontend.repository=realtimepixel.azurecr.io/realtimepixel_frontend --set image.frontend.tag=123123 &gt; temp.yaml
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">helm template realtimepixel ./kubernetes/realtimepixel --set namespace=realtimepixel-prod --set image.pullPolicy=Always --set image.redis.repository=realtimepixel.azurecr.io/realtimepixel_redis --set image.redis.tag=123123 --set image.backend.repository=realtimepixel.azurecr.io/realtimepixel_backend --set image.backend.tag=123123 --set image.frontend.repository=realtimepixel.azurecr.io/realtimepixel_frontend --set image.frontend.tag=123123 &gt; temp.yaml
 </code></pre>
 <p>I found a case-sensitive issue with the <code>image.pullPolicy</code> where the <code>p</code> was lowercase and needed to be uppercase.</p>
 <h2>How to Debug with Azure Kubernetes Containers</h2>
 <p>The first issue was out of the way, and a second appeared. This time, the Azure Kubernetes was showing the pods having a <code>CrashLoopBackOff</code>.There is a command to get the health of all your pods. In my case, some of them were crashing:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">kubectl get pods -n realtimepixel-prod
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">kubectl get pods -n realtimepixel-prod
 </code></pre>
 <p>Resulted with:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">NAME                                   READY   STATUS             RESTARTS         AGE
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">NAME                                   READY   STATUS             RESTARTS         AGE
 backend-deployment-69c99548d9-g2w5d    0/1     CrashLoopBackOff   10 (3m28s ago)   30m
 backend-deployment-69c99548d9-wrhzp    0/1     CrashLoopBackOff   10 (3m42s ago)   30m
 backend-deployment-7dfbc4f7f8-m99kl    0/1     CrashLoopBackOff   10 (3m51s ago)   109m
@@ -151,11 +151,11 @@ frontend-deployment-6f88fdb587-2p2lk   1/1     Running            0             
 redis-deployment-5d48cc44bd-8w869      1/1     Running            0                30m
 </code></pre>
 <p>It is possible to see the logs of the deployment:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">kubectl describe pod backend-deployment-69c99548d9-g2w5d -n realtimepixel-prod
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">kubectl describe pod backend-deployment-69c99548d9-g2w5d -n realtimepixel-prod
 kubectl logs backend-deployment-69c99548d9-g2w5d -n realtimepixel-prod
 </code></pre>
 <p>The output:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">&gt; start:production
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">&gt; start:production
 &gt; node -r ts-node/register/transpile-only -r tsconfig-paths/register build/backend/src/index.js
 
 Error: Cannot find module '/node/build/backend/src/index.js'
@@ -170,14 +170,14 @@ Error: Cannot find module '/node/build/backend/src/index.js'
 }
 </code></pre>
 <p>My instinct was to get into the container.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">kubectl exec -it backend-deployment-69c99548d9-g2w5d -n realtimepixel-prod -- sh
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">kubectl exec -it backend-deployment-69c99548d9-g2w5d -n realtimepixel-prod -- sh
 </code></pre>
 <p>But was producing:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight"> error: unable to upgrade connection: container not found...
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight"> error: unable to upgrade connection: container not found...
 </code></pre>
 <p>The problem is that the issue is on the <code>run</code> command of the container that is failing because the starting file (index.js) is not present. However, because it cannot start the command, the container closes not letting me accessing the container to inspect the folder structures and files.</p>
 <p>You can test it by creating a Pod for the problematic image that will not restart using the following commands:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">kubectl run debug-demo -n realtimepixel-prod --image=realtimepixel.azurecr.io/realtimepixel_backend:67dfbf27b868bd0b9e7c77aefafb596f2adb3ca0 --restart=Never
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">kubectl run debug-demo -n realtimepixel-prod --image=realtimepixel.azurecr.io/realtimepixel_backend:67dfbf27b868bd0b9e7c77aefafb596f2adb3ca0 --restart=Never
 kubectl get pods -n realtimepixel-prod
 kubectl exec -it debug-demo -n realtimepixel-prod -- sh
 </code></pre>
@@ -189,21 +189,21 @@ kubectl exec -it debug-demo -n realtimepixel-prod -- sh
 <h1>Still Not Working! What to do next?</h1>
 <p>In my case, it was still not green. Same error about <code>CrashLoopBackOff</code> on the startup of the container. Time to get back locally.</p>
 <p>Instead of using <code>docker-compose</code>, I decided to mimic what I was doing on the Github workflow.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">docker build -f ./services/backend/Dockerfile --target production --build-arg NODE_ENV=production .
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">docker build -f ./services/backend/Dockerfile --target production --build-arg NODE_ENV=production .
 </code></pre>
 <p>Then get the image built and run it.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">docker images
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">docker images
 docker run 40d4941a9092
 docker ps
 </code></pre>
 <p>Take the <em>image id</em> from the ps command:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">docker run -it 40d4941a9092 bash
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">docker run -it 40d4941a9092 bash
 </code></pre>
 <p>I could see the error, but like Kubernetes, the container shut down. So now, time to make the container crash but to hang it there in an infinite loop:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">docker run 40d4941a9092 /bin/sh -c "while true; do sleep 2; df -h; done"
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">docker run 40d4941a9092 /bin/sh -c "while true; do sleep 2; df -h; done"
 </code></pre>
 <p>In another terminal window, you can connect.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">docker run -it 40d4941a9092 bash
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">docker run -it 40d4941a9092 bash
 </code></pre>
 <p>At that point, I saw that the build was messing around with the folders of the output of TypeScript. So I modified the path and was good to go.</p>
 <h1>Conclusion</h1>

@@ -3,7 +3,7 @@
 <p>In those both case, the problem is when setting the property, you need to add automatically the name of the property between quotes. When refactoring the name of the property, you have chance that you miss the name change of this String. Most refactoring tool, won't change String value, and that's a good thing.</p>
 <p>But, you can simply create a method that use the Lambda Tree Expression to be able to pass the method itself. This way, refactoring the name won't be a problem later.</p>
 <p>How to do it is pretty straight forward.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">protected void Modified(Expression&lt;Func&lt;string&gt;&gt; prop) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">protected void Modified(Expression&lt;Func&lt;string&gt;&gt; prop) { 
   if (prop== null){ 
     throw new ArgumentNullException("prop", @"You must have selected a method"); 
   } 
@@ -16,13 +16,13 @@
 </code></pre>
 <p>I put a comment in the above code that indicate how to get the property name. This way, you can add it to your own list or call the <code>PropertyChanged</code> of <code>INotifyPropertyChanged</code> .</p>
 <p>The use of this method is pretty easy also:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">Modified(()=&gt;this.MyProperty); 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">Modified(()=&gt;this.MyProperty); 
 </code></pre>
 <p>Another option is to use <code>System.Reflection.MethodBase</code>. This option let you get the current Method name. This is also a good option but with the disadvantage that you can only have the current Property/Method and not be able to notified others fields. Sometime, you may need to notified multiple Property of a change. This won't give you this flexibility.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">System.Reflection.MethodBase.GetCurrentMethod().Name.Replace("set_", string.Empty) 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">System.Reflection.MethodBase.GetCurrentMethod().Name.Replace("set_", string.Empty) 
 </code></pre>
 <p>The code above give the string of the Property/Method that this line is executed. If it's inside a Property you will need to remove <code>set_</code> if you use it inside the setter, or <code>get_</code> if you use it inside the getter.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public string CustomerEmail { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public string CustomerEmail { 
   get { return_customerEmail; } 
   set{
     _customerEmail = value; 
@@ -30,7 +30,7 @@
 } 
 </code></pre>
 <p>Another method which is relatively similar to the previous one is to use the Stacktrace to get the method called. This give you the advantage to not have to set any name or property reference to the method/property and just having a method in the inherit class that handle the name of the previous stack method called. This has the disadvantage that you cannot have multiple fields to be notified. This is a good default approach but the one with Lambda Expression should also be implemented to give the developer the leverage to be able to call multiple properties changes.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">private string GetPropertyName() { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">private string GetPropertyName() { 
   var callStackTrace = new StackTrace(); 
   var propertyFrame = callStackTrace.GetFrame(1); 
   var properyAccessorName = propertyFrame.GetMethod().Name; 

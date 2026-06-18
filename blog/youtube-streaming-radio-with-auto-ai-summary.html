@@ -13,7 +13,7 @@
 <p>The system starts by downloading YouTube content using the <code>yt-dlp</code> library. I store the MP3 files on disk to avoid re-downloading if I replay a video within a few days. Storing files also allows me to separate the downloading, transcription, and summarization tasks. The Python script uses <code>subprocess</code> to manage these tasks. For example, audio extraction relies on the <code>ffmpeg</code> tool.</p>
 <p><img src="/images/blog/StreamingRadioYoutubeArchicture.png" alt="" /></p>
 <p>Transcription is optional since sometimes I listen to music or relaxing audio, which doesn't require AI. For podcasts and audiobooks, the web interface lets me check a box to enable transcription. I rely on OpenAI's cloud services for transcription, it costs less than $0.05 for 30 minutes, which is fast and cheap. Here's an example:</p>
-<pre class="language-python"><code class="language-python code-highlight">client = OpenAI(api_key=config.openai_api_key)
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">client = OpenAI(api_key=config.openai_api_key)
 # &lt;Removed retry code&gt;
  with open(audio_path, "rb") as audio_file:
             response = client.audio.transcriptions.create(
@@ -26,7 +26,7 @@
 # &lt;Error handling code removed&gt;
 </code></pre>
 <p>Summarization is a simple HTTP call to ChatGPT, also very inexpensive. Here's a brief example:</p>
-<pre class="language-python"><code class="language-python code-highlight">client = OpenAI(api_key=config.openai_api_key)
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">client = OpenAI(api_key=config.openai_api_key)
 
 try:
     response = client.chat.completions.create(
@@ -48,7 +48,7 @@ try:
     summary = response.choices[0].message.content
 </code></pre>
 <p>Connecting to Trilium is straightforward. You provide a node ID (a unique identifier for a page), create a child page, and push the summary. Trilium supports HTML, so I prompt the LLM to output HTML for the summary. Trilium's REST API uses a token for authentication. Example:</p>
-<pre class="language-python"><code class="language-python code-highlight">headers = {
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">headers = {
           "Authorization": config.trilium_etapi_token,
           "Content-Type": "application/json"
       }

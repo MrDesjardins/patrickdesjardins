@@ -8,7 +8,7 @@
 <p>The <a href="http://en.wikipedia.org/wiki/Factory_method_pattern">factory method pattern</a> let you construct object from a single point. The factory will return all repositories for every entity. It's a central point. The reason to use this pattern is that it will give use a lazy loading for all repositories creation but also will give us the possibility to share the DbContext between those repositories in the creation of them. It also give us the possibility to mock the whole factory for testing. The factory will be the classe shared between all controllers.</p>
 <h1>Repository Factory</h1>
 <p>The repository factory inherit from an interface. This interface will contain all entity repository. That mean that if you want to add new entity that you need to add a new entry into this interface.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public interface IRepositoryFactory { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public interface IRepositoryFactory { 
   IWorkoutRepository Workout { get; } 
  IUserProfileRepository UserProfile { get; } //...Other entities... 
 } 
@@ -16,7 +16,7 @@
 <p>For example, in the code above, we have 2 entities. One is our domain, the Workout class, and the second is the UserProfile that is for the user (from the membership classes). If we wanted to add the Exercises entity, we would need to add a new property in the interface.</p>
 <p>You can also notice that IRepositoryFactory contain interface to repository. So, a new entity means a new interface for its repository and for the concrete implementation of this repository.</p>
 <p>Before going deeper with the repository class, let check a concrete implementation of IRepositoryFactory for Entity Framework 5.0 Code First approach.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class RepositoryFactory:IRepositoryFactory { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class RepositoryFactory:IRepositoryFactory { 
   private readonly IDatabaseContext_databaseContext; 
   private IWorkoutRepository_workoutRepository; 
   private IUserProfileRepository_userProfileRepository;
@@ -37,7 +37,7 @@
 <p>This class takes in its constructor a IDatabaseContext. This will give us an interface to share between repository. Otherwise, the factory if very simple. It checks if the property has been already initialized, if not, it initialize it with the IDatabaseContext, otherwise, it simply reuse the repository. This class contains for every repository a property. That's it.</p>
 <h1>Repository Classes</h1>
 <p>Every repository inherit from <strong>IRepository</strong>.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public interface IRepository&lt;T&gt; { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public interface IRepository&lt;T&gt; { 
    IQueryable&lt;T&gt; GetAll(); T Get(int id); 
    int Insert(T entity); 
    int Update(T entity); 
@@ -46,14 +46,14 @@
 </code></pre>
 <p>This give us the 80% repository method that we need. Other more specific method like searching with filter will be added directly into the concrete implementation of the class.</p>
 <p>Also, every Repository inherit from a BaseRepository which will hold the DataContext reference. This is required because every call to the repository is done by the DbContext. When the Repository factory pass the IDatabaseContext to the repository, all repository will simply pass the object to the base in their constructor.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class BaseRepository { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class BaseRepository { 
   protected IDatabaseContext DatabaseContext { get; private set; }
 
   protected BaseRepository(IDatabaseContext databaseContext) { DatabaseContext = databaseContext; } 
 } 
 </code></pre>
 <p>Here is the example with the Workout entity.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class WorkoutRepository : BaseRepository, IWorkoutRepository { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class WorkoutRepository : BaseRepository, IWorkoutRepository { 
   public WorkoutRepository(IDatabaseContext databaseContext) : base(databaseContext) { }
 
   #region Implementation of IRepository&lt;Workout&gt;

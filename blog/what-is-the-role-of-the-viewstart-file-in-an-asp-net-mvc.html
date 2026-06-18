@@ -2,7 +2,7 @@
 <p>The ViewStart files are read from the root of the view folder to the more deep folder of the view called. So, if you are using an area which have several folder for different view, you can have a ViewStart inside the "Views" folder and one inside the <code>Views/Folder1</code>. Asp.Net MVC will read the ViewStart from the "Views" folder and then the one inside "Views/Folder1".</p>
 <p>An other characteristic of the ViewStart is that this one is called <code>_ViewStart.cshtml</code>. It must start with an underscore and use the .cshtml extension.</p>
 <p>The role is to avoid to repeat some code that must be the same between views. For example, the layout for the view (the master page). Instead of defining the the top of each view what layout to use, you can simply define a layout at the root of your views folder a file_ViewStart.cshtml and put :</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> @{ Layout = &amp;quot;~/Views/Shared/_MasterPage.cshtml&amp;quot;; } 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> @{ Layout = &amp;quot;~/Views/Shared/_MasterPage.cshtml&amp;quot;; } 
 </code></pre>
 <p>If you need a different layout for a specific view, simply set the layout inside the view or inside a ViewStart inside the folder of the view. Since the order of read is from the root of the Views folder to its subdirectory, this last ViewStart will set the Layout property and override the one defined previously.</p>
 <p>If you are getting an exception saying something about cast like the following error it's because you are using the ViewStart outside the Views folder.</p>

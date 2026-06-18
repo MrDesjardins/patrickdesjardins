@@ -3,7 +3,7 @@
 <p>The target “ResolveWebJobFiles” does not exist in the project.</p>
 </blockquote>
 <p>This scenario is present if you create a C# console application and then added from NuGet the Microsoft.Web.WebJobs.Publish package. This package is required to be able to run a console application as a web job on Azure. The problem is that Nuget doesn't play well with csproj, and this is even more try if you did it once and you updated Microsoft.Web.WebJobs.Publish. The first problem you might have is that the .csproj doesn't add the import xml line in the project. If this is the case, you can manually add it :</p>
-<pre class="language-xml"><code class="language-xml code-highlight"> &lt;Import Project="..\\packages\\Microsoft.Web.WebJobs.Publish.1.0.10\\tools\\webjobs.targets" Condition="Exists('..\\packages\\Microsoft.Web.WebJobs.Publish.1.0.10\\tools\\webjobs.targets')" /&gt; 
+<pre class="language-xml" tabindex="0"><code class="language-xml code-highlight"> &lt;Import Project="..\\packages\\Microsoft.Web.WebJobs.Publish.1.0.10\\tools\\webjobs.targets" Condition="Exists('..\\packages\\Microsoft.Web.WebJobs.Publish.1.0.10\\tools\\webjobs.targets')" /&gt; 
 </code></pre>
 <p>The second problem is that if you update the package, with Nuget, you may get two different problems. Problem A) the version doesn't get updated, thus you get warning. Problem B) you will get an additional import, and the previous one still stay there.</p>
 <p>In all case, you need to open in a text editor your csproj, search for <em>Microsoft.Web.WebJobs.Publish</em>. If it is not there, add it. If it's there, be sure the version is right and only present once.</p>

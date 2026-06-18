@@ -5,7 +5,7 @@
 <h1>How to handle concurrency conflict with Entity Framework and Asp.Net MVC with Server Wins approach</h1>
 <p>We do not want to lock an entry from the database because some entry could be lock when the system crash and it also cause performance problem. The best way is to use optimistic approach. With Microsoft Sql Server, we can use a column of type TimeStamp or RowVersion. In both case, it will contains an incremental sequential number that will increase every time the entry is modified. This approach let you know that if you load an entity with the number 23 and when you save you are at 24 that someone has done something to the entity because it should be remain to 23.</p>
 <p>To be able to apply this strategy to your entities, you need to configure your BaseEntity.cs class (a class that every model will inherit). You need to add a TimeStamp property with the TimeStamp and ConcurrencyCheck attribute.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class BaseEntity { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class BaseEntity { 
   public int Id { get; set; }
 
   [ConcurrencyCheck] 
@@ -14,10 +14,10 @@
 } 
 </code></pre>
 <p>To be able to use this value we need to add it into the view in a hidden field. This hidden field will give back the Timestamp to the server and will be used to compare with the database version when saving.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">@Html.HiddenFor(model =&gt; model.Timestamp) 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">@Html.HiddenFor(model =&gt; model.Timestamp) 
 </code></pre>
 <p>So, the whole view look like this:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> @using (Html.BeginForm()) { @Html.HiddenFor(model =&gt; model.Timestamp) @Html.ValidationSummary(true) &lt;fieldset&gt; &lt;legend&gt;Customer&lt;/legend&gt;
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> @using (Html.BeginForm()) { @Html.HiddenFor(model =&gt; model.Timestamp) @Html.ValidationSummary(true) &lt;fieldset&gt; &lt;legend&gt;Customer&lt;/legend&gt;
 
 &lt;div class="editor-label"&gt; @Html.LabelFor(model =&gt; model.FirstName) &lt;/div&gt; &lt;div class="editor-field"&gt; @Html.EditorFor(model =&gt; model.FirstName) @Html.ValidationMessageFor(model =&gt; model.FirstName) &lt;/div&gt;
 
@@ -28,7 +28,7 @@
 &lt;p&gt; &lt;input type="submit" value="Save" /&gt; &lt;/p&gt; &lt;/fieldset&gt; } 
 </code></pre>
 <p>The model look like:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class Customer:BaseEntity { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class Customer:BaseEntity { 
   public string FirstName { get; set; } 
   public string LastName { get; set; } 
 } 
@@ -42,7 +42,7 @@ public class BaseEntity {
 } 
 </code></pre>
 <p>And the controller which contain the compare code:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">[HttpPost] 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">[HttpPost] 
 public ActionResult Edit(Customer customer) { 
   if (ModelState.IsValid) { 
     db.Entry(customer).State = EntityState.Modified; 
@@ -74,14 +74,14 @@ public ActionResult Edit(Customer customer) {
 <p>You can have a quick and easy way to control concurrency conflict with a timespan field located inside every entities. You only need to add this field in a base model class, modify your controller to handle the exception and add an hidden field into the view.</p>
 <h1>Edit February 2th, 2013</h1>
 <p>In the Workout website I have used concurrency and I have found few details that were not written in the above blog article. First of all, you must have the <code>ConcurrencyCheck</code> attribute and not only the <code>Timestamp</code> attribute over the property that will take care of the concurrency. If you do the modification, do not forget to regenerate the database to have the database having this field (which should be not nullable). Entity Framework will take care to compute to correct value to set into this field automatically. Second, you need to not load the entity from the database just before using SetValues (to update scalar property of your object). This would result to alter the Timestamp and to override the one that came from the form (ViewModel to Model) to the value of the one from the database. This cause the mechanism to not detect the concurrency. Here is what I had previously which work to update the scalar value but doesn't work with the concurrency. Following will be the new code which work in both case.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public int Update(Muscle entity) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public int Update(Muscle entity) { 
   Muscle fromDatabase = Get(entity.Id); 
   DatabaseContext.Entry(fromDatabase).CurrentValues.SetValues(entity); 
   DatabaseContext.Entry(fromDatabase).State = EntityState.Modified; 
 } 
 </code></pre>
 <p>By this:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public int Update(Muscle entity) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public int Update(Muscle entity) { 
   this.Set&lt;Muscle&gt;().Attach(entity); 
   this.ChangeTracker.Entries&lt;Muscle&gt;().Single(d =&gt; d.Entity == entity).State = EntityState.Modified; 
 } 

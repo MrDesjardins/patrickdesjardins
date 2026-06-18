@@ -3,13 +3,13 @@
 <p>This article will show you how to take a screenshot,in JavaScript, with the library called <a href="http://html2canvas.hertzen.com/">Html2Canvas</a>, stores it into the local storage and how to do the swap between this fake cached view with the real Html one. First, let's create an example scenario with two zones. One zone, called <em>box1</em> will take 3 seconds to load and the <em>box2</em> will take 5 seconds. The goal is to display the fake cached view when loading the real data, and thus make it appearing to the user as it was already loaded.</p>
 <p>This solution is having some caveats. First, if the time between the image and the real html takes too much time, than the user may be confused. Thus, this is a good solution for improving a solution that has good performance on the start. I would say that you can easily use that solution for zones that load without this trick under 3-5 seconds. You can always have a subtle loading visual hint somewhere if it's longer. Second, if the cached image is very different from the new visual, than it will flicker during the swap of the image to the real html. Third, the local storage is limited in size, between 5 to 10 megs. That mean that you are limited to what you can cache with that solution. Overall, this solution is not a silver bullet and should be used as a blazing fast boost experience to an experience that is reasonable to load. It's not a solution to apply to a menu for example, because user may interact very fast with it and would hit a wall or should I say an image. It's good for element in a page that has a high visual interest or with element that has basic interaction like linking to somewhere else because the image can fulfill that contract.</p>
 <p>Let's dive in the code.</p>
-<pre class="language-html"><code class="language-html code-highlight">&lt;div id="box1" class="box"&gt;
+<pre class="language-html" tabindex="0"><code class="language-html code-highlight">&lt;div id="box1" class="box"&gt;
   &lt;i class="fa fa-spinner fa-spin"&gt;&lt;/i&gt;
 &lt;/div&gt; 
 &lt;div id="box2" class="box"&gt;
   &lt;i class="fa fa-spinner fa-spin"&gt;&lt;/i&gt;
 &lt;/div&gt; 
-</code></pre><pre class="language-css"><code class="language-css code-highlight">.box{ 
+</code></pre><pre class="language-css" tabindex="0"><code class="language-css code-highlight">.box{ 
   width:150px; 
   height:150px; 
   background-color:lightblue; 
@@ -22,7 +22,7 @@
 </code></pre>
 <p>This will produce the following html : <img src="/images/blog/2LoadingZonesBoxes.png" alt="" /></p>
 <p>The normal loading experience is done by using JavaScript's timeout. Both box display a different text, one display also an image.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">setTimeout(renderBox1, 3000); 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">setTimeout(renderBox1, 3000); 
 setTimeout(renderBox2, 5000); 
 function renderBox1() { 
   var $box = $('#box1'); 
@@ -38,7 +38,7 @@ function renderBox2() {
 </code></pre>
 <p>So far, it takes the amount of time defined to see the spinner being removed and replaced by the real content.</p>
 <p>The next step is to have in those render box the code to set the cache with the image of the rendered result. Box 1 will have the text and the image, box 2 just the text. This require to change both render method to call a cache method. Since the experience is so seamless that we will also, for the purpose of this demo, add some text under the boxes once refreshed with real value. So, the visual will be on the first call that we display the spinner, we cache, we display the text under the box. On the second load, we do not display the spinner since this one is replaced by the cached version right away. The texts under the boxes are shown only after the delay with the real value.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function renderBox1() { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function renderBox1() { 
   var $box = $('#box1'); 
   $box.text('Loaded 1'); 
   var $icon = $('&lt;i&gt;').addClass('fa fa-hand-peace-o'); 
@@ -54,7 +54,7 @@ function renderBox2() {
 } 
 </code></pre>
 <p>We also need to change the loading code to go check in the cache. We try to read the cache, the local storage, and if nothing</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">var box1Cached = unDataToCanvas(localStorage.getItem('box1')); 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">var box1Cached = unDataToCanvas(localStorage.getItem('box1')); 
 var box2Cached = unDataToCanvas(localStorage.getItem('box2'));
 
 if(box1Cached){ 
@@ -68,7 +68,7 @@ if(box2Cached){
 setTimeout(renderBox2, 5000); 
 </code></pre>
 <p>Finally, the load and save in the cache need to be coded. The save will create a canvas and we will store the data into a base64 representation. This is done by calling the method <code>toDataUrl()</code> method.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function cache($elementToCache) { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function cache($elementToCache) { 
   var id = $elementToCache.attr('id'); 
   html2canvas($elementToCache, { onrendered: function(canvas) { 
       window.localStorage.setItem(id, canvas.toDataURL()); 
@@ -77,7 +77,7 @@ setTimeout(renderBox2, 5000);
 } 
 </code></pre>
 <p>The loading is more tricky. We need to load from the local storage the base64 image, create an image with the source to this base64 and return it.</p>
-<pre class="language-javascript"><code class="language-javascript code-highlight">function unDataToCanvas(data) { 
+<pre class="language-javascript" tabindex="0"><code class="language-javascript code-highlight">function unDataToCanvas(data) { 
   var img = new Image(); 
   var canvas = document.createElement('canvas'); 
   img.onload = function() { 

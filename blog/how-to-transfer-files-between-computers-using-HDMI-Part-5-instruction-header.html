@@ -3,10 +3,10 @@
 <p>At this point, we can transfer a single file containing a few words. We stubble into several issues: data transfer quality issues, rgb losing accuracy on bits, video encoding, and duplicate data. Now, we need to tackle a bigger file.</p>
 <h1>Case 1: 53 megs zip file</h1>
 <p>The first case was to inject into a video a zip file containing several pictures. The size was 53 megs and took about 4 minutes 20 seconds to inject into a video. The time is reasonable, but many optimization could be applied to improve the performance. The generated video file is a 188 megs video of 7 seconds. The configuration is</p>
-<pre class="language-sh"><code class="language-sh code-highlight">cargo run -- -m inject -i outputs/Picture.zip -o outputs/out_zip_1px.mp4 --fps 30 --height 1080 --width 1920 --size 1 -a bw
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">cargo run -- -m inject -i outputs/Picture.zip -o outputs/out_zip_1px.mp4 --fps 30 --height 1080 --width 1920 --size 1 -a bw
 </code></pre>
 <p>I ran on the target computer:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">ffmpeg -r 30 -f dshow -s 1920x1080 -vcodec mjpeg -i video="USB Video" -r 30 out_picturezip_1px.mp4
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">ffmpeg -r 30 -f dshow -s 1920x1080 -vcodec mjpeg -i video="USB Video" -r 30 out_picturezip_1px.mp4
 </code></pre>
 <p>And it failed with a video of 75 megs and an extracted zip file of 8kb. However, I noticed the source computer lagging while playing the video. I suspect many frames were not displayed, thus not recorded by the capture card.</p>
 <p>Other than trying to make the source computer run faster, I decided to give it a try with a size of 5. The rationale is that when extracting, I noticed that the red frame was at 99.8 red. Thus some information was missing, as 100% would be that all the frames were red, meaning all the black and white pixels might not display.</p>
@@ -14,14 +14,14 @@
 <p>A first change to increase the speed was to run the tool using the <code>--release</code> flag (use this argument after the <code>cargo run</code>. As a result, the 7 minutes went down to 2 minutes 12 seconds.</p>
 <h1>Case 2: Picture File Failure</h1>
 <p>I decided to step back and try more on a single machine without the additional step of the display card. So far, I've been focusing on fine text, but a zip file and a picture didn't work. What about doing a picture locally?</p>
-<pre class="language-sh"><code class="language-sh code-highlight">cargo run -- -m inject -i outputs/test4.jpg -o outputs/test4_out_5px.mp4 --fps 30 --height 1080 --width 1920 --size 5 -a bw -p true
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">cargo run -- -m inject -i outputs/test4.jpg -o outputs/test4_out_5px.mp4 --fps 30 --height 1080 --width 1920 --size 5 -a bw -p true
 cargo run -- -m extract -i outputs/test4_out_5px.mp4 -o outputs/test4_extracted.jpg --fps 30 --height 1080 --width 1920 --size 5 -a bw
 </code></pre>
 <p>57 megs video for 10 seconds for a 2.99 meg picture. The extraction command 137kb! Something was off!</p>
 <p>At this point, my gut feeling was that the file was parsed and stopped because the end of the file (eof) character was detected (the 0x04). With text, the character makes sense, but with ZIP or picture or other format, the character might be used. A modification to ensure that the end of the content into a frame was needed further than a single character. A quick search in a HEX editor on the video shows a lot of the character everywhere!</p>
 <p><img src="/images/blog/hdmi-file-transfer-article4_eof_char.png" alt="" /></p>
 <p>The solution might be as easy as having several eof characters next to each other. For example, having 50 eof means that it is the end of the content. However, this is easy to say, harder to implement without introducing other issues. For example, managing several frames where information of this static 50 eof may be on several frames</p>
-<pre class="language-rust"><code class="language-rust code-highlight">let rgb = get_pixel(source, x, y, info_size);
+<pre class="language-rust" tabindex="0"><code class="language-rust code-highlight">let rgb = get_pixel(source, x, y, info_size);
 rgbs.push(vec![rgb[0], rgb[1], rgb[2]]);
 let bit_value = get_bit_from_rgb(rgb);
 mutate_byte(&amp;mut data, bit_value, bit_index);

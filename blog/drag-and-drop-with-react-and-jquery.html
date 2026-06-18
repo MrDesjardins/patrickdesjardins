@@ -5,12 +5,12 @@
 <ol>
 <li>On the stop of the drag, listen the stop event which take JQueryEventObject and JQueryUI.SortableUIParams as parameter. This can be done when your component is mounted or dynamically when you need after the component is mounted. It's important that the component it's mounted because you need to access the rendered Dom element by refs.</li>
 </ol>
-<pre class="language-typescript"><code class="language-typescript code-highlight">public componentDidMount() { const $element= $(this.refs.dom); const options = { update: (e: JQueryEventObject, ui: JQueryUI.SortableUIParams) =&gt; { this.onUpdate(e, ui) }, } as JQueryUI.SortableOptions; $element.sortable(options); } 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">public componentDidMount() { const $element= $(this.refs.dom); const options = { update: (e: JQueryEventObject, ui: JQueryUI.SortableUIParams) =&gt; { this.onUpdate(e, ui) }, } as JQueryUI.SortableOptions; $element.sortable(options); } 
 </code></pre>
 <ol start="2">
 <li>On the onUpdate, cancel the drag. This can be done by getting using the <code>sortable</code> method.</li>
 </ol>
-<pre class="language-typescript"><code class="language-typescript code-highlight">private onUpdate(e: JQueryEventObject, ui: JQueryUI.SortableUIParams): void { const $element= $(this.refs.dom); $element.sortable("cancel"); //Step 3 goes here } 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">private onUpdate(e: JQueryEventObject, ui: JQueryUI.SortableUIParams): void { const $element= $(this.refs.dom); $element.sortable("cancel"); //Step 3 goes here } 
 </code></pre>
 <ol start="3">
 <li>The last step is to get React render your list again with the new position. This can be done by setting a state, calling a property callback or directly calling the action creator to have this one set the new position in the store to kick a new round of render. At that step, you need to send the all the items or the items that got moved.</li>

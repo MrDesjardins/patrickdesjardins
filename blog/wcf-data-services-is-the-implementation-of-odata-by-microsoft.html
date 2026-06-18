@@ -2,12 +2,12 @@
 <p>WCF Data Service is a type of service that provide information through url. This is easily consumable because it requires only a web browser to execute a call which can have filter, join between entities and conditions. WCF Data Service uses the entity-relationship conventions of the Entity Data Model to expose resources as sets of entities that are related by associations. Not only can you get information the way you want but you can also update entity and insert.</p>
 <p>WCF Data Service lets you use two well know structured semantic which is Atom (XML) and JSON. Both of these protocole are RestFul. That mean that when a call is executed, the life cycle end once the data is sent back to the consumer.</p>
 <p>To create a WCF Data Service, simply create a class that inherit from DataService. It's a generic class so you will have to specify a DataContext type. To use this class, you need to reference the dll : <code>System.Data.Services</code>.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public partial class MyService: DataService&lt;MyDbContext&gt; { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public partial class MyService: DataService&lt;MyDbContext&gt; { 
   //... 
 } 
 </code></pre>
 <p>You will have to also specify which entities is allowed to be accessed in InitializeService.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public static void InitializeService(DataServiceConfiguration config) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public static void InitializeService(DataServiceConfiguration config) { 
   //... 
 } 
 </code></pre>

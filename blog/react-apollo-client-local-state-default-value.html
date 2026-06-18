@@ -6,13 +6,13 @@
 <h1>Step to Add a Field to a Type</h1>
 <h2>Modifying your GraphQL Schema</h2>
 <p>The first step to adding your new piece of data is to include the field in your GraphQL schema. In my case, I have a generated server-side unified file that has all the types of the GraphQL server. To keep the server-side schema separated, the best is to define a separate GraphQL file (<code>.graphql</code>) for the local state. After that, specifying the exact type again is tolerated. The re-defined type only needs the local fields. Apollo will merge all types even if defined multiple types.</p>
-<pre class="language-graphql"><code class="language-graphql code-highlight">type Movie {
+<pre class="language-graphql" tabindex="0"><code class="language-graphql code-highlight">type Movie {
   isStreaming: Boolean!
 }
 </code></pre>
 <p>In our example, the <code>Movie</code> type has many fields, but we only define the local state field in this new file.</p>
 <p>Then, you need to go into the fragment (or query) where you are fetching the field and add the new field to be fetched. The need of <code>@client</code> is required. It indicates that the field is not on the server.</p>
-<pre class="language-graphql"><code class="language-graphql code-highlight">fragment MovieFragment on Movie {
+<pre class="language-graphql" tabindex="0"><code class="language-graphql code-highlight">fragment MovieFragment on Movie {
   id
   title
   isStreaming @client
@@ -23,7 +23,7 @@
 <h2>Default Value</h2>
 <p>Any <code>useQuery</code> that asks for your fragment (or query) that has the field will now fetch the data but still, need a default value for these fields. Until the value is written explicitly by you (we will cover that in a few), the value is <code>undefined</code>. To define a default value, you must change the <code>InMemoryCache</code> to add a policy for your GraphQL type.</p>
 <p>The concept is that you can determine how each field behaves in reading and writing. In that case, we specify our field <code>read</code> property to return <code>false</code> if the field is new (<code>undefined</code>). Otherwise, it returns the value determined by us.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">// Snip...
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">// Snip...
 new ApolloClient({
   link: // Snip,
   cache: new InMemoryCache({
@@ -43,7 +43,7 @@ new ApolloClient({
 <h2>Updating the Value</h2>
 <p>The last step is to update the value locally. A change should not generate a GraphQL mutation because the field is unknown to the server. However, we want to have the same effect: on change it impacts everywhere the field was used. In our case, every React component that relies on the <code>MovieFragment</code> must be updated for a new render.</p>
 <p>There are a few options; the one I prefer relies on the <code>writeFragment</code> because its foundation is the same as the data from the server. The method does not rely on external reactivity systems or third-party state management tools. It is also a single instruction using the Apollo Client.</p>
-<pre class="language-tsx"><code class="language-tsx code-highlight">// Snip
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">// Snip
 const client = useApolloClient();
 // Snip
 client.writeFragment({

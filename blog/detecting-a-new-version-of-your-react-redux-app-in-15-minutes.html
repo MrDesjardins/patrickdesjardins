@@ -9,10 +9,10 @@
 <li>If the Git Hash from the JavaScript environment variable is different from the file on the server, show a message to the user to refresh</li>
 </ol>
 <p>The first step has been <a href="burning-the-last-git-commit-into-your-telemetry-log">already discussed</a>, but in short, it consists to change the <code>npm run build</code> to take the head Git hash and to pass it down to React.</p>
-<pre class="language-sh"><code class="language-sh code-highlight"> "build": "REACT_APP_VERSION=$(git rev-parse --short HEAD) react-scripts-ts build"
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight"> "build": "REACT_APP_VERSION=$(git rev-parse --short HEAD) react-scripts-ts build"
 </code></pre>
 <p>The second step require a change on the build system. At Netflix, we are using Jenkins. I added a Bash Script step that look like the following:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">CommitHash=$(git rev-parse --short HEAD) 
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">CommitHash=$(git rev-parse --short HEAD) 
 echo "HASH" 
 echo $CommitHash 
 echo $CommitHash &gt; "public/version.json" 
@@ -20,7 +20,7 @@ echo "VERSION FILE BEGIN" cat public/version.json
 echo "VERSION FILE END" 
 </code></pre>
 <p>The step number is open to how you want to handle it. I personally want to avoid <code>setTimout</code>. I rather have a Redux Middleware that will check once in a while. The middleware holds the time of the last check and on every action, verify that the time has elapsed from the threshold that you set. I have mine to 5 minutes. Every 5 minutes, or more depending of when the user does an action, it fetches the static file. As you can see in the previous step, the Git Hash is stored in a file under the <code>public</code> folder which is accessible with a simple Ajax call. If the string is different from the JavaScript environment variable, an action is dispatched that shows a message to the user to refresh the page.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight"> const diff = this.currentTimeSinceEpoch() - this.lastCheck; 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight"> const diff = this.currentTimeSinceEpoch() - this.lastCheck; 
  if (diff &gt; SECONDS_BETWEEN_VERSION_CHECK) { 
    this.lastCheck = this.currentTimeSinceEpoch(); 
    (async () =&gt; { 

@@ -2,12 +2,12 @@
 <h1>Pre-Requisites</h1>
 <p>The script is in Python but can be written in any language. Prototyping with Python is quick, and performing a few HTTP requests does not require too much code.
 There are few dependencies. One is <code>request</code> to perform an HTTP request to the API. The second is <code>schedule</code> as we want the code to fetch Git status at regular intervals but also send a periodic heartbeat to the application.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">requests==2.31.0
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">requests==2.31.0
 schedule==1.2.1
 </code></pre>
 <h1>Import, Constants and Class</h1>
 <p>At first, few imports are required. The imports are mostly used to manage the HTTP requests and schedule them. Then, a few constants for status to compare from the GIT pull request API, then a few for registering the application and the event. Finally, the Git token to authenticate to GitHub. The username filters the list of pull requests to get only yours.</p>
-<pre class="language-python"><code class="language-python code-highlight">import requests
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">import requests
 import json
 from string import Template
 import schedule
@@ -28,7 +28,7 @@ class Result:
 <p>The class will contain results from the filtered list of PR. Creating an array of objects in this class gives a clean way to move the data to the OLED keyboard.</p>
 <h1>Fetching Github</h1>
 <p>The first piece of code is fetching from the Git repository. It can be the Github.com or your corporate, private Github repository. The following code has <code>&lt;redacted&gt;</code>, which needs to have your details. Ideally, this would be also in constants. What is essential is returning the list of pull requests.</p>
-<pre class="language-python"><code class="language-python code-highlight">def fetchGitHub():
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">def fetchGitHub():
     url = "https://&lt;redacted&gt;/api/v3/repos/&lt;redacted&gt;/&lt;redacted&gt;/pulls"
     headers = {
         "Accept": "application/vnd.github+json",
@@ -58,7 +58,7 @@ class Result:
 </code></pre>
 <h1>Registering the game and events</h1>
 <p>The way the API works is that you must register your "game," which is your application. Then, you must tell the API what event you will send. Then, you send the events and heartbeat to the API every few seconds to keep your application alive.</p>
-<pre class="language-python"><code class="language-python code-highlight">headers = {"Content-Type": "application/json"}
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">headers = {"Content-Type": "application/json"}
 configFilePath = "/Library/Application Support/SteelSeries Engine 3/coreProps.json"
 config = json.load(open(configFilePath))
 keyboardAddressPort = config["address"]
@@ -117,7 +117,7 @@ def bindGame():
 </code></pre>
 <h1>Sending The Data</h1>
 <p>Sending data to the keyboard uses the previous step's registered game (application) and event. This time, we are sending the information from GitHub. The OLED has two lines.</p>
-<pre class="language-python"><code class="language-python code-highlight">counter = 0
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">counter = 0
 ### Send Event
 def sendEvent(line1, line2):
     global counter
@@ -140,7 +140,7 @@ def sendEvent(line1, line2):
 </code></pre>
 <h3>Heart Beat</h3>
 <p>Without a heartbeat, the application does not stay alive to receive future HTTP calls to update the screen. Thus, you must send a heartbeat.</p>
-<pre class="language-python"><code class="language-python code-highlight">def heartbeat():
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">def heartbeat():
     payload = {
         "game": gameName,
     }
@@ -150,7 +150,7 @@ def sendEvent(line1, line2):
 </code></pre>
 <h2>Logic</h2>
 <p>The code bridges the gap between the Git response and the OLED, which means that it gets a specific message. In that case, if a single pull request is made, the name is shown with the status. Otherwise, the first line is the number of PRs that can merge, and the second is the number of PRs that are blocked.</p>
-<pre class="language-python"><code class="language-python code-highlight">def fetchAndShow():
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">def fetchAndShow():
     prs = fetchGitHub()
     meargable = 0
     blocked = 0
@@ -172,7 +172,7 @@ def sendEvent(line1, line2):
 </code></pre>
 <h1>Bringing Everything Together</h1>
 <p>The last step is to call the methods. I amregistering, binding, and sending events. The first event never shows on the OLED. I'm sending a "loading" to ensure the real message works. Heartbeat is scheduled every five seconds, and every two minutes, the script fetch from Git and refresh the OLED.</p>
-<pre class="language-python"><code class="language-python code-highlight">registerGame()
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">registerGame()
 bindGame()
 sendEvent("Github PR Status", "Loading...")
 fetchAndShow()

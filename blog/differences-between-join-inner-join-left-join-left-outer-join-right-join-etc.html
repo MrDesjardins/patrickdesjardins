@@ -3,7 +3,7 @@
 <p>In Sql, some statement are the same. The only difference is how it's written.</p>
 <h2>Join and Inner Join</h2>
 <p>To begin with, a query with <strong>Join</strong> is the same thing as <strong>Inner Join</strong>. What is a Join or a Inner Join? It's what people are doing with the Where clause, it compares two keys and join them only if a relationship exist. Here is a simple example with the Join done inside the <code>where</code> clause:</p>
-<pre class="language-sql"><code class="language-sql code-highlight"> SELECT EmployeeTerritories.EmployeeID AS 'ET.EMPID' 
+<pre class="language-sql" tabindex="0"><code class="language-sql code-highlight"> SELECT EmployeeTerritories.EmployeeID AS 'ET.EMPID' 
  , EmployeeTerritories.TerritoryID AS 'ET.TID' 
  , Territories.TerritoryID AS 'T.TID' 
  FROM EmployeeTerritories, Territories 
@@ -29,7 +29,7 @@
 <tr><td>3</td><td>33607</td><td>33607</td></tr>
 </tbody></table>
 <p>The same result is output using the <strong>Join</strong> keyword or the <strong>Inner Join</strong>.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">SELECT EmployeeTerritories.EmployeeID AS 'ET.EMPID' 
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">SELECT EmployeeTerritories.EmployeeID AS 'ET.EMPID' 
 , EmployeeTerritories.TerritoryID AS 'ET.TID' 
 , Territories.TerritoryID AS 'T.TID' 
 FROM EmployeeTerritories 
@@ -37,7 +37,7 @@ JOIN Territories ON Territories.TerritoryID = EmployeeTerritories.TerritoryID
 WHERE EmployeeTerritories.EmployeeID &lt;= 3 
 </code></pre>
 <p>Or</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">SELECT EmployeeTerritories.EmployeeID AS 'ET.EMPID' 
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">SELECT EmployeeTerritories.EmployeeID AS 'ET.EMPID' 
 , EmployeeTerritories.TerritoryID AS 'ET.TID' 
 , Territories.TerritoryID AS 'T.TID' 
 FROM EmployeeTerritories 
@@ -47,7 +47,7 @@ WHERE EmployeeTerritories.EmployeeID &lt;= 3
 <h2>Left Join and Left Outer Join</h2>
 <p>These two are also the same. In fact, the Outer keywords is implicit everytime in a SQL query.</p>
 <p>The following query return exactly the same as the Join but it has a reason why.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">SELECT EmployeeTerritories.EmployeeID AS 'ET.EMPID' 
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">SELECT EmployeeTerritories.EmployeeID AS 'ET.EMPID' 
 , EmployeeTerritories.TerritoryID AS 'ET.TID' 
 , Territories.TerritoryID AS 'T.TID' 
 FROM EmployeeTerritories 
@@ -75,7 +75,7 @@ WHERE EmployeeTerritories.EmployeeID &lt;= 3
 <p>The Right Join statement also known as Right Outer Join is the mirror of the Left Outer Join. That mean that all results are from from the Joined table and then the join is try. If no data is found, NULL is returned.</p>
 <h2>Cross Join</h2>
 <p>Cross Join is a Cartesian product. That mean that all data from the left side and join them to the right. The previous example with the Where statement that is query to <code>&lt;=3</code> has 3 EmployeeTerritories. The Join Territories table contains 53 territories. If we execute a Group Statement to know how many Territories the EmployeeTerritories have per EmployeeID this will give you the number to multiply to 53 to know the amount or row returned.</p>
-<pre class="language-sql"><code class="language-sql code-highlight"> SELECT EmployeeID, count(TerritoryID) 
+<pre class="language-sql" tabindex="0"><code class="language-sql code-highlight"> SELECT EmployeeID, count(TerritoryID) 
  FROM EmployeeTerritories 
  WHERE EmployeeTerritories.EmployeeID &lt;= 3 GROUP BY EmployeeID 
 </code></pre><table><thead><tr><th>EmployeeID</th><th>count(TerritoryID)</th></tr></thead><tbody>
@@ -84,7 +84,7 @@ WHERE EmployeeTerritories.EmployeeID &lt;= 3
 <tr><td>3</td><td>4</td></tr>
 </tbody></table>
 <p>This give 13 totals amount of Employees/Territories that will be Cross Joined to 53 territories. For a total of 689 rows. Here is the Cross Join query:</p>
-<pre class="language-sql"><code class="language-sql code-highlight"> SELECT distinct(EmployeeTerritories.EmployeeID) AS 'ET.EMPID' 
+<pre class="language-sql" tabindex="0"><code class="language-sql code-highlight"> SELECT distinct(EmployeeTerritories.EmployeeID) AS 'ET.EMPID' 
  , EmployeeTerritories.TerritoryID AS 'ET.TID' 
  , Territories.TerritoryID AS 'T.TID' 
 FROM EmployeeTerritories 
@@ -95,7 +95,7 @@ WHERE EmployeeTerritories.EmployeeID &lt;=3
 <h2>Full Join and Full Outer Join</h2>
 <p>This join is combining the Left Join and Right Join. In fact, even some database does not support Full Join (like SqlLite) but Microsoft SQL Server does.</p>
 <p>The same query modified for Full Join return 13 rows also.</p>
-<pre class="language-sql"><code class="language-sql code-highlight"> SELECT EmployeeTerritories.EmployeeID AS 'ET.EMPID' 
+<pre class="language-sql" tabindex="0"><code class="language-sql code-highlight"> SELECT EmployeeTerritories.EmployeeID AS 'ET.EMPID' 
  , EmployeeTerritories.TerritoryID AS 'ET.TID' 
  , Territories.TerritoryID AS 'T.TID' 
 FROM EmployeeTerritories 

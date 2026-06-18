@@ -10,7 +10,7 @@
 <p>Unable to open the physical file "C:\sql\adventureworks\AdventureWorks_Data.mdf". Operating system error 5: "5(error not found)". (.Net SqlClient Data Provider)</p>
 </blockquote>
 <p>This error occur when the <code>sp_attach_db</code> is executed or when the attach is done via the Microsoft Sql Management Studio.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">SQLCMD -S (local)\\sqlexpress -E
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">SQLCMD -S (local)\\sqlexpress -E
 exec sp_attach_db @dbname=N'AdventureWorks', @filename1=N'C:\\sql\\adventureworks\\AdventureWorks_Data.mdf', @filename2=N'C:\\sql\\adventureworks\\AdventureWorks_log.ldf'
 GO
 </code></pre>

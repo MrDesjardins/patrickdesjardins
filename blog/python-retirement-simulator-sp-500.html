@@ -2,7 +2,7 @@
 <p>Additionally, I want to start the simulation with the smallest amount possible to optimize an early retirement. The Monte Carlo simulation is based on two different possibilities that I am experimenting with. One is taking the last 150 years of S&amp;P 500 random year performance and aligning them for 40 years (or another period). It continues until there is convergence. The simulation removes the withdrawal amount each year, adjusted for inflation, until the total of 40 years is completed. It does that until the standard error is under half a percent, and then tries another combination of random numbers. The second experiment is more sophisticated in terms of randomness. Historically, the S&amp;P 500 has never had more than four consecutive negative years and never experienced a more than 50% sequential drop. While randomly assigning the performance of each year in the second experiment, if the 5th year is negative, it selects another random performance. The same happens if the accumulation of sequence years goes under 50%. In both cases, when the system determines a year, it removes it from the dataset to ensure uniqueness.</p>
 <h1>Monte Carlo</h1>
 <p>The simulation uses Monte Carlo to generate several random combinations of performance every year over a specified period. My computer has many cores, and to run the simulation in parallel, I rely on <code>multiprocessing</code></p>
-<pre class="language-python"><code class="language-python code-highlight">  if n_workers is None:
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">  if n_workers is None:
       n_workers = max(1, cpu_count() - 1)  # leave one core for OS/other tasks
 
   if chunk_size is None:
@@ -42,7 +42,7 @@
 <p>The Pool runs with an <code>initializer</code> that is a function called once per worker. In our case, it sets up some global variables that are specific to each process (not shared across processes). It enables performance gains between multiple simulations in the process, avoiding the costly transfer of data by parameter. Thus, it is helpful for performance optimization. The <code>initargs</code> are passed by parameter and contain lightweight information that determines how to start the simulation.</p>
 <p>Once the function completes all the simulations, it returns an object that contains the initial parameter, as well as the returns and, optionally, the balance of the portfolio every year. That is optional because it becomes large, but in some cases, it might be helpful for illustration purposes.</p>
 <p>At this point, we can run without adjusting the hyperparameter automatically, but by guessing some scenario. For example, a simulation with these hyperparameters:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">simulation_data = run_simulation_mp(
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">simulation_data = run_simulation_mp(
     return_trajectories=False,
     n_sims=100_000,
     initial_balance=4_500_000,
@@ -52,7 +52,7 @@
 )
 </code></pre>
 <p>Returns</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">Simulation of 100,000 runs over 35 years took 2.53 seconds using constrained random.
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">Simulation of 100,000 runs over 35 years took 2.53 seconds using constrained random.
 The simulation starts using a portfolio balance of $4,500,000.
 
 Probability portfolio survives 35 years: 96.0% if withdrawing $110,000 per year and in negative years $88,000 per year.
@@ -75,7 +75,7 @@ Standard error / mean: $0.400%
 <p><img src="/images/blog/monte_carlo_simulation_3.png" alt="" /></p>
 <h1>Automatic Hyperparameters Optimization</h1>
 <p>Once the Monte Carlo is giving results that make sense from the input values, it is time to get the computer to try several combinations. The idea is to score each tentative to optimize toward a maximum value. The percentage of success is an important value, but ideally, we also want to be successful with the largest withdrawal and the lowest initial balance (retiring early). That part requires some experimentation, and I am still trying to determine the best scoring algorithm. Currently, I use the following scoring function:</p>
-<pre class="language-python"><code class="language-python code-highlight">gap_ratio = (withdrawal - withdrawal_negative_year) / withdrawal
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">gap_ratio = (withdrawal - withdrawal_negative_year) / withdrawal
 gap_ratio = max(gap_ratio, 0)  # just in case
 score = (
  threshold_power_map(prob_success, 0.85, 0.6) * 0.7
@@ -87,7 +87,7 @@ score = (
 )
 </code></pre>
 <p>As you can see, 70% of the score is the probability of success, then 5% higher withdrawal from a range that I would be interested in withdrawing money every year. Then, 5% of the weight of the score is approximately how much money to withdraw when the year of the S&amp;P 500 has a negative return. Finally, 20% of the initial balance, aiming for the lowest rate possible. I came up with an experiment. It was easy for the computer to find that a large initial balance is better, which was causing a bias toward late retirement. Similarly, initially, when focusing solely on the probability of succe</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">=== Optimization Results for retirement_tuning_study_v31 ===
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">=== Optimization Results for retirement_tuning_study_v31 ===
 Best Trial #12
   Initial Balance: $4,500,000.0
   Withdrawal: $110,000.0

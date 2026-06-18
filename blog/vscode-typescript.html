@@ -5,7 +5,7 @@
 <p>To do so, hit "F1" key and type "<strong>Configure Task Runner</strong>". This will create for you the <code>tasks.json</code> file under <code>.vscode</code> folder.</p>
 <p><img src="/images/blog/taskrunner.png" alt="" /></p>
 <p>You can put he following code:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">{ 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">{ 
   // See http://go.microsoft.com/fwlink/?LinkId=733558 
   // for the documentation about the tasks.json format 
   "version": "0.1.0", 
@@ -18,16 +18,16 @@
 </code></pre>
 <h1>VSCode Shortcut</h1>
 <p>From there, you can use the default hotkey to run the task : <code>Ctrl+Shift+B</code>. However, you can also bind that key on save. This way, everytime you save your file, TypeScript will be compiled into JavaScript. To do so, you can change you VsCode keybinding located in your user profile.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight"> C:\\Users\\patrick\\AppData\\Roaming\\Code\\User\\keybindings.json 
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight"> C:\\Users\\patrick\\AppData\\Roaming\\Code\\User\\keybindings.json 
 </code></pre>
 <p>You can all on <code>ctrl+s</code> the command "tasks build".</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">[ 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">[ 
   { "key": "ctrl+s", "command": "workbench.action.tasks.build" } 
 ] 
 </code></pre>
 <h1>TypeScript Configuration</h1>
 <p>Next thing is to add TypeScript configuration into a <strong>tsconfig.json</strong> file. This file is located at the root of your project, at the same level where reside your package.json (npm). My TypeScript configuration contains a "jsx" mention only because I am using React and TypeScript.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">{ 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">{ 
   "compilerOptions": { 
   "target": "ES6", 
   "module": "amd", 

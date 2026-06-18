@@ -8,7 +8,7 @@
 <p>The whole project is built in TypeSript which compile everything into JavaScript. The whole code can be found in this GitHub repository: https://github.com/MrDesjardins/TypeScriptWebWorker</p>
 <p>The project contains 3 files. The main.ts which will create the two buttons and starts the timer for the clock and the dots. The algo.ts which contains an intensive, not efficient, way to calculate prime numbers. It has two parameters, the first is the number of iteration and the second a multiplier. The iteration is to find more than just one prime number, the multiplier is increasing with a random number a number to verify if it's a prime.</p>
 <p>The slow button is executing the following code that disable the button, instantiate the algorithm class and execute it with a huge number. When it returns, it says that the data is back and enable the button.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">function slowFunction(): void { 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">function slowFunction(): void { 
   $("#btn1").prop("disabled", true); 
   const algo = new Algorithm(); 
   const result = algo.calculatePrimes(50, 99887766554); 
@@ -16,7 +16,7 @@
   $("#main").append($line); $("#btn1").prop("disabled", false); } 
 </code></pre>
 <p>The WebWorker button is doing something different and needs more code. To execute code in the WebWorker we need to load the WebWorker and pass a message. To Receive the value back to the page from the WebWorker, we need to subscribe to an event.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">let worker: Worker; 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">let worker: Worker; 
 const callBack = (message: MessageEvent) =&gt; { 
   if (message.data.command === "done") { 
     const result = message.data.prime; 
@@ -44,7 +44,7 @@ const callBack = (message: MessageEvent) =&gt; {
 <p>The call back, is looking for which message is sent back. The string could have been anything, the important is that the WebWorker needs to send the same. This is the way to handle multiple messages and response between the page and WebWorker. In our case, we have only one method and one response so a single string is the only thing required which is called "done".</p>
 <p>The button is disabled and make sure that if a previous worker existed to remove the response listener and termine this one. After, it creates the worker. This is done by using the Worker class and passing a relative path to the WebWorker JavaScript file. After, we need to subscribe to a worker which of type "message". This allows to pass messages between the page and the WebWorker. Finally, there is a timeout of 1 sec before passing the request command down. The reason is that we need some time to the WebWorker to instanciate and register to listen to command. As you can see the postMessage is the way to call the WebWorker with some arguments.</p>
 <p>The WebWorker is using the same algorithm that the one execute in the main script which was loading it from an other module. To do that with WebWorker, we need to get more barebone which mean we cannot use the import syntax, but directly use requirejs.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">importScripts("../vendors/requirejs/require.js"); 
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">importScripts("../vendors/requirejs/require.js"); 
 console.log("loaded"); 
 requirejs.config({ baseUrl: ".", }); 
 require(["algo"], 

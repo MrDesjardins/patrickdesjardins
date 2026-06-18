@@ -4,10 +4,10 @@
 <p>Once the DLL changed, and the validation that the project is well referenced to this new dll. I hit the compile button and see many errors that has been fixed rapidly.</p>
 <h1>Namespace changes</h1>
 <p>The first think you have to know is if you use data annotation, the namespace has changed.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> using System.ComponentModel.DataAnnotations; 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> using System.ComponentModel.DataAnnotations; 
 </code></pre>
 <p>became:</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> using System.ComponentModel.DataAnnotations.Schema; 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> using System.ComponentModel.DataAnnotations.Schema; 
 </code></pre>
 <p>So you have to change some of your classes to use the new Schema. This was required for us because we use data annotation (not a lot but still over hundred places).</p>
 <h1>NotMappedAttribute is not NotMapped</h1>

@@ -7,17 +7,17 @@
 <h1>State</h1>
 <p>React Hook relies on Hook and has the <code>useState</code>. A change in the state renders the component again. With SolidJS, we must use <code>createSignal</code>. The name is different but also how it behaves. Instead of rendering the whole component again, the framework is smart enough to render only the portion using the state. It means that if you have a <code>console.log</code> in your component, you will get an entry the first time the component is rendered but not every time the state changes.</p>
 <p>Here is an example where the weight is entered with a default value, and when the user adjusts the weight, we are setting the value again.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const [currentWeight, setCurrentWeight] = createSignal(props.defaultWeight);
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const [currentWeight, setCurrentWeight] = createSignal(props.defaultWeight);
 </code></pre>
 <p>In my code, I have the <code>setCurrentWeight</code> called directly on the <code>mousemove</code>. The component does not render all over again while the user drags the handler.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">&lt;span class={styles.SingleWeightSelectorWeight_Number}&gt;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">&lt;span class={styles.SingleWeightSelectorWeight_Number}&gt;
   {currentWeight()}
 &lt;/span&gt;
 </code></pre>
 <p>There is a minor difference: the state is accessible with a function instead of a variable. The difference makes the framework known when the state is changing to alter this portion of the component instead of the whole component.</p>
 <h1>CreateMemo</h1>
 <p>The water height (in pixel) is calculated from the weight (lbs) in this demo. Hence, we need to calculate get the pixel from a function. SolidJS has effect (Like React Effect but called <code>createEffect</code>) and Memoization function. The <code>createMemo</code> function is very similar to <code>useMemo</code> with a small difference.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const getWaterHeight = createMemo((): number =&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const getWaterHeight = createMemo((): number =&gt; {
   return (
     (currentWeight() / (props.maximumWeight - props.minimumWeight)) *
     props.height
@@ -28,7 +28,7 @@
 <video src="/videos/blog/WaterTankAnimation.mp4" controls/>
 <h1>Styles</h1>
 <p>By default, a new project with SolidJS comes with CSS module. So you only need to have a file with a suffix <code>.module.css</code>, and then you can import it and use it.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">import styles from "./SingleWeightSelectorHandle.module.css";
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">import styles from "./SingleWeightSelectorHandle.module.css";
 
 // Later in the file
 &lt;div class={styles.SingleWeightSelectorHandleData}&gt;
@@ -36,7 +36,7 @@
 &lt;/div&gt;
 </code></pre>
 <p>SolidJS has more than just <code>class</code>. It also support <code>className</code> like React and a very useful <code>classList</code> that allows conditional style. In the small demo, a handle changes if the handle is pushed.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">classList={{
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">classList={{
   [styles.SingleWeightSelectorHandle]: true,
   [styles.SingleWeightSelectorHandle_Unpressed]: !isDragging(),
   [styles.SingleWeightSelectorHandle_Pressed]: isDragging(),

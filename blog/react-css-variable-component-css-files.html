@@ -2,13 +2,13 @@
 <h1>CSS</h1>
 <p>Settling into a solution of defining all values in CSS as the source of truth is technically possible.</p>
 <p>The first step is to define your variables. For example, you can specify a background color at the <code>:root</code>. Of course, it could be at another level, but I prefer setting global variables at the highest level possible.</p>
-<pre class="language-css"><code class="language-css code-highlight">:root {
+<pre class="language-css" tabindex="0"><code class="language-css code-highlight">:root {
   --button-background-color: #c0c0c0;
 }
 </code></pre>
 <h1>TypeScript</h1>
 <p>The second step is to extract the value in TypeScript (or JavaScript), which React can use.</p>
-<pre class="language-ts"><code class="language-ts code-highlight">const buttonBackgroundColor: string = getComputedStyle(
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">const buttonBackgroundColor: string = getComputedStyle(
   document.documentElement
 ).getPropertyValue("--button-background-color");
 </code></pre>
@@ -20,14 +20,14 @@
 <iframe src="https://codesandbox.io/embed/late-rain-z80cgd" style="width:100%;height:500px;border:0;border-radius:4px;overflow:hidden" title="CodeSandbox example late-rain-z80cgd" loading="lazy" allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking" sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"><a href="https://codesandbox.io/s/late-rain-z80cgd">Open CodeSandbox example late-rain-z80cgd</a></iframe>
 <h1>Theme with Conditional CSS Variables Value</h1>
 <p>A pattern that I like is to define a variable depending on a theme. The theme is selected by assigning a value to an attribute, and the CSS check if the attribute is a specific value.</p>
-<pre class="language-css"><code class="language-css code-highlight">html {
+<pre class="language-css" tabindex="0"><code class="language-css code-highlight">html {
   --button-background-color: #c0c0c0;
 }
 
 html[data-theme="dark"] {
   --button-background-color: #7fffd4;
 }
-</code></pre><pre class="language-ts"><code class="language-ts code-highlight">// Get current theme value (light or dark)
+</code></pre><pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">// Get current theme value (light or dark)
 const currentTheme = document.documentElement.getAttribute("data-theme");
 
 // Alternate the theme (swap)

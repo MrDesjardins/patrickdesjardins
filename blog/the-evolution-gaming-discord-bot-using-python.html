@@ -6,7 +6,7 @@
 <p>Soon, I realized that many people do not plan, but I wanted to channel all the posts to reflect the server activity. Thus, I added a feature that checks the voice channels, collects who is playing, and automatically adds them to the time frame.</p>
 <p><img src="/images/blog/discord_bot_daily_message.png" alt="Discord Bot" /></p>
 <p>The feature relies mostly on the Discord API, which allows for recurrent tasks.</p>
-<pre class="language-python"><code class="language-python code-highlight">HOUR_SEND_DAILY_MESSAGE = 7
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">HOUR_SEND_DAILY_MESSAGE = 7
 local_tz = pytz.timezone("America/Los_Angeles")
 time_send_daily_message = time(hour=HOUR_SEND_DAILY_MESSAGE, minute=0, second=0, tzinfo=local_tz)
 #...
@@ -23,7 +23,7 @@ async def send_daily_question_to_all_guild_task(self):
 <h2>Getting Statistic</h2>
 <p>The next natural step was to get a sense of who was playing, who was reducing their time, and other statistical information. I could understand better who to reach out to get some news or understand some dynamics in the group better. It was especially useful once the group reached above 100 members. I started saving the information into a SQLite database. Then, using Panda, I could load the data from a data range and start computing some statistics.</p>
 <p>Most of the code looks like this one:</p>
-<pre class="language-python"><code class="language-python code-highlight"># Some fetching code:
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight"># Some fetching code:
 data_user_activity: list[UserActivity] = fetch_all_user_activities(from_day, to_day)
 data_user_id_name: Dict[int, UserInfo] = fetch_user_info()
 users_by_weekday_dict: Dict[int, list[UserInfoWithCount]] = users_by_weekday(data_user_activity, data_user_id_name)
@@ -34,7 +34,7 @@ users_by_weekday_dict: Dict[int, list[UserInfoWithCount]] = users_by_weekday(dat
 <p>Getting the latest database from the Raspberry PI to my local machine or updating the service running on my Raspberry PI was a pain. I added a few commands to the bot to help me with that. Then, the unit tests, coverage, and integration tests required other commands. Then, more statistic visualization required more commands. Thus, I created this admin tool that I could use to manage the bot.</p>
 <video src="/videos/blog/discord_bot_admin_menu.mp4" controls/>
 <p>The admin tool relies on a third-party library called <code>simple_term_menu</code>. There are many menus available that allow you to dive deep into options. For example, the admin tool starts asking if you are running the command in the Raspberry PI (prod) or in your local machine (dev). Then, the options are different. In production, when updating the code, the admin tool stops the service, fetches the latest code, installs the dependencies, and starts the service again. In development, options for visualization, tests, or fetching the latest production data are all available.</p>
-<pre class="language-python"><code class="language-python code-highlight">def main():
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">def main():
     """First menu"""
  options = ["[1] Raspberry PI", "[2] Local", "[q] Exit"]
  terminal_menu = TerminalMenu(options, title="Environment", show_shortcut_hints=True)
@@ -50,7 +50,7 @@ users_by_weekday_dict: Dict[int, list[UserInfoWithCount]] = users_by_weekday(dat
 <h2>Voice Message Channel</h2>
 <p>On my journey of adding features, I wanted to let people know they are not alone when joining a voice channel. There is always a first one to join. I added a feature that the bot would join the voice channel and play a dynamically generated message using the user name and then the schedule. The bot was mentioning out loud who was playing in the current hours, and if no one was, it would say the upcoming hour's schedule. This feature is temporarily disabled as it was making the false impression that a human had joined the channel.</p>
 <p>The feature relies on the <code>gtts</code> library that converts text to speech. The library is easy to use, and the code looks like this:</p>
-<pre class="language-python"><code class="language-python code-highlight"># Convert text to speech using gTTS
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight"># Convert text to speech using gTTS
 tts = gTTS(text_message, lang="en")
 tts.save("welcome.mp3")
 
@@ -83,7 +83,7 @@ os.remove("welcome.mp3")
 <p><img src="/images/blog/discord_bot_user_gaming_session.png" alt="Discord Bot Gaming Session" /></p>
 <p>The feature is one of the more popular ones, as it gives a quick overview of everyone's performance without having to leave the server.</p>
 <p>Technically, it was challenging because of the many security steps in place to avoid having people scrape. I have contacted the API owner, but the communication was very broken, and I received a denial without any explanation. So, upon disconnect, I accumulate people's names. That is a good way to get a list instead of going one by one since we need to actually open a browser. And the website detects a headless browser. Thus, we need a real browser! So, on the disconnect event, the user id is persisted in the memory cache. Then, a Discord task that runs every 5 minutes check if there is any user to query. The task opens a browser and does its job. Using Python context manager, the code is clean:</p>
-<pre class="language-python"><code class="language-python code-highlight">try:
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">try:
     with BrowserContextManager() as context:
         for user in users:
             try:
@@ -100,7 +100,7 @@ except Exception as e:
     print_error_log(f"post_queued_user_stats: Error opening the browser context: {e}")
 </code></pre>
 <p>The <code>BrowserContextManager</code> uses <code>selenium</code> and with <code>xvfb</code> open Chrome. The code works locally (WSL on Windows) and on the Raspberry PI.</p>
-<pre class="language-python"><code class="language-python code-highlight">def _config_browser(self) -&gt; None:
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">def _config_browser(self) -&gt; None:
     """Configure the browser for headers and to receive a cookie to call future API endpoints"""
  options = uc.ChromeOptions()
  options.add_argument("--no-sandbox")

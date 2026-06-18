@@ -13,12 +13,12 @@
 <h1>Migration Steps</h1>
 <h2>Migration Step 1: Install NPM Packages</h2>
 <p>The first step is to install ViteJS and a few dependencies. You may have to install more or less depending on your project. In my case, I wanted to have ViteJS and the absolute path capability. Thus, I'll describe the step to migrate CRA to ViteJS using TypeScript and absolute path.</p>
-<pre class="language-sh"><code class="language-sh code-highlight">npm install --save-dev vite @vitejs/plugin-react vite-tsconfig-paths
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">npm install --save-dev vite @vitejs/plugin-react vite-tsconfig-paths
 </code></pre>
 <p>There is nothing particular to install for TypeScript. Vite supports TypeScript.</p>
 <h2>Migration Step 2: ViteJS Configuration File</h2>
 <p>A single TypeScript file must be present at the root of your project, next to your <code>package.json</code> file. The file name is: <code>vite.config.ts</code>. The content varies depending on your need. In my case:</p>
-<pre class="language-ts"><code class="language-ts code-highlight">/// &lt;reference types="vitest" /&gt;
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">/// &lt;reference types="vitest" /&gt;
 import path from "path";
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -51,7 +51,7 @@ export default defineConfig({
 });
 </code></pre>
 <p>The plugins are to work with React and to handle TypeScript alias path from the .tsconfig.json file. The <code>viteTsconfigPaths</code> plugins allows to not have to add a configuration similar to TypeScript to define the path for each alias. For example, the following code is <strong>not</strong> needed if you use the plugin (if you have the alias defined in your TypeScript configuration file.</p>
-<pre class="language-json"><code class="language-json code-highlight">resolve: {
+<pre class="language-json" tabindex="0"><code class="language-json code-highlight">resolve: {
   alias: {
     "@myaliashere" : path.resolve(__dirname, "./packages/mypackagehere")
   }
@@ -63,7 +63,7 @@ export default defineConfig({
 <p>The test section gives the coverage output configuration and how to handle tests in general. An important point if you are using <strong>Docker</strong> is to ensure that you have a volume to the specified <code>reportDirectory</code> to allow the CI to access the result. Also, you <strong>must</strong> set the <code>clean</code> option to <code>false</code>. Otherwise, vstest execute a <code>rmdir</code> to the specified <code>reportDirectory</code> which will thrown an exception (error). The reason is that Docker with the volume will hold the folder and prevent any deletion.</p>
 <h2>Migration Step 3: Index.html</h2>
 <p>With CRA, the index.html is in the <code>public</code> folder. With ViteJS, the index.html is inside the root folder, next to the package.json file (and the vite.config.ts file). Besides moving the file, you need to edit the index.html. First, remove all mention of the <code>%PUBLIC_URL%</code>. You do not need to replace it with anything -- just remove it. Second, you need to add a <code>script</code> with a <code>module</code>. Here is what is needed without the <code>&lt;head&gt;</code> portion, which should be the same (without <code>%PUBLIC_URL%</code>).</p>
-<pre class="language-html"><code class="language-html code-highlight">&lt;html&gt;
+<pre class="language-html" tabindex="0"><code class="language-html code-highlight">&lt;html&gt;
   &lt;body&gt;
     &lt;div id="root"&gt;&lt;/div&gt;
     &lt;script type="module" src="/src/index.tsx"&gt;&lt;/script&gt;
@@ -72,22 +72,22 @@ export default defineConfig({
 </code></pre>
 <h2>Migration Step 4: TypeScript</h2>
 <p>TypeScript changes are limited to adding two types: one for Vite and one for Vitest (the test framework that replaces Jest).</p>
-<pre class="language-json"><code class="language-json code-highlight">"types": ["vite/client", "vitest/globals"]
+<pre class="language-json" tabindex="0"><code class="language-json code-highlight">"types": ["vite/client", "vitest/globals"]
 </code></pre>
 <p>Then, you need to create a file called <code>vite-env.d.ts</code> with this single line:</p>
-<pre class="language-ts"><code class="language-ts code-highlight">/// &lt;reference types="vite/client" /&gt;
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">/// &lt;reference types="vite/client" /&gt;
 </code></pre>
 <h2>Migration Step 5: Environment Variable</h2>
 <p>React uses the prefix <code>REACT_APP_</code> before each environment variable. Vite uses a different prefix but also a position to store the values. CRA stores the value directly in <code>process.env</code> but ViteJS stores the value under <code>import.meta.env</code>.</p>
 <p>For example:</p>
-<pre class="language-ts"><code class="language-ts code-highlight">process.env.REACT_APP_myvar;
+<pre class="language-ts" tabindex="0"><code class="language-ts code-highlight">process.env.REACT_APP_myvar;
 // Become
 import.meta.env.VITE_myvar
 </code></pre>
 <p>The change is fast by performing a search and replaces of <code>process.env.REACT_APP_</code> to <code>import.meta.env.VITE_</code> and you are good to go.</p>
 <h2>Migrating Step 6: Package.json</h2>
 <p>You need to change the CRA commands for Vite commands.</p>
-<pre class="language-json"><code class="language-json code-highlight">"scripts": {
+<pre class="language-json" tabindex="0"><code class="language-json code-highlight">"scripts": {
   "start": "vite",
   "build": "tsc &amp;&amp; vite build",
   "serve": "vite preview --host",

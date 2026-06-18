@@ -5,12 +5,12 @@
 <li>/Administrat<strong>eur</strong>/investigat<strong>ion</strong>/reje<strong>ter</strong>/1</li>
 </ul>
 <p>This is the standard ASP.Net MVC route in English only. To have it in French, you would have to repeat that with French string but it wouldn't have handled the culture thread problem.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">context.MapRoute( Constants.Areas.ADMINISTRATOR + "_OrdersController_Reject" , "Administrator/Investigate/Reject/{" + Constants.RoutePortionName.ID + "}"
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">context.MapRoute( Constants.Areas.ADMINISTRATOR + "_OrdersController_Reject" , "Administrator/Investigate/Reject/{" + Constants.RoutePortionName.ID + "}"
  , new RouteValueDictionary {{ Constants.RoutePortionName.ACTION, "Reject" }, { Constants.RoutePortionName.CONTROLLER, "Orders" }}
  , new RouteValueDictionary {{ Constants.RoutePortionName.ID,@"\\d+"}, });
 </code></pre>
 <p>In the previous article, we described a way to defined constraints, values, localized tokens and Area-Controller-Action. For our example here, this would look like the following code.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">var areaRoutes = new List&lt;AreaTranslation&gt; {
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">var areaRoutes = new List&lt;AreaTranslation&gt; {
 new AreaTranslation(Constants.Areas.ADMINISTRATION
   ,new List&lt;LocalizedSection&gt;{
     new LocalizedSection(LocalizedSection.EN, "administrator")
@@ -39,7 +39,7 @@ new AreaTranslation(Constants.Areas.ADMINISTRATION
 };
 </code></pre>
 <p>This is the final form with the Fluent API that we will discuss.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> var areaRoutes = FluentLocalizedRoute 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> var areaRoutes = FluentLocalizedRoute 
  .BuildRoute() 
  .ForBilingualArea(Constants.Areas.ADMINISTRATION, "administrator", "administrateur") 
  .WithBilingualController("Orders", "Orders", "Ordres") 
@@ -51,14 +51,14 @@ new AreaTranslation(Constants.Areas.ADMINISTRATION
 </code></pre>
 <p>I think it's pretty clear the benefit of using Fluent API in that particular case. However, do not get me wrong, Fluent API is not ideal in a lot of situation. First, as you will see, it add a lot of code if you want to have your Fluent API to restrict what operation you can do depending of which action you use. Second, it also creates additional codes to unit test, to support and to improve in the future.</p>
 <p>There is many different ways to use the "starting point" with a Fluent API. You could create an extension method that let you use an existing object to be enhance. Or, you can use a static object like a builder. I am using the second idea because I am not enhancing an existing object but create a new collection of objects. However, I could have extend the RouteCollection for example to do the same. The first class is the entry point, could have been simply flatten out directly inside the RouteBuilder. I built it this way to allow me to add later more route builder.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public static class FluentLocalizedRoute {
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public static class FluentLocalizedRoute {
   public static RouteBuilder BuildRoute() {
      return new RouteBuilder();
   }
 }
 </code></pre>
 <p>The second one is the builder itself. I have two possibilities. One to create a list of route that doesn't have areas and one that has area support.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public class RouteBuilder: IRouteBuilder { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public class RouteBuilder: IRouteBuilder { 
   public List&lt;ControllerSectionLocalized&gt; ControllerList { get; } 
   public List&lt;AreaSectionLocalized&gt; AreaList { get; }
 
@@ -87,16 +87,16 @@ new AreaTranslation(Constants.Areas.ADMINISTRATION
 }
 </code></pre>
 <p>So far, we can do :</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> var areaRoutes = FluentLocalizedRoute.BuildRoute() 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> var areaRoutes = FluentLocalizedRoute.BuildRoute() 
  .ForBilingualArea(Constants.Areas.CONTEST, Constants.Areas.CONTEST, Constants.Areas.CONTEST)
  ...
 </code></pre>
 <p>You will notice that every methods return an Interface from that point of this article. This is how you define what will appears when you cascade the instruction. It also filters what you can do or not. For example, in the previous code, the <em>ForBilingualController</em> returns a <strong>IRouteBuilderController</strong>, and the <em>ForBilingualArea</em> returns <strong>IRouteBuilderArea</strong> . Hence, you cannot do the same actions. Here is what you can do in both case.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public interface IRouteBuilderController { IRouteBuilderAction WithBilingualAction(string actionName, string actionEnglishLocalizedString, string actionFrenchLocalizedString); } public interface IRouteBuilderArea { IRouteBuilderController WithBilingualController(string controllerName, string controllerEnglishLocalizedString, string controllerFrenchLocalizedString); }
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public interface IRouteBuilderController { IRouteBuilderAction WithBilingualAction(string actionName, string actionEnglishLocalizedString, string actionFrenchLocalizedString); } public interface IRouteBuilderArea { IRouteBuilderController WithBilingualController(string controllerName, string controllerEnglishLocalizedString, string controllerFrenchLocalizedString); }
 </code></pre>
 <p>It's similar but not the same. The controller lets you create an action, while the area let you create a controller. As you can see, the return is IRouteBuilderController which converge both path to the controller. That make sense since Area &gt; Controller &gt; Action. This is interesting because it will help us limiting the number of interface. However, keep it mind that a rich API will probably have 1 interface per underlying method. The reason is that each method you have or property you want to set may have some restriction. For example, we will see that once you have setup an action, you can create an Url, a constraint or a value but not in the controller, neither in the area.</p>
 <p>Both Area and Controller builder takes care of defining the interface contract. It's pretty limited what they can do. They can only localize their name and define the collection of child (one will be controllers and the other one actions).</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public class RouteBuilder: IRouteBuilder {
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public class RouteBuilder: IRouteBuilder {
   public List&lt;ControllerSectionLocalized&gt; ControllerList { get; }
   public List&lt;AreaSectionLocalized&gt; AreaList { get; }
 
@@ -158,7 +158,7 @@ public class RouteBuilderArea : IRouteBuilderArea {
 }
 </code></pre>
 <p>The action interface is getting interesting because of the number of possible action. When the controller is defined, you can do several actions for an action. You can define default value, constraints, url, defines token, create a new action or create a new controller and of course outputting the whole list.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public interface IRouteBuilderAction : IRouteBuilderAction_Defaults, IRouteBuilderAction_Constraints, IRouteBuilderAction_Url, ITranslatedTokens, IRouteBuilderAction_ToList {
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public interface IRouteBuilderAction : IRouteBuilderAction_Defaults, IRouteBuilderAction_Constraints, IRouteBuilderAction_Url, ITranslatedTokens, IRouteBuilderAction_ToList {
 
 }
 
@@ -175,7 +175,7 @@ public interface IRouteBuilderAction_ToList: IRouteBuilder, IAndAction, ITransla
 public interface IAndAction { IRouteBuilderController And(); } public interface ITranslatedTokens { IRouteBuilderAction_ToList WithTranslatedTokens(string tokenKey, string english, string french); }
 </code></pre>
 <p>So for each scenario, you end up with interfaces, and also it's implementation. Most of these implementation return an interface that the Action class will inherit, thus we can return the same class. This is the reason that in the implementation, <strong>RouteBuilderAction</strong> , you will see that a lot of methods return this. This allows to chain actions on the same object.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public class RouteBuilderAction : IRouteBuilderAction
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public class RouteBuilderAction : IRouteBuilderAction
  , IRouteBuilderAction_Defaults
  , IRouteBuilderAction_Constraints
  , IRouteBuilderAction_Url

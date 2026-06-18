@@ -4,7 +4,7 @@
 <p>The second step is to have library to access ReCaptcha. Inside your project, add the two following NuGet Package. One is the Recaptcha API service and the other one will give you <strong>Html helper</strong>.</p>
 <p><img src="/images/blog/recaptchaMVC1-400x131.png" alt="" /></p>
 <p>The third step is to configure your project with the public and private key. This can be done by adding 2 appsettings in the web.config.</p>
-<pre class="language-xml"><code class="language-xml code-highlight">&lt;appSettings&gt; 
+<pre class="language-xml" tabindex="0"><code class="language-xml code-highlight">&lt;appSettings&gt; 
   &lt;add key="webpages:Version" value="2.0.0.0" /&gt; 
   &lt;add key="webpages:Enabled" value="false" /&gt; 
   &lt;add key="PreserveLoginUrl" value="true" /&gt; 
@@ -16,7 +16,7 @@
 &lt;/appSettings&gt; 
 </code></pre>
 <p>The forth step is to let know every page about the new library by adding the name space into the system.web configuration of the web.config.</p>
-<pre class="language-xml"><code class="language-xml code-highlight">&lt;system.web&gt; 
+<pre class="language-xml" tabindex="0"><code class="language-xml code-highlight">&lt;system.web&gt; 
 &lt;pages&gt; 
   &lt;namespaces&gt; 
     &lt;add namespace="System.Web.Helpers" /&gt; 
@@ -31,10 +31,10 @@
  &lt;/pages&gt; 
 </code></pre>
 <p>The fifth step is to add the control to the register form.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> &lt;li&gt; @Html.Raw(Html.GenerateCaptcha()) @Html.ValidationMessage("recaptcha") &lt;/li&gt; 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> &lt;li&gt; @Html.Raw(Html.GenerateCaptcha()) @Html.ValidationMessage("recaptcha") &lt;/li&gt; 
 </code></pre>
 <p>The last step is to check if everything is fine from the controller side. This will be validated when the user will submit the form to the server.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">[RecaptchaControlMvc.CaptchaValidator] 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">[RecaptchaControlMvc.CaptchaValidator] 
 public ActionResult Register(RegisterModel model, bool captchaValid, string captchaErrorMessage) { 
   if (ModelState.IsValid) { 
     if (!captchaValid) { 
@@ -47,7 +47,7 @@ public ActionResult Register(RegisterModel model, bool captchaValid, string capt
 <p>Nothing has to be done when developing into localhost (or 127.0.0.1) because ReCaptcha service allow developer to use for any key the localhost domain.</p>
 <h1>Behind the library</h1>
 <p>The first section was enough to let you implement ReCaptcha with your Asp.Net MVC 4 website. Now, let check a little bit the code behind the library. First, the html helper. This helper, create an instance of RecaptchaControl with the id "recaptcha".</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public static string GenerateCaptcha(this HtmlHelper helper) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public static string GenerateCaptcha(this HtmlHelper helper) { 
   return RecaptchaControlMvc.GenerateCaptcha(helper, "recaptcha", "default"); 
 }
 
@@ -67,13 +67,13 @@ public static string GenerateCaptcha(this HtmlHelper helper, string id, string t
 </code></pre>
 <p>This is quite interesting because when you validate your recaptcha you may want to add the error message next to it.</p>
 <p>From the same code, we can see that the public and private key come from RecaptchaControlMvc... Those are two static string that get their value from the application setting of the web config file.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight"> public static class RecaptchaControlMvc { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight"> public static class RecaptchaControlMvc { 
   private static string publicKey = ConfigurationManager.AppSettings["RecaptchaPublicKey"]; 
   private static string privateKey = ConfigurationManager.AppSettings["RecaptchaPrivateKey"]; 
 </code></pre>
 <p>So far, nothing very hard to understand and we have two answers concerning the name of the control generated and the name of the setting used for the web.config.</p>
 <p>The last interesting part is concerning the filter that we had to add to the action to validate the input of the user. This one is straight forward. It uses the RecaptchaValidator class to access the service and get a response from the ReCaptcha service. It then add the validation answer to the parameter. We have now our third answer concerning what are the parameter to add to the action.</p>
-<pre class="language-csharp"><code class="language-csharp code-highlight">public override void OnActionExecuting(ActionExecutingContext filterContext) { 
+<pre class="language-csharp" tabindex="0"><code class="language-csharp code-highlight">public override void OnActionExecuting(ActionExecutingContext filterContext) { 
   RecaptchaValidator recaptchaValidator = new RecaptchaValidator(); 
   recaptchaValidator.PrivateKey = RecaptchaControlMvc.PrivateKey; 
   recaptchaValidator.RemoteIP = filterContext.HttpContext.Request.UserHostAddress; 

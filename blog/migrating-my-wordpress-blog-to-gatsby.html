@@ -3,7 +3,7 @@
 <p>The road of moving from a WordPress blog to Gatsby.js is not uncharted but also not a walk-to-the-park. I was disconcerted to see that Gatsby v2 and v3 are pretty different, making many documentation irrelevant. Also, something to know about Gatsby is that it relies heavily on plugins. Many are deprecated or do not work, seemingly as we will see in this article.</p>
 <h2>Migration WordPress Articles to Markdown</h2>
 <p>The migration starts by moving all the assets from WordPress. WordPress has an export feature built-in which worked fine. It produces an XML file with the articles from the database. Once the data was on my computer, I used a script to convert the XML into Markdown. The script name is <a href="https://github.com/lonekorean/wordpress-export-to-markdown">wordpress-export-to-markdown</a>. It is open-source and available on Github. The script performance was greater than expected. I had issues with many images, but I could retrieve those from the servers. Overall, very satisfied. A quick thing to know, Markdown (md) is not anymore <em>the way</em> to write in Gatsby. In version 3, the new format is Markdown for component a.k.a. <a href="https://mdxjs.com/">MDX</a>. A quick rename of all file extensions, and I was all set. Here is the command line I used:</p>
-<pre class="language-sh"><code class="language-sh code-highlight">find . -name '*.md' -exec rename .md .mdx {} +
+<pre class="language-sh" tabindex="0"><code class="language-sh code-highlight">find . -name '*.md' -exec rename .md .mdx {} +
 </code></pre>
 <h2>Getting Started with Gatsby.js</h2>
 <p>The official website has a lot of documentations. The problem is to get your head straight to what you can do or not. It is not a normal Webpack/CRA/React website. Gatsby is actually a system that compile .jsx or .tsx into HTML files. The system has a great development experience that lets you not rebuild everything while building. Nonetheless, I tour a detour reading article that was showing one of many ways which was not the way I desired.</p>
@@ -12,7 +12,7 @@
 <h2>Two Types of Page</h2>
 <p>Gatsby allows creating automatically pages depending on where you put your TypeScript file (template) or programmatically. The flexibility is interesting but also confusing when you get started. I ended up having everything for the blog in the programmatic pattern for consistency and control. My personal website consists of a single page, and it relies on folder structures. For example, in my <code>src/pages/index.tsx</code> is my website. It is elementary, has no access to GraphQL, and displays images and texts. The blog has all its pages inside <code>src/templates</code>. As you might understand by now, the <code>src/pages/</code> is a folder that creates a route with the file name. The pages in the template folder (could be any time that is not reserved) are used by the <code>gatsby-node.js</code> where you create pages with JavaScript.</p>
 <p>Without getting in too much detail, the script needs to export a <code>createPages</code> function where you fetch all your Markdown file (MDX)</p>
-<pre class="language-javascript"><code class="language-javascript code-highlight">exports.createPages = async ({ graphql, actions, reporter }) =&gt; {
+<pre class="language-javascript" tabindex="0"><code class="language-javascript code-highlight">exports.createPages = async ({ graphql, actions, reporter }) =&gt; {
   const { createPage } = actions;
 
   const result = await graphql(`
@@ -38,7 +38,7 @@
 <p>This is a GraphQL query at the top of the function to gather the id of the node. The node is a MDX file. There was a little confusion because the GraphQL fetches the slug, which is the URL that identifies the blog article. However, there is a <code>slug</code> underneath the <code>node</code> and one inside the <code>fields</code>. The <code>fields</code> is the good one because everything inside the <code>fields</code> are custom fields. That is right; I had to create a custom field! The reason is that I wanted to have all my markdown files by year in my repository.</p>
 <p><img src="/images/blog/blogfolder.png" alt="" /></p>
 <p>The problem is the generated default slug uses the path, which means the year was on all slugs. To create a custom field that will contain the same slug but without the year, you need to create a function called <code>onCreateNode</code> inside the <code>gatsby-node.js</code> file. In short, it checks if the node is a MDX file, creates a file path that removes the six first characters and creates a new URL that can be used in a later stage (the <code>createPages</code>).</p>
-<pre class="language-javascript"><code class="language-javascript code-highlight">exports.onCreateNode = ({ node, actions, getNode }) =&gt; {
+<pre class="language-javascript" tabindex="0"><code class="language-javascript code-highlight">exports.onCreateNode = ({ node, actions, getNode }) =&gt; {
   const { createNodeField } = actions;
   if (node.internal.type === `Mdx`) {
     const relativeFilePath = createFilePath({
@@ -58,7 +58,7 @@
 </code></pre>
 <p>From the GraphQL above, we need to loop each node and create the page for what is needed. For example, we need 1 page per article. Then, we need each year to create a page for that year. And, it gets tricky: one page for each page of the pagination. It means you cannot have custom number of articles by page and that every time you have a new article about rebuilding your solution.</p>
 <p>Here is the code for the page that hosts the text of the article. It was created for the 650+ articles.</p>
-<pre class="language-javascript"><code class="language-javascript code-highlight">createPage({
+<pre class="language-javascript" tabindex="0"><code class="language-javascript code-highlight">createPage({
   path: node.fields.slug /*defined in `onCreateNode`*/,
   component: path.resolve(`./src/templates/BlogArticle.tsx`),
   context: { id: node.id, totalPages: totalPageCount },
@@ -66,7 +66,7 @@
 </code></pre>
 <p>The <code>context</code> is where you pass information down to the <code>component</code>. In that case, I am passing the node <code>id</code>, which I can retrieve to fetch the content of the MDX file. Again, keep in mind that the id passed is passed at the build time to GraphQL. And, at build time, it fetches in GraphQL the content. Hence, the <code>totalPageCount</code> is also passed to have the pagination control to be filled of data at the bottom of the article.</p>
 <p>Without getting in all the page templates, here is a last example displaying all articles for a year.</p>
-<pre class="language-javascript"><code class="language-javascript code-highlight">const year = node.frontmatter.date.substr(0, 4);
+<pre class="language-javascript" tabindex="0"><code class="language-javascript code-highlight">const year = node.frontmatter.date.substr(0, 4);
 if (!years.has(year)) {
   const yearStart = year + "-01-01";
   const yearEnd = year + 1 + "-01-01";
@@ -86,7 +86,7 @@ if (!years.has(year)) {
 </code></pre>
 <p>The configuration is still in the loop but does not need to create a page for each entry. That time, it does only when a new year is discovered. The path does not use a slug but uses a format from a constant with the year. It looks like <code>/year/2021</code>. The component is different because we will display a list of titles and dates for each year's article. The context has more information. It has the starting date and ending year. The years are passed in argument in the GraphQL of this component (at built time) and filter the list of MDX to the year.</p>
 <p>Here is an example of the TSX file that displays all article for a year.</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">const BlogsByYear = (queryInfo) =&gt; {
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">const BlogsByYear = (queryInfo) =&gt; {
   const data = queryInfo.data;
   const context = queryInfo.pageContext;
   return (
@@ -138,7 +138,7 @@ export const query = graphql`
 export default BlogsByYear;
 </code></pre>
 <p>It is simple but took longer than I wished. For example, the pattern of passing the dates is something to think about since it relies on the build script. Also, you can see that the <code>query</code> variable is not used directly. Gatsby has many default behavior, like this one, that is by convention. By convention, you can have a single GraphQL query that is called during the call of <code>createPages</code>. So, when looping the page, it performs a call with the context information. The current date allows not to display blog articles planned in the future. Quick remark here: many things that WordPress offers from many years are not present in Gatsby. Gatsby is not specialized as a blog platform like WordPress. Thus, some manual work is needed. There are many gotchas. For example, you cannot have a GraphQL in the Typescript component, similar to an image that you cannot pass a path to a TypeScript control without error. It is also harder to debug because you need to debug during build time, not during execution time. While you can still debug the TSX for some elements, most of the code is executed only at build time. that being said, I was able to use VsCode to debug the build script without a problem. Here is my VsCode for debugging:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">{
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">{
   "name": "Gatsby develop",
   "type": "pwa-node",
   "request": "launch",
@@ -150,7 +150,7 @@ export default BlogsByYear;
 </code></pre>
 <h2>MDX</h2>
 <p>I had to spend about 10 hours fixing the generated markdown file. Most issues were related to 10 years of different ways to have code snippets. I was able to use many Regex replace to fix URL, code blocks, and bad image links, but I also had to deal with hundreds of MDX files with issues. Overall, my situation is way better than before with a more uniform content, but it was not quick. Here are some of the Regex I kept around and changed to fix a couple of issues. I used them in VsCode.</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">URL to the IMAGE folder
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">URL to the IMAGE folder
 \[!\[(.+)?\]\(http(s?):\/\/patrickdesjardins.com\/blog\/wp-content\/uploads\/(\d+)\/(\d+)\/([\w\.\-_]+)(.*)?\)\](.+)
 
 !\[(.+)?\]\(http(s?):\/\/patrickdesjardins.com\/blog\/wp-content\/uploads\/(\d+)\/(\d+)\/([\w\.\-_]+)(.*)?\)
@@ -180,12 +180,12 @@ Similarly, I have a couple of mp4 that I cannot render. There are many plugins, 
 <p>I tried many more for what I am missing without success yet.</p>
 <h2>Code</h2>
 <p>Showing code is more than just a plugin, to my big surprise. At this point, I thought that I would need one more plugin that goes along the MDX, and I could call it a day. I was wrong. I had to create a TypeScript component that wrapped the article. It relies on <code>Prime.js</code>, which is a popular framework to render code online. So, I had to:</p>
-<pre class="language-typescript"><code class="language-typescript code-highlight">&lt;MDXProvider components={components}&gt;
+<pre class="language-typescript" tabindex="0"><code class="language-typescript code-highlight">&lt;MDXProvider components={components}&gt;
   &lt;MDXRenderer&gt;{data.mdx.body}&lt;/MDXRenderer&gt;
 &lt;/MDXProvider&gt;
 </code></pre>
 <p>and the components is:</p>
-<pre class="language-plaintext"><code class="language-plaintext code-highlight">const components = {
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight">const components = {
   pre: CodeBlock,
 };
 </code></pre>
