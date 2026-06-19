@@ -1,5 +1,5 @@
 import * as runtime from "react/jsx-runtime";
-import { jsx, jsxs } from "react/jsx-runtime";
+import { jsx, jsxs, Fragment } from "react/jsx-runtime";
 import { renderToStaticMarkup } from "react-dom/server";
 import { useEffect, createElement } from "react";
 import { onCLS, onFCP, onINP, onLCP, onTTFB } from "web-vitals";
@@ -2534,19 +2534,10 @@ const styles$5 = {
   mastodonLink,
   mastodonStatus
 };
-const PROFILE_URL = "https://mastodon.social/@mrdesjardins";
 function MastodonComments(props2) {
   const discussion = props2.discussion ?? getMastodonDiscussion(props2.kind, props2.slug);
   if (discussion === void 0) {
-    return /* @__PURE__ */ jsxs("section", { className: styles$5.mastodonComments, "aria-labelledby": "mastodon-comments", children: [
-      /* @__PURE__ */ jsx("h2", { id: "mastodon-comments", children: "Discussion" }),
-      /* @__PURE__ */ jsxs("p", { children: [
-        "Join the discussion on",
-        " ",
-        /* @__PURE__ */ jsx("a", { className: styles$5.mastodonLink, href: PROFILE_URL, children: "Mastodon" }),
-        "."
-      ] })
-    ] });
+    return /* @__PURE__ */ jsx(Fragment, {});
   }
   return /* @__PURE__ */ jsxs("section", { className: styles$5.mastodonComments, "aria-labelledby": "mastodon-comments", children: [
     /* @__PURE__ */ jsx("h2", { id: "mastodon-comments", children: "Discussion" }),
