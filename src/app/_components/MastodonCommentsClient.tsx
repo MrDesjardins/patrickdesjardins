@@ -9,6 +9,7 @@ export interface MastodonCommentsClientProps {
 
 interface MastodonStatus {
   id: string;
+  in_reply_to_id?: string | null;
   url?: string | null;
   created_at: string;
   content: string;
@@ -26,10 +27,17 @@ interface MastodonContext {
   descendants: MastodonStatus[];
 }
 
+interface ReplyNode {
+  status: MastodonStatus;
+  children: ReplyNode[];
+}
+
 type LoadState =
   | { kind: "loading" }
-  | { kind: "loaded"; repliesCount: number; replies: MastodonStatus[] }
+  | { kind: "loaded"; repliesCount: number; replies: ReplyNode[] }
   | { kind: "error" };
+
+const MAX_VISIBLE_NESTING_DEPTH = 3;
 
 function textFromHtml(html: string): string {
   const parser = new DOMParser();
@@ -42,6 +50,114 @@ function formatTimestamp(value: string): string {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(new Date(value));
+}
+
+function buildReplyTree(
+  rootStatusId: string,
+  replies: MastodonStatus[],
+): ReplyNode[] {
+  const nodes = new Map<string, ReplyNode>();
+  for (const reply of replies) {
+    nodes.set(reply.id, { status: reply, children: [] });
+  }
+
+  const roots: ReplyNode[] = [];
+  for (const reply of replies) {
+    const node = nodes.get(reply.id);
+    if (node === undefined) {
+      continue;
+    }
+
+    const parentId = reply.in_reply_to_id ?? rootStatusId;
+    const parent = nodes.get(parentId);
+    if (parentId !== rootStatusId && parent !== undefined) {
+      parent.children.push(node);
+    } else {
+      roots.push(node);
+    }
+  }
+
+  return roots;
+}
+
+function flattenReplyNodes(nodes: ReplyNode[]): ReplyNode[] {
+  return nodes.flatMap((node) => [node, ...flattenReplyNodes(node.children)]);
+}
+
+function renderReplyNode(
+  node: ReplyNode,
+  depth: number,
+  fallbackStatusUrl: string,
+): React.ReactElement {
+  const reply = node.status;
+  const hasWarning = (reply.spoiler_text ?? "").trim().length > 0;
+  const replyUrl = reply.url ?? fallbackStatusUrl;
+  const visibleChildren =
+    depth >= MAX_VISIBLE_NESTING_DEPTH
+      ? flattenReplyNodes(node.children)
+      : node.children;
+  const childDepth =
+    depth >= MAX_VISIBLE_NESTING_DEPTH
+      ? MAX_VISIBLE_NESTING_DEPTH
+      : depth + 1;
+  const childContainerStyle: React.CSSProperties & {
+    "--mastodon-reply-depth": number;
+  } = {
+    "--mastodon-reply-depth": childDepth,
+  };
+
+  return (
+    <article className={styles.mastodonReply} key={reply.id}>
+      <div className={styles.mastodonReplyHeader}>
+        {reply.account.avatar !== undefined &&
+        reply.account.avatar.trim() !== "" ? (
+          <img
+            alt=""
+            className={styles.mastodonAvatar}
+            loading="lazy"
+            src={reply.account.avatar}
+          />
+        ) : null}
+        <div className={styles.mastodonAuthorBlock}>
+          <span className={styles.mastodonAuthor}>
+            {reply.account.display_name.trim() !== ""
+              ? reply.account.display_name
+              : reply.account.acct}
+          </span>
+          <span className={styles.mastodonAcct}>@{reply.account.acct}</span>
+          <a className={styles.mastodonTimestamp} href={replyUrl}>
+            {formatTimestamp(reply.created_at)}
+          </a>
+          <a className={styles.mastodonLink} href={replyUrl}>
+            Reply
+          </a>
+        </div>
+      </div>
+      {hasWarning ? (
+        <p className={styles.mastodonWarning}>
+          Content warning: {reply.spoiler_text}.{" "}
+          <a className={styles.mastodonLink} href={replyUrl}>
+            Read on Mastodon
+          </a>
+          .
+        </p>
+      ) : (
+        <p className={styles.mastodonReplyText}>
+          {textFromHtml(reply.content)}
+        </p>
+      )}
+      {visibleChildren.length > 0 ? (
+        <div
+          className={styles.mastodonReplyChildren}
+          style={childContainerStyle}
+        >
+          {visibleChildren.map((child) =>
+            renderReplyNode(child, childDepth, fallbackStatusUrl),
+          )}
+        </div>
+      ) : null}
+    </article>
+  );
 }
 
 export function MastodonCommentsClient(
@@ -74,7 +190,7 @@ export function MastodonCommentsClient(
         setState({
           kind: "loaded",
           repliesCount: status.replies_count ?? context.descendants.length,
-          replies: context.descendants,
+          replies: buildReplyTree(props.statusId, context.descendants),
         });
       } catch (error) {
         if (error instanceof DOMException && error.name === "AbortError") {
@@ -116,49 +232,9 @@ export function MastodonCommentsClient(
       </p>
       {state.replies.length > 0 ? (
         <div className={styles.mastodonReplies}>
-          {state.replies.map((reply) => {
-            const hasWarning = (reply.spoiler_text ?? "").trim().length > 0;
-            const replyUrl = reply.url ?? props.statusUrl;
-            return (
-              <article className={styles.mastodonReply} key={reply.id}>
-                <div className={styles.mastodonReplyHeader}>
-                  {reply.account.avatar !== undefined &&
-                  reply.account.avatar.trim() !== "" ? (
-                    <img
-                      alt=""
-                      className={styles.mastodonAvatar}
-                      loading="lazy"
-                      src={reply.account.avatar}
-                    />
-                  ) : null}
-                  <div className={styles.mastodonAuthorBlock}>
-                    <span className={styles.mastodonAuthor}>
-                      {reply.account.display_name.trim() !== ""
-                        ? reply.account.display_name
-                        : reply.account.acct}
-                    </span>
-                    <span className={styles.mastodonAcct}>@{reply.account.acct}</span>
-                    <a className={styles.mastodonTimestamp} href={replyUrl}>
-                      {formatTimestamp(reply.created_at)}
-                    </a>
-                  </div>
-                </div>
-                {hasWarning ? (
-                  <p className={styles.mastodonWarning}>
-                    Content warning: {reply.spoiler_text}.{" "}
-                    <a className={styles.mastodonLink} href={replyUrl}>
-                      Read on Mastodon
-                    </a>
-                    .
-                  </p>
-                ) : (
-                  <p className={styles.mastodonReplyText}>
-                    {textFromHtml(reply.content)}
-                  </p>
-                )}
-              </article>
-            );
-          })}
+          {state.replies.map((reply) =>
+            renderReplyNode(reply, 0, props.statusUrl),
+          )}
         </div>
       ) : null}
     </>

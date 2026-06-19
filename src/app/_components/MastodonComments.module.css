@@ -88,7 +88,23 @@
   white-space: pre-wrap;
 }
 
+.mastodonReplyChildren {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 0.9rem;
+  margin-left: min(calc(var(--mastodon-reply-depth, 1) * 1rem), 3rem);
+  padding-left: 0.9rem;
+  border-left: 2px solid rgb(37 99 235 / 18%);
+}
+
 .mastodonWarning {
   margin: 0.5rem 0 0;
   color: #7a4b00;
+}
+
+@media (width <= 700px) {
+  .mastodonReplyChildren {
+    margin-left: min(calc(var(--mastodon-reply-depth, 1) * 0.45rem), 1.35rem);
+    padding-left: 0.65rem;
+  }
 }

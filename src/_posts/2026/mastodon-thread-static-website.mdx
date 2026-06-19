@@ -1,0 +1,180 @@
+---
+title: "Mastodon Thread on a Static Website"
+date: "2026-06-20"
+categories:
+ - "static-site"
+ - "mastodon"
+ - "ci"
+---
+
+I recently visited [bubbles.town](https://bubbles.town) and noticed a simple idea that I liked: comments do not need to live inside the website database. They can live on the social web, and the website can point to the discussion.
+
+For a static website, this is appealing because I do not want to run a comment server, to moderate a local database or manage accounts on my website. But I still like the idea that an article can have a conversation attached to it.
+
+The solution I added to this website is to use Mastodon as the discussion thread.
+
+Each article can have one Mastodon post associated with it. The website reads the public replies from Mastodon and displays them below the article. If someone wants to reply, they use Mastodon.
+
+## The Shape of the Solution
+
+The website remains static. There is no backend added to the site.
+
+The site has a small JSON file:
+
+```json
+{
+  "blog": {
+    "article-slug": {
+      "instanceUrl": "https://mastodon.social",
+      "statusId": "123",
+      "statusUrl": "https://mastodon.social/@mrdesjardins/123",
+      "postedAt": "2026-06-19T00:00:00Z"
+    }
+  },
+  "philosophy": {}
+}
+```
+
+The key is the article slug. The value is the Mastodon status that represents the discussion.
+
+When the article page is generated, it checks the registry. If the article has a Mastodon status, the page renders a discussion section. The browser then calls the public Mastodon API:
+
+```text
+GET /api/v1/statuses/:id
+GET /api/v1/statuses/:id/context
+```
+
+The first endpoint gives metadata about the original post, including the reply count. The second endpoint gives the public replies. The website renders those replies as plain text. It does not inject Mastodon HTML directly into the page.
+
+If there is no registry entry, the page still shows a small link to my Mastodon profile. That keeps the page simple and avoids pretending that every old article already has a discussion.
+
+## How the CI Associates the Thread
+
+The important part is to avoid manually creating a Mastodon post for every new article.
+
+The GitHub Actions workflow now has a Mastodon job before the site build. On scheduled or manual runs, the job looks for the article being published that day. It runs once for the technical blog and once for the philosophy section.
+
+For each collection, the script does this:
+
+1. Finds the article matching the publish date.
+2. Checks the JSON registry.
+3. If the slug already exists, it stops.
+4. If the slug does not exist, it posts to Mastodon.
+5. It stores the returned status id and URL in the registry.
+6. It commits the registry with a `[skip ci]` message.
+7. It uploads the registry as a workflow artifact.
+
+The build job downloads that artifact before generating the site. That means the same deployment that publishes the article also includes the Mastodon discussion section.
+
+The idempotent check is important. If I edit an article later, the slug is already in the registry. The script does not create a second Mastodon post. The page keeps using the same thread.
+
+This is the core rule:
+
+```text
+same collection + same slug = same Mastodon thread
+```
+
+If I rename the slug, it becomes a new key. That would create a new thread. That is acceptable because changing a slug already changes the public URL.
+
+## The Page Component
+
+The page itself is simple.
+
+Both technical blog posts and philosophy essays render the same comment component after the article body:
+
+```tsx
+<MastodonComments kind="blog" slug={post.metadata.slug} />
+```
+
+For philosophy:
+
+```tsx
+<MastodonComments kind="philosophy" slug={post.metadata.slug} />
+```
+
+The server-rendered component only decides whether there is a thread. If there is one, it writes the Mastodon instance, status id, and status URL into data attributes.
+
+The browser component picks up those attributes and loads the replies.
+
+That split matters because the page is still static. The build does not need to call Mastodon. The browser does the public read later.
+
+## Replying
+
+Reading replies is easy. Posting replies is not the same problem.
+
+Mastodon lets anyone read public replies through the public API. But replying requires a Mastodon account and an authenticated user token.
+
+I could build that into the website, but it would change the nature of the site. It would require OAuth, token handling, and a server-side component. That is too much for what I need.
+
+So the website has one link: "Reply on Mastodon."
+
+That link opens the thread. The user can reply from their Mastodon account. The website only displays what is public.
+
+## Performance Impact
+
+The performance impact on the static build is almost nothing.
+
+The build reads one local JSON file. There is no Mastodon API call during page generation. The HTML output gets a small discussion section and a few data attributes.
+
+The cost moves to the browser, and only for article pages with a configured thread. When the page loads, the client makes two Mastodon API calls:
+
+```text
+/api/v1/statuses/:id
+/api/v1/statuses/:id/context
+```
+
+That means the article content is not blocked by comments. The page can render immediately. Replies load after the page is already usable.
+
+There is still a cost:
+
+- One extra client component in the JavaScript bundle.
+- Two network requests on pages with a thread.
+- A little extra rendering for replies.
+- External avatars loaded from Mastodon accounts.
+
+For this website, that is acceptable. Comments are not part of the critical path. If Mastodon is slow or unavailable, the article still works and the page shows a fallback link to the thread.
+
+## What I Like
+
+The best part is that the website stays static.
+
+No database, no local user accounts, no comment moderation system, no spam table, no admin page. Mastodon already has accounts, moderation tools, blocking, and public conversation URLs.
+
+It also gives each article a canonical discussion link. The thread can be shared outside the website, and the website can still display the public replies.
+
+The implementation is small enough to understand:
+
+```text
+article slug
+  -> registry lookup
+  -> Mastodon status id
+  -> public context API
+  -> render replies
+```
+
+That is the kind of integration that goes along with the direction of the architecture of the blog. The website owns the article. Mastodon owns the conversation and at anytime I can remove by deleting two React components.
+
+## Conclusion
+
+This is not a perfect comment system, but it is a good fit for a static personal website.
+
+Pros:
+
+- The website remains static.
+- No database is needed.
+- No local account system is needed.
+- The same thread id is kept when an article is edited.
+- Replies are public and portable through Mastodon.
+- The article still works if Mastodon fails.
+- CI creates the thread automatically for new scheduled or manual publications.
+
+Cons:
+
+- Replying happens on Mastodon, not directly on the website.
+- Visitors need a Mastodon account to participate.
+- The browser makes extra API calls on pages with discussions.
+- External avatars and reply content depend on Mastodon availability.
+- Renaming a slug creates a new registry key and therefore a new thread.
+- Private or deleted replies will not appear.
+
+For me, the tradeoff is worth it. A static website should stay simple. Mastodon gives the article a place for discussion without turning the site into a small social platform.
