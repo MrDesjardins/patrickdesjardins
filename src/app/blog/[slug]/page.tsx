@@ -1,4 +1,5 @@
 import { type Metadata } from "next";
+import { MastodonComments } from "../../_components/MastodonComments";
 import { getAllPosts, getPostBySlug, getTotalPages } from "../../../lib/api";
 import { BlogBody } from "../_components/BlogBody";
 import styles from "./Page.module.css";
@@ -53,6 +54,7 @@ export default async function Page(props: {
           Posted on: {post.frontmatter.date}
         </p>
         {post.contentReact}
+        <MastodonComments kind="blog" slug={post.metadata.slug} />
       </div>
     </BlogBody>
   );

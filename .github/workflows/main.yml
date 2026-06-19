@@ -140,17 +140,89 @@ jobs:
             public/output
             public/philosophy-output
 
-  build-site:
+  mastodon-post:
     runs-on: ubuntu-latest
-    needs: [quality, search-index, detect-changes]
+    needs: [quality, detect-changes]
     if: |
       always() &&
+      (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') &&
       (needs.quality.result == 'success' || needs.quality.result == 'skipped') &&
-      (needs.search-index.result == 'success' || needs.search-index.result == 'skipped') &&
       (needs.detect-changes.result == 'success' || needs.detect-changes.result == 'skipped')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: master
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install Python dependencies
+        run: uv sync
+        working-directory: tools
+
+      - name: Configure Git author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Create Mastodon discussion for blog article
+        env:
+          MASTODON_ACCESS_TOKEN: ${{ secrets.MASTODON_ACCESS_TOKEN }}
+          MASTODON_INSTANCE_URL: ${{ vars.MASTODON_INSTANCE_URL || 'https://mastodon.social' }}
+          MASTODON_POST_DATE_TZ: America/Los_Angeles
+          MASTODON_WAIT_FOR_POST: "0"
+          SOCIAL_POST_CONTENT_KIND: blog
+        run: uv run python mastodon/post.py
+        working-directory: tools
+
+      - name: Create Mastodon discussion for philosophy essay
+        env:
+          MASTODON_ACCESS_TOKEN: ${{ secrets.MASTODON_ACCESS_TOKEN }}
+          MASTODON_INSTANCE_URL: ${{ vars.MASTODON_INSTANCE_URL || 'https://mastodon.social' }}
+          MASTODON_POST_DATE_TZ: America/Los_Angeles
+          MASTODON_WAIT_FOR_POST: "0"
+          SOCIAL_POST_CONTENT_KIND: philosophy
+        run: uv run python mastodon/post.py
+        working-directory: tools
+
+      - name: Commit Mastodon discussion registry
+        run: |
+          if git diff --quiet -- src/data/mastodon-discussions.json; then
+            echo "No Mastodon registry changes to commit."
+          else
+            git add src/data/mastodon-discussions.json
+            git commit -m "Update Mastodon discussion registry [skip ci]"
+            git push origin HEAD:master
+          fi
+
+      - name: Upload Mastodon discussion registry
+        uses: actions/upload-artifact@v4
+        with:
+          name: mastodon-discussions
+          path: src/data/mastodon-discussions.json
+
+  build-site:
+    runs-on: ubuntu-latest
+    needs: [quality, search-index, detect-changes, mastodon-post]
+    if: |
+      always() &&
+      (needs.quality.result == 'success' || needs.quality.result == 'skipped') &&
+      (needs.search-index.result == 'success' || needs.search-index.result == 'skipped') &&
+      (needs.mastodon-post.result == 'success' || needs.mastodon-post.result == 'skipped') &&
+      (needs.detect-changes.result == 'success' || needs.detect-changes.result == 'skipped')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Mastodon discussion registry
+        if: needs.mastodon-post.result == 'success'
+        uses: actions/download-artifact@v4
+        with:
+          name: mastodon-discussions
+          path: src/data
 
       - name: Download search outputs
         if: needs.search-index.result == 'success'

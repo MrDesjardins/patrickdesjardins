@@ -18,6 +18,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { OutboundLinkTelemetry } from "../app/OutboundLinkTelemetry";
 import { WebVitals } from "../app/WebVitals";
+import { MastodonCommentsClient } from "../app/_components/MastodonCommentsClient";
 import BlogSearchClient from "../app/blog/search/SearchClient";
 import { SearchErrorBoundary } from "../app/blog/search/SearchErrorBoundary";
 import PhilosophySearchClient from "../app/philosophy/search/PhilosophySearchClient";
@@ -48,6 +49,29 @@ mount(
     <PhilosophySearchClient />
   </SearchErrorBoundary>,
 );
+
+for (const root of document.querySelectorAll<HTMLElement>(
+  "[data-mastodon-comments-root]",
+)) {
+  const { instanceUrl, statusId, statusUrl } = root.dataset;
+  if (
+    instanceUrl === undefined ||
+    statusId === undefined ||
+    statusUrl === undefined
+  ) {
+    continue;
+  }
+
+  createRoot(root).render(
+    <StrictMode>
+      <MastodonCommentsClient
+        instanceUrl={instanceUrl}
+        statusId={statusId}
+        statusUrl={statusUrl}
+      />
+    </StrictMode>,
+  );
+}
 
 const telemetryRoot = document.createElement("div");
 telemetryRoot.hidden = true;

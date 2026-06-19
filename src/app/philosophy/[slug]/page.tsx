@@ -4,6 +4,7 @@ import {
   getPhilosophyPostBySlug,
   getTotalPages,
 } from "../../../lib/api";
+import { MastodonComments } from "../../_components/MastodonComments";
 import { PhilosophyBlogBody } from "../_components/PhilosophyBlogBody";
 import styles from "./Page.module.css";
 import "../../blog/[slug]/linenumber.css";
@@ -72,6 +73,7 @@ export default async function Page(props: {
           Posted on: {post.frontmatter.date}
         </p>
         <div className={styles.blogPostContent}>{post.contentReact}</div>
+        <MastodonComments kind="philosophy" slug={post.metadata.slug} />
       </div>
     </PhilosophyBlogBody>
   );
