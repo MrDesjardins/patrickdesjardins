@@ -20,11 +20,30 @@ const BASE_URL: &str = "https://patrickdesjardins.com";
 const MARKDOWN_RENDERER_VERSION: &str = "rust-md-2026-06-14";
 const SHORTCODE_RENDERER_VERSION: &str = "shortcodes-2026-06-14";
 const SHELL_TEMPLATE_VERSION: &str = "rust-shell-2026-06-14";
+const MASTODON_DISCUSSIONS_DEPENDENCY: &str = "src/data/mastodon-discussions.json";
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 struct Assets {
     css: Vec<String>,
     js: Vec<String>,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+struct MastodonDiscussion {
+    #[serde(rename = "instanceUrl")]
+    instance_url: String,
+    #[serde(rename = "statusId")]
+    status_id: String,
+    #[serde(rename = "statusUrl")]
+    status_url: String,
+}
+
+#[derive(Clone, Debug, Default, Deserialize)]
+struct MastodonDiscussionRegistry {
+    #[serde(default)]
+    blog: BTreeMap<String, MastodonDiscussion>,
+    #[serde(default)]
+    philosophy: BTreeMap<String, MastodonDiscussion>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -568,7 +587,10 @@ fn build_routes(root: &Path) -> Result<Vec<Route>> {
         routes.push(route(
             &format!("/blog/{}", post.slug),
             &shared,
-            std::slice::from_ref(&post.dependency),
+            &[
+                post.dependency.clone(),
+                MASTODON_DISCUSSIONS_DEPENDENCY.to_string(),
+            ],
         ));
     }
     for page in 1..=philosophy_total_pages {
@@ -589,7 +611,10 @@ fn build_routes(root: &Path) -> Result<Vec<Route>> {
         routes.push(route(
             &format!("/philosophy/{}", post.slug),
             &shared,
-            std::slice::from_ref(&post.dependency),
+            &[
+                post.dependency.clone(),
+                MASTODON_DISCUSSIONS_DEPENDENCY.to_string(),
+            ],
         ));
     }
 
@@ -907,11 +932,7 @@ fn render_rss_feed(out_dir: &Path, collection: Collection, posts: &[Post]) -> Re
     Ok(())
 }
 
-fn render_rss_feeds(
-    out_dir: &Path,
-    blog_posts: &[Post],
-    philosophy_posts: &[Post],
-) -> Result<()> {
+fn render_rss_feeds(out_dir: &Path, blog_posts: &[Post], philosophy_posts: &[Post]) -> Result<()> {
     render_rss_feed(out_dir, Collection::Blog, blog_posts)?;
     render_rss_feed(out_dir, Collection::Philosophy, philosophy_posts)?;
     Ok(())
@@ -1270,6 +1291,55 @@ fn render_categories(root: &Path, categories: &[String]) -> Result<String> {
     Ok(html)
 }
 
+fn mastodon_discussion_for(
+    root: &Path,
+    collection: Collection,
+    slug: &str,
+) -> Result<Option<MastodonDiscussion>> {
+    let path = root.join(MASTODON_DISCUSSIONS_DEPENDENCY);
+    if !file_exists(&path) {
+        return Ok(None);
+    }
+    let registry: MastodonDiscussionRegistry = serde_json::from_slice(&fs::read(path)?)?;
+    Ok(match collection {
+        Collection::Blog => registry.blog.get(slug).cloned(),
+        Collection::Philosophy => registry.philosophy.get(slug).cloned(),
+    })
+}
+
+fn render_mastodon_comments(root: &Path, collection: Collection, slug: &str) -> Result<String> {
+    let Some(discussion) = mastodon_discussion_for(root, collection, slug)? else {
+        return Ok(String::new());
+    };
+    let comments = class(
+        root,
+        "src/app/_components/MastodonComments.module.css",
+        "mastodonComments",
+    )?;
+    let actions = class(
+        root,
+        "src/app/_components/MastodonComments.module.css",
+        "mastodonActions",
+    )?;
+    let link = class(
+        root,
+        "src/app/_components/MastodonComments.module.css",
+        "mastodonLink",
+    )?;
+    let status = class(
+        root,
+        "src/app/_components/MastodonComments.module.css",
+        "mastodonStatus",
+    )?;
+    Ok(format!(
+        r#"<section class="{comments}" aria-labelledby="mastodon-comments"><h2 id="mastodon-comments">Discussion</h2><p>Replies are loaded from the public Mastodon thread for this article.</p><div class="{actions}"><a class="{link}" href="{}">Reply on Mastodon</a></div><div data-mastodon-comments-root data-instance-url="{}" data-status-id="{}" data-status-url="{}"><p class="{status}">Loading replies from Mastodon...</p></div></section>"#,
+        escape_html(&discussion.status_url),
+        escape_html(&discussion.instance_url),
+        escape_html(&discussion.status_id),
+        escape_html(&discussion.status_url),
+    ))
+}
+
 fn render_entry(root: &Path, post: &Post) -> Result<String> {
     let module = match post.collection {
         Collection::Blog => "src/app/blog/_components/BlogEntry.module.css",
@@ -1602,8 +1672,9 @@ fn render_content_route(
         } else {
             fragment
         };
+        let comments = render_mastodon_comments(root, collection, &post.slug)?;
         children = format!(
-            r#"<div class="{container}"><p class="{date}">Posted on: {}</p>{content}</div>"#,
+            r#"<div class="{container}"><p class="{date}">Posted on: {}</p>{content}{comments}</div>"#,
             escape_html(&post.date)
         );
         title = if collection == Collection::Blog {
@@ -1726,8 +1797,9 @@ fn render_detail_route(
     } else {
         fragment
     };
+    let comments = render_mastodon_comments(root, collection, &post.slug)?;
     let children = format!(
-        r#"<div class="{container}"><p class="{date}">Posted on: {}</p>{content}</div>"#,
+        r#"<div class="{container}"><p class="{date}">Posted on: {}</p>{content}{comments}</div>"#,
         escape_html(&post.date)
     );
     let title = if collection == Collection::Blog {
@@ -1832,7 +1904,15 @@ fn render_routes_native_first(
                 let Some((collection, dependency)) = detail_dependency(route) else {
                     bail!("expected detail route: {}", route.path);
                 };
-                render_detail_route(root, out_dir, assets, all_routes, route, collection, &dependency)
+                render_detail_route(
+                    root,
+                    out_dir,
+                    assets,
+                    all_routes,
+                    route,
+                    collection,
+                    &dependency,
+                )
             })
             .collect::<Result<Vec<_>>>()?;
         for (dependency, entry) in rendered {
@@ -2205,12 +2285,8 @@ fn main() -> Result<()> {
 
     let mut content_manifest =
         render_routes_native_first(&root, &out_dir, &assets, &routes, &stale_routes)?;
-    let render_ancillary = should_render_ancillary_outputs(
-        force_full,
-        previous.as_ref(),
-        &changed_paths,
-        &out_dir,
-    );
+    let render_ancillary =
+        should_render_ancillary_outputs(force_full, previous.as_ref(), &changed_paths, &out_dir);
     if render_ancillary {
         render_ancillary_outputs(&root, &out_dir)?;
     }
@@ -2402,7 +2478,8 @@ mod tests {
 
     #[test]
     fn plain_text_excerpt_skips_markdown_noise() {
-        let body = "# Heading\n\n![](/images/example.png)\n\nFirst paragraph text.\n\nSecond paragraph.";
+        let body =
+            "# Heading\n\n![](/images/example.png)\n\nFirst paragraph text.\n\nSecond paragraph.";
         assert_eq!(
             plain_text_excerpt(body, 300),
             "First paragraph text. Second paragraph."
@@ -2417,10 +2494,8 @@ mod tests {
 
     #[test]
     fn renders_ancillary_outputs_when_rss_feed_is_missing() {
-        let out_dir = env::temp_dir().join(format!(
-            "sitegen-ancillary-test-{}",
-            std::process::id()
-        ));
+        let out_dir =
+            env::temp_dir().join(format!("sitegen-ancillary-test-{}", std::process::id()));
         let _ = fs::remove_dir_all(&out_dir);
         fs::create_dir_all(&out_dir).expect("create temp out dir");
         let previous = Manifest {
@@ -2469,5 +2544,35 @@ mod tests {
         frontmatter_change.insert("meta:src/_posts/2026/example.mdx".to_string());
         assert!(!route_impacted_by_changes(&detail, &frontmatter_change));
         assert!(route_impacted_by_changes(&listing, &frontmatter_change));
+    }
+
+    #[test]
+    fn native_renderer_outputs_mastodon_mount_when_registry_has_entry() {
+        let root = env::temp_dir().join(format!("sitegen-mastodon-test-{}", std::process::id()));
+        let _ = fs::remove_dir_all(&root);
+        fs::create_dir_all(root.join("src/data")).expect("create data dir");
+        fs::write(
+            root.join(MASTODON_DISCUSSIONS_DEPENDENCY),
+            r#"{
+              "blog": {},
+              "philosophy": {
+                "essay": {
+                  "instanceUrl": "https://mastodon.social",
+                  "statusId": "123",
+                  "statusUrl": "https://mastodon.social/@mrdesjardins/123",
+                  "postedAt": "2026-06-19T00:00:00Z"
+                }
+              }
+            }"#,
+        )
+        .expect("write registry");
+
+        let html = render_mastodon_comments(&root, Collection::Philosophy, "essay")
+            .expect("render mastodon comments");
+
+        assert!(html.contains("data-mastodon-comments-root"));
+        assert!(html.contains(r#"data-status-id="123""#));
+        assert!(html.contains("Reply on Mastodon"));
+        let _ = fs::remove_dir_all(root);
     }
 }
