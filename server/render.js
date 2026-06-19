@@ -1683,6 +1683,8 @@ async function getMdxFileContent(fullPathWithFileName) {
   const Content = evaluated.default;
   const content = createElement(Content, {
     components: {
+      h1: (props2) => createElement("h2", props2),
+      pre: (props2) => createElement("pre", { ...props2, tabIndex: 0 }),
       TocAzureContainerSeries,
       CodeSandbox,
       YouTube,
@@ -2360,14 +2362,15 @@ const BlogEntry = (props2) => {
   ] });
 };
 const BlogBody$1 = "app_blog__components_BlogBody__BlogBody";
+const skipLink$1 = "app_blog__components_BlogBody__skipLink";
 const main$1 = "app_blog__components_BlogBody__main";
 const heading$1 = "app_blog__components_BlogBody__heading";
 const siteTitle$1 = "app_blog__components_BlogBody__siteTitle";
 const navLinks$1 = "app_blog__components_BlogBody__navLinks";
 const navLinkItem$1 = "app_blog__components_BlogBody__navLinkItem";
 const navLinkText$1 = "app_blog__components_BlogBody__navLinkText";
-const blogTopPicture = "app_blog__components_BlogBody__blogTopPicture";
 const paginationBar$1 = "app_blog__components_BlogBody__paginationBar";
+const blogTopPicture = "app_blog__components_BlogBody__blogTopPicture";
 const paginationTitle$1 = "app_blog__components_BlogBody__paginationTitle";
 const currentLink$1 = "app_blog__components_BlogBody__currentLink";
 const paginationLinks$1 = "app_blog__components_BlogBody__paginationLinks";
@@ -2375,14 +2378,15 @@ const blogPictureContainer = "app_blog__components_BlogBody__blogPictureContaine
 const totalBlogPost = "app_blog__components_BlogBody__totalBlogPost";
 const styles$6 = {
   BlogBody: BlogBody$1,
+  skipLink: skipLink$1,
   main: main$1,
   heading: heading$1,
   siteTitle: siteTitle$1,
   navLinks: navLinks$1,
   navLinkItem: navLinkItem$1,
   navLinkText: navLinkText$1,
-  blogTopPicture,
   paginationBar: paginationBar$1,
+  blogTopPicture,
   paginationTitle: paginationTitle$1,
   currentLink: currentLink$1,
   paginationLinks: paginationLinks$1,
@@ -2401,8 +2405,9 @@ function BlogBody(props2) {
     }
   }
   return /* @__PURE__ */ jsxs("div", { className: styles$6.BlogBody, children: [
+    /* @__PURE__ */ jsx("a", { className: styles$6.skipLink, href: "#content", children: "Skip to content" }),
     /* @__PURE__ */ jsxs("header", { children: [
-      /* @__PURE__ */ jsx("h1", { className: styles$6.siteTitle, children: "Patrick Desjardins Blog" }),
+      props2.isArticle === true ? /* @__PURE__ */ jsx("div", { className: styles$6.siteTitle, children: "Patrick Desjardins Blog" }) : /* @__PURE__ */ jsx("h1", { className: styles$6.siteTitle, children: "Patrick Desjardins Blog" }),
       /* @__PURE__ */ jsx("nav", { "aria-label": "Blog", children: /* @__PURE__ */ jsxs("ul", { className: styles$6.navLinks, children: [
         /* @__PURE__ */ jsx("li", { className: styles$6.navLinkItem, children: /* @__PURE__ */ jsx(Link, { className: styles$6.navLinkText, href: "/", children: "Main Page" }) }),
         /* @__PURE__ */ jsx("li", { className: styles$6.navLinkItem, children: /* @__PURE__ */ jsx(Link, { className: styles$6.navLinkText, href: "/blog", children: "Blog" }) }),
@@ -2433,8 +2438,8 @@ function BlogBody(props2) {
         }
       ) })
     ] }),
-    /* @__PURE__ */ jsxs("main", { className: styles$6.main, children: [
-      /* @__PURE__ */ jsx("h2", { className: styles$6.heading, children: props2.topTitle }),
+    /* @__PURE__ */ jsxs("main", { id: "content", className: styles$6.main, children: [
+      props2.isArticle === true ? /* @__PURE__ */ jsx("h1", { className: styles$6.heading, children: props2.topTitle }) : /* @__PURE__ */ jsx("h2", { className: styles$6.heading, children: props2.topTitle }),
       props2.children
     ] }),
     pages.length > 0 || props2.totalBlogPost !== void 0 ? /* @__PURE__ */ jsxs("footer", { children: [
@@ -2581,6 +2586,7 @@ async function Page$7(props2) {
   return /* @__PURE__ */ jsx(
     BlogBody,
     {
+      isArticle: true,
       totalPages,
       topTitle: post.frontmatter.title,
       children: /* @__PURE__ */ jsxs("div", { className: styles$4.blogPostContainer, children: [
@@ -2675,6 +2681,7 @@ const PhilosophyEntry = (props2) => {
   ] });
 };
 const blogBodyShell = "app_philosophy__components_PhilosophyBlogBody__blogBodyShell";
+const skipLink = "app_philosophy__components_PhilosophyBlogBody__skipLink";
 const main = "app_philosophy__components_PhilosophyBlogBody__main";
 const siteTitle = "app_philosophy__components_PhilosophyBlogBody__siteTitle";
 const siteSubtitle = "app_philosophy__components_PhilosophyBlogBody__siteSubtitle";
@@ -2682,14 +2689,15 @@ const paperEdge = "app_philosophy__components_PhilosophyBlogBody__paperEdge";
 const navLinks = "app_philosophy__components_PhilosophyBlogBody__navLinks";
 const navLinkItem = "app_philosophy__components_PhilosophyBlogBody__navLinkItem";
 const navLinkText = "app_philosophy__components_PhilosophyBlogBody__navLinkText";
+const paginationBar = "app_philosophy__components_PhilosophyBlogBody__paginationBar";
 const currentLink = "app_philosophy__components_PhilosophyBlogBody__currentLink";
 const heading = "app_philosophy__components_PhilosophyBlogBody__heading";
-const paginationBar = "app_philosophy__components_PhilosophyBlogBody__paginationBar";
 const paginationTitle = "app_philosophy__components_PhilosophyBlogBody__paginationTitle";
 const paginationLinks = "app_philosophy__components_PhilosophyBlogBody__paginationLinks";
 const totalPosts = "app_philosophy__components_PhilosophyBlogBody__totalPosts";
 const styles$2 = {
   blogBodyShell,
+  skipLink,
   main,
   siteTitle,
   siteSubtitle,
@@ -2697,9 +2705,9 @@ const styles$2 = {
   navLinks,
   navLinkItem,
   navLinkText,
+  paginationBar,
   currentLink,
   heading,
-  paginationBar,
   paginationTitle,
   paginationLinks,
   totalPosts
@@ -2716,8 +2724,9 @@ function PhilosophyBlogBody(props2) {
     }
   }
   return /* @__PURE__ */ jsxs("div", { className: styles$2.blogBodyShell, children: [
+    /* @__PURE__ */ jsx("a", { className: styles$2.skipLink, href: "#content", children: "Skip to content" }),
     /* @__PURE__ */ jsxs("header", { children: [
-      /* @__PURE__ */ jsx("h1", { className: styles$2.siteTitle, children: "Philosophy" }),
+      props2.isArticle === true ? /* @__PURE__ */ jsx("div", { className: styles$2.siteTitle, children: "Philosophy" }) : /* @__PURE__ */ jsx("h1", { className: styles$2.siteTitle, children: "Philosophy" }),
       /* @__PURE__ */ jsx("p", { className: styles$2.siteSubtitle, children: "Patrick Desjardins — essays and notes" }),
       /* @__PURE__ */ jsx("div", { className: styles$2.paperEdge, children: /* @__PURE__ */ jsx("nav", { "aria-label": "Philosophy", children: /* @__PURE__ */ jsxs("ul", { className: styles$2.navLinks, children: [
         /* @__PURE__ */ jsx("li", { className: styles$2.navLinkItem, children: /* @__PURE__ */ jsx(Link, { className: styles$2.navLinkText, href: "/", children: "Main Page" }) }),
@@ -2736,8 +2745,8 @@ function PhilosophyBlogBody(props2) {
         ) }, y))
       ] }) }) })
     ] }),
-    /* @__PURE__ */ jsxs("main", { className: styles$2.main, children: [
-      /* @__PURE__ */ jsx("h2", { className: styles$2.heading, children: props2.topTitle }),
+    /* @__PURE__ */ jsxs("main", { id: "content", className: styles$2.main, children: [
+      props2.isArticle === true ? /* @__PURE__ */ jsx("h1", { className: styles$2.heading, children: props2.topTitle }) : /* @__PURE__ */ jsx("h2", { className: styles$2.heading, children: props2.topTitle }),
       props2.children
     ] }),
     pages.length > 0 || props2.totalBlogPost !== void 0 ? /* @__PURE__ */ jsxs("footer", { children: [
@@ -2844,14 +2853,22 @@ async function Page$2(props2) {
   if (post === void 0) {
     throw new Error("Philosophy post not found");
   }
-  return /* @__PURE__ */ jsx(PhilosophyBlogBody, { totalPages, topTitle: post.frontmatter.title, children: /* @__PURE__ */ jsxs("div", { className: styles.blogPostContainer, children: [
-    /* @__PURE__ */ jsxs("p", { className: styles.blogPostDate, children: [
-      "Posted on: ",
-      post.frontmatter.date
-    ] }),
-    /* @__PURE__ */ jsx("div", { className: styles.blogPostContent, children: post.contentReact }),
-    /* @__PURE__ */ jsx(MastodonComments, { kind: "philosophy", slug: post.metadata.slug })
-  ] }) });
+  return /* @__PURE__ */ jsx(
+    PhilosophyBlogBody,
+    {
+      isArticle: true,
+      totalPages,
+      topTitle: post.frontmatter.title,
+      children: /* @__PURE__ */ jsxs("div", { className: styles.blogPostContainer, children: [
+        /* @__PURE__ */ jsxs("p", { className: styles.blogPostDate, children: [
+          "Posted on: ",
+          post.frontmatter.date
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: styles.blogPostContent, children: post.contentReact }),
+        /* @__PURE__ */ jsx(MastodonComments, { kind: "philosophy", slug: post.metadata.slug })
+      ] })
+    }
+  );
 }
 async function generateMetadata$1(props2) {
   return {
