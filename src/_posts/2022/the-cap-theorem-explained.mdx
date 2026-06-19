@@ -122,7 +122,7 @@ Although the system looks more robust in terms of partially tolerence, the consi
 ## Step 7: Increase Consistency
 In an attempt to improve the consistency, we trick the user into displaying a local copy of its browser storage, and hence the user sees the latest version until the back end (databases) are consistent. The solution is not flawless since users might use another device and see an inconsistency. But, the design is eventually consistent and covers most use cases transparently. A portion of the complexity is transferred in the frontend single page application (SPA), verifying if the order data is already locally available before fetching to the web server. The SPA logics knowns that for a determined period to bring from the local storage to display the information to the user. It gives time to the backend to be consistent. Once consistent, requests are generating consistent deterministic responses.
 
-![Adding local storage](/images/blog/blog/CAP_Theorem-LocalStorage.png)
+![Adding local storage](/images/blog/CAP_Theorem-LocalStorage.png)
 
 Another alternative could have been to ensure that the system read the information again from the write server until all the database read nodes had received the latest information. But, again, increasing the consistency involves more technical challenges and reduced availability as distributed locking mechanisms are involved.
 
@@ -130,7 +130,7 @@ Another alternative could have been to ensure that the system read the informati
 ## Step 8: Increase the Availability
 However, as the website becomes more popular, a need of backend cache is needed. A key-value solution is implemented, giving a fast access to the data. The cache is updated every time the data is persisted in the database. If an order is present in the cache, the cache returns the order instead of one of the database nodes. 
 
-![Introduction of a cache](/images/blog/blog/CAP_Theorem-Cache.drawio.png)
+![Introduction of a cache](/images/blog/CAP_Theorem-Cache.drawio.png)
 
 The availability is faster has the response for each request is quicker. However, synchronizing the cache and the database introduce some latency.
 

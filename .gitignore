@@ -51,3 +51,5 @@ __pycache__/
 
 /tools/stats/*.png
 /tools/sitegen/target/
+
+*.playwright-mcp

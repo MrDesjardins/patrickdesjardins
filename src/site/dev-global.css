@@ -1,0 +1,15 @@
+@import "@fontsource/open-sans/400.css";
+@import "@fontsource/open-sans/700.css";
+@import "@fontsource/oswald/400.css";
+@import "@fontsource/ubuntu-mono/400.css";
+@import "@fontsource/eb-garamond/400.css";
+@import "@fontsource/eb-garamond/400-italic.css";
+@import "@fontsource/eb-garamond/500.css";
+@import "@fontsource/eb-garamond/500-italic.css";
+@import "@fontsource/eb-garamond/600.css";
+@import "@fontsource/eb-garamond/600-italic.css";
+@import "@fontsource/eb-garamond/700.css";
+@import "@fontsource/eb-garamond/700-italic.css";
+@import "../app/blog/[slug]/linenumber.css";
+@import "../app/blog/[slug]/theme.css";
+@import "../app/philosophy/[slug]/paper-prism.css";

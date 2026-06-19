@@ -1,10 +1,20 @@
 #!/usr/bin/env node
 import http from "node:http";
-import { createServer as createViteServer } from "vite";
+import { createServer as createViteServer, loadEnv } from "vite";
+import { generateStaticModuleCss } from "./generate-static-modules-css.mjs";
 
 const port = Number(process.env.PORT ?? 3000);
+const mode = "development";
+const env = loadEnv(mode, process.cwd(), "");
 
-process.env.NODE_ENV = "development";
+process.env.NODE_ENV = mode;
+for (const [key, value] of Object.entries(env)) {
+  if (process.env[key] === undefined) {
+    process.env[key] = value;
+  }
+}
+// Dev previews include scheduled posts; production hides them until publish day.
+process.env.BLOG_ENV ??= "development";
 
 function requestPath(requestUrl) {
   const url = new URL(requestUrl ?? "/", "http://127.0.0.1");
@@ -20,11 +30,15 @@ function shouldReload(filePath) {
   return (
     filePath.includes("/src/app/") ||
     filePath.includes("/src/_posts/") ||
+    filePath.includes("/src/_philosophy/") ||
     filePath.includes("/src/lib/") ||
     filePath.includes("/src/site/") ||
     filePath.includes("/src/constants/")
   );
 }
+
+const DEV_STATIC_MODULES_PATH = "/@dev/static-modules.css";
+let staticModulesCss = generateStaticModuleCss();
 
 const vite = await createViteServer({
   appType: "custom",
@@ -36,21 +50,31 @@ const vite = await createViteServer({
 });
 
 vite.watcher.on("change", (filePath) => {
+  if (filePath.endsWith(".module.css")) {
+    staticModulesCss = generateStaticModuleCss();
+  }
   if (shouldReload(filePath)) {
     vite.ws.send({ type: "full-reload" });
   }
 });
 
 const devAssets = {
-  css: [],
+  css: [DEV_STATIC_MODULES_PATH, "/src/site/dev-global.css"],
   js: ["/@vite/client", "/src/site/client.tsx"],
 };
 
 const server = http.createServer((request, response) => {
+  const pathname = requestPath(request.url);
+  if (pathname === DEV_STATIC_MODULES_PATH) {
+    response.statusCode = 200;
+    response.setHeader("Content-Type", "text/css; charset=utf-8");
+    response.end(staticModulesCss);
+    return;
+  }
+
   vite.middlewares(request, response, async () => {
     try {
       const renderer = await vite.ssrLoadModule("/src/site/render.tsx");
-      const pathname = requestPath(request.url);
 
       if (pathname === "/sitemap.xml") {
         response.setHeader("Content-Type", "application/xml; charset=utf-8");
