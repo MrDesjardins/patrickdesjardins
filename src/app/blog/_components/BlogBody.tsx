@@ -7,6 +7,7 @@ import { type PropsWithChildren } from "react";
 
 export interface BlogBodyProps extends PropsWithChildren {
   currentPage?: number;
+  isArticle?: boolean;
   year?: number;
   totalPages?: number;
   topTitle: string;
@@ -32,8 +33,15 @@ export function BlogBody(props: BlogBodyProps): React.ReactElement {
 
   return (
     <div className={styles.BlogBody}>
+      <a className={styles.skipLink} href="#content">
+        Skip to content
+      </a>
       <header>
-        <h1 className={styles.siteTitle}>Patrick Desjardins Blog</h1>
+        {props.isArticle === true ? (
+          <div className={styles.siteTitle}>Patrick Desjardins Blog</div>
+        ) : (
+          <h1 className={styles.siteTitle}>Patrick Desjardins Blog</h1>
+        )}
         <nav aria-label="Blog">
           <ul className={styles.navLinks}>
             <li className={styles.navLinkItem}>
@@ -83,8 +91,12 @@ export function BlogBody(props: BlogBodyProps): React.ReactElement {
           />
         </div>
       </header>
-      <main className={styles.main}>
-        <h2 className={styles.heading}>{props.topTitle}</h2>
+      <main id="content" className={styles.main}>
+        {props.isArticle === true ? (
+          <h1 className={styles.heading}>{props.topTitle}</h1>
+        ) : (
+          <h2 className={styles.heading}>{props.topTitle}</h2>
+        )}
         {props.children}
       </main>
       {pages.length > 0 || props.totalBlogPost !== undefined ? (

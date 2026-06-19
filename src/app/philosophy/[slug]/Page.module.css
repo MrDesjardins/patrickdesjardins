@@ -43,6 +43,12 @@
   color: var(--link-foreground-color);
 }
 
+.blogPostContainer a:focus-visible {
+  outline: 3px solid var(--link-foreground-color);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
 .blogPostContainer blockquote {
   margin: 0 0 1.25rem;
   padding-left: 0;
@@ -66,6 +72,11 @@
   overflow: auto;
   background-color: #f7f6f2 !important;
   border: 1px solid var(--blog-section-border-color);
+}
+
+.blogPostContainer pre:focus-visible {
+  outline: 3px solid var(--link-foreground-color);
+  outline-offset: 4px;
 }
 
 .blogPostContainer p.blogPostDate {
@@ -129,4 +140,11 @@
 
 .blogPostContainer p + ul {
   margin-top: -12px;
+}
+
+@media only screen and (max-width: 500px) {
+  .blogPostContent > p:first-of-type::first-letter {
+    font-size: 3em;
+    line-height: 0.95;
+  }
 }

@@ -27,6 +27,12 @@
   color: var(--link-foreground-color);
 }
 
+.blogPostContainer a:focus-visible {
+  outline: 3px solid var(--link-foreground-color);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
 .blogPostContainer blockquote p::before {
   content: "“";
   font-size: 3em;
@@ -50,11 +56,16 @@
   color: var(--blog-blockquote-text-color);
   border-left: 10px solid var(--blog-blockquote-border-color);
   padding-left: 10px;
-  word-break: break-all;
+  overflow-wrap: anywhere;
 }
 
 .blogPostContainer pre {
   overflow: auto;
+}
+
+.blogPostContainer pre:focus-visible {
+  outline: 3px solid var(--link-foreground-color);
+  outline-offset: 4px;
 }
 
 .blogPostContainer p.blogPostDate {

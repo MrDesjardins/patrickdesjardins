@@ -1,5 +1,7 @@
 use anyhow::{Context, Result, bail};
-use pulldown_cmark::{CodeBlockKind, CowStr, Event, Options, Parser, Tag, TagEnd, html};
+use pulldown_cmark::{
+    CodeBlockKind, CowStr, Event, HeadingLevel, Options, Parser, Tag, TagEnd, html,
+};
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
@@ -17,9 +19,9 @@ const PHILOSOPHY_FIRST_YEAR: i32 = 2026;
 const MAX_POSTS_PER_PAGE: usize = 10;
 const MAX_RSS_ITEMS: usize = 50;
 const BASE_URL: &str = "https://patrickdesjardins.com";
-const MARKDOWN_RENDERER_VERSION: &str = "rust-md-2026-06-14";
+const MARKDOWN_RENDERER_VERSION: &str = "rust-md-2026-06-19-a11y";
 const SHORTCODE_RENDERER_VERSION: &str = "shortcodes-2026-06-14";
-const SHELL_TEMPLATE_VERSION: &str = "rust-shell-2026-06-14";
+const SHELL_TEMPLATE_VERSION: &str = "rust-shell-2026-06-19-a11y";
 const MASTODON_DISCUSSIONS_DEPENDENCY: &str = "src/data/mastodon-discussions.json";
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
@@ -1239,6 +1241,11 @@ fn render_markdown(path: &str, body: &str) -> Result<String> {
             )))
         }
         Event::End(TagEnd::CodeBlock) => Event::Html(CowStr::from("</code></pre>")),
+        Event::Start(Tag::Heading {
+            level: HeadingLevel::H1,
+            ..
+        }) => Event::Html(CowStr::from("<h2>")),
+        Event::End(TagEnd::Heading(HeadingLevel::H1)) => Event::Html(CowStr::from("</h2>")),
         other => other,
     });
     let mut output = String::new();
@@ -1363,6 +1370,7 @@ struct BodyOptions<'a> {
     collection: Collection,
     top_title: &'a str,
     current_page: Option<usize>,
+    is_article: bool,
     year: Option<i32>,
     total_pages: Option<usize>,
     total_posts: Option<usize>,
@@ -1401,6 +1409,7 @@ fn content_body(root: &Path, options: BodyOptions<'_>, children: &str) -> Result
     let current = class(root, body_module, "currentLink")?;
     let main = class(root, body_module, "main")?;
     let heading = class(root, body_module, "heading")?;
+    let skip_link = class(root, body_module, "skipLink")?;
     let mut nav = String::new();
     let last_year = current_year_utc()?;
     match options.collection {
@@ -1467,6 +1476,16 @@ fn content_body(root: &Path, options: BodyOptions<'_>, children: &str) -> Result
             r#"<nav aria-label="Blog"><ul class="{nav_links}">{nav}</ul></nav><div class="{picture_container}"><img class="{picture}" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div>"#
         ));
     }
+    let site_title_markup = if options.is_article {
+        format!(r#"<div class="{site_title_class}">{}</div>"#, escape_html(site_title))
+    } else {
+        format!(r#"<h1 class="{site_title_class}">{}</h1>"#, escape_html(site_title))
+    };
+    let heading_markup = if options.is_article {
+        format!(r#"<h1 class="{heading}">{}</h1>"#, escape_html(options.top_title))
+    } else {
+        format!(r#"<h2 class="{heading}">{}</h2>"#, escape_html(options.top_title))
+    };
     let mut footer = String::new();
     if options.total_pages.unwrap_or(0) > 0 || options.total_posts.is_some() {
         footer.push_str("<footer>");
@@ -1517,9 +1536,7 @@ fn content_body(root: &Path, options: BodyOptions<'_>, children: &str) -> Result
         footer.push_str("</footer>");
     }
     Ok(format!(
-        r#"<div class="{wrapper}"><div class="{body}"><header><h1 class="{site_title_class}">{}</h1>{header_extra}</header><main class="{main}"><h2 class="{heading}">{}</h2>{children}</main>{footer}</div></div>"#,
-        escape_html(site_title),
-        escape_html(options.top_title),
+        r##"<div class="{wrapper}"><div class="{body}"><a class="{skip_link}" href="#content">Skip to content</a><header>{site_title_markup}{header_extra}</header><main id="content" class="{main}">{heading_markup}{children}</main>{footer}</div></div>"##,
     ))
 }
 
@@ -1567,6 +1584,7 @@ fn render_content_route(
                 "Essays"
             },
             current_page: Some(1),
+            is_article: false,
             year: None,
             total_pages: Some(total_pages),
             total_posts: Some(posts.len()),
@@ -1591,6 +1609,7 @@ fn render_content_route(
                 "Search essays"
             },
             current_page: None,
+            is_article: false,
             year: None,
             total_pages: None,
             total_posts: None,
@@ -1622,6 +1641,7 @@ fn render_content_route(
                 "Essays"
             },
             current_page: Some(page),
+            is_article: false,
             year: None,
             total_pages: Some(total_pages),
             total_posts: None,
@@ -1651,6 +1671,7 @@ fn render_content_route(
                 "Essays"
             },
             current_page: None,
+            is_article: false,
             year: Some(year),
             total_pages: Some(total_pages),
             total_posts: None,
@@ -1700,6 +1721,7 @@ fn render_content_route(
             collection,
             top_title: &post.title,
             current_page: None,
+            is_article: true,
             year: None,
             total_pages: Some(total_pages),
             total_posts: None,
@@ -1813,6 +1835,7 @@ fn render_detail_route(
             collection,
             top_title: &post.title,
             current_page: None,
+            is_article: true,
             year: None,
             total_pages: Some(total_pages),
             total_posts: None,

@@ -46,6 +46,7 @@ export default async function Page(props: {
 
   return (
     <BlogBody
+      isArticle
       totalPages={totalPages}
       topTitle={post.frontmatter.title}
     >

@@ -3,6 +3,23 @@
   padding-top: 30px;
   max-width: 800px;
 }
+.skipLink {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 10;
+  transform: translateY(-160%);
+  color: var(--blog-background-color2);
+  background-color: var(--blog-title-foreground-color);
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-weight: 700;
+}
+.skipLink:focus-visible {
+  transform: translateY(0);
+  outline: 3px solid var(--link-foreground-color);
+  outline-offset: 3px;
+}
 @media only screen and (max-width: 800px) {
   .main {
     width: 90%;
@@ -25,6 +42,7 @@
   list-style: none;
   padding-left: 0;
   margin: 0;
+  gap: 4px;
 }
 .navLinkItem {
   display: flex;
@@ -32,9 +50,17 @@
 }
 .navLinkText {
   color: var(--link-foreground-color);
-  margin-right: 10px;
-  padding: 2px 6px 2px 6px;
-  display: inline-block;
+  min-height: 44px;
+  padding: 2px 8px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.navLinkText:focus-visible,
+.paginationBar a:focus-visible {
+  outline: 3px solid var(--link-foreground-color);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 .blogTopPicture {
@@ -56,8 +82,9 @@
   margin-left: 4px;
   padding: 4px 10px;
   font-size: 20px;
-  line-height: 30px;
-  display: inline-block;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
   color: var(--link-foreground-color);
 }
 .paginationBar a:hover {

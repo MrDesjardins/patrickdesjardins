@@ -9,6 +9,7 @@ import { type PropsWithChildren } from "react";
 
 export interface PhilosophyBlogBodyProps extends PropsWithChildren {
   currentPage?: number;
+  isArticle?: boolean;
   year?: number;
   totalPages?: number;
   topTitle: string;
@@ -31,8 +32,15 @@ export function PhilosophyBlogBody(
 
   return (
     <div className={styles.blogBodyShell}>
+      <a className={styles.skipLink} href="#content">
+        Skip to content
+      </a>
       <header>
-        <h1 className={styles.siteTitle}>Philosophy</h1>
+        {props.isArticle === true ? (
+          <div className={styles.siteTitle}>Philosophy</div>
+        ) : (
+          <h1 className={styles.siteTitle}>Philosophy</h1>
+        )}
         <p className={styles.siteSubtitle}>
           Patrick Desjardins — essays and notes
         </p>
@@ -75,8 +83,12 @@ export function PhilosophyBlogBody(
           </nav>
         </div>
       </header>
-      <main className={styles.main}>
-        <h2 className={styles.heading}>{props.topTitle}</h2>
+      <main id="content" className={styles.main}>
+        {props.isArticle === true ? (
+          <h1 className={styles.heading}>{props.topTitle}</h1>
+        ) : (
+          <h2 className={styles.heading}>{props.topTitle}</h2>
+        )}
         {props.children}
       </main>
       {pages.length > 0 || props.totalBlogPost !== undefined ? (

@@ -15,6 +15,7 @@ import { TocAzureContainerSeries } from "../app/blog/_mdxComponents/TocAzureCont
 import { YouTube } from "../app/blog/_mdxComponents/YouTube";
 import {
   createElement,
+  type HTMLAttributes,
   type JSXElementConstructor,
   type ReactElement,
 } from "react";
@@ -131,6 +132,10 @@ export async function getMdxFileContent(
   const Content = evaluated.default;
   const content = createElement(Content, {
     components: {
+      h1: (props: HTMLAttributes<HTMLHeadingElement>) =>
+        createElement("h2", props),
+      pre: (props: HTMLAttributes<HTMLPreElement>) =>
+        createElement("pre", { ...props, tabIndex: 0 }),
       TocAzureContainerSeries: TocAzureContainerSeries,
       CodeSandbox: CodeSandbox,
       YouTube: YouTube,

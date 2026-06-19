@@ -67,7 +67,11 @@ export default async function Page(props: {
   }
 
   return (
-    <PhilosophyBlogBody totalPages={totalPages} topTitle={post.frontmatter.title}>
+    <PhilosophyBlogBody
+      isArticle
+      totalPages={totalPages}
+      topTitle={post.frontmatter.title}
+    >
       <div className={styles.blogPostContainer}>
         <p className={styles.blogPostDate}>
           Posted on: {post.frontmatter.date}
