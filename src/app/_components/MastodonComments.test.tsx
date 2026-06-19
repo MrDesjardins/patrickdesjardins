@@ -4,13 +4,11 @@ import { describe, expect, it } from "vitest";
 import { MastodonComments } from "./MastodonComments";
 
 describe("MastodonComments", () => {
-  it("renders a compact profile link when no discussion is configured", () => {
-    render(<MastodonComments kind="blog" slug="missing-post" />);
-    expect(screen.getByRole("heading", { name: "Discussion" })).toBeTruthy();
-    expect(screen.getByRole("link", { name: "Mastodon" })).toHaveAttribute(
-      "href",
-      "https://mastodon.social/@mrdesjardins",
+  it("renders nothing when no discussion is configured", () => {
+    const { container } = render(
+      <MastodonComments kind="blog" slug="missing-post" />,
     );
+    expect(container).toBeEmptyDOMElement();
   });
 
   it("renders the mounted client placeholder when a discussion is configured", () => {

@@ -81,7 +81,10 @@ function buildReplyTree(
 }
 
 function flattenReplyNodes(nodes: ReplyNode[]): ReplyNode[] {
-  return nodes.flatMap((node) => [node, ...flattenReplyNodes(node.children)]);
+  return nodes.flatMap((node) => [
+    { status: node.status, children: [] },
+    ...flattenReplyNodes(node.children),
+  ]);
 }
 
 function renderReplyNode(

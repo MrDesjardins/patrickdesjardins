@@ -11,8 +11,6 @@ interface MastodonCommentsProps {
   discussion?: MastodonDiscussion;
 }
 
-const PROFILE_URL = "https://mastodon.social/@mrdesjardins";
-
 export function MastodonComments(
   props: MastodonCommentsProps,
 ): React.ReactElement {
@@ -20,18 +18,7 @@ export function MastodonComments(
     props.discussion ?? getMastodonDiscussion(props.kind, props.slug);
 
   if (discussion === undefined) {
-    return (
-      <section className={styles.mastodonComments} aria-labelledby="mastodon-comments">
-        <h2 id="mastodon-comments">Discussion</h2>
-        <p>
-          Join the discussion on{" "}
-          <a className={styles.mastodonLink} href={PROFILE_URL}>
-            Mastodon
-          </a>
-          .
-        </p>
-      </section>
-    );
+    return <></>;
   }
 
   return (
