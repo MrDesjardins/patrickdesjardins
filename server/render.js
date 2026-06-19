@@ -26,7 +26,7 @@ const topPicture = "app_layout__topPicture";
 const topHeaderAnchorLink = "app_layout__topHeaderAnchorLink";
 const wrapper = "app_layout__wrapper";
 const imageWrapper = "app_layout__imageWrapper";
-const styles$b = {
+const styles$c = {
   htmlstyle,
   bodystyle,
   container: container$1,
@@ -123,20 +123,20 @@ const metadata$3 = {
 function RootLayout$1({
   children
 }) {
-  return /* @__PURE__ */ jsx("html", { lang: "en", className: styles$b.htmlstyle, children: /* @__PURE__ */ jsxs("body", { className: styles$b.bodystyle, children: [
+  return /* @__PURE__ */ jsx("html", { lang: "en", className: styles$c.htmlstyle, children: /* @__PURE__ */ jsxs("body", { className: styles$c.bodystyle, children: [
     /* @__PURE__ */ jsx(WebVitals, {}),
     /* @__PURE__ */ jsx(OutboundLinkTelemetry, {}),
     children
   ] }) });
 }
 const blogbodystyle = "app_blog_layout__blogbodystyle";
-const styles$a = {
+const styles$b = {
   blogbodystyle
 };
 function RootLayout({
   children
 }) {
-  return /* @__PURE__ */ jsx("div", { className: styles$a.blogbodystyle, children });
+  return /* @__PURE__ */ jsx("div", { className: styles$b.blogbodystyle, children });
 }
 function Image(props2) {
   const { fill, priority, style, loading, ...rest } = props2;
@@ -167,7 +167,7 @@ const sectionVisualOneSubHeader = "app_website_website__sectionVisualOneSubHeade
 const cardFixedWidthImage = "app_website_website__cardFixedWidthImage";
 const cardFixedWidthImageImg = "app_website_website__cardFixedWidthImageImg";
 const sectionSingleFixedWidth = "app_website_website__sectionSingleFixedWidth";
-const styles$9 = {
+const styles$a = {
   sectionMainpage,
   sectionPhilosophySub,
   sectionPhilosophyCta,
@@ -191,7 +191,7 @@ const AboutMeSection = () => {
     "section",
     {
       id: "about-me",
-      className: clsx(styles$9.sectionMainpage, styles$9.sectionVisualTwo),
+      className: clsx(styles$a.sectionMainpage, styles$a.sectionVisualTwo),
       children: [
         /* @__PURE__ */ jsx("h2", { children: "About Me" }),
         /* @__PURE__ */ jsxs("div", { className: styles2$8.sectionAboutMeContainer, children: [
@@ -233,14 +233,14 @@ const PhilosophySection = () => {
     "section",
     {
       id: "philosophy",
-      className: clsx(styles$9.sectionMainpage, styles$9.sectionVisualTwo),
+      className: clsx(styles$a.sectionMainpage, styles$a.sectionVisualTwo),
       children: [
         /* @__PURE__ */ jsx("h2", { children: "Philosophy" }),
-        /* @__PURE__ */ jsx("h3", { className: styles$9.sectionPhilosophySub, children: "Personal Essays and Notes" }),
-        /* @__PURE__ */ jsxs("div", { className: styles$9.sectionSingleFixedWidth, children: [
+        /* @__PURE__ */ jsx("h3", { className: styles$a.sectionPhilosophySub, children: "Personal Essays and Notes" }),
+        /* @__PURE__ */ jsxs("div", { className: styles$a.sectionSingleFixedWidth, children: [
           /* @__PURE__ */ jsx("p", { children: "Alongside my technical writing, I keep a separate space for philosophy: longer-form essays, careful argument, and notes that deserve a different pace and tone from day-to-day engineering posts." }),
           /* @__PURE__ */ jsx("p", { children: "I will be trying to write more personal essays and notes here. I will be writing about my life, my thoughts, my experiences, and my opinions. I will also focus on AI and its impact on our lives." }),
-          /* @__PURE__ */ jsx("p", { className: styles$9.sectionPhilosophyCta, children: /* @__PURE__ */ jsx(Link, { href: "/philosophy", children: "Open the philosophy journal" }) })
+          /* @__PURE__ */ jsx("p", { className: styles$a.sectionPhilosophyCta, children: /* @__PURE__ */ jsx(Link, { href: "/philosophy", children: "Open the philosophy journal" }) })
         ] })
       ]
     }
@@ -270,8 +270,8 @@ const AchievementsSection = () => {
     {
       id: "achievements",
       className: clsx(
-        styles$9.sectionMainpage,
-        styles$9.sectionVisualTwo,
+        styles$a.sectionMainpage,
+        styles$a.sectionVisualTwo,
         styles2$7.achievementContainerBackground
       ),
       children: /* @__PURE__ */ jsxs("div", { className: styles2$7.achievementOverlay, children: [
@@ -617,9 +617,9 @@ const AchievementsSection = () => {
   );
 };
 const CardFixedWidth = (props2) => {
-  return /* @__PURE__ */ jsxs("div", { className: styles$9.sectionFixedWitdhContent, children: [
+  return /* @__PURE__ */ jsxs("div", { className: styles$a.sectionFixedWitdhContent, children: [
     /* @__PURE__ */ jsx("h5", { children: props2.title }),
-    /* @__PURE__ */ jsx("p", { className: styles$9.cardFixedWidthImage, children: props2.image }),
+    /* @__PURE__ */ jsx("p", { className: styles$a.cardFixedWidthImage, children: props2.image }),
     /* @__PURE__ */ jsx("p", { children: props2.description }),
     /* @__PURE__ */ jsx("p", { children: /* @__PURE__ */ jsx("a", { href: props2.link, target: "_blank", rel: "noopener noreferrer", children: "Link" }) })
   ] });
@@ -629,10 +629,10 @@ const BookSection = () => {
     "section",
     {
       id: "book",
-      className: clsx(styles$9.sectionMainpage, styles$9.sectionVisualOne),
+      className: clsx(styles$a.sectionMainpage, styles$a.sectionVisualOne),
       children: [
         /* @__PURE__ */ jsx("h2", { children: "Books" }),
-        /* @__PURE__ */ jsxs("div", { className: styles$9.sectionFixedWitdh, children: [
+        /* @__PURE__ */ jsxs("div", { className: styles$a.sectionFixedWitdh, children: [
           /* @__PURE__ */ jsx(
             CardFixedWidth,
             {
@@ -642,7 +642,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of the W3H, What, Why, How Distributed System Book",
                   src: "/images/books/w3h_200width.png",
                   width: 200,
@@ -660,7 +660,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of the book Holistic TypeScript Second Edition",
                   src: "/images/books/HolisticTypeScriptBook.jpg",
                   width: 200,
@@ -678,7 +678,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of the book TypeScript Quick Start",
                   src: "/images/books/booktspackt_200width.jpg",
                   width: 200,
@@ -696,7 +696,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of the book Holistic TypeScript First Edition",
                   src: "/images/books/HolisticTypeScriptBook.jpg",
                   width: 200,
@@ -714,7 +714,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of the book .Net Knowledge Book Volume 6",
                   src: "/images/books/LivreBlog6_200Width.jpg",
                   width: 200,
@@ -732,7 +732,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of the book .Net Knowledge Book Volume 5",
                   src: "/images/books/LivreBlog5_200Width.png",
                   width: 200,
@@ -750,7 +750,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of the book .Net Knowledge Book Volume 4",
                   src: "/images/books/LivreBlog4_200Width.png",
                   width: 200,
@@ -768,7 +768,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of the book .Net Knowledge Book Volume 3",
                   src: "/images/books/LivreBlog3_200Width.png",
                   width: 200,
@@ -786,7 +786,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of the book .Net Knowledge Book Volume 2",
                   src: "/images/books/LivreBlog2_200Width.jpg",
                   width: 200,
@@ -804,7 +804,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of the book .Net Knowledge Book Volume 1",
                   src: "/images/books/LivreBlog1_200Width.png",
                   width: 200,
@@ -822,7 +822,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of the book .Net Knowledge Book Volume 3",
                   src: "/images/books/apress_200width.png",
                   width: 200,
@@ -849,7 +849,7 @@ const ConferencesSection = () => {
     "section",
     {
       id: "conferences",
-      className: clsx(styles$9.sectionMainpage, styles$9.sectionVisualOne),
+      className: clsx(styles$a.sectionMainpage, styles$a.sectionVisualOne),
       children: [
         /* @__PURE__ */ jsx("h2", { children: "CONFERENCES" }),
         /* @__PURE__ */ jsx("h3", { children: "Limited list with public recorded presentation only" }),
@@ -886,8 +886,8 @@ const ContactSection = () => {
     {
       id: "contact",
       className: clsx(
-        styles$9.sectionMainpage,
-        styles$9.sectionVisualOne,
+        styles$a.sectionMainpage,
+        styles$a.sectionVisualOne,
         styles2$5.contactSection
       ),
       children: [
@@ -989,13 +989,13 @@ const EducationSection = () => {
     {
       id: "education",
       className: clsx(
-        styles$9.sectionMainpage,
-        styles$9.sectionVisualTwo,
+        styles$a.sectionMainpage,
+        styles$a.sectionVisualTwo,
         styles2$4.educationSection
       ),
       children: [
         /* @__PURE__ */ jsx("h2", { children: "Education" }),
-        /* @__PURE__ */ jsx("div", { className: styles$9.sectionFixedWitdh, children: /* @__PURE__ */ jsxs("ul", { children: [
+        /* @__PURE__ */ jsx("div", { className: styles$a.sectionFixedWitdh, children: /* @__PURE__ */ jsxs("ul", { children: [
           /* @__PURE__ */ jsxs("li", { children: [
             /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faGraduationCap }),
             /* @__PURE__ */ jsx("p", { children: "Master Degree 4 years in Machine Learning at Georgia Tech (Atlanta, USA)" })
@@ -1037,8 +1037,8 @@ const HistorySection = () => {
     {
       id: "past",
       className: clsx(
-        styles$9.sectionMainpage,
-        styles$9.sectionVisualTwo,
+        styles$a.sectionMainpage,
+        styles$a.sectionVisualTwo,
         styles2$3.historyContainerBackground
       ),
       children: /* @__PURE__ */ jsxs("div", { className: styles2$3.historyOverlay, children: [
@@ -1060,10 +1060,10 @@ const CourseSection = () => {
     "section",
     {
       id: "course",
-      className: clsx(styles$9.sectionMainpage, styles$9.sectionVisualOne),
+      className: clsx(styles$a.sectionMainpage, styles$a.sectionVisualOne),
       children: [
         /* @__PURE__ */ jsx("h2", { children: "Courses" }),
-        /* @__PURE__ */ jsxs("div", { className: styles$9.sectionFixedWitdh, children: [
+        /* @__PURE__ */ jsxs("div", { className: styles$a.sectionFixedWitdh, children: [
           /* @__PURE__ */ jsx(
             CardFixedWidth,
             {
@@ -1073,7 +1073,7 @@ const CourseSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of me",
                   src: "/images/portfolio/youtube.jpg",
                   width: 350,
@@ -1091,7 +1091,7 @@ const CourseSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of the online course",
                   src: "/images/portfolio/course3.jpg",
                   width: 350,
@@ -1109,7 +1109,7 @@ const CourseSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of the online course",
                   src: "/images/portfolio/course2.jpg",
                   width: 350,
@@ -1127,7 +1127,7 @@ const CourseSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of the online course",
                   src: "/images/portfolio/course1.jpg",
                   width: 350,
@@ -1148,7 +1148,7 @@ const bodyC = "app_website_NeonGlowOverlay__bodyC";
 const stoolL = "app_website_NeonGlowOverlay__stoolL";
 const stoolR = "app_website_NeonGlowOverlay__stoolR";
 const tableE = "app_website_NeonGlowOverlay__tableE";
-const styles$8 = {
+const styles$9 = {
   overlay,
   bodyA,
   bodyB,
@@ -1165,7 +1165,7 @@ function NeonGlowOverlay() {
   return /* @__PURE__ */ jsxs(
     "svg",
     {
-      className: styles$8.overlay,
+      className: styles$9.overlay,
       viewBox: "0 0 1105 683",
       preserveAspectRatio: "xMidYMid slice",
       xmlns: "http://www.w3.org/2000/svg",
@@ -1198,7 +1198,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$8.bodyA,
+            className: styles$9.bodyA,
             d: BODY_PATH,
             fill: "none",
             stroke: "rgba(255,40,5,0.30)",
@@ -1209,7 +1209,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$8.bodyA,
+            className: styles$9.bodyA,
             d: BODY_PATH,
             fill: "none",
             stroke: "rgba(255,60,10,0.80)",
@@ -1220,7 +1220,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$8.bodyA,
+            className: styles$9.bodyA,
             d: BODY_PATH,
             fill: "none",
             stroke: "rgba(255,200,160,1.00)",
@@ -1231,7 +1231,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$8.bodyB,
+            className: styles$9.bodyB,
             d: BODY_PATH,
             fill: "none",
             stroke: "rgba(255,40,5,0.30)",
@@ -1242,7 +1242,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$8.bodyB,
+            className: styles$9.bodyB,
             d: BODY_PATH,
             fill: "none",
             stroke: "rgba(255,60,10,0.80)",
@@ -1253,7 +1253,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$8.bodyB,
+            className: styles$9.bodyB,
             d: BODY_PATH,
             fill: "none",
             stroke: "rgba(255,200,160,1.00)",
@@ -1264,7 +1264,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$8.bodyC,
+            className: styles$9.bodyC,
             d: BODY_PATH,
             fill: "none",
             stroke: "rgba(255,40,5,0.30)",
@@ -1275,7 +1275,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$8.bodyC,
+            className: styles$9.bodyC,
             d: BODY_PATH,
             fill: "none",
             stroke: "rgba(255,60,10,0.80)",
@@ -1286,7 +1286,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$8.bodyC,
+            className: styles$9.bodyC,
             d: BODY_PATH,
             fill: "none",
             stroke: "rgba(255,200,160,1.00)",
@@ -1297,7 +1297,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$8.stoolL,
+            className: styles$9.stoolL,
             d: LEFT_STOOL_PATH,
             fill: "none",
             stroke: "rgba(255,40,5,0.30)",
@@ -1308,7 +1308,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$8.stoolL,
+            className: styles$9.stoolL,
             d: LEFT_STOOL_PATH,
             fill: "none",
             stroke: "rgba(255,60,10,0.80)",
@@ -1319,7 +1319,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$8.stoolL,
+            className: styles$9.stoolL,
             d: LEFT_STOOL_PATH,
             fill: "none",
             stroke: "rgba(255,200,160,1.00)",
@@ -1330,7 +1330,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$8.stoolR,
+            className: styles$9.stoolR,
             d: RIGHT_STOOL_PATH,
             fill: "none",
             stroke: "rgba(255,40,5,0.30)",
@@ -1341,7 +1341,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$8.stoolR,
+            className: styles$9.stoolR,
             d: RIGHT_STOOL_PATH,
             fill: "none",
             stroke: "rgba(255,60,10,0.80)",
@@ -1352,7 +1352,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$8.stoolR,
+            className: styles$9.stoolR,
             d: RIGHT_STOOL_PATH,
             fill: "none",
             stroke: "rgba(255,200,160,1.00)",
@@ -1363,7 +1363,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$8.tableE,
+            className: styles$9.tableE,
             d: TABLE_PATH,
             fill: "none",
             stroke: "rgba(255,40,5,0.30)",
@@ -1374,7 +1374,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$8.tableE,
+            className: styles$9.tableE,
             d: TABLE_PATH,
             fill: "none",
             stroke: "rgba(255,60,10,0.80)",
@@ -1385,7 +1385,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$8.tableE,
+            className: styles$9.tableE,
             d: TABLE_PATH,
             fill: "none",
             stroke: "rgba(255,200,160,1.00)",
@@ -1402,10 +1402,10 @@ const OpenSourceSection = () => {
     "section",
     {
       id: "open-source",
-      className: clsx(styles$9.sectionMainpage, styles$9.sectionVisualOne),
+      className: clsx(styles$a.sectionMainpage, styles$a.sectionVisualOne),
       children: [
         /* @__PURE__ */ jsx("h2", { children: "Open Source" }),
-        /* @__PURE__ */ jsxs("div", { className: styles$9.sectionFixedWitdh, children: [
+        /* @__PURE__ */ jsxs("div", { className: styles$a.sectionFixedWitdh, children: [
           /* @__PURE__ */ jsx(
             CardFixedWidth,
             {
@@ -1415,7 +1415,7 @@ const OpenSourceSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of the Discord bot",
                   src: "/images/portfolio/DiscordBot.png",
                   width: 350,
@@ -1433,7 +1433,7 @@ const OpenSourceSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of the realtime pixel game",
                   src: "/images/portfolio/realtimepixelgame.png",
                   width: 350,
@@ -1451,7 +1451,7 @@ const OpenSourceSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of a workout screen of the gym app",
                   src: "/images/portfolio/gym-water-dev-panel.png",
                   width: 350,
@@ -1469,7 +1469,7 @@ const OpenSourceSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of the a 2d representation of a third order Hilbert Curve",
                   src: "/images/portfolio/hilbertcurve.png",
                   width: 350,
@@ -1487,7 +1487,7 @@ const OpenSourceSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of the Chrome extension for the Data Access gateway",
                   src: "/images/portfolio/dagextension.jpg",
                   width: 350,
@@ -1505,7 +1505,7 @@ const OpenSourceSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of a UML diagram of the Data Access Gateway library",
                   src: "/images/portfolio/daglib.jpg",
                   width: 350,
@@ -1807,7 +1807,7 @@ const StatisticsSection = () => {
     "section",
     {
       id: "experiences",
-      className: clsx(styles$9.sectionMainpage, styles$9.sectionVisualOne),
+      className: clsx(styles$a.sectionMainpage, styles$a.sectionVisualOne),
       children: /* @__PURE__ */ jsxs("div", { className: styles2$2.statisticContainer, children: [
         /* @__PURE__ */ jsxs("div", { className: styles2$2.statisticContainerCard, children: [
           /* @__PURE__ */ jsx("div", { className: "counterup-photo", children: /* @__PURE__ */ jsx(
@@ -1886,7 +1886,7 @@ const styles2$1 = {
 };
 const CardWithImage = (props2) => {
   return /* @__PURE__ */ jsxs("div", { className: styles2$1.cardWithImageContainer, children: [
-    /* @__PURE__ */ jsx("div", { className: styles2$1.cardWithImageContainerImage, children: /* @__PURE__ */ jsx("p", { className: styles$9.cardFixedWidthImage, children: props2.image }) }),
+    /* @__PURE__ */ jsx("div", { className: styles2$1.cardWithImageContainerImage, children: /* @__PURE__ */ jsx("p", { className: styles$a.cardFixedWidthImage, children: props2.image }) }),
     /* @__PURE__ */ jsxs("div", { className: styles2$1.cardWithImageContainerText, children: [
       /* @__PURE__ */ jsx("h5", { children: props2.title }),
       /* @__PURE__ */ jsx("h6", { children: props2.subtitle }),
@@ -1904,7 +1904,7 @@ const TechnologiesSection = () => {
     "section",
     {
       id: "technologies",
-      className: clsx(styles$9.sectionMainpage, styles$9.sectionVisualTwo),
+      className: clsx(styles$a.sectionMainpage, styles$a.sectionVisualTwo),
       children: [
         /* @__PURE__ */ jsx("h2", { children: "Technologies" }),
         /* @__PURE__ */ jsxs("div", { className: styles2.technologiesColumn, children: [
@@ -2003,12 +2003,12 @@ const WorkSection = () => {
     "section",
     {
       id: "work",
-      className: clsx(styles$9.sectionMainpage, styles$9.sectionVisualOne),
+      className: clsx(styles$a.sectionMainpage, styles$a.sectionVisualOne),
       children: [
         /* @__PURE__ */ jsx("h2", { children: "My Work" }),
-        /* @__PURE__ */ jsx("div", { className: styles$9.sectionVisualOneSubHeader, children: "An excerpt of some of my works from the last few years. See resume for full entries" }),
+        /* @__PURE__ */ jsx("div", { className: styles$a.sectionVisualOneSubHeader, children: "An excerpt of some of my works from the last few years. See resume for full entries" }),
         /* @__PURE__ */ jsx("h3", { children: "Professional Application" }),
-        /* @__PURE__ */ jsxs("div", { className: styles$9.sectionFixedWitdh, children: [
+        /* @__PURE__ */ jsxs("div", { className: styles$a.sectionFixedWitdh, children: [
           /* @__PURE__ */ jsx(
             CardFixedWidth,
             {
@@ -2018,7 +2018,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of Roblox",
                   src: "/images/portfolio/Roblox_Tilt_Black.svg",
                   width: 350,
@@ -2036,7 +2036,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of Adobe Express",
                   src: "/images/portfolio/adobeExpress.png",
                   width: 350,
@@ -2054,7 +2054,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of Jump Trading",
                   src: "/images/portfolio/jumpTrading.png",
                   width: 350,
@@ -2072,7 +2072,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of Netflix",
                   src: "/images/portfolio/netflix.jpg",
                   width: 350,
@@ -2090,7 +2090,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of Microsoft Teams",
                   src: "/images/portfolio/microsoftteam.jpg",
                   width: 350,
@@ -2108,7 +2108,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of Microsoft Visual Studio Delivery Timeline",
                   src: "/images/portfolio/vstsplan.jpg",
                   width: 350,
@@ -2126,7 +2126,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of Microsoft Visual Studio Dashboard",
                   src: "/images/portfolio/vstsdashboard.jpg",
                   width: 350,
@@ -2144,7 +2144,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of Microsoft VSTS Dashboard",
                   src: "/images/portfolio/msdn.jpg",
                   width: 350,
@@ -2162,7 +2162,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of CDPQ",
                   src: "/images/portfolio/cdpq.jpg",
                   width: 350,
@@ -2180,7 +2180,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of CDPQ",
                   src: "/images/portfolio/cdpq.jpg",
                   width: 350,
@@ -2198,7 +2198,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of CDPQ",
                   src: "/images/portfolio/cdpq.jpg",
                   width: 350,
@@ -2216,7 +2216,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of Nutcache",
                   src: "/images/portfolio/nutcache.jpg",
                   width: 350,
@@ -2234,7 +2234,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of Tenrox TimeSheet",
                   src: "/images/portfolio/tenrox.jpg",
                   width: 350,
@@ -2252,7 +2252,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$9.cardFixedWidthImageImg,
+                  className: styles$a.cardFixedWidthImageImg,
                   alt: "Screenshot of StockVirtual.com",
                   src: "/images/portfolio/stockvirtual.jpg",
                   width: 350,
@@ -2271,37 +2271,37 @@ const metadata$2 = {
   description: "Patrick Desjardins Website and Blog"
 };
 function Index() {
-  return /* @__PURE__ */ jsx("div", { className: styles$b.container, children: /* @__PURE__ */ jsxs("main", { children: [
-    /* @__PURE__ */ jsx("header", { className: styles$b.topMenu, children: /* @__PURE__ */ jsxs("nav", { className: styles$b.topHeader, "aria-label": "Primary", children: [
-      /* @__PURE__ */ jsx(Link, { className: styles$b.topHeaderMyName, href: "/", children: "Patrick Desjardins" }),
-      /* @__PURE__ */ jsx("a", { href: "#about-me", className: styles$b.topHeaderAnchorLink, children: "About Me" }),
-      /* @__PURE__ */ jsx("a", { href: "#work", className: styles$b.topHeaderAnchorLink, children: "Works" }),
-      /* @__PURE__ */ jsx("a", { href: "#technologies", className: styles$b.topHeaderAnchorLink, children: "Technologies" }),
-      /* @__PURE__ */ jsx("a", { href: "#achievements", className: styles$b.topHeaderAnchorLink, children: "Achievements" }),
-      /* @__PURE__ */ jsx("a", { href: "#experiences", className: styles$b.topHeaderAnchorLink, children: "Experiences" }),
-      /* @__PURE__ */ jsx("a", { href: "#past", className: styles$b.topHeaderAnchorLink, children: "Past" }),
-      /* @__PURE__ */ jsx("a", { href: "#conferences", className: styles$b.topHeaderAnchorLink, children: "Conferences" }),
-      /* @__PURE__ */ jsx("a", { href: "#contact", className: styles$b.topHeaderAnchorLink, children: "Contact" }),
-      /* @__PURE__ */ jsx(Link, { href: "/blog", className: styles$b.topHeaderBlog, children: "Blog" }),
-      /* @__PURE__ */ jsx(Link, { href: "/philosophy", className: styles$b.topHeaderBlog, children: "Philosophy" })
+  return /* @__PURE__ */ jsx("div", { className: styles$c.container, children: /* @__PURE__ */ jsxs("main", { children: [
+    /* @__PURE__ */ jsx("header", { className: styles$c.topMenu, children: /* @__PURE__ */ jsxs("nav", { className: styles$c.topHeader, "aria-label": "Primary", children: [
+      /* @__PURE__ */ jsx(Link, { className: styles$c.topHeaderMyName, href: "/", children: "Patrick Desjardins" }),
+      /* @__PURE__ */ jsx("a", { href: "#about-me", className: styles$c.topHeaderAnchorLink, children: "About Me" }),
+      /* @__PURE__ */ jsx("a", { href: "#work", className: styles$c.topHeaderAnchorLink, children: "Works" }),
+      /* @__PURE__ */ jsx("a", { href: "#technologies", className: styles$c.topHeaderAnchorLink, children: "Technologies" }),
+      /* @__PURE__ */ jsx("a", { href: "#achievements", className: styles$c.topHeaderAnchorLink, children: "Achievements" }),
+      /* @__PURE__ */ jsx("a", { href: "#experiences", className: styles$c.topHeaderAnchorLink, children: "Experiences" }),
+      /* @__PURE__ */ jsx("a", { href: "#past", className: styles$c.topHeaderAnchorLink, children: "Past" }),
+      /* @__PURE__ */ jsx("a", { href: "#conferences", className: styles$c.topHeaderAnchorLink, children: "Conferences" }),
+      /* @__PURE__ */ jsx("a", { href: "#contact", className: styles$c.topHeaderAnchorLink, children: "Contact" }),
+      /* @__PURE__ */ jsx(Link, { href: "/blog", className: styles$c.topHeaderBlog, children: "Blog" }),
+      /* @__PURE__ */ jsx(Link, { href: "/philosophy", className: styles$c.topHeaderBlog, children: "Philosophy" })
     ] }) }),
-    /* @__PURE__ */ jsxs("div", { className: styles$b.wrapper, children: [
-      /* @__PURE__ */ jsx("div", { className: styles$b.textOnPicture, children: /* @__PURE__ */ jsxs("div", { className: styles$b.homeContent, children: [
+    /* @__PURE__ */ jsxs("div", { className: styles$c.wrapper, children: [
+      /* @__PURE__ */ jsx("div", { className: styles$c.textOnPicture, children: /* @__PURE__ */ jsxs("div", { className: styles$c.homeContent, children: [
         /* @__PURE__ */ jsxs("h1", { children: [
           "Patrick",
           /* @__PURE__ */ jsx("strong", { children: "Desjardins" })
         ] }),
-        /* @__PURE__ */ jsxs("p", { className: styles$b.homeContentTitles, children: [
+        /* @__PURE__ */ jsxs("p", { className: styles$c.homeContentTitles, children: [
           "Roblox Principal Software Engineer",
           /* @__PURE__ */ jsx("br", {}),
           "Formerly Netflix/Jump Trading/Microsoft/Adobe"
         ] })
       ] }) }),
-      /* @__PURE__ */ jsx("div", { className: styles$b.imageWrapper, children: /* @__PURE__ */ jsx(
+      /* @__PURE__ */ jsx("div", { className: styles$c.imageWrapper, children: /* @__PURE__ */ jsx(
         Image,
         {
           priority: true,
-          className: styles$b.topPicture,
+          className: styles$c.topPicture,
           alt: "Patrick Desjardins sitting at Netflix Building F",
           src: "/images/backgrounds/patrickdesjardinsatnetflix.jpg",
           fill: true,
@@ -2331,7 +2331,7 @@ const blogEntry$1 = "app_blog__components_BlogEntry__blogEntry";
 const blogEntryArticleTitle$1 = "app_blog__components_BlogEntry__blogEntryArticleTitle";
 const blogEntryDate$1 = "app_blog__components_BlogEntry__blogEntryDate";
 const blogEntryDetails$1 = "app_blog__components_BlogEntry__blogEntryDetails";
-const styles$7 = {
+const styles$8 = {
   blogEntry: blogEntry$1,
   blogEntryArticleTitle: blogEntryArticleTitle$1,
   blogEntryDate: blogEntryDate$1,
@@ -2339,19 +2339,19 @@ const styles$7 = {
 };
 const container = "app_blog__components_BlogCategories__container";
 const item = "app_blog__components_BlogCategories__item";
-const styles$6 = {
+const styles$7 = {
   container,
   item
 };
 const BlogCategories = (props2) => {
   var _a;
-  return /* @__PURE__ */ jsx("span", { className: styles$6.container, children: (_a = props2.categories ?? []) == null ? void 0 : _a.map((c) => /* @__PURE__ */ jsx("span", { className: styles$6.item, children: c }, c)) });
+  return /* @__PURE__ */ jsx("span", { className: styles$7.container, children: (_a = props2.categories ?? []) == null ? void 0 : _a.map((c) => /* @__PURE__ */ jsx("span", { className: styles$7.item, children: c }, c)) });
 };
 const BlogEntry = (props2) => {
-  return /* @__PURE__ */ jsxs("article", { className: styles$7.blogEntry, children: [
-    /* @__PURE__ */ jsx("h2", { className: styles$7.blogEntryArticleTitle, children: /* @__PURE__ */ jsx(Link, { href: `/blog/${props2.slug}`, children: props2.title }) }),
-    /* @__PURE__ */ jsxs("div", { className: styles$7.blogEntryDetails, children: [
-      /* @__PURE__ */ jsxs("span", { className: styles$7.blogEntryDate, children: [
+  return /* @__PURE__ */ jsxs("article", { className: styles$8.blogEntry, children: [
+    /* @__PURE__ */ jsx("h2", { className: styles$8.blogEntryArticleTitle, children: /* @__PURE__ */ jsx(Link, { href: `/blog/${props2.slug}`, children: props2.title }) }),
+    /* @__PURE__ */ jsxs("div", { className: styles$8.blogEntryDetails, children: [
+      /* @__PURE__ */ jsxs("span", { className: styles$8.blogEntryDate, children: [
         "Posted: ",
         props2.date
       ] }),
@@ -2373,7 +2373,7 @@ const currentLink$1 = "app_blog__components_BlogBody__currentLink";
 const paginationLinks$1 = "app_blog__components_BlogBody__paginationLinks";
 const blogPictureContainer = "app_blog__components_BlogBody__blogPictureContainer";
 const totalBlogPost = "app_blog__components_BlogBody__totalBlogPost";
-const styles$5 = {
+const styles$6 = {
   BlogBody: BlogBody$1,
   main: main$1,
   heading: heading$1,
@@ -2400,21 +2400,21 @@ function BlogBody(props2) {
       pages.push(i);
     }
   }
-  return /* @__PURE__ */ jsxs("div", { className: styles$5.BlogBody, children: [
+  return /* @__PURE__ */ jsxs("div", { className: styles$6.BlogBody, children: [
     /* @__PURE__ */ jsxs("header", { children: [
-      /* @__PURE__ */ jsx("h1", { className: styles$5.siteTitle, children: "Patrick Desjardins Blog" }),
-      /* @__PURE__ */ jsx("nav", { "aria-label": "Blog", children: /* @__PURE__ */ jsxs("ul", { className: styles$5.navLinks, children: [
-        /* @__PURE__ */ jsx("li", { className: styles$5.navLinkItem, children: /* @__PURE__ */ jsx(Link, { className: styles$5.navLinkText, href: "/", children: "Main Page" }) }),
-        /* @__PURE__ */ jsx("li", { className: styles$5.navLinkItem, children: /* @__PURE__ */ jsx(Link, { className: styles$5.navLinkText, href: "/blog", children: "Blog" }) }),
-        /* @__PURE__ */ jsx("li", { className: styles$5.navLinkItem, children: /* @__PURE__ */ jsx(Link, { className: styles$5.navLinkText, href: "/blog/search", children: "Search" }) }),
-        /* @__PURE__ */ jsx("li", { className: styles$5.navLinkItem, children: /* @__PURE__ */ jsx(Link, { className: styles$5.navLinkText, href: "/philosophy", children: "Philosophy" }) }),
+      /* @__PURE__ */ jsx("h1", { className: styles$6.siteTitle, children: "Patrick Desjardins Blog" }),
+      /* @__PURE__ */ jsx("nav", { "aria-label": "Blog", children: /* @__PURE__ */ jsxs("ul", { className: styles$6.navLinks, children: [
+        /* @__PURE__ */ jsx("li", { className: styles$6.navLinkItem, children: /* @__PURE__ */ jsx(Link, { className: styles$6.navLinkText, href: "/", children: "Main Page" }) }),
+        /* @__PURE__ */ jsx("li", { className: styles$6.navLinkItem, children: /* @__PURE__ */ jsx(Link, { className: styles$6.navLinkText, href: "/blog", children: "Blog" }) }),
+        /* @__PURE__ */ jsx("li", { className: styles$6.navLinkItem, children: /* @__PURE__ */ jsx(Link, { className: styles$6.navLinkText, href: "/blog/search", children: "Search" }) }),
+        /* @__PURE__ */ jsx("li", { className: styles$6.navLinkItem, children: /* @__PURE__ */ jsx(Link, { className: styles$6.navLinkText, href: "/philosophy", children: "Philosophy" }) }),
         years.map((y) => {
-          return /* @__PURE__ */ jsx("li", { className: styles$5.navLinkItem, children: /* @__PURE__ */ jsx(
+          return /* @__PURE__ */ jsx("li", { className: styles$6.navLinkItem, children: /* @__PURE__ */ jsx(
             Link,
             {
               className: clsx({
-                [styles$5.navLinkText]: true,
-                [styles$5.currentLink]: y === props2.year
+                [styles$6.navLinkText]: true,
+                [styles$6.currentLink]: y === props2.year
               }),
               href: `/blog/for/${y}`,
               children: y
@@ -2422,10 +2422,10 @@ function BlogBody(props2) {
           ) }, y);
         })
       ] }) }),
-      /* @__PURE__ */ jsx("div", { className: styles$5.blogPictureContainer, children: /* @__PURE__ */ jsx(
+      /* @__PURE__ */ jsx("div", { className: styles$6.blogPictureContainer, children: /* @__PURE__ */ jsx(
         Image,
         {
-          className: styles$5.blogTopPicture,
+          className: styles$6.blogTopPicture,
           alt: "Patrick Desjardins picture from a conference",
           src: "/images/backgrounds/patrickdesjardins_conference_bw.webp",
           width: 800,
@@ -2433,19 +2433,19 @@ function BlogBody(props2) {
         }
       ) })
     ] }),
-    /* @__PURE__ */ jsxs("main", { className: styles$5.main, children: [
-      /* @__PURE__ */ jsx("h2", { className: styles$5.heading, children: props2.topTitle }),
+    /* @__PURE__ */ jsxs("main", { className: styles$6.main, children: [
+      /* @__PURE__ */ jsx("h2", { className: styles$6.heading, children: props2.topTitle }),
       props2.children
     ] }),
     pages.length > 0 || props2.totalBlogPost !== void 0 ? /* @__PURE__ */ jsxs("footer", { children: [
-      pages.length > 0 ? /* @__PURE__ */ jsxs("div", { className: styles$5.paginationBar, children: [
-        /* @__PURE__ */ jsx("div", { className: styles$5.paginationTitle, children: "Chronological Blog Articles by Page" }),
-        /* @__PURE__ */ jsx("div", { className: styles$5.paginationLinks, children: pages.map((page) => {
+      pages.length > 0 ? /* @__PURE__ */ jsxs("div", { className: styles$6.paginationBar, children: [
+        /* @__PURE__ */ jsx("div", { className: styles$6.paginationTitle, children: "Chronological Blog Articles by Page" }),
+        /* @__PURE__ */ jsx("div", { className: styles$6.paginationLinks, children: pages.map((page) => {
           return /* @__PURE__ */ jsx(
             Link,
             {
               className: clsx({
-                [styles$5.currentLink]: page === props2.currentPage
+                [styles$6.currentLink]: page === props2.currentPage
               }),
               href: `/blog/page/${page}`,
               children: page
@@ -2454,7 +2454,7 @@ function BlogBody(props2) {
           );
         }) })
       ] }) : null,
-      props2.totalBlogPost === void 0 ? null : /* @__PURE__ */ jsxs("div", { className: styles$5.totalBlogPost, children: [
+      props2.totalBlogPost === void 0 ? null : /* @__PURE__ */ jsxs("div", { className: styles$6.totalBlogPost, children: [
         "Total Blog Posts: ",
         props2.totalBlogPost
       ] })
@@ -2506,6 +2506,64 @@ async function Page$9() {
 function Page$8() {
   return /* @__PURE__ */ jsx(BlogBody, { topTitle: "Search Posts", children: /* @__PURE__ */ jsx("div", { id: "blog-search-root" }) });
 }
+const blog = {};
+const philosophy = {
+  "the-peacock-perfect-trial": {
+    instanceUrl: "https://mastodon.social",
+    postedAt: "2026-06-19T18:20:06Z",
+    statusId: "116778153237140094",
+    statusUrl: "https://mastodon.social/@mrdesjardins/116778153237140094"
+  }
+};
+const discussions = {
+  blog,
+  philosophy
+};
+const registry = discussions;
+function getMastodonDiscussion(kind, slug) {
+  var _a;
+  return (_a = registry[kind]) == null ? void 0 : _a[slug];
+}
+const mastodonComments = "app__components_MastodonComments__mastodonComments";
+const mastodonActions = "app__components_MastodonComments__mastodonActions";
+const mastodonLink = "app__components_MastodonComments__mastodonLink";
+const mastodonStatus = "app__components_MastodonComments__mastodonStatus";
+const styles$5 = {
+  mastodonComments,
+  mastodonActions,
+  mastodonLink,
+  mastodonStatus
+};
+const PROFILE_URL = "https://mastodon.social/@mrdesjardins";
+function MastodonComments(props2) {
+  const discussion = props2.discussion ?? getMastodonDiscussion(props2.kind, props2.slug);
+  if (discussion === void 0) {
+    return /* @__PURE__ */ jsxs("section", { className: styles$5.mastodonComments, "aria-labelledby": "mastodon-comments", children: [
+      /* @__PURE__ */ jsx("h2", { id: "mastodon-comments", children: "Discussion" }),
+      /* @__PURE__ */ jsxs("p", { children: [
+        "Join the discussion on",
+        " ",
+        /* @__PURE__ */ jsx("a", { className: styles$5.mastodonLink, href: PROFILE_URL, children: "Mastodon" }),
+        "."
+      ] })
+    ] });
+  }
+  return /* @__PURE__ */ jsxs("section", { className: styles$5.mastodonComments, "aria-labelledby": "mastodon-comments", children: [
+    /* @__PURE__ */ jsx("h2", { id: "mastodon-comments", children: "Discussion" }),
+    /* @__PURE__ */ jsx("p", { children: "Replies are loaded from the public Mastodon thread for this article." }),
+    /* @__PURE__ */ jsx("div", { className: styles$5.mastodonActions, children: /* @__PURE__ */ jsx("a", { className: styles$5.mastodonLink, href: discussion.statusUrl, children: "Reply on Mastodon" }) }),
+    /* @__PURE__ */ jsx(
+      "div",
+      {
+        "data-mastodon-comments-root": true,
+        "data-instance-url": discussion.instanceUrl,
+        "data-status-id": discussion.statusId,
+        "data-status-url": discussion.statusUrl,
+        children: /* @__PURE__ */ jsx("p", { className: styles$5.mastodonStatus, children: "Loading replies from Mastodon..." })
+      }
+    )
+  ] });
+}
 const blogPostContainer$1 = "app_blog__slug__Page__blogPostContainer";
 const blogPostDate$1 = "app_blog__slug__Page__blogPostDate";
 const styles$4 = {
@@ -2539,7 +2597,8 @@ async function Page$7(props2) {
           "Posted on: ",
           post.frontmatter.date
         ] }),
-        post.contentReact
+        post.contentReact,
+        /* @__PURE__ */ jsx(MastodonComments, { kind: "blog", slug: post.metadata.slug })
       ] })
     }
   );
@@ -2799,7 +2858,8 @@ async function Page$2(props2) {
       "Posted on: ",
       post.frontmatter.date
     ] }),
-    /* @__PURE__ */ jsx("div", { className: styles.blogPostContent, children: post.contentReact })
+    /* @__PURE__ */ jsx("div", { className: styles.blogPostContent, children: post.contentReact }),
+    /* @__PURE__ */ jsx(MastodonComments, { kind: "philosophy", slug: post.metadata.slug })
   ] }) });
 }
 async function generateMetadata$1(props2) {
