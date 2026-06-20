@@ -2511,7 +2511,14 @@ async function Page$9() {
 function Page$8() {
   return /* @__PURE__ */ jsx(BlogBody, { topTitle: "Search Posts", children: /* @__PURE__ */ jsx("div", { id: "blog-search-root" }) });
 }
-const blog = {};
+const blog = {
+  "mastodon-thread-static-website": {
+    instanceUrl: "https://mastodon.social",
+    postedAt: "2026-06-20T18:05:37Z",
+    statusId: "116783758549131307",
+    statusUrl: "https://mastodon.social/@mrdesjardins/116783758549131307"
+  }
+};
 const philosophy = {
   "the-peacock-perfect-trial": {
     instanceUrl: "https://mastodon.social",

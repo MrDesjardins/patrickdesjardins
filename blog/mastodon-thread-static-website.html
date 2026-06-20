@@ -1,0 +1,113 @@
+<!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Patrick Desjardins Blog - Mastodon Thread on a Static Website</title><meta name="description" content="Mastodon Thread on a Static Website"><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-Ca00_hx2.css"><link rel="stylesheet" href="/assets/static-modules.css"></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><a class="app_blog__components_BlogBody__skipLink" href="#content">Skip to content</a><header><div class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</div><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main id="content" class="app_blog__components_BlogBody__main"><h1 class="app_blog__components_BlogBody__heading">Mastodon Thread on a Static Website</h1><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: 2026-06-20</p><p>I recently visited <a href="https://bubbles.town">bubbles.town</a> and noticed a simple idea that I liked: comments do not need to live inside the website database. They can live on the social web, and the website can point to the discussion.</p>
+<p>For a static website, this is appealing because I do not want to run a comment server, to moderate a local database or manage accounts on my website. But I still like the idea that an article can have a conversation attached to it.</p>
+<p>The solution I added to this website is to use Mastodon as the discussion thread.</p>
+<p>Each article can have one Mastodon post associated with it. The website reads the public replies from Mastodon and displays them below the article. If someone wants to reply, they use Mastodon.</p>
+<h2>The Shape of the Solution</h2>
+<p>The website remains static. There is no backend added to the site.</p>
+<p>The site has a small JSON file:</p>
+<pre class="language-json" tabindex="0"><code class="language-json code-highlight">{
+  "blog": {
+    "article-slug": {
+      "instanceUrl": "https://mastodon.social",
+      "statusId": "123",
+      "statusUrl": "https://mastodon.social/@mrdesjardins/123",
+      "postedAt": "2026-06-19T00:00:00Z"
+    }
+  },
+  "philosophy": {}
+}
+</code></pre>
+<p>The key is the article slug. The value is the Mastodon status that represents the discussion.</p>
+<p>When the article page is generated, it checks the registry. If the article has a Mastodon status, the page renders a discussion section. The browser then calls the public Mastodon API:</p>
+<pre class="language-text" tabindex="0"><code class="language-text code-highlight">GET /api/v1/statuses/:id
+GET /api/v1/statuses/:id/context
+</code></pre>
+<p>The first endpoint gives metadata about the original post, including the reply count. The second endpoint gives the public replies. The website renders those replies as plain text. It does not inject Mastodon HTML directly into the page.</p>
+<p>If there is no registry entry, the page still shows a small link to my Mastodon profile. That keeps the page simple and avoids pretending that every old article already has a discussion.</p>
+<h2>How the CI Associates the Thread</h2>
+<p>The important part is to avoid manually creating a Mastodon post for every new article.</p>
+<p>The GitHub Actions workflow now has a Mastodon job before the site build. On scheduled or manual runs, the job looks for the article being published that day. It runs once for the technical blog and once for the philosophy section.</p>
+<p>For each collection, the script does this:</p>
+<ol>
+<li>Finds the article matching the publish date.</li>
+<li>Checks the JSON registry.</li>
+<li>If the slug already exists, it stops.</li>
+<li>If the slug does not exist, it posts to Mastodon.</li>
+<li>It stores the returned status id and URL in the registry.</li>
+<li>It commits the registry with a <code>[skip ci]</code> message.</li>
+<li>It uploads the registry as a workflow artifact.</li>
+</ol>
+<p>The build job downloads that artifact before generating the site. That means the same deployment that publishes the article also includes the Mastodon discussion section.</p>
+<p>The idempotent check is important. If I edit an article later, the slug is already in the registry. The script does not create a second Mastodon post. The page keeps using the same thread.</p>
+<p>This is the core rule:</p>
+<pre class="language-text" tabindex="0"><code class="language-text code-highlight">same collection + same slug = same Mastodon thread
+</code></pre>
+<p>If I rename the slug, it becomes a new key. That would create a new thread. That is acceptable because changing a slug already changes the public URL.</p>
+<h2>The Page Component</h2>
+<p>The page itself is simple.</p>
+<p>Both technical blog posts and philosophy essays render the same comment component after the article body:</p>
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">&lt;MastodonComments kind="blog" slug={post.metadata.slug} /&gt;
+</code></pre>
+<p>For philosophy:</p>
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">&lt;MastodonComments kind="philosophy" slug={post.metadata.slug} /&gt;
+</code></pre>
+<p>The server-rendered component only decides whether there is a thread. If there is one, it writes the Mastodon instance, status id, and status URL into data attributes.</p>
+<p>The browser component picks up those attributes and loads the replies.</p>
+<p>That split matters because the page is still static. The build does not need to call Mastodon. The browser does the public read later.</p>
+<h2>Replying</h2>
+<p>Reading replies is easy. Posting replies is not the same problem.</p>
+<p>Mastodon lets anyone read public replies through the public API. But replying requires a Mastodon account and an authenticated user token.</p>
+<p>I could build that into the website, but it would change the nature of the site. It would require OAuth, token handling, and a server-side component. That is too much for what I need.</p>
+<p>So the website has one link: "Reply on Mastodon."</p>
+<p>That link opens the thread. The user can reply from their Mastodon account. The website only displays what is public.</p>
+<h2>Performance Impact</h2>
+<p>The performance impact on the static build is almost nothing.</p>
+<p>The build reads one local JSON file. There is no Mastodon API call during page generation. The HTML output gets a small discussion section and a few data attributes.</p>
+<p>The cost moves to the browser, and only for article pages with a configured thread. When the page loads, the client makes two Mastodon API calls:</p>
+<pre class="language-text" tabindex="0"><code class="language-text code-highlight">/api/v1/statuses/:id
+/api/v1/statuses/:id/context
+</code></pre>
+<p>That means the article content is not blocked by comments. The page can render immediately. Replies load after the page is already usable.</p>
+<p>There is still a cost:</p>
+<ul>
+<li>One extra client component in the JavaScript bundle.</li>
+<li>Two network requests on pages with a thread.</li>
+<li>A little extra rendering for replies.</li>
+<li>External avatars loaded from Mastodon accounts.</li>
+</ul>
+<p>For this website, that is acceptable. Comments are not part of the critical path. If Mastodon is slow or unavailable, the article still works and the page shows a fallback link to the thread.</p>
+<h2>What I Like</h2>
+<p>The best part is that the website stays static.</p>
+<p>No database, no local user accounts, no comment moderation system, no spam table, no admin page. Mastodon already has accounts, moderation tools, blocking, and public conversation URLs.</p>
+<p>It also gives each article a canonical discussion link. The thread can be shared outside the website, and the website can still display the public replies.</p>
+<p>The implementation is small enough to understand:</p>
+<pre class="language-text" tabindex="0"><code class="language-text code-highlight">article slug
+  -&gt; registry lookup
+  -&gt; Mastodon status id
+  -&gt; public context API
+  -&gt; render replies
+</code></pre>
+<p>That is the kind of integration that goes along with the direction of the architecture of the blog. The website owns the article. Mastodon owns the conversation and at anytime I can remove by deleting two React components.</p>
+<h2>Conclusion</h2>
+<p>This is not a perfect comment system, but it is a good fit for a static personal website.</p>
+<p>Pros:</p>
+<ul>
+<li>The website remains static.</li>
+<li>No database is needed.</li>
+<li>No local account system is needed.</li>
+<li>The same thread id is kept when an article is edited.</li>
+<li>Replies are public and portable through Mastodon.</li>
+<li>The article still works if Mastodon fails.</li>
+<li>CI creates the thread automatically for new scheduled or manual publications.</li>
+</ul>
+<p>Cons:</p>
+<ul>
+<li>Replying happens on Mastodon, not directly on the website.</li>
+<li>Visitors need a Mastodon account to participate.</li>
+<li>The browser makes extra API calls on pages with discussions.</li>
+<li>External avatars and reply content depend on Mastodon availability.</li>
+<li>Renaming a slug creates a new registry key and therefore a new thread.</li>
+<li>Private or deleted replies will not appear.</li>
+</ul>
+<p>For me, the tradeoff is worth it. A static website should stay simple. Mastodon gives the article a place for discussion without turning the site into a small social platform.</p>
+<section class="app__components_MastodonComments__mastodonComments" aria-labelledby="mastodon-comments"><h2 id="mastodon-comments">Discussion</h2><p>Replies are loaded from the public Mastodon thread for this article.</p><div class="app__components_MastodonComments__mastodonActions"><a class="app__components_MastodonComments__mastodonLink" href="https://mastodon.social/@mrdesjardins/116783758549131307">Reply on Mastodon</a></div><div data-mastodon-comments-root data-instance-url="https://mastodon.social" data-status-id="116783758549131307" data-status-url="https://mastodon.social/@mrdesjardins/116783758549131307"><p class="app__components_MastodonComments__mastodonStatus">Loading replies from Mastodon...</p></div></section></div></main><footer><div class="app_blog__components_BlogBody__paginationBar"><div class="app_blog__components_BlogBody__paginationTitle">Chronological Blog Articles by Page</div><div class="app_blog__components_BlogBody__paginationLinks"><a href="/blog/page/1">1</a><a href="/blog/page/2">2</a><a href="/blog/page/3">3</a><a href="/blog/page/4">4</a><a href="/blog/page/5">5</a><a href="/blog/page/6">6</a><a href="/blog/page/7">7</a><a href="/blog/page/8">8</a><a href="/blog/page/9">9</a><a href="/blog/page/10">10</a><a href="/blog/page/11">11</a><a href="/blog/page/12">12</a><a href="/blog/page/13">13</a><a href="/blog/page/14">14</a><a href="/blog/page/15">15</a><a href="/blog/page/16">16</a><a href="/blog/page/17">17</a><a href="/blog/page/18">18</a><a href="/blog/page/19">19</a><a href="/blog/page/20">20</a><a href="/blog/page/21">21</a><a href="/blog/page/22">22</a><a href="/blog/page/23">23</a><a href="/blog/page/24">24</a><a href="/blog/page/25">25</a><a href="/blog/page/26">26</a><a href="/blog/page/27">27</a><a href="/blog/page/28">28</a><a href="/blog/page/29">29</a><a href="/blog/page/30">30</a><a href="/blog/page/31">31</a><a href="/blog/page/32">32</a><a href="/blog/page/33">33</a><a href="/blog/page/34">34</a><a href="/blog/page/35">35</a><a href="/blog/page/36">36</a><a href="/blog/page/37">37</a><a href="/blog/page/38">38</a><a href="/blog/page/39">39</a><a href="/blog/page/40">40</a><a href="/blog/page/41">41</a><a href="/blog/page/42">42</a><a href="/blog/page/43">43</a><a href="/blog/page/44">44</a><a href="/blog/page/45">45</a><a href="/blog/page/46">46</a><a href="/blog/page/47">47</a><a href="/blog/page/48">48</a><a href="/blog/page/49">49</a><a href="/blog/page/50">50</a><a href="/blog/page/51">51</a><a href="/blog/page/52">52</a><a href="/blog/page/53">53</a><a href="/blog/page/54">54</a><a href="/blog/page/55">55</a><a href="/blog/page/56">56</a><a href="/blog/page/57">57</a><a href="/blog/page/58">58</a><a href="/blog/page/59">59</a><a href="/blog/page/60">60</a><a href="/blog/page/61">61</a><a href="/blog/page/62">62</a><a href="/blog/page/63">63</a><a href="/blog/page/64">64</a><a href="/blog/page/65">65</a><a href="/blog/page/66">66</a><a href="/blog/page/67">67</a><a href="/blog/page/68">68</a><a href="/blog/page/69">69</a><a href="/blog/page/70">70</a><a href="/blog/page/71">71</a><a href="/blog/page/72">72</a><a href="/blog/page/73">73</a><a href="/blog/page/74">74</a><a href="/blog/page/75">75</a><a href="/blog/page/76">76</a><a href="/blog/page/77">77</a><a href="/blog/page/78">78</a><a href="/blog/page/79">79</a><a href="/blog/page/80">80</a><a href="/blog/page/81">81</a><a href="/blog/page/82">82</a><a href="/blog/page/83">83</a><a href="/blog/page/84">84</a></div></div></footer></div></div><script type="module" src="/assets/client-Cv1QdOMb.js"></script></body></html>
