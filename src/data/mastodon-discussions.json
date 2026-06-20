@@ -1,5 +1,12 @@
 {
-  "blog": {},
+  "blog": {
+    "mastodon-thread-static-website": {
+      "instanceUrl": "https://mastodon.social",
+      "postedAt": "2026-06-20T18:05:37Z",
+      "statusId": "116783758549131307",
+      "statusUrl": "https://mastodon.social/@mrdesjardins/116783758549131307"
+    }
+  },
   "philosophy": {
     "the-peacock-perfect-trial": {
       "instanceUrl": "https://mastodon.social",
