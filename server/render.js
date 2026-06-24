@@ -1791,10 +1791,10 @@ async function getAllPhilosophyPosts() {
   }
   return [...getAllPhilosophyPostsResult];
 }
-function countBlogArticles() {
+function countMdxArticles(collectionRoot) {
   let counter = 0;
   for (let y = FIRST_YEAR; y <= LAST_YEAR; y++) {
-    const filePath = `${ROOT_POSTS_PATH}/${y}`;
+    const filePath = `${collectionRoot}/${y}`;
     if (!fs.existsSync(filePath)) {
       continue;
     }
@@ -1803,8 +1803,11 @@ function countBlogArticles() {
   }
   return counter;
 }
+function countArticles() {
+  return countMdxArticles(ROOT_POSTS_PATH) + countMdxArticles(ROOT_PHILOSOPHY_PATH);
+}
 const StatisticsSection = () => {
-  const blogCount = countBlogArticles();
+  const articleCount = countArticles();
   return /* @__PURE__ */ jsx(
     "section",
     {
@@ -1867,9 +1870,12 @@ const StatisticsSection = () => {
             }
           ) }),
           /* @__PURE__ */ jsxs("div", { className: "counterup-content", children: [
-            /* @__PURE__ */ jsx("h5", { className: "count-number", children: blogCount }),
+            /* @__PURE__ */ jsx("h5", { className: "count-number", children: articleCount }),
             /* @__PURE__ */ jsxs("h6", { children: [
               /* @__PURE__ */ jsx(Link, { href: "/blog", children: "Blog" }),
+              " +",
+              " ",
+              /* @__PURE__ */ jsx(Link, { href: "/philosophy", children: "Philosophy" }),
               "  Articles"
             ] })
           ] })
