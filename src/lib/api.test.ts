@@ -1,9 +1,11 @@
 import { describe, it, expect } from "vitest";
+import { countArticles } from "../_utils/file";
 import {
   extractSlugFromFileName,
   extractYearFromStringDate,
   getTotalPages,
   getAllMdxFilesWithoutContent,
+  ROOT_POSTS_PATH,
   ROOT_PHILOSOPHY_PATH,
   type MdxData,
 } from "./api";
@@ -92,5 +94,15 @@ describe("getAllMdxFilesWithoutContent", () => {
         true,
       );
     }
+  });
+});
+
+describe("countArticles", () => {
+  it("counts both blog and philosophy articles", () => {
+    const blogCount = getAllMdxFilesWithoutContent(ROOT_POSTS_PATH).length;
+    const philosophyCount = getAllMdxFilesWithoutContent(
+      ROOT_PHILOSOPHY_PATH,
+    ).length;
+    expect(countArticles()).toBe(blogCount + philosophyCount);
   });
 });

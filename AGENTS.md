@@ -25,6 +25,7 @@ This repository is Patrick Desjardins' static website and blog. Keep changes sim
 - Blog and philosophy article detail pages may be rendered by the Rust native generator in `tools/sitegen/src/main.rs` for performance.
 - If an article-page feature is added in React, verify whether the Rust native renderer must also emit the same static shell.
 - Client components only work in production when the generated HTML in `out/` contains their mount point. Adding code to `src/site/client.tsx` is not enough.
+- React-rendered static routes use the SSR bundle at `out/server/render.js`; when changing files that feed that renderer, make sure the Rust incremental build invalidates the bundle before rerendering HTML.
 - Any feature that depends on data attributes, placeholder roots, IDs, or static page markup must be checked in the generated HTML after `rtk npm run build`.
 - For article-page changes, search the relevant generated file under `out/blog/*.html` or `out/philosophy/*.html` for the expected marker before calling the work complete.
 - If a new local data file affects generated article HTML, add it as a route dependency in the Rust generator. Otherwise a data-only edit may not rebuild the affected page.

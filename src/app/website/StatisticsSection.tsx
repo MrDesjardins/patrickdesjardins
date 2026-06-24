@@ -2,10 +2,10 @@ import clsx from "clsx";
 import styles from "./website.module.css";
 import styles2 from "./StatisticsSection.module.css";
 import Image from "next/image";
-import { countBlogArticles } from "../../_utils/file";
+import { countArticles } from "../../_utils/file";
 import Link from "next/link";
 export const StatisticsSection = (): React.ReactElement => {
-  const blogCount = countBlogArticles();
+  const articleCount = countArticles();
   return (
     <section
       id="experiences"
@@ -69,9 +69,10 @@ export const StatisticsSection = (): React.ReactElement => {
             />
           </div>
           <div className="counterup-content">
-            <h5 className="count-number">{blogCount}</h5>
+            <h5 className="count-number">{articleCount}</h5>
             <h6>
-              <Link href="/blog">Blog</Link>&nbsp; Articles
+              <Link href="/blog">Blog</Link> +{" "}
+              <Link href="/philosophy">Philosophy</Link>&nbsp; Articles
             </h6>
           </div>
         </div>

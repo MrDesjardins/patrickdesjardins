@@ -2170,11 +2170,10 @@ fn should_rebuild_assets(
         .iter()
         .any(|path| {
             path.starts_with("src/site/")
-                || path.starts_with("src/app/blog/search/")
-                || path.starts_with("src/app/philosophy/search/")
-                || (path.starts_with("src/app/") && path.ends_with(".css"))
-                || path == "src/app/OutboundLinkTelemetry.tsx"
-                || path == "src/app/WebVitals.tsx"
+                || path.starts_with("src/app/")
+                || path.starts_with("src/_utils/")
+                || path.starts_with("src/constants/")
+                || path.starts_with("src/lib/")
                 || path == "vite.config.ts"
                 || path == "package.json"
                 || path.ends_with(".module.css")
@@ -2537,6 +2536,37 @@ mod tests {
             &BTreeSet::new(),
             &out_dir,
         ));
+        let _ = fs::remove_dir_all(out_dir);
+    }
+
+    #[test]
+    fn rebuilds_ssr_assets_when_shared_renderer_source_changes() {
+        let out_dir = env::temp_dir().join(format!("sitegen-assets-test-{}", std::process::id()));
+        let _ = fs::remove_dir_all(&out_dir);
+        fs::create_dir_all(out_dir.join(".vite")).expect("create vite dir");
+        fs::create_dir_all(out_dir.join("assets")).expect("create assets dir");
+        fs::create_dir_all(out_dir.join("server")).expect("create server dir");
+        fs::write(out_dir.join(".vite/manifest.json"), "{}").expect("write manifest");
+        fs::write(out_dir.join("assets/static-modules.css"), "").expect("write css");
+        fs::write(out_dir.join("server/render.js"), "").expect("write renderer");
+
+        let mut previous = Manifest {
+            schema_version: SCHEMA_VERSION,
+            generated_at: String::new(),
+            assets: Assets::default(),
+            source_hashes: BTreeMap::new(),
+            output_hashes: BTreeMap::new(),
+            routes: BTreeMap::new(),
+            content: BTreeMap::new(),
+            global_hashes: GlobalHashes::default(),
+        };
+        previous
+            .source_hashes
+            .insert("src/_utils/file.ts".to_string(), "old".to_string());
+        let mut current = BTreeMap::new();
+        current.insert("src/_utils/file.ts".to_string(), "new".to_string());
+
+        assert!(should_rebuild_assets(Some(&previous), &current, &out_dir));
         let _ = fs::remove_dir_all(out_dir);
     }
 
