@@ -2531,6 +2531,12 @@ const philosophy = {
     postedAt: "2026-06-19T18:20:06Z",
     statusId: "116778153237140094",
     statusUrl: "https://mastodon.social/@mrdesjardins/116778153237140094"
+  },
+  "which-ethical-framework-is-the-most-practical-guide-for-the-development-and-use-of-artificial-intelligence": {
+    instanceUrl: "https://mastodon.social",
+    postedAt: "2026-06-25T19:02:44Z",
+    statusId: "116812294675556190",
+    statusUrl: "https://mastodon.social/@mrdesjardins/116812294675556190"
   }
 };
 const discussions = {
