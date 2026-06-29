@@ -1,8 +1,8 @@
 .mastodonComments {
   margin-top: 3rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgb(0 0 0 / 12%);
-  color: #222;
+  border-top: 1px solid var(--blog-section-border-color);
+  color: var(--blog-text-color);
 }
 
 .mastodonComments h2 {
@@ -10,6 +10,7 @@
   font-family: var(--font-oswald), "Oswald", sans-serif;
   font-size: 1.45rem;
   font-weight: 500;
+  color: var(--blog-title-foreground-color);
 }
 
 .mastodonActions {
@@ -21,7 +22,7 @@
 }
 
 .mastodonLink {
-  color: #2563eb;
+  color: var(--link-foreground-color);
   font-weight: 600;
   text-decoration: none;
 }
@@ -33,7 +34,7 @@
 
 .mastodonStatus {
   margin: 0.75rem 0;
-  color: #555;
+  color: var(--blog-date-foreground-color);
   font-size: 0.95rem;
 }
 
@@ -45,9 +46,9 @@
 
 .mastodonReply {
   padding: 1rem;
-  border: 1px solid rgb(0 0 0 / 10%);
+  border: 1px solid var(--blog-section-border-color);
   border-radius: 6px;
-  background: rgb(255 255 255 / 70%);
+  background: var(--mastodon-reply-background-color);
 }
 
 .mastodonReplyHeader {
@@ -61,8 +62,10 @@
   width: 40px;
   height: 40px;
   flex: 0 0 auto;
+  margin: 0 !important;
   border-radius: 50% !important;
   object-fit: cover;
+  box-shadow: none !important;
 }
 
 .mastodonAuthorBlock {
@@ -79,7 +82,7 @@
 
 .mastodonAcct,
 .mastodonTimestamp {
-  color: #666;
+  color: var(--blog-date-foreground-color);
   font-size: 0.9rem;
 }
 
@@ -94,12 +97,12 @@
   margin-top: 0.9rem;
   margin-left: min(calc(var(--mastodon-reply-depth, 1) * 1rem), 3rem);
   padding-left: 0.9rem;
-  border-left: 2px solid rgb(37 99 235 / 18%);
+  border-left: 2px solid var(--blog-blockquote-border-color);
 }
 
 .mastodonWarning {
   margin: 0.5rem 0 0;
-  color: #7a4b00;
+  color: var(--blog-date-foreground-color);
 }
 
 @media (width <= 700px) {
