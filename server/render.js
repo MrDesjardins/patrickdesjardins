@@ -42,9 +42,9 @@ const styles$c = {
   wrapper,
   imageWrapper
 };
-const gaMeasurementId = "";
-const buildCommit = "local";
-const buildTime = "local";
+const gaMeasurementId = "G-6EH8HNYV13";
+const buildCommit = "2e7ea03c798088e76b6642ecc2c9c442497ef678";
+const buildTime = "28495088084";
 function isTelemetryEnabled() {
   return typeof window !== "undefined" && typeof window.gtag === "function" && gaMeasurementId !== void 0 && gaMeasurementId.length > 0;
 }
@@ -3055,7 +3055,7 @@ function pageDescription(metadata2) {
   return typeof description === "string" && description.length > 0 ? description : String(metadata$3.description);
 }
 function gaScript() {
-  const gaMeasurementId2 = "";
+  const gaMeasurementId2 = "G-6EH8HNYV13";
   if (gaMeasurementId2.length === 0) {
     return "";
   }
