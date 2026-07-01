@@ -44,7 +44,7 @@ const styles$c = {
 };
 const gaMeasurementId = "G-6EH8HNYV13";
 const buildCommit = "04175bac5ba3a062e61631d7c726d671a5380831";
-const buildTime = "28495585462";
+const buildTime = "28540526825";
 function isTelemetryEnabled() {
   return typeof window !== "undefined" && typeof window.gtag === "function" && gaMeasurementId !== void 0 && gaMeasurementId.length > 0;
 }
@@ -2526,6 +2526,12 @@ const blog = {
   }
 };
 const philosophy = {
+  "the-ant-the-lantern-beetle-and-the-great-hive-of-metrics": {
+    instanceUrl: "https://mastodon.social",
+    postedAt: "2026-07-01T18:55:30Z",
+    statusId: "116846240110613912",
+    statusUrl: "https://mastodon.social/@mrdesjardins/116846240110613912"
+  },
   "the-peacock-perfect-trial": {
     instanceUrl: "https://mastodon.social",
     postedAt: "2026-06-19T18:20:06Z",
