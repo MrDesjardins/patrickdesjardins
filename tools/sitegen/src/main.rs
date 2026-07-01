@@ -122,6 +122,8 @@ struct ContentCacheEntry {
 struct GlobalHashes {
     #[serde(rename = "assetsHash")]
     assets_hash: String,
+    #[serde(default, rename = "analyticsEnvHash")]
+    analytics_env_hash: String,
     #[serde(rename = "shellTemplateHash")]
     shell_template_hash: String,
     #[serde(rename = "shortcodeRendererHash")]
@@ -805,6 +807,39 @@ fn escape_html(value: &str) -> String {
         .replace('"', "&quot;")
 }
 
+fn ga_measurement_id() -> String {
+    env::var("NEXT_PUBLIC_GA_MEASUREMENT_ID").unwrap_or_default()
+}
+
+fn node_env() -> String {
+    env::var("NODE_ENV").unwrap_or_else(|_| "production".to_string())
+}
+
+fn analytics_env_hash() -> String {
+    sha256(format!("{}:{}", node_env(), ga_measurement_id()).as_bytes())
+}
+
+fn analytics_config_changed(previous: Option<&Manifest>) -> bool {
+    previous
+        .map(|manifest| manifest.global_hashes.analytics_env_hash != analytics_env_hash())
+        .unwrap_or(true)
+}
+
+fn ga_script(node_env: &str, measurement_id: &str) -> String {
+    if node_env != "production" || measurement_id.is_empty() {
+        return String::new();
+    }
+
+    let id = escape_html(measurement_id);
+    format!(
+        r#"<script async src="https://www.googletagmanager.com/gtag/js?id={id}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments);}}gtag("js",new Date());gtag("config","{id}");</script>"#
+    )
+}
+
+fn ga_script_from_env() -> String {
+    ga_script(&node_env(), &ga_measurement_id())
+}
+
 fn escape_xml(value: &str) -> String {
     value
         .replace('&', "&amp;")
@@ -970,8 +1005,9 @@ fn page_document(
         })
         .collect::<String>();
     let extra = head_extra.unwrap_or("");
+    let ga = ga_script_from_env();
     Ok(format!(
-        r#"<!doctype html><html lang="en" class="{html_class}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{}</title><meta name="description" content="{}">{extra}{css}</head><body class="{body_class}">{body}{js}</body></html>"#,
+        r#"<!doctype html><html lang="en" class="{html_class}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{}</title><meta name="description" content="{}">{extra}{css}{ga}</head><body class="{body_class}">{body}{js}</body></html>"#,
         escape_html(title),
         escape_html(description),
     ))
@@ -1999,6 +2035,7 @@ fn global_hashes(source_hashes: &BTreeMap<String, String>, assets: &Assets) -> G
         .collect::<String>();
     GlobalHashes {
         assets_hash: sha256(serde_json::to_string(assets).unwrap_or_default().as_bytes()),
+        analytics_env_hash: analytics_env_hash(),
         shell_template_hash: sha256(SHELL_TEMPLATE_VERSION.as_bytes()),
         shortcode_renderer_hash: sha256(SHORTCODE_RENDERER_VERSION.as_bytes()),
         markdown_renderer_hash: sha256(MARKDOWN_RENDERER_VERSION.as_bytes()),
@@ -2076,6 +2113,12 @@ fn stale_reasons(
         if !source_hashes.contains_key(file) {
             reasons.push(format!("source removed: {file}"));
         }
+    }
+    if !reasons.is_empty() {
+        return Ok(reasons);
+    }
+    if analytics_config_changed(Some(previous)) {
+        reasons.push("analytics environment changed".to_string());
     }
     if !reasons.is_empty() {
         return Ok(reasons);
@@ -2283,6 +2326,7 @@ fn main() -> Result<()> {
         })
         .unwrap_or_default();
     let changed_paths = changed_source_paths(previous.as_ref(), &source_hashes);
+    let analytics_changed = analytics_config_changed(previous.as_ref());
 
     let mut stale_routes = Vec::new();
     for route in &routes {
@@ -2290,6 +2334,7 @@ fn main() -> Result<()> {
         let should_render = force_full
             || previous.is_none()
             || did_assets_change
+            || analytics_changed
             || !file_exists(&output)
             || route_impacted_by_changes(route, &changed_paths);
         if should_render {
@@ -2512,6 +2557,23 @@ mod tests {
     fn rss_head_link_points_at_collection_feed() {
         assert!(rss_head_link(Collection::Blog).contains("/blog/rss.xml"));
         assert!(rss_head_link(Collection::Philosophy).contains("/philosophy/rss.xml"));
+    }
+
+    #[test]
+    fn ga_script_renders_only_for_production_measurement_id() {
+        let html = ga_script("production", "G-TEST<1>");
+        assert!(html.contains("https://www.googletagmanager.com/gtag/js?id=G-TEST&lt;1&gt;"));
+        assert!(html.contains(r#"gtag("config","G-TEST&lt;1&gt;")"#));
+        assert_eq!(ga_script("development", "G-TEST"), "");
+        assert_eq!(ga_script("production", ""), "");
+    }
+
+    #[test]
+    fn analytics_env_hash_participates_in_global_hashes() {
+        let assets = Assets::default();
+        let source_hashes = BTreeMap::new();
+        let hash = global_hashes(&source_hashes, &assets).analytics_env_hash;
+        assert!(!hash.is_empty());
     }
 
     #[test]

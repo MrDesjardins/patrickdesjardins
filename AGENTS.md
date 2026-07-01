@@ -59,6 +59,7 @@ This repository is Patrick Desjardins' static website and blog. Keep changes sim
 - Registry commits made by CI must use `[skip ci]` to avoid build loops.
 - Keep CI jobs split by purpose where possible: quality, search index, Mastodon registry, build, deploy, social posting.
 - Do not make content-only pushes pay for unnecessary code checks unless the workflow already requires them.
+- Google Analytics is a static build-time concern. The GitHub Pages build must pass `NEXT_PUBLIC_GA_MEASUREMENT_ID` so both the React SSR renderer and Rust native renderer can emit the GA tag into generated HTML.
 
 ## Content Rules
 
