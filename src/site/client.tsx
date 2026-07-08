@@ -73,6 +73,14 @@ for (const root of document.querySelectorAll<HTMLElement>(
   );
 }
 
+if (
+  document.querySelector('pre code[class*="language-"]') !== null
+) {
+  void import("./highlight").then((module) => {
+    module.highlightAll();
+  });
+}
+
 const telemetryRoot = document.createElement("div");
 telemetryRoot.hidden = true;
 document.body.appendChild(telemetryRoot);

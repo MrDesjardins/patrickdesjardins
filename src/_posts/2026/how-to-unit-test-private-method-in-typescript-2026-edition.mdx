@@ -1,0 +1,100 @@
+---
+title: "How to test in TypeScript 2026 edition"
+date: "2026-07-09"
+categories:
+  - "unit test"
+  - "typescript"
+---
+
+I wrote in [2018](https://patrickdesjardins.com/blog/typescript-testing-private-members), [2017](https://patrickdesjardins.com/blog/how-to-unit-test-private-method-in-typescript-part-2), [2016](https://patrickdesjardins.com/blog/unit-testing-with-typescript-3-tricks-to-help-you-with-private-method), and [2015](https://patrickdesjardins.com/blog/how-to-unit-test-private-method) about TypeScript and private functions. Eleven years later, I still believe that relaxing encapsulation to ease testability has the best return on investment (ROI). In this blog post I will argue that separating classes and interfaces preserves a portion of the encapsulation while allowing testability, that functions and constants should always be exported from a module, and that inner functions (a lambda or nameless function) should be extracted out of their parent function. Before getting into the details, let's define some terms, especially the types of tests:
+
+1) Mock: Faking a piece of code with a very performant and reliable piece of code.
+2) Unit test: A test conducted on the smallest unit of code. You inject values into parameters and you receive an output. You are testing a specific piece of logic without any dependency. When a function relies on external logic, for example calling another function, that function must be mocked to avoid a dependency failure impacting the focus of the test.
+3) Integration test: A test that does not mock dependencies but mocks services. For example, a function calling a second function won't mock that dependency. However, if the function or a dependency uses a service, such as a database, an API, or any system that could potentially be down or slow and impact the code, then that service must be mocked.
+4) System test: A test largely using services that are running close to the test, instantiating a testing framework that does not show a full-fledged UI but can still test visual components, like React.
+5) E2E test: Runs on a replica of a real system, using a browser, database, caching layer, etc. It tests the code in the same conditions as production.
+
+The first point is using an interface on each class. The interface should define what can be used by the system, describing the public contract. The classes implement the interface. The classes are the ones tested, and by not having private functions, all logic is accessible. We gain by providing a clear set of functions that we want the system to consume while keeping access to the whole set of code. Someone might argue that the system could bypass the interface, use the classes directly, and thus access private functions. While that is true, for an internal system where the code is accessible by a known set of developers, that should be part of the agreed-upon practices. For external consumption, for example third-party libraries, I suggest creating objects using a builder or factory pattern, removing the possibility of instantiating the classes directly. Thus, for the team managing the classes, testing remains possible, but what is exported are the builder/factory and the interfaces.
+
+```typescript
+interface IMyClass1 {
+  function2(p1: number, p2: number): void;
+}
+
+class MyClass1 implements IMyClass1 {
+  private variable1: string = "init";
+
+  public function2(p1: number, p2: number): void {
+    // Code here...
+    if (this.function1(p1)) {
+      // More code here...
+    }
+    // Code here...
+  }
+
+  public function1(p1: number): boolean {
+    return p1 > 0;
+  }
+}
+```
+
+The second point is exporting every function and constant. Functions that are not exported are not accessible from test files; they are only reachable through an exported function that uses these non-exported functions. That leads to integration tests instead of unit tests. By exporting every function, you can invoke the code directly from the test file. The same applies to constants: you can reuse them instead of duplicating strings, which would otherwise lead to tests failing because they use the wrong string, something that is not relevant to what you are testing. Someone could argue that exporting every function and constant opens access to a large amount of code that is irrelevant for the consumer. In that case, I would respond that you can have a file whose whole purpose is to select what to export for the consumer, for example a barrel file. Also, while exporting a larger set of functions might be confusing, I would argue that allowing more improves reusability and removes the intellectual burden of guessing what might or might not be useful for the consumer.
+
+```typescript
+export const VALUE_1 = 1;
+
+export function function1(): void {}
+
+export function function2(): void {}
+```
+
+The third point, about a lambda function or a function within a function, is again an issue of testability but also of maintenance cost. A function that defines another function creates an accessibility problem: it removes the potential for other pieces of code to reuse the logic, and it blocks the possibility of unit testing the logic of that inner function. Furthermore, it increases the maintenance cost by growing the parent function. By extracting the function into the same file or another file, you open it up for testing. Someone might argue that keeping the logic close to the actual case makes it clearer how the function is used, but I would argue that this is a short-term view that creates technical debt for future developers who want to reuse that same logic or have to debug issues in a place where more code needs to be read than is required.
+
+```typescript
+export function function1(y: number) {
+  const functionInner = (x: number) => {
+    return x * 10;
+  };
+  return functionInner(y);
+}
+
+// Instead do:
+export const functionInner = (x: number) => {
+  return x * 10;
+};
+
+export function function1(y: number) {
+  return functionInner(y);
+}
+```
+
+## Type of tests
+
+Concerning the types of tests, they all have their place. With the adoption of AI and LLMs when developing, if the rules are clearly defined to avoid irrelevant tests while still testing logic, unit tests and integration tests are almost free to generate. They benefit humans but also future AI, which, with a good harness, would double-check itself before modifying a function, avoiding changes to behavior that was already tested. System tests should be prioritized over E2E because of their execution speed, especially around visual components. E2E tests are required for the most important use cases.
+
+## Breakdown Assertions
+
+Finally, I want to mention that unit tests, integration tests, and system tests should assert as little as possible. They are quick, and a test failure should point to a clear cause. Having many assertions in a single test makes it confusing to know which part of the test is failing. Because E2E tests are slower, some leeway depending on the situation is fine. A good habit is to structure the tests into a hierarchy of `describe` and `it`.
+
+```typescript
+describe("Function X", () => {
+  describe("with a defined input", () => {
+    it("handles a positive number", () => {
+      const x = new MyClass1();
+      x.function2(1, 2);
+      expect(x.function1(1)).toBeTruthy();
+    });
+
+    it("handles a negative number", () => {
+      const x = new MyClass1();
+      expect(x.function1(-1)).toBeFalsy();
+    });
+  });
+});
+```
+
+## Conclusion
+
+Eleven years of writing about testing private members in TypeScript have led me to a simple stance: encapsulation is a means, not an end, and the goal is code that is easy to trust. Splitting classes from interfaces keeps a public contract for consumers while giving the owning team full access for testing. Exporting every function and constant removes the friction of reaching internal logic and keeps tests focused on behavior rather than on how the code is wired. Extracting inner functions turns hidden, untestable logic into reusable, verifiable units.
+
+None of these practices are free. They expose more surface area and require some discipline, such as barrel files or factories to guide consumers. But the trade-off pays off: tests stay small, failures stay clear, and the code stays open to the humans and the AI tooling that will maintain it next. If I had to keep a single rule, it would be this: never hide logic you might one day need to test.

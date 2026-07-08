@@ -23,7 +23,7 @@ class MyClass1 {
   } 
   private function1(p1: number): boolean { } 
 } 
-``` 
+```
 
 
 There are some workarounds. One popular approach is to avoid testing these functions directly. The problem is that you have code that is not tested. An alternative is to test these private functions through public function. The problem is that you are using a function to proxy all the logic which make all test less "unit test" and fragile because these tests become dependant on another piece of code. If the logic of the private function remains the same, but the public function change, the code that is testing the private function will fail. It sways the simplicity into a nightmare. If the private function returns a boolean value, but the public function returns a void type, testing the return of the private function requires to understand the behavior of the public function that use it to extrapolate a behavior that corresponds to the return value. The proxy function, the public function, might be only a single one or many. When there is only a single function, the choice is limited and can push you in a corner without escape. When many functions, the selection of which one can also be problematic. In the end, the goal is to unit test, not to have many hurdles before even testing.
@@ -43,7 +43,7 @@ describe("MyClass1", () => {
     }); 
   }); 
 }); 
-``` 
+```
 
 
 So, if we have all these solutions with weaknesses, what is the best solution? The best solution that I have been used for a while now is this one: do not use private. Instead, you should use interface. The idea is that the concrete object will never be used directly, hence can have its members public. The usage across the whole application is done with an interface that exposes the members that the consumers can interact. Here is the same code as above but with the pattern of using an interface instead of private.
@@ -74,7 +74,7 @@ describe("MyClass1", () => {
     }); 
   }); 
 }); 
-``` 
+```
 
 
 It works perfectly in term of testability. The unit test code has access to all members because everything is public. It is easy to invoke all members directly but also to mock these and still keep and the type from TypeScript. In the application, we use the interface everywhere. The only place where we use the concrete class is during the initialization. Every declaration uses the interface -- no exception.
@@ -96,7 +96,7 @@ describe("MyClass1", () => {
       }); 
     }); 
   }); 
-``` 
+```
 
 
 Last but not the least, functions that are directly sitting in a module are very hard to unit test. It is not possible to mock or spy their dependencies. The lack of access sway my design to always encapsulate every function into a class.
