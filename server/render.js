@@ -44,7 +44,7 @@ const styles$c = {
 };
 const gaMeasurementId = "G-6EH8HNYV13";
 const buildCommit = "d458347ffcfa8c50d628c56c6ab70c216f08df4b";
-const buildTime = "28984190612";
+const buildTime = "29041821994";
 function isTelemetryEnabled() {
   return typeof window !== "undefined" && typeof window.gtag === "function" && gaMeasurementId !== void 0 && gaMeasurementId.length > 0;
 }
@@ -2518,6 +2518,12 @@ function Page$8() {
   return /* @__PURE__ */ jsx(BlogBody, { topTitle: "Search Posts", children: /* @__PURE__ */ jsx("div", { id: "blog-search-root" }) });
 }
 const blog = {
+  "how-to-unit-test-private-method-in-typescript-2026-edition": {
+    instanceUrl: "https://mastodon.social",
+    postedAt: "2026-07-09T18:46:24Z",
+    statusId: "116891502774809766",
+    statusUrl: "https://mastodon.social/@mrdesjardins/116891502774809766"
+  },
   "mastodon-thread-static-website": {
     instanceUrl: "https://mastodon.social",
     postedAt: "2026-06-20T18:05:37Z",
