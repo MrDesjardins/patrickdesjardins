@@ -6,7 +6,7 @@ import { onCLS, onFCP, onINP, onLCP, onTTFB } from "web-vitals";
 import clsx from "clsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopyright, faPaperPlane, faMapMarker, faRss, faGraduationCap, faCertificate } from "@fortawesome/free-solid-svg-icons";
-import { faTwitter, faLinkedin, faGithub, faStackOverflow, faAmazon, faYoutube } from "@fortawesome/free-brands-svg-icons";
+import { faTwitter, faLinkedin, faGithub, faStackOverflow, faAmazon, faYoutube, faMastodon } from "@fortawesome/free-brands-svg-icons";
 import fs from "fs";
 import path from "path";
 import { evaluate } from "@mdx-js/mdx";
@@ -43,8 +43,8 @@ const styles$c = {
   imageWrapper
 };
 const gaMeasurementId = "G-6EH8HNYV13";
-const buildCommit = "fa0f5aae54270b2fa0f3e0937be611c5db7df70d";
-const buildTime = "29162185784";
+const buildCommit = "b3093b86dc987ea13469028268e64d96c1902111";
+const buildTime = "29171291442";
 function isTelemetryEnabled() {
   return typeof window !== "undefined" && typeof window.gtag === "function" && gaMeasurementId !== void 0 && gaMeasurementId.length > 0;
 }
@@ -862,7 +862,8 @@ const ConferencesSection = () => {
               title: "Patrick Desjardins - Croatia 2018 Split Conference presentation",
               src: "https://www.youtube.com/embed/QWtNhelMv-k?rel=0&controls=1&showinfo=0",
               allow: "autoplay; encrypted-media; fullscreen",
-              allowFullScreen: true
+              allowFullScreen: true,
+              loading: "lazy"
             }
           ) })
         ] })
@@ -962,6 +963,16 @@ const ContactSection = () => {
               rel: "noopener noreferrer",
               title: "Patrick Desjardins Youtube Page",
               children: /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faYoutube })
+            }
+          ) }),
+          /* @__PURE__ */ jsx("div", { className: styles2$5.contactDetail, children: /* @__PURE__ */ jsx(
+            "a",
+            {
+              href: "https://mastodon.social/@mrdesjardins",
+              target: "_blank",
+              rel: "me noopener noreferrer",
+              title: "Patrick Desjardins Mastodon Account Page",
+              children: /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faMastodon })
             }
           ) }),
           /* @__PURE__ */ jsx("div", { className: styles2$5.contactDetail, children: /* @__PURE__ */ jsx(
