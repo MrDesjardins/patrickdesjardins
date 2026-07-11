@@ -15,7 +15,7 @@ from social_common import (
     find_todays_post,
     generate_gemini_text,
     get_social_content_kind,
-    post_calendar_today_iso,
+    post_target_date_iso,
     strip_mdx,
     wait_for_blog_post_to_be_available,
 )
@@ -151,7 +151,7 @@ if __name__ == "__main__":
         tz_label = (os.environ.get("LINKEDIN_POST_DATE_TZ") or "UTC").strip() or "UTC"
         content_kind = get_social_content_kind()
         print(
-            f"No {content_kind} post with date {post_calendar_today_iso('LINKEDIN_POST_DATE_TZ')} (calendar day in {tz_label}) found. Skipping."
+            f"No {content_kind} post with date {post_target_date_iso('LINKEDIN_POST_DATE_TZ')} (calendar day in {tz_label}) found. Skipping."
         )
         sys.exit(0)
     if slug is None or content is None or frontmatter is None:

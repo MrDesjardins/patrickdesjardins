@@ -8,6 +8,8 @@ from social_common import (
     find_first_image,
     format_category_hashtag,
     parse_frontmatter,
+    post_calendar_today_iso,
+    post_target_date_iso,
     strip_mdx,
 )
 
@@ -118,6 +120,26 @@ console.log("test");
         with patch.dict("os.environ", {"SOCIAL_POST_CONTENT_KIND": "unknown"}, clear=False):
             with self.assertRaises(ValueError):
                 get_social_content_kind()
+
+    def test_post_target_date_uses_override_when_set(self):
+        with patch.dict(
+            "os.environ", {"SOCIAL_POST_DATE_OVERRIDE": "2026-07-09"}, clear=False
+        ):
+            self.assertEqual(post_target_date_iso("LINKEDIN_POST_DATE_TZ"), "2026-07-09")
+
+    def test_post_target_date_rejects_malformed_override(self):
+        with patch.dict(
+            "os.environ", {"SOCIAL_POST_DATE_OVERRIDE": "07/09/2026"}, clear=False
+        ):
+            with self.assertRaises(ValueError):
+                post_target_date_iso("LINKEDIN_POST_DATE_TZ")
+
+    def test_post_target_date_falls_back_to_today_when_unset(self):
+        with patch.dict("os.environ", {"SOCIAL_POST_DATE_OVERRIDE": ""}, clear=False):
+            self.assertEqual(
+                post_target_date_iso("LINKEDIN_POST_DATE_TZ"),
+                post_calendar_today_iso("LINKEDIN_POST_DATE_TZ"),
+            )
 
 
 class GenerateGeminiTextTests(unittest.TestCase):

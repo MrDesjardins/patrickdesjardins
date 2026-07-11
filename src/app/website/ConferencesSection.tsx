@@ -18,6 +18,7 @@ export const ConferencesSection = (): React.ReactElement => {
             src="https://www.youtube.com/embed/QWtNhelMv-k?rel=0&amp;controls=1&amp;showinfo=0"
             allow="autoplay; encrypted-media; fullscreen"
             allowFullScreen
+            loading="lazy"
           ></iframe>
         </div>
       </div>

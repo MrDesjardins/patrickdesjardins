@@ -14,6 +14,7 @@ import {
   faStackOverflow,
   faAmazon,
   faYoutube,
+  faMastodon,
 } from "@fortawesome/free-brands-svg-icons";
 export const ContactSection = (): React.ReactElement => {
   return (
@@ -99,6 +100,16 @@ export const ContactSection = (): React.ReactElement => {
             title="Patrick Desjardins Youtube Page"
           >
             <FontAwesomeIcon icon={faYoutube} />
+          </a>
+        </div>
+        <div className={styles2.contactDetail}>
+          <a
+            href="https://mastodon.social/@mrdesjardins"
+            target="_blank"
+            rel="me noopener noreferrer"
+            title="Patrick Desjardins Mastodon Account Page"
+          >
+            <FontAwesomeIcon icon={faMastodon} />
           </a>
         </div>
         <div className={styles2.contactDetail}>

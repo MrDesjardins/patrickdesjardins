@@ -3,6 +3,11 @@ name: LinkedIn post (manual)
 # Re-run when the scheduled job hit Gemini/LinkedIn errors without rebuilding the site.
 on:
   workflow_dispatch:
+    inputs:
+      date:
+        description: "Frontmatter date to post (YYYY-MM-DD). Empty = today (America/Los_Angeles)."
+        required: false
+        default: ""
 
 jobs:
   post:
@@ -27,5 +32,6 @@ jobs:
           LINKEDIN_PERSON_ID: ${{ secrets.LINKEDIN_PERSON_ID }}
           SOCIAL_POST_CONTENT_KIND: blog
           LINKEDIN_POST_DATE_TZ: America/Los_Angeles
+          SOCIAL_POST_DATE_OVERRIDE: ${{ inputs.date }}
         run: uv run python linkedin/post.py
         working-directory: tools

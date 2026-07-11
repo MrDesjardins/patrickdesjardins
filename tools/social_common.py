@@ -44,6 +44,19 @@ def post_calendar_today_iso(env_var_name: str, default_tz_name: str = "UTC") -> 
     return datetime.datetime.now(tz).date().isoformat()
 
 
+def post_target_date_iso(tz_env_var_name: str) -> str:
+    """Date to match against frontmatter: SOCIAL_POST_DATE_OVERRIDE wins over today.
+
+    The override lets the manual workflows re-post a past-dated article after a
+    failed scheduled run, since selection is otherwise date == today only.
+    """
+    override = (os.environ.get("SOCIAL_POST_DATE_OVERRIDE") or "").strip()
+    if override:
+        datetime.date.fromisoformat(override)  # raises ValueError on bad input
+        return override
+    return post_calendar_today_iso(tz_env_var_name)
+
+
 def parse_frontmatter(content: str) -> dict[str, Any]:
     match = re.match(r"^---\n(.*?\n)---\n", content, flags=re.DOTALL)
     if not match:
@@ -135,8 +148,7 @@ def find_post_by_calendar_date(
 def find_todays_post(
     tz_env_var_name: str,
 ) -> tuple[str | None, str | None, str | None, dict[str, Any] | None]:
-    today = post_calendar_today_iso(tz_env_var_name)
-    return find_post_by_calendar_date(today)
+    return find_post_by_calendar_date(post_target_date_iso(tz_env_var_name))
 
 
 def generate_gemini_text(

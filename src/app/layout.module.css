@@ -113,7 +113,7 @@
 
 .topPicture {
   width: 100%;
-  height: 100vh;
+  height: 100%;
 }
 
 .topMenu a.topHeaderAnchorLink {
@@ -179,8 +179,10 @@ section.contactSection {
 
 .wrapper {
   position: relative;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
+  /* Small viewport height: stable when the mobile address bar shows/hides */
+  height: 100svh;
 }
 
 .imageWrapper {

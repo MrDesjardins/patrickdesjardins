@@ -62,3 +62,23 @@
   from { stroke-dashoffset: 0; }
   to   { stroke-dashoffset: -820; }
 }
+
+/* The animated stroke sparks sit under Gaussian-blur filters, so every frame
+   forces a full re-rasterization of the blur — too costly on mobile GPUs. */
+@media (max-width: 768px), (pointer: coarse) {
+  .overlay {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bodyA,
+  .bodyB,
+  .bodyC,
+  .stoolL,
+  .stoolR,
+  .tableE {
+    animation: none;
+    stroke-dasharray: none; /* full static outline instead of frozen sparks */
+  }
+}
