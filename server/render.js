@@ -44,7 +44,7 @@ const styles$c = {
 };
 const gaMeasurementId = "G-6EH8HNYV13";
 const buildCommit = "6307edc9d202309b5fca5f0ed8b0472c25577313";
-const buildTime = "29202772736";
+const buildTime = "29274417758";
 function isTelemetryEnabled() {
   return typeof window !== "undefined" && typeof window.gtag === "function" && gaMeasurementId !== void 0 && gaMeasurementId.length > 0;
 }
@@ -2529,6 +2529,12 @@ function Page$8() {
   return /* @__PURE__ */ jsx(BlogBody, { topTitle: "Search Posts", children: /* @__PURE__ */ jsx("div", { id: "blog-search-root" }) });
 }
 const blog = {
+  "generating-documentation-with-ai": {
+    instanceUrl: "https://mastodon.social",
+    postedAt: "2026-07-13T18:26:57Z",
+    statusId: "116914075539914003",
+    statusUrl: "https://mastodon.social/@mrdesjardins/116914075539914003"
+  },
   "how-to-unit-test-private-method-in-typescript-2026-edition": {
     instanceUrl: "https://mastodon.social",
     postedAt: "2026-07-09T18:46:24Z",
