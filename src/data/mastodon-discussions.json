@@ -1,5 +1,11 @@
 {
   "blog": {
+    "generating-documentation-with-ai": {
+      "instanceUrl": "https://mastodon.social",
+      "postedAt": "2026-07-13T18:26:57Z",
+      "statusId": "116914075539914003",
+      "statusUrl": "https://mastodon.social/@mrdesjardins/116914075539914003"
+    },
     "how-to-unit-test-private-method-in-typescript-2026-edition": {
       "instanceUrl": "https://mastodon.social",
       "postedAt": "2026-07-09T18:46:24Z",
