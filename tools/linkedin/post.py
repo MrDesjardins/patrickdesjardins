@@ -11,11 +11,11 @@ from social_common import (
     SCRIPT_DIR,
     build_post_url,
     format_category_hashtag,
-    find_first_image,
     find_todays_post,
     generate_gemini_text,
     get_social_content_kind,
     post_target_date_iso,
+    resolve_social_image,
     strip_mdx,
     wait_for_blog_post_to_be_available,
 )
@@ -168,9 +168,13 @@ if __name__ == "__main__":
     print("Generated LinkedIn text:\n", linkedin_text)
 
     asset_urn = None
-    image_path = find_first_image(content)
+    image_path = resolve_social_image(
+        title=title,
+        slug=slug,
+        content=content,
+        frontmatter=frontmatter,
+    )
     if image_path:
-        print(f"Found blog image: {image_path}")
         try:
             asset_urn = upload_image_to_linkedin(
                 image_path,
@@ -181,8 +185,6 @@ if __name__ == "__main__":
             print(
                 f"Image upload failed ({error.response.status_code}), falling back to text-only post"
             )
-    else:
-        print("No blog image found, posting text-only")
 
     try:
         wait_for_blog_post_to_be_available(title, slug, "LINKEDIN")

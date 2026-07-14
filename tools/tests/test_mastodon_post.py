@@ -73,9 +73,57 @@ class MastodonPostTests(unittest.TestCase):
         post_mock.assert_called_once_with(
             "https://mastodon.social/api/v1/statuses",
             headers={"Authorization": "Bearer token"},
-            json={"status": "hello", "visibility": "public"},
+            data=[("status", "hello"), ("visibility", "public")],
             timeout=30,
         )
+
+    def test_post_to_mastodon_sends_media_ids(self):
+        class Response:
+            def raise_for_status(self):
+                return None
+
+            def json(self):
+                return {"id": "123", "url": "https://mastodon.social/@mrdesjardins/123"}
+
+        with patch("mastodon.post.requests.post", return_value=Response()) as post_mock:
+            mastodon_post.post_to_mastodon(
+                "hello",
+                instance_url="https://mastodon.social",
+                access_token="token",
+                media_ids=["media-1"],
+            )
+
+        self.assertEqual(
+            post_mock.call_args.kwargs["data"],
+            [("status", "hello"), ("visibility", "public"), ("media_ids[]", "media-1")],
+        )
+
+    def test_upload_media_to_mastodon_uploads_file_with_description(self):
+        class Response:
+            status_code = 200
+
+            def raise_for_status(self):
+                return None
+
+            def json(self):
+                return {"id": "media-1", "url": "https://files.example/image.png"}
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            image_path = Path(temp_dir) / "preview.png"
+            image_path.write_bytes(b"png")
+            with patch("mastodon.post.requests.post", return_value=Response()) as post_mock:
+                media_id = mastodon_post.upload_media_to_mastodon(
+                    str(image_path),
+                    title="Article",
+                    instance_url="https://mastodon.social",
+                    access_token="token",
+                )
+
+        self.assertEqual(media_id, "media-1")
+        self.assertEqual(
+            post_mock.call_args.args[0], "https://mastodon.social/api/v2/media"
+        )
+        self.assertEqual(post_mock.call_args.kwargs["data"]["description"], 'Social preview image for "Article"')
 
     def test_find_post_by_slug_reads_selected_collection(self):
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -166,7 +214,7 @@ Body
                     "id": "123",
                     "url": "https://mastodon.social/@mrdesjardins/123",
                 },
-            ):
+            ), patch("mastodon.post.resolve_social_image", return_value=None):
                 result = mastodon_post.main()
 
             registry = json.loads(path.read_text(encoding="utf-8"))
@@ -197,11 +245,95 @@ Body
                     "id": "123",
                     "url": "https://mastodon.social/@mrdesjardins/123",
                 },
-            ):
+            ), patch("mastodon.post.resolve_social_image", return_value=None):
                 result = mastodon_post.main()
 
         self.assertEqual(result, 0)
         find_mock.assert_called_once_with("essay")
+
+    def test_main_posts_with_media_when_upload_succeeds(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "registry.json"
+            with patch("mastodon.post.REGISTRY_PATH", path), patch(
+                "mastodon.post.find_todays_post",
+                return_value=("Article", "article", "content", {"categories": ["Python"]}),
+            ), patch.dict(
+                "os.environ",
+                {
+                    "SOCIAL_POST_CONTENT_KIND": "blog",
+                    "MASTODON_ACCESS_TOKEN": "token",
+                    "MASTODON_INSTANCE_URL": "https://mastodon.social",
+                    "MASTODON_WAIT_FOR_POST": "0",
+                    "GITHUB_EVENT_NAME": "schedule",
+                },
+                clear=False,
+            ), patch("mastodon.post.resolve_social_image", return_value="/tmp/preview.png"), patch(
+                "mastodon.post.upload_media_to_mastodon", return_value="media-1"
+            ), patch(
+                "mastodon.post.post_to_mastodon",
+                return_value={
+                    "id": "123",
+                    "url": "https://mastodon.social/@mrdesjardins/123",
+                },
+            ) as post_mock:
+                result = mastodon_post.main()
+
+        self.assertEqual(result, 0)
+        self.assertEqual(post_mock.call_args.kwargs["media_ids"], ["media-1"])
+
+    def test_main_falls_back_to_text_when_media_upload_fails(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "registry.json"
+            with patch("mastodon.post.REGISTRY_PATH", path), patch(
+                "mastodon.post.find_todays_post",
+                return_value=("Article", "article", "content", {"categories": ["Python"]}),
+            ), patch.dict(
+                "os.environ",
+                {
+                    "SOCIAL_POST_CONTENT_KIND": "blog",
+                    "MASTODON_ACCESS_TOKEN": "token",
+                    "MASTODON_INSTANCE_URL": "https://mastodon.social",
+                    "MASTODON_WAIT_FOR_POST": "0",
+                    "GITHUB_EVENT_NAME": "schedule",
+                },
+                clear=False,
+            ), patch("mastodon.post.resolve_social_image", return_value="/tmp/preview.png"), patch(
+                "mastodon.post.upload_media_to_mastodon", side_effect=RuntimeError("failed")
+            ), patch(
+                "mastodon.post.post_to_mastodon",
+                return_value={
+                    "id": "123",
+                    "url": "https://mastodon.social/@mrdesjardins/123",
+                },
+            ) as post_mock:
+                result = mastodon_post.main()
+
+        self.assertEqual(result, 0)
+        self.assertEqual(post_mock.call_args.kwargs["media_ids"], [])
+
+    def test_main_does_not_write_registry_when_status_post_fails(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "registry.json"
+            with patch("mastodon.post.REGISTRY_PATH", path), patch(
+                "mastodon.post.find_todays_post",
+                return_value=("Article", "article", "content", {"categories": ["Python"]}),
+            ), patch.dict(
+                "os.environ",
+                {
+                    "SOCIAL_POST_CONTENT_KIND": "blog",
+                    "MASTODON_ACCESS_TOKEN": "token",
+                    "MASTODON_INSTANCE_URL": "https://mastodon.social",
+                    "MASTODON_WAIT_FOR_POST": "0",
+                    "GITHUB_EVENT_NAME": "schedule",
+                },
+                clear=False,
+            ), patch("mastodon.post.resolve_social_image", return_value=None), patch(
+                "mastodon.post.post_to_mastodon", side_effect=RuntimeError("post failed")
+            ):
+                with self.assertRaises(RuntimeError):
+                    mastodon_post.main()
+
+            self.assertFalse(path.exists())
 
 
 if __name__ == "__main__":

@@ -21,6 +21,12 @@ jobs:
         run: uv sync
         working-directory: tools
 
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install og-img
+        run: cargo install og-img --locked
+
       - name: Post today's philosophy essay to LinkedIn
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

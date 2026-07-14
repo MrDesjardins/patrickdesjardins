@@ -1,6 +1,8 @@
 import sys
+import tempfile
 import types
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 from social_common import (
@@ -10,6 +12,7 @@ from social_common import (
     parse_frontmatter,
     post_calendar_today_iso,
     post_target_date_iso,
+    resolve_social_image,
     strip_mdx,
 )
 
@@ -140,6 +143,81 @@ console.log("test");
                 post_target_date_iso("LINKEDIN_POST_DATE_TZ"),
                 post_calendar_today_iso("LINKEDIN_POST_DATE_TZ"),
             )
+
+    def test_resolve_social_image_uses_existing_image(self):
+        with patch("social_common.find_first_image", return_value="/tmp/existing.png"), patch(
+            "social_common.generate_social_card_image"
+        ) as generate_mock:
+            result = resolve_social_image(
+                title="Article",
+                slug="article",
+                content="Body",
+                frontmatter={},
+            )
+        self.assertEqual(result, "/tmp/existing.png")
+        generate_mock.assert_not_called()
+
+    def test_resolve_social_image_generates_blog_card_when_image_missing(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_dir = Path(temp_dir)
+
+            def fake_run(command, **_kwargs):
+                Path(command[command.index("--output") + 1]).write_bytes(b"png")
+
+            with patch("social_common.find_first_image", return_value=None), patch(
+                "social_common.SOCIAL_CARD_OUTPUT_DIR", output_dir
+            ), patch("social_common.subprocess.run", side_effect=fake_run) as run_mock, patch.dict(
+                "os.environ", {"SOCIAL_POST_CONTENT_KIND": "blog"}, clear=False
+            ):
+                result = resolve_social_image(
+                    title="Article",
+                    slug="article",
+                    content="Long body",
+                    frontmatter={"categories": ["TypeScript"]},
+                )
+
+        self.assertEqual(result, str(output_dir / "blog-article.png"))
+        command = run_mock.call_args.args[0]
+        self.assertIn("--bg", command)
+        self.assertEqual(command[command.index("--bg") + 1], "#2a2338")
+        self.assertEqual(command[command.index("--accent") + 1], "#f775ff")
+        self.assertEqual(command[command.index("--tags") + 1], "TypeScript")
+
+    def test_resolve_social_image_generates_philosophy_card_when_image_missing(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_dir = Path(temp_dir)
+
+            def fake_run(command, **_kwargs):
+                Path(command[command.index("--output") + 1]).write_bytes(b"png")
+
+            with patch("social_common.find_first_image", return_value=None), patch(
+                "social_common.SOCIAL_CARD_OUTPUT_DIR", output_dir
+            ), patch("social_common.subprocess.run", side_effect=fake_run) as run_mock, patch.dict(
+                "os.environ", {"SOCIAL_POST_CONTENT_KIND": "philosophy"}, clear=False
+            ):
+                result = resolve_social_image(
+                    title="Essay",
+                    slug="essay",
+                    content="Long body",
+                    frontmatter={"categories": ["Ethics"]},
+                )
+
+        self.assertEqual(result, str(output_dir / "philosophy-essay.png"))
+        command = run_mock.call_args.args[0]
+        self.assertEqual(command[command.index("--bg") + 1], "#faf8f3")
+        self.assertEqual(command[command.index("--accent") + 1], "#284e7a")
+
+    def test_resolve_social_image_returns_none_when_generation_fails(self):
+        with patch("social_common.find_first_image", return_value=None), patch(
+            "social_common.subprocess.run", side_effect=FileNotFoundError
+        ):
+            result = resolve_social_image(
+                title="Article",
+                slug="article",
+                content="Body",
+                frontmatter={},
+            )
+        self.assertIsNone(result)
 
 
 class GenerateGeminiTextTests(unittest.TestCase):

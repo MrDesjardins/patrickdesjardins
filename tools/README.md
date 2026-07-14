@@ -12,6 +12,15 @@ uv sync --directory tools
 
 This creates `tools/.venv/` and `tools/uv.lock`. Commit `uv.lock` to keep builds reproducible.
 
+Social posting can attach images. If a post does not contain a valid local
+Markdown image, the social scripts use the `og-img` CLI (`og render`) to create
+a temporary preview image under `/tmp/patrick-social-og/`. Install it locally
+when testing image fallback behavior:
+
+```bash
+cargo install og-img --locked
+```
+
 ---
 
 ## search
@@ -43,7 +52,7 @@ uv run --directory tools python tools/search/main.py search philosophy "your que
 
 ## linkedin
 
-Posts a new item to LinkedIn. By default, it posts technical blog posts from `src/_posts/`. Set `SOCIAL_POST_CONTENT_KIND=philosophy` to post philosophy essays from `src/_philosophy/` with the philosophy-specific prompt and first MDX image when present.
+Posts a new item to LinkedIn. By default, it posts technical blog posts from `src/_posts/`. Set `SOCIAL_POST_CONTENT_KIND=philosophy` to post philosophy essays from `src/_philosophy/` with the philosophy-specific prompt. The script uploads the first valid MDX image when present, or a generated `og-img` preview when the article has no image.
 
 **Post today's article:**
 
@@ -84,11 +93,31 @@ LinkedIn OAuth tokens expire after ~60 days. When the workflow starts failing wi
 
 ---
 
+## mastodon
+
+Posts a new item to Mastodon and records the discussion thread in
+`src/data/mastodon-discussions.json`. The script uploads the first valid MDX
+image when present, or a generated `og-img` preview when the article has no
+image. If image generation or upload fails, it posts text-only.
+
+Required environment variables:
+
+| Variable | Description |
+|---|---|
+| `MASTODON_ACCESS_TOKEN` | Mastodon user token with `write:statuses` and `write:media` scopes |
+| `MASTODON_INSTANCE_URL` | Mastodon instance URL. Defaults to `https://mastodon.social` in GitHub Actions |
+| `SOCIAL_POST_CONTENT_KIND` | Optional. Content source to post from. Default: `blog`. Supported: `philosophy`, `blog`. |
+| `MASTODON_POST_DATE_TZ` | Optional. Calendar timezone used to match the post `date`. |
+| `MASTODON_POST_SLUG` | Optional. Post a specific slug instead of matching today's date. |
+| `MASTODON_WAIT_FOR_POST` | Optional. Set to `0` to skip waiting for the public article URL before posting. |
+
+---
+
 ## twitter
 
 X/Twitter posting is intentionally disabled because the X API is not funded yet. This is not a functional issue with the automation. Re-enable the script after API funding is available.
 
-Posts a new item to X/Twitter. By default, it posts technical blog posts from `src/_posts/`. Set `SOCIAL_POST_CONTENT_KIND=philosophy` to post philosophy essays from `src/_philosophy/` with the philosophy-specific prompt and first MDX image when present.
+Posts a new item to X/Twitter. By default, it posts technical blog posts from `src/_posts/`. Set `SOCIAL_POST_CONTENT_KIND=philosophy` to post philosophy essays from `src/_philosophy/` with the philosophy-specific prompt. The script uploads the first valid MDX image when present, or a generated `og-img` preview when the article has no image.
 
 **Post today's article:**
 

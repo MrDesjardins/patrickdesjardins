@@ -1,7 +1,9 @@
 import datetime
 import json
+import mimetypes
 import os
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -19,6 +21,8 @@ from social_common import (
     get_social_content_kind,
     parse_frontmatter,
     post_calendar_today_iso,
+    resolve_social_image,
+    social_image_alt_text,
     wait_for_blog_post_to_be_available,
 )
 
@@ -94,11 +98,15 @@ def post_to_mastodon(
     *,
     instance_url: str,
     access_token: str,
+    media_ids: list[str] | None = None,
 ) -> dict[str, Any]:
+    payload: list[tuple[str, str]] = [("status", text), ("visibility", "public")]
+    for media_id in media_ids or []:
+        payload.append(("media_ids[]", media_id))
     response = requests.post(
         f"{instance_url.rstrip('/')}/api/v1/statuses",
         headers={"Authorization": f"Bearer {access_token}"},
-        json={"status": text, "visibility": "public"},
+        data=payload,
         timeout=30,
     )
     response.raise_for_status()
@@ -106,6 +114,72 @@ def post_to_mastodon(
     if not isinstance(data.get("id"), str):
         raise RuntimeError("Mastodon response did not include a status id")
     return data
+
+
+def wait_for_mastodon_media(
+    media_id: str,
+    *,
+    instance_url: str,
+    access_token: str,
+    timeout_seconds: int = 30,
+    interval_seconds: int = 2,
+) -> dict[str, Any]:
+    deadline = time.monotonic() + timeout_seconds
+    headers = {"Authorization": f"Bearer {access_token}"}
+    last_status = "not checked"
+    while time.monotonic() < deadline:
+        response = requests.get(
+            f"{instance_url.rstrip('/')}/api/v1/media/{media_id}",
+            headers=headers,
+            timeout=30,
+        )
+        last_status = str(response.status_code)
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("url"):
+                return data
+        elif response.status_code != 206:
+            response.raise_for_status()
+        time.sleep(interval_seconds)
+    raise RuntimeError(
+        f"Timed out waiting for Mastodon media {media_id} to process. Last status: {last_status}"
+    )
+
+
+def upload_media_to_mastodon(
+    image_path: str,
+    *,
+    title: str,
+    instance_url: str,
+    access_token: str,
+) -> str:
+    with open(image_path, "rb") as file_handle:
+        response = requests.post(
+            f"{instance_url.rstrip('/')}/api/v2/media",
+            headers={"Authorization": f"Bearer {access_token}"},
+            files={
+                "file": (
+                    Path(image_path).name,
+                    file_handle,
+                    mimetypes.guess_type(image_path)[0] or "image/png",
+                )
+            },
+            data={"description": social_image_alt_text(title)},
+            timeout=60,
+        )
+    response.raise_for_status()
+    data = response.json()
+    media_id = data.get("id")
+    if not isinstance(media_id, str):
+        raise RuntimeError("Mastodon media upload response did not include an id")
+    if response.status_code == 202 or not data.get("url"):
+        wait_for_mastodon_media(
+            media_id,
+            instance_url=instance_url,
+            access_token=access_token,
+        )
+    print(f"Uploaded image to Mastodon media ID: {media_id}")
+    return media_id
 
 
 def should_run_for_event() -> bool:
@@ -133,9 +207,9 @@ def main() -> int:
 
     requested_slug = (os.environ.get("MASTODON_POST_SLUG") or "").strip()
     if requested_slug:
-        title, slug, _content, frontmatter = find_post_by_slug(requested_slug)
+        title, slug, content, frontmatter = find_post_by_slug(requested_slug)
     else:
-        title, slug, _content, frontmatter = find_todays_post("MASTODON_POST_DATE_TZ")
+        title, slug, content, frontmatter = find_todays_post("MASTODON_POST_DATE_TZ")
     if not title:
         if requested_slug:
             content_kind = get_social_content_kind()
@@ -147,8 +221,8 @@ def main() -> int:
             f"No {content_kind} post with date {post_calendar_today_iso('MASTODON_POST_DATE_TZ')} (calendar day in {tz_label}) found. Skipping."
         )
         return 0
-    if slug is None or frontmatter is None:
-        raise RuntimeError("Matched Mastodon post is missing slug or frontmatter")
+    if slug is None or content is None or frontmatter is None:
+        raise RuntimeError("Matched Mastodon post is missing slug, content, or frontmatter")
 
     kind = get_social_content_kind()
     registry = read_registry()
@@ -164,10 +238,34 @@ def main() -> int:
     else:
         print("Skipping public availability wait before Mastodon post.")
     instance_url = os.environ["MASTODON_INSTANCE_URL"].rstrip("/")
+    media_ids: list[str] = []
+    image_path = resolve_social_image(
+        title=title,
+        slug=slug,
+        content=content,
+        frontmatter=frontmatter,
+    )
+    if image_path:
+        try:
+            media_ids.append(
+                upload_media_to_mastodon(
+                    image_path,
+                    title=title,
+                    instance_url=instance_url,
+                    access_token=os.environ["MASTODON_ACCESS_TOKEN"],
+                )
+            )
+        except requests.HTTPError as error:
+            print(
+                f"Mastodon image upload failed ({error.response.status_code}), falling back to text-only post"
+            )
+        except RuntimeError as error:
+            print(f"Mastodon image upload failed, falling back to text-only post: {error}")
     data = post_to_mastodon(
         text,
         instance_url=instance_url,
         access_token=os.environ["MASTODON_ACCESS_TOKEN"],
+        media_ids=media_ids,
     )
 
     registry[kind][slug] = {

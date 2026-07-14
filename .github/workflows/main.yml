@@ -163,6 +163,12 @@ jobs:
         run: uv sync
         working-directory: tools
 
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install og-img
+        run: cargo install og-img --locked
+
       - name: Configure Git author
         run: |
           git config user.name "github-actions[bot]"
@@ -351,6 +357,12 @@ jobs:
       - name: Install Python dependencies
         run: uv sync
         working-directory: tools
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install og-img
+        run: cargo install og-img --locked
 
       - name: Post new article to LinkedIn
         env:

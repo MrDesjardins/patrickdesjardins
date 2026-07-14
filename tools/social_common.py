@@ -2,8 +2,11 @@ import datetime
 import os
 import random
 import re
+import subprocess
+import tempfile
 import sys
 import time
+from pathlib import Path
 from typing import Any
 
 import requests
@@ -20,6 +23,22 @@ DEFAULT_WAIT_INTERVAL_SECONDS = 15
 GEMINI_RETRY_MAX_ATTEMPTS = 6
 GEMINI_RETRY_BASE_DELAY_SECONDS = 5
 GEMINI_RETRY_MAX_DELAY_SECONDS = 60
+SOCIAL_CARD_OUTPUT_DIR = Path(tempfile.gettempdir()) / "patrick-social-og"
+
+SOCIAL_CARD_THEMES = {
+    "blog": {
+        "bg": "#2a2338",
+        "fg": "#e2d0ff",
+        "muted": "#a1a1aacc",
+        "accent": "#f775ff",
+    },
+    "philosophy": {
+        "bg": "#faf8f3",
+        "fg": "#1a1a1a",
+        "muted": "#5c5c5c",
+        "accent": "#284e7a",
+    },
+}
 
 CONTENT_CONFIG = {
     "blog": {"posts_dir": BLOG_POSTS_DIR, "base_url": BLOG_BASE_URL},
@@ -90,6 +109,107 @@ def find_first_image(content: str) -> str | None:
     rel_path = match.group(1).lstrip("/")
     abs_path = os.path.join(SCRIPT_DIR, "../public", rel_path)
     return abs_path if os.path.isfile(abs_path) else None
+
+
+def social_image_alt_text(title: str) -> str:
+    return f'Social preview image for "{title}"'
+
+
+def social_card_excerpt(content: str, max_length: int = 260) -> str:
+    body = re.sub(r"\s+", " ", strip_mdx(content)).strip()
+    if len(body) <= max_length:
+        return body
+    return body[: max_length - 1].rstrip() + "…"
+
+
+def social_card_tags(frontmatter: dict[str, Any]) -> str | None:
+    categories = frontmatter.get("categories")
+    if isinstance(categories, str):
+        categories = [categories]
+    if not isinstance(categories, list):
+        return None
+    tags = []
+    for category in categories:
+        if not isinstance(category, str):
+            continue
+        normalized = re.sub(r"\s+", "-", category.strip().replace(",", ""))
+        if normalized:
+            tags.append(normalized)
+    return ",".join(tags[:4]) if tags else None
+
+
+def generate_social_card_image(
+    *,
+    title: str,
+    slug: str,
+    content: str,
+    frontmatter: dict[str, Any],
+) -> str | None:
+    kind = get_social_content_kind()
+    theme = SOCIAL_CARD_THEMES[kind]
+    SOCIAL_CARD_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    output_path = SOCIAL_CARD_OUTPUT_DIR / f"{kind}-{slug}.png"
+    command = [
+        "og",
+        "render",
+        "--title",
+        title,
+        "--text",
+        social_card_excerpt(content),
+        "--site",
+        "patrickdesjardins.com",
+        "--size",
+        "og",
+        "--format",
+        "png",
+        "--bg",
+        theme["bg"],
+        "--fg",
+        theme["fg"],
+        "--muted",
+        theme["muted"],
+        "--accent",
+        theme["accent"],
+        "--output",
+        str(output_path),
+    ]
+    tags = social_card_tags(frontmatter)
+    if tags:
+        command.extend(["--tags", tags])
+    try:
+        subprocess.run(command, check=True, capture_output=True, text=True)
+    except FileNotFoundError:
+        print("og-img CLI not found; posting without a generated social image.")
+        return None
+    except subprocess.CalledProcessError as error:
+        print(f"og-img generation failed; posting without a generated social image: {error.stderr}")
+        return None
+    return str(output_path) if output_path.is_file() else None
+
+
+def resolve_social_image(
+    *,
+    title: str,
+    slug: str,
+    content: str,
+    frontmatter: dict[str, Any],
+) -> str | None:
+    image_path = find_first_image(content)
+    if image_path:
+        print(f"Found blog image: {image_path}")
+        return image_path
+    print("No blog image found; generating a social preview image with og-img.")
+    generated_path = generate_social_card_image(
+        title=title,
+        slug=slug,
+        content=content,
+        frontmatter=frontmatter,
+    )
+    if generated_path:
+        print(f"Generated social preview image: {generated_path}")
+    else:
+        print("No social preview image available; posting text-only.")
+    return generated_path
 
 
 def get_social_content_kind() -> str:
