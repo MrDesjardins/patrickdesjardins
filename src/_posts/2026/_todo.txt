@@ -8,6 +8,9 @@
 
 
 === Published
+✅ 2026-07-17: HATEOAS as the Natural Interface for Autonomous Agents
+✅ 2026-07-13: Generating Documentation with AI
+✅ 2026-07-09: How to test in TypeScript 2026 edition
 ✅ 2026-06-20: Mastodon Thread on a Static Website
 ✅ 2026-06-18: Replacing NextJS With a Rust Static Site Generator
 ✅ 2026-06-13: Audiobook machine version 3 using an ELECROW ESP32 Rotary Display 240x240
