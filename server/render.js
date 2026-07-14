@@ -44,7 +44,7 @@ const styles$c = {
 };
 const gaMeasurementId = "G-6EH8HNYV13";
 const buildCommit = "11b5d692dff69296d36f3151de27d9329eda3f68";
-const buildTime = "29308425622";
+const buildTime = "29355771205";
 function isTelemetryEnabled() {
   return typeof window !== "undefined" && typeof window.gtag === "function" && gaMeasurementId !== void 0 && gaMeasurementId.length > 0;
 }
@@ -2554,6 +2554,12 @@ const philosophy = {
     postedAt: "2026-07-01T18:55:30Z",
     statusId: "116846240110613912",
     statusUrl: "https://mastodon.social/@mrdesjardins/116846240110613912"
+  },
+  "the-garden-of-smiles": {
+    instanceUrl: "https://mastodon.social",
+    postedAt: "2026-07-14T18:01:50Z",
+    statusId: "116919639129769465",
+    statusUrl: "https://mastodon.social/@mrdesjardins/116919639129769465"
   },
   "the-peacock-perfect-trial": {
     instanceUrl: "https://mastodon.social",
