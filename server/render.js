@@ -44,7 +44,7 @@ const styles$c = {
 };
 const gaMeasurementId = "G-6EH8HNYV13";
 const buildCommit = "41e3f532b3936e4bad56db26aa225d8b117c6e0f";
-const buildTime = "29521960154";
+const buildTime = "29601992290";
 function isTelemetryEnabled() {
   return typeof window !== "undefined" && typeof window.gtag === "function" && gaMeasurementId !== void 0 && gaMeasurementId.length > 0;
 }
@@ -2534,6 +2534,12 @@ const blog = {
     postedAt: "2026-07-13T18:26:57Z",
     statusId: "116914075539914003",
     statusUrl: "https://mastodon.social/@mrdesjardins/116914075539914003"
+  },
+  "hateoas-as-the-natural-interface-for-autonomous-agents": {
+    instanceUrl: "https://mastodon.social",
+    postedAt: "2026-07-17T18:03:07Z",
+    statusId: "116936631044734799",
+    statusUrl: "https://mastodon.social/@mrdesjardins/116936631044734799"
   },
   "how-to-unit-test-private-method-in-typescript-2026-edition": {
     instanceUrl: "https://mastodon.social",
