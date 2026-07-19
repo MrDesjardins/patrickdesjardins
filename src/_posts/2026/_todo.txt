@@ -8,6 +8,7 @@
 
 
 === Published
+✅ 2026-07-20: Using epaper for studying
 ✅ 2026-07-17: HATEOAS as the Natural Interface for Autonomous Agents
 ✅ 2026-07-13: Generating Documentation with AI
 ✅ 2026-07-09: How to test in TypeScript 2026 edition
