@@ -44,7 +44,7 @@ const styles$c = {
 };
 const gaMeasurementId = "G-6EH8HNYV13";
 const buildCommit = "ec5f7681e31973783ffd77d8bf880237148f8fda";
-const buildTime = "29700628768";
+const buildTime = "29769273383";
 function isTelemetryEnabled() {
   return typeof window !== "undefined" && typeof window.gtag === "function" && gaMeasurementId !== void 0 && gaMeasurementId.length > 0;
 }
@@ -2552,6 +2552,12 @@ const blog = {
     postedAt: "2026-06-20T18:05:37Z",
     statusId: "116783758549131307",
     statusUrl: "https://mastodon.social/@mrdesjardins/116783758549131307"
+  },
+  "using-epaper-for-studying": {
+    instanceUrl: "https://mastodon.social",
+    postedAt: "2026-07-20T18:53:33Z",
+    statusId: "116953816283863299",
+    statusUrl: "https://mastodon.social/@mrdesjardins/116953816283863299"
   }
 };
 const philosophy = {
