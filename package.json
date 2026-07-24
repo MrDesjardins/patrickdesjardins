@@ -49,7 +49,7 @@
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
     "@playwright/test": "^1.41.2",
-    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "^16.1.0",
     "@types/node": "^20.16.11",
     "@types/prismjs": "^1.26.6",
