@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { type FeatureExtractionPipeline } from "@xenova/transformers";
+import { type FeatureExtractionPipeline } from "@huggingface/transformers";
 import styles from "./page.module.css";
 import { BlogSearchEntry } from "../_components/BlogSearchEntry";
 import { slugFromMdxFilename } from "../../../lib/slug";
@@ -22,8 +22,8 @@ export default function Page(): React.ReactElement {
   const [results, setResults] = useState<Array<{ post: Post; score: number }>>(
     [],
   );
-  const [index, setIndex] = useState<Post[]>([]);
-  const [embeddings, setEmbeddings] = useState<Float32Array[]>([]);
+  const indexRef = useRef<Post[]>([]);
+  const embeddingsRef = useRef<Float32Array[]>([]);
   const [embedder, setEmbedder] = useState<FeatureExtractionPipeline | null>(
     null,
   );
@@ -56,14 +56,13 @@ export default function Page(): React.ReactElement {
       const indexData: unknown = await indexRes.json();
 
       if (!Array.isArray(indexData)) throw new Error("Invalid index data format");
-      setIndex(indexData as Post[]);
-      setEmbeddings(loadedEmbeddings.rows);
-      const transformers = await import("@xenova/transformers");
-      // @ts-expect-error — onnx backend type does not expose 'wasm' variant in library types
-      transformers.env.backends.onnx = "wasm";
+      indexRef.current = indexData as Post[];
+      embeddingsRef.current = loadedEmbeddings.rows;
+      const transformers = await import("@huggingface/transformers");
       const extractor = await transformers.pipeline(
         "feature-extraction", // https://huggingface.co/docs/transformers.js/api/pipelines#module_pipelines.FeatureExtractionPipeline
         "Xenova/all-MiniLM-L6-v2", // Must match the Python embedding model
+        { device: "wasm" },
       );
       setEmbedder(() => extractor); // Avoid rerender loop
       setSearchInitialized(true);
@@ -103,8 +102,8 @@ export default function Page(): React.ReactElement {
     const queryVector = output.data as number[];
 
     // Run the cosine similarity against all embeddings
-    const scoredResults = embeddings.map((vec, i) => ({
-      post: index[i],
+    const scoredResults = embeddingsRef.current.map((vec, i) => ({
+      post: indexRef.current[i],
       score: cosineSimilarity(queryVector, vec),
     }));
 
@@ -127,7 +126,7 @@ export default function Page(): React.ReactElement {
       zero_results: topResults.length === 0,
       search_latency_ms: Math.round(duration),
     });
-  }, [embeddings, index, initializeSearch, query]);
+  }, [initializeSearch, query]);
 
   return (
     <>
