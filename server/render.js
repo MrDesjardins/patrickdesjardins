@@ -44,7 +44,7 @@ const styles$c = {
 };
 const gaMeasurementId = "G-6EH8HNYV13";
 const buildCommit = "2fe880d1795f5ee57e133c7b629c9de7bf5e4b13";
-const buildTime = "30104569516";
+const buildTime = "30115886321";
 function isTelemetryEnabled() {
   return typeof window !== "undefined" && typeof window.gtag === "function" && gaMeasurementId !== void 0 && gaMeasurementId.length > 0;
 }
@@ -2561,6 +2561,12 @@ const blog = {
   }
 };
 const philosophy = {
+  "council-of-the-owls": {
+    instanceUrl: "https://mastodon.social",
+    postedAt: "2026-07-24T18:16:46Z",
+    statusId: "116976320895512510",
+    statusUrl: "https://mastodon.social/@mrdesjardins/116976320895512510"
+  },
   "the-ant-the-lantern-beetle-and-the-great-hive-of-metrics": {
     instanceUrl: "https://mastodon.social",
     postedAt: "2026-07-01T18:55:30Z",
