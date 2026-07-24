@@ -43,8 +43,8 @@ const styles$c = {
   imageWrapper
 };
 const gaMeasurementId = "G-6EH8HNYV13";
-const buildCommit = "1a0f30fee169afcae36e608add9ff6f464a9bb22";
-const buildTime = "30124762527";
+const buildCommit = "7785c40126e27d0303b378e19925c12f02a443a3";
+const buildTime = "30126573014";
 function isTelemetryEnabled() {
   return typeof window !== "undefined" && typeof window.gtag === "function" && gaMeasurementId !== void 0 && gaMeasurementId.length > 0;
 }
@@ -2528,70 +2528,8 @@ async function Page$9() {
 function Page$8() {
   return /* @__PURE__ */ jsx(BlogBody, { topTitle: "Search Posts", children: /* @__PURE__ */ jsx("div", { id: "blog-search-root" }) });
 }
-const blog = {
-  "generating-documentation-with-ai": {
-    instanceUrl: "https://mastodon.social",
-    postedAt: "2026-07-13T18:26:57Z",
-    statusId: "116914075539914003",
-    statusUrl: "https://mastodon.social/@mrdesjardins/116914075539914003"
-  },
-  "hateoas-as-the-natural-interface-for-autonomous-agents": {
-    instanceUrl: "https://mastodon.social",
-    postedAt: "2026-07-17T18:03:07Z",
-    statusId: "116936631044734799",
-    statusUrl: "https://mastodon.social/@mrdesjardins/116936631044734799"
-  },
-  "how-to-unit-test-private-method-in-typescript-2026-edition": {
-    instanceUrl: "https://mastodon.social",
-    postedAt: "2026-07-09T18:46:24Z",
-    statusId: "116891502774809766",
-    statusUrl: "https://mastodon.social/@mrdesjardins/116891502774809766"
-  },
-  "mastodon-thread-static-website": {
-    instanceUrl: "https://mastodon.social",
-    postedAt: "2026-06-20T18:05:37Z",
-    statusId: "116783758549131307",
-    statusUrl: "https://mastodon.social/@mrdesjardins/116783758549131307"
-  },
-  "using-epaper-for-studying": {
-    instanceUrl: "https://mastodon.social",
-    postedAt: "2026-07-20T18:53:33Z",
-    statusId: "116953816283863299",
-    statusUrl: "https://mastodon.social/@mrdesjardins/116953816283863299"
-  }
-};
-const philosophy = {
-  "council-of-the-owls": {
-    instanceUrl: "https://mastodon.social",
-    postedAt: "2026-07-24T18:16:46Z",
-    statusId: "116976320895512510",
-    statusUrl: "https://mastodon.social/@mrdesjardins/116976320895512510"
-  },
-  "the-ant-the-lantern-beetle-and-the-great-hive-of-metrics": {
-    instanceUrl: "https://mastodon.social",
-    postedAt: "2026-07-01T18:55:30Z",
-    statusId: "116846240110613912",
-    statusUrl: "https://mastodon.social/@mrdesjardins/116846240110613912"
-  },
-  "the-garden-of-smiles": {
-    instanceUrl: "https://mastodon.social",
-    postedAt: "2026-07-14T18:01:50Z",
-    statusId: "116919639129769465",
-    statusUrl: "https://mastodon.social/@mrdesjardins/116919639129769465"
-  },
-  "the-peacock-perfect-trial": {
-    instanceUrl: "https://mastodon.social",
-    postedAt: "2026-06-19T18:20:06Z",
-    statusId: "116778153237140094",
-    statusUrl: "https://mastodon.social/@mrdesjardins/116778153237140094"
-  },
-  "which-ethical-framework-is-the-most-practical-guide-for-the-development-and-use-of-artificial-intelligence": {
-    instanceUrl: "https://mastodon.social",
-    postedAt: "2026-06-25T19:02:44Z",
-    statusId: "116812294675556190",
-    statusUrl: "https://mastodon.social/@mrdesjardins/116812294675556190"
-  }
-};
+const blog = { "generating-documentation-with-ai": { "instanceUrl": "https://mastodon.social", "postedAt": "2026-07-13T18:26:57Z", "statusId": "116914075539914003", "statusUrl": "https://mastodon.social/@mrdesjardins/116914075539914003" }, "hateoas-as-the-natural-interface-for-autonomous-agents": { "instanceUrl": "https://mastodon.social", "postedAt": "2026-07-17T18:03:07Z", "statusId": "116936631044734799", "statusUrl": "https://mastodon.social/@mrdesjardins/116936631044734799" }, "how-to-unit-test-private-method-in-typescript-2026-edition": { "instanceUrl": "https://mastodon.social", "postedAt": "2026-07-09T18:46:24Z", "statusId": "116891502774809766", "statusUrl": "https://mastodon.social/@mrdesjardins/116891502774809766" }, "mastodon-thread-static-website": { "instanceUrl": "https://mastodon.social", "postedAt": "2026-06-20T18:05:37Z", "statusId": "116783758549131307", "statusUrl": "https://mastodon.social/@mrdesjardins/116783758549131307" }, "using-epaper-for-studying": { "instanceUrl": "https://mastodon.social", "postedAt": "2026-07-20T18:53:33Z", "statusId": "116953816283863299", "statusUrl": "https://mastodon.social/@mrdesjardins/116953816283863299" } };
+const philosophy = { "council-of-the-owls": { "instanceUrl": "https://mastodon.social", "postedAt": "2026-07-24T18:16:46Z", "statusId": "116976320895512510", "statusUrl": "https://mastodon.social/@mrdesjardins/116976320895512510" }, "the-ant-the-lantern-beetle-and-the-great-hive-of-metrics": { "instanceUrl": "https://mastodon.social", "postedAt": "2026-07-01T18:55:30Z", "statusId": "116846240110613912", "statusUrl": "https://mastodon.social/@mrdesjardins/116846240110613912" }, "the-garden-of-smiles": { "instanceUrl": "https://mastodon.social", "postedAt": "2026-07-14T18:01:50Z", "statusId": "116919639129769465", "statusUrl": "https://mastodon.social/@mrdesjardins/116919639129769465" }, "the-peacock-perfect-trial": { "instanceUrl": "https://mastodon.social", "postedAt": "2026-06-19T18:20:06Z", "statusId": "116778153237140094", "statusUrl": "https://mastodon.social/@mrdesjardins/116778153237140094" }, "which-ethical-framework-is-the-most-practical-guide-for-the-development-and-use-of-artificial-intelligence": { "instanceUrl": "https://mastodon.social", "postedAt": "2026-06-25T19:02:44Z", "statusId": "116812294675556190", "statusUrl": "https://mastodon.social/@mrdesjardins/116812294675556190" } };
 const discussions = {
   blog,
   philosophy
