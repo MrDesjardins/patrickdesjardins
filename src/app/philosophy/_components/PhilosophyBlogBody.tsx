@@ -37,9 +37,17 @@ export function PhilosophyBlogBody(
       </a>
       <header>
         {props.isArticle === true ? (
-          <div className={styles.siteTitle}>Philosophy</div>
+          <div className={styles.siteTitle}>
+            <Link className={styles.siteTitleLink} href="/philosophy">
+              Philosophy
+            </Link>
+          </div>
         ) : (
-          <h1 className={styles.siteTitle}>Philosophy</h1>
+          <h1 className={styles.siteTitle}>
+            <Link className={styles.siteTitleLink} href="/philosophy">
+              Philosophy
+            </Link>
+          </h1>
         )}
         <p className={styles.siteSubtitle}>
           Patrick Desjardins — essays and notes
@@ -84,6 +92,11 @@ export function PhilosophyBlogBody(
         </div>
       </header>
       <main id="content" className={styles.main}>
+        {props.isArticle === true ? (
+          <Link className={styles.articleParentLink} href="/philosophy">
+            ← All philosophy essays
+          </Link>
+        ) : null}
         {props.isArticle === true ? (
           <h1 className={styles.heading}>{props.topTitle}</h1>
         ) : (

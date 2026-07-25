@@ -1439,6 +1439,11 @@ fn content_body(root: &Path, options: BodyOptions<'_>, children: &str) -> Result
         },
     )?;
     let site_title_class = class(root, body_module, "siteTitle")?;
+    let site_title_link_class = if options.collection == Collection::Philosophy {
+        Some(class(root, body_module, "siteTitleLink")?)
+    } else {
+        None
+    };
     let nav_links = class(root, body_module, "navLinks")?;
     let nav_item = class(root, body_module, "navLinkItem")?;
     let nav_text = class(root, body_module, "navLinkText")?;
@@ -1512,15 +1517,36 @@ fn content_body(root: &Path, options: BodyOptions<'_>, children: &str) -> Result
             r#"<nav aria-label="Blog"><ul class="{nav_links}">{nav}</ul></nav><div class="{picture_container}"><img class="{picture}" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div>"#
         ));
     }
-    let site_title_markup = if options.is_article {
-        format!(r#"<div class="{site_title_class}">{}</div>"#, escape_html(site_title))
+    let site_title_content = if let Some(link_class) = site_title_link_class {
+        format!(
+            r#"<a class="{link_class}" href="/philosophy">{}</a>"#,
+            escape_html(site_title)
+        )
     } else {
-        format!(r#"<h1 class="{site_title_class}">{}</h1>"#, escape_html(site_title))
+        escape_html(site_title)
     };
-    let heading_markup = if options.is_article {
-        format!(r#"<h1 class="{heading}">{}</h1>"#, escape_html(options.top_title))
+    let site_title_markup = if options.is_article {
+        format!(r#"<div class="{site_title_class}">{site_title_content}</div>"#)
     } else {
-        format!(r#"<h2 class="{heading}">{}</h2>"#, escape_html(options.top_title))
+        format!(r#"<h1 class="{site_title_class}">{site_title_content}</h1>"#)
+    };
+    let article_parent_markup =
+        if options.collection == Collection::Philosophy && options.is_article {
+            let parent_link = class(root, body_module, "articleParentLink")?;
+            format!(r#"<a class="{parent_link}" href="/philosophy">← All philosophy essays</a>"#)
+        } else {
+            String::new()
+        };
+    let heading_markup = if options.is_article {
+        format!(
+            r#"<h1 class="{heading}">{}</h1>"#,
+            escape_html(options.top_title)
+        )
+    } else {
+        format!(
+            r#"<h2 class="{heading}">{}</h2>"#,
+            escape_html(options.top_title)
+        )
     };
     let mut footer = String::new();
     if options.total_pages.unwrap_or(0) > 0 || options.total_posts.is_some() {
@@ -1572,7 +1598,7 @@ fn content_body(root: &Path, options: BodyOptions<'_>, children: &str) -> Result
         footer.push_str("</footer>");
     }
     Ok(format!(
-        r##"<div class="{wrapper}"><div class="{body}"><a class="{skip_link}" href="#content">Skip to content</a><header>{site_title_markup}{header_extra}</header><main id="content" class="{main}">{heading_markup}{children}</main>{footer}</div></div>"##,
+        r##"<div class="{wrapper}"><div class="{body}"><a class="{skip_link}" href="#content">Skip to content</a><header>{site_title_markup}{header_extra}</header><main id="content" class="{main}">{article_parent_markup}{heading_markup}{children}</main>{footer}</div></div>"##,
     ))
 }
 
@@ -2689,5 +2715,28 @@ mod tests {
         assert!(html.contains(r#"data-status-id="123""#));
         assert!(html.contains("Reply on Mastodon"));
         let _ = fs::remove_dir_all(root);
+    }
+
+    #[test]
+    fn native_philosophy_article_links_back_to_the_essay_list() {
+        let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+        let html = content_body(
+            &root,
+            BodyOptions {
+                collection: Collection::Philosophy,
+                top_title: "Council of the Owls",
+                current_page: None,
+                is_article: true,
+                year: None,
+                total_pages: Some(1),
+                total_posts: None,
+            },
+            "<p>Essay body</p>",
+        )
+        .expect("render philosophy article shell");
+
+        assert!(html.contains(r#"href="/philosophy">Philosophy</a>"#));
+        assert!(html.contains(r#"href="/philosophy">← All philosophy essays</a>"#));
+        assert!(html.contains(">Council of the Owls</h1>"));
     }
 }
