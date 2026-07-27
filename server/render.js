@@ -43,8 +43,8 @@ const styles$c = {
   imageWrapper
 };
 const gaMeasurementId = "G-6EH8HNYV13";
-const buildCommit = "3ad76c615424ba23595aecb4fbc773bd0dfbf5e0";
-const buildTime = "30293077586";
+const buildCommit = "cb5bf93869cab4072ca31879bde82206a98d0a41";
+const buildTime = "30309804429";
 function isTelemetryEnabled() {
   return typeof window !== "undefined" && typeof window.gtag === "function" && gaMeasurementId !== void 0 && gaMeasurementId.length > 0;
 }
@@ -196,27 +196,27 @@ const AboutMeSection = () => {
         /* @__PURE__ */ jsx("h2", { children: "About Me" }),
         /* @__PURE__ */ jsxs("div", { className: styles2$8.sectionAboutMeContainer, children: [
           /* @__PURE__ */ jsxs("div", { className: styles2$8.sectionAboutMeContainerContent, children: [
-            /* @__PURE__ */ jsx("h5", { children: "Polyvalent" }),
+            /* @__PURE__ */ jsx("h3", { children: "Polyvalent" }),
             /* @__PURE__ */ jsx("p", { children: "I adjust rapidly and efficiently to any environment. The proof is in my life. I have relocated from a French world to an English one. Changing countries and leaving my comfort zone to embrace new ones. At the same time, I moved between many teams and projects while being promoted continuously. I had to learn new technologies quickly and be efficient within a few days. As a result, I am rising from top companies to incredible ones while moving across the United States." })
           ] }),
           /* @__PURE__ */ jsxs("div", { className: styles2$8.sectionAboutMeContainerContent, children: [
-            /* @__PURE__ */ jsx("h5", { children: "Leader" }),
+            /* @__PURE__ */ jsx("h3", { children: "Leader" }),
             /* @__PURE__ */ jsx("p", { children: "In every position, I took the lead to improve the current situation or put practices in place with the people around me. I am not a loud talker, but I regularly bring pieces to every system for a final result that could benefit every engineer and company. I cannot stay in place and do the minimum -- I am naturally an entrepreneur and want to innovate and push the limit of every assignment. I convey my love of efficiency to everyone who works with me and share as much as possible by presenting, emailing, or Slack any detail to bolster the team." })
           ] }),
           /* @__PURE__ */ jsxs("div", { className: styles2$8.sectionAboutMeContainerContent, children: [
-            /* @__PURE__ */ jsx("h5", { children: "Doer" }),
+            /* @__PURE__ */ jsx("h3", { children: "Doer" }),
             /* @__PURE__ */ jsx("p", { children: 'Expert in doing: think, plan, and execute. I design and write just enough to have the team understand the direction and lift apparent impediments. I master balancing analyzing and coding, giving me a steady delivery cadence. I polish user interfaces gradually while bringing more features that, with time, create the best experience for the user. Same for performance, usability, and tests: iterating is the key to success. I introduce a "wow" factor and innovations to surpass expectations at every step.' })
           ] }),
           /* @__PURE__ */ jsxs("div", { className: styles2$8.sectionAboutMeContainerContent, children: [
-            /* @__PURE__ */ jsx("h5", { children: "Naturally Initiative Seeker" }),
+            /* @__PURE__ */ jsx("h3", { children: "Naturally Initiative Seeker" }),
             /* @__PURE__ */ jsx("p", { children: "My innate nature gave me the quality to find solutions to any problems. My experiences, motivation, and capability to learn fast are handy for zooming my way into fixing any existing codebase. It is the same with engineering solutions that require adjustment quickly or when facing a customer's challenging requirements." })
           ] }),
           /* @__PURE__ */ jsxs("div", { className: styles2$8.sectionAboutMeContainerContent, children: [
-            /* @__PURE__ */ jsx("h5", { children: "Sharer" }),
+            /* @__PURE__ */ jsx("h3", { children: "Sharer" }),
             /* @__PURE__ */ jsx("p", { children: "While performing my main tasks, I thrive on discovering initiatives to improve my team and the products. In addition, I am known to communicate visually and often by creating web prototypes rapidly." })
           ] }),
           /* @__PURE__ */ jsxs("div", { className: styles2$8.sectionAboutMeContainerContent, children: [
-            /* @__PURE__ */ jsx("h5", { children: "Fast Pareto Practitioner" }),
+            /* @__PURE__ */ jsx("h3", { children: "Fast Pareto Practitioner" }),
             /* @__PURE__ */ jsx("p", { children: "I lean toward simple and fast solutions with a preference to do the heavy 80% of the work using 20% of my time. I truly excel working on the breath instead of working in-depth. I prefer working iteratively to achieve the best solution over time." })
           ] })
         ] })
@@ -316,8 +316,8 @@ const AchievementsSection = () => {
                 height: 95,
                 color: "rgb(255, 255, 255)",
                 position: "relative",
-                border: "2px solid rgb(3, 169, 244)",
-                background: "rgb(3, 169, 244)",
+                border: "2px solid rgb(2, 119, 189)",
+                background: "rgb(2, 119, 189)",
                 borderRadius: 3,
                 padding: "5px 10px",
                 fontFamily: "-apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbo"
@@ -331,7 +331,7 @@ const AchievementsSection = () => {
                     viewBox: "0 0 250 250",
                     style: {
                       fill: "rgb(255, 255, 255)",
-                      color: "rgb(3, 169, 244)",
+                      color: "rgb(2, 119, 189)",
                       position: "absolute",
                       top: 0,
                       right: 0,
@@ -401,7 +401,7 @@ const AchievementsSection = () => {
                             {
                               href: "https://github.com/MrDesjardins",
                               target: "_blank",
-                              style: { fill: "rgb(255, 255, 255)" },
+                              style: { color: "rgb(255, 255, 255)" },
                               rel: "noreferrer",
                               children: "MrDesjardins"
                             }
@@ -618,7 +618,7 @@ const AchievementsSection = () => {
 };
 const CardFixedWidth = (props2) => {
   return /* @__PURE__ */ jsxs("div", { className: styles$a.sectionFixedWitdhContent, children: [
-    /* @__PURE__ */ jsx("h5", { children: props2.title }),
+    /* @__PURE__ */ jsx("h3", { children: props2.title }),
     /* @__PURE__ */ jsx("p", { className: styles$a.cardFixedWidthImage, children: props2.image }),
     /* @__PURE__ */ jsx("p", { children: props2.description }),
     /* @__PURE__ */ jsx("p", { children: /* @__PURE__ */ jsx("a", { href: props2.link, target: "_blank", rel: "noopener noreferrer", children: "Link" }) })
@@ -897,11 +897,11 @@ const ContactSection = () => {
         /* @__PURE__ */ jsxs("div", { className: styles2$5.contactContainer, children: [
           /* @__PURE__ */ jsxs("div", { className: styles2$5.contactDetail, children: [
             /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faPaperPlane }),
-            /* @__PURE__ */ jsx("h5", { children: /* @__PURE__ */ jsx("a", { href: "mailto:mrdesjardins@gmail.com", children: "mrdesjardins@gmail.com" }) })
+            /* @__PURE__ */ jsx("h4", { children: /* @__PURE__ */ jsx("a", { href: "mailto:mrdesjardins@gmail.com", children: "mrdesjardins@gmail.com" }) })
           ] }),
           /* @__PURE__ */ jsxs("div", { className: styles2$5.contactDetail, children: [
             /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faMapMarker }),
-            /* @__PURE__ */ jsx("h5", { children: "United States, California" })
+            /* @__PURE__ */ jsx("h4", { children: "United States, California" })
           ] })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: styles2$5.contactContainer2, children: [
@@ -1548,7 +1548,8 @@ const CodeSandbox = (props2) => {
       src: `https://codesandbox.io/embed/${props2.codeSandboxId}`,
       style: {
         width: "100%",
-        height: "500px",
+        height: "min(500px, 70vh)",
+        minHeight: "320px",
         border: 0,
         borderRadius: "4px",
         overflow: "hidden"
@@ -1602,7 +1603,8 @@ const YouTube = (props2) => {
     {
       style: {
         width: "100%",
-        height: "500px",
+        aspectRatio: "16 / 9",
+        minHeight: "240px",
         border: 0,
         borderRadius: "4px",
         overflow: "hidden"
@@ -1626,6 +1628,17 @@ const ROOT_PHILOSOPHY_PATH = path.join(
   process.cwd(),
   "/src/_philosophy"
 );
+function plainTextExcerpt(content, maxLength = 160) {
+  const body = content.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, "");
+  const text = body.split(/\r?\n/).filter((line) => {
+    const value2 = line.trim();
+    return value2 !== "" && !value2.startsWith("#") && !value2.startsWith("!") && !value2.startsWith("<") && !value2.startsWith("```") && !value2.startsWith("~~~");
+  }).join(" ").replace(/\[([^\]]+)]\([^)]+\)/g, "$1").replace(/[`*_>]/g, "").replace(/\s+/g, " ").trim();
+  if (text.length <= maxLength) {
+    return text;
+  }
+  return `${text.slice(0, maxLength).trimEnd()}…`;
+}
 function parseFrontmatter(content) {
   const match = /^---\r?\n([\s\S]*?)\r?\n---\r?\n/.exec(content);
   const rawFrontmatter = (match == null ? void 0 : match[1]) ?? "";
@@ -1836,8 +1849,8 @@ const StatisticsSection = () => {
             }
           ) }),
           /* @__PURE__ */ jsxs("div", { className: "counterup-content", children: [
-            /* @__PURE__ */ jsx("h5", { className: "count-number", children: "13" }),
-            /* @__PURE__ */ jsx("h6", { children: "Companies" })
+            /* @__PURE__ */ jsx("div", { className: "count-number", children: "13" }),
+            /* @__PURE__ */ jsx("p", { children: "Companies" })
           ] })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: styles2$2.statisticContainerCard, children: [
@@ -1851,8 +1864,8 @@ const StatisticsSection = () => {
             }
           ) }),
           /* @__PURE__ */ jsxs("div", { className: "counterup-content", children: [
-            /* @__PURE__ */ jsx("h5", { className: "count-number", children: (/* @__PURE__ */ new Date()).getFullYear() - 2004 + 1 }),
-            /* @__PURE__ */ jsx("h6", { children: "Years of programming" })
+            /* @__PURE__ */ jsx("div", { className: "count-number", children: (/* @__PURE__ */ new Date()).getFullYear() - 2004 + 1 }),
+            /* @__PURE__ */ jsx("p", { children: "Years of programming" })
           ] })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: styles2$2.statisticContainerCard, children: [
@@ -1866,8 +1879,8 @@ const StatisticsSection = () => {
             }
           ) }),
           /* @__PURE__ */ jsxs("div", { className: "counterup-content", children: [
-            /* @__PURE__ */ jsx("h5", { className: "count-number", children: "28" }),
-            /* @__PURE__ */ jsx("h6", { children: "Projects finished" })
+            /* @__PURE__ */ jsx("div", { className: "count-number", children: "28" }),
+            /* @__PURE__ */ jsx("p", { children: "Projects finished" })
           ] })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: styles2$2.statisticContainerCard, children: [
@@ -1881,8 +1894,8 @@ const StatisticsSection = () => {
             }
           ) }),
           /* @__PURE__ */ jsxs("div", { className: "counterup-content", children: [
-            /* @__PURE__ */ jsx("h5", { className: "count-number", children: articleCount }),
-            /* @__PURE__ */ jsxs("h6", { children: [
+            /* @__PURE__ */ jsx("div", { className: "count-number", children: articleCount }),
+            /* @__PURE__ */ jsxs("p", { children: [
               /* @__PURE__ */ jsx(Link, { href: "/blog", children: "Blog" }),
               " +",
               " ",
@@ -1907,8 +1920,8 @@ const CardWithImage = (props2) => {
   return /* @__PURE__ */ jsxs("div", { className: styles2$1.cardWithImageContainer, children: [
     /* @__PURE__ */ jsx("div", { className: styles2$1.cardWithImageContainerImage, children: /* @__PURE__ */ jsx("p", { className: styles$a.cardFixedWidthImage, children: props2.image }) }),
     /* @__PURE__ */ jsxs("div", { className: styles2$1.cardWithImageContainerText, children: [
-      /* @__PURE__ */ jsx("h5", { children: props2.title }),
-      /* @__PURE__ */ jsx("h6", { children: props2.subtitle }),
+      /* @__PURE__ */ jsx("h3", { children: props2.title }),
+      /* @__PURE__ */ jsx("h4", { children: props2.subtitle }),
       /* @__PURE__ */ jsx("p", { children: props2.description })
     ] })
   ] });
@@ -2362,9 +2375,20 @@ const styles$7 = {
   container,
   item
 };
+function categorySlug(category) {
+  return category.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
 const BlogCategories = (props2) => {
   var _a;
-  return /* @__PURE__ */ jsx("span", { className: styles$7.container, children: (_a = props2.categories ?? []) == null ? void 0 : _a.map((c) => /* @__PURE__ */ jsx("span", { className: styles$7.item, children: c }, c)) });
+  return /* @__PURE__ */ jsx("span", { className: styles$7.container, children: (_a = props2.categories ?? []) == null ? void 0 : _a.map((c) => /* @__PURE__ */ jsx(
+    Link,
+    {
+      className: styles$7.item,
+      href: `/blog/category/${categorySlug(c)}`,
+      children: c
+    },
+    c
+  )) });
 };
 const BlogEntry = (props2) => {
   return /* @__PURE__ */ jsxs("article", { className: styles$8.blogEntry, children: [
@@ -2382,6 +2406,7 @@ const BlogBody$1 = "app_blog__components_BlogBody__BlogBody";
 const skipLink$1 = "app_blog__components_BlogBody__skipLink";
 const main$1 = "app_blog__components_BlogBody__main";
 const heading$1 = "app_blog__components_BlogBody__heading";
+const articleParentLink$1 = "app_blog__components_BlogBody__articleParentLink";
 const siteTitle$1 = "app_blog__components_BlogBody__siteTitle";
 const navLinks$1 = "app_blog__components_BlogBody__navLinks";
 const navLinkItem$1 = "app_blog__components_BlogBody__navLinkItem";
@@ -2398,6 +2423,7 @@ const styles$6 = {
   skipLink: skipLink$1,
   main: main$1,
   heading: heading$1,
+  articleParentLink: articleParentLink$1,
   siteTitle: siteTitle$1,
   navLinks: navLinks$1,
   navLinkItem: navLinkItem$1,
@@ -2415,12 +2441,14 @@ function BlogBody(props2) {
   for (let i = LAST_YEAR; i >= FIRST_YEAR; i--) {
     years.push(i);
   }
-  const pages = [];
-  if (props2.totalPages !== void 0 && props2.totalPages > 0) {
-    for (let i = 1; i <= props2.totalPages; i++) {
-      pages.push(i);
-    }
-  }
+  const totalPages = props2.isArticle === true || props2.year !== void 0 ? 0 : props2.totalPages ?? 0;
+  const currentPage = props2.currentPage ?? 1;
+  const firstVisiblePage = Math.max(1, currentPage - 2);
+  const lastVisiblePage = Math.min(totalPages, currentPage + 2);
+  const pages = Array.from(
+    { length: Math.max(0, lastVisiblePage - firstVisiblePage + 1) },
+    (_, index) => firstVisiblePage + index
+  );
   return /* @__PURE__ */ jsxs("div", { className: styles$6.BlogBody, children: [
     /* @__PURE__ */ jsx("a", { className: styles$6.skipLink, href: "#content", children: "Skip to content" }),
     /* @__PURE__ */ jsxs("header", { children: [
@@ -2456,25 +2484,41 @@ function BlogBody(props2) {
       ) })
     ] }),
     /* @__PURE__ */ jsxs("main", { id: "content", className: styles$6.main, children: [
-      props2.isArticle === true ? /* @__PURE__ */ jsx("h1", { className: styles$6.heading, children: props2.topTitle }) : /* @__PURE__ */ jsx("h2", { className: styles$6.heading, children: props2.topTitle }),
+      props2.isArticle === true ? /* @__PURE__ */ jsxs(Fragment, { children: [
+        /* @__PURE__ */ jsx(Link, { className: styles$6.articleParentLink, href: "/blog", children: "← All technical posts" }),
+        /* @__PURE__ */ jsx("h1", { className: styles$6.heading, children: props2.topTitle })
+      ] }) : /* @__PURE__ */ jsx("h2", { className: styles$6.heading, children: props2.topTitle }),
       props2.children
     ] }),
     pages.length > 0 || props2.totalBlogPost !== void 0 ? /* @__PURE__ */ jsxs("footer", { children: [
       pages.length > 0 ? /* @__PURE__ */ jsxs("div", { className: styles$6.paginationBar, children: [
         /* @__PURE__ */ jsx("div", { className: styles$6.paginationTitle, children: "Chronological Blog Articles by Page" }),
-        /* @__PURE__ */ jsx("div", { className: styles$6.paginationLinks, children: pages.map((page) => {
-          return /* @__PURE__ */ jsx(
-            Link,
-            {
-              className: clsx({
-                [styles$6.currentLink]: page === props2.currentPage
-              }),
-              href: `/blog/page/${page}`,
-              children: page
-            },
-            page
-          );
-        }) })
+        /* @__PURE__ */ jsxs("div", { className: styles$6.paginationLinks, children: [
+          currentPage > 1 ? /* @__PURE__ */ jsx(Link, { rel: "prev", href: `/blog/page/${currentPage - 1}`, children: "← Previous" }) : null,
+          firstVisiblePage > 1 ? /* @__PURE__ */ jsxs(Fragment, { children: [
+            /* @__PURE__ */ jsx(Link, { href: "/blog/page/1", children: "1" }),
+            /* @__PURE__ */ jsx("span", { "aria-hidden": "true", children: "…" })
+          ] }) : null,
+          pages.map((page) => {
+            return /* @__PURE__ */ jsx(
+              Link,
+              {
+                "aria-current": page === currentPage ? "page" : void 0,
+                className: clsx({
+                  [styles$6.currentLink]: page === props2.currentPage
+                }),
+                href: `/blog/page/${page}`,
+                children: page
+              },
+              page
+            );
+          }),
+          lastVisiblePage < totalPages ? /* @__PURE__ */ jsxs(Fragment, { children: [
+            /* @__PURE__ */ jsx("span", { "aria-hidden": "true", children: "…" }),
+            /* @__PURE__ */ jsx(Link, { href: `/blog/page/${totalPages}`, children: totalPages })
+          ] }) : null,
+          currentPage < totalPages ? /* @__PURE__ */ jsx(Link, { rel: "next", href: `/blog/page/${currentPage + 1}`, children: "Next →" }) : null
+        ] })
       ] }) : null,
       props2.totalBlogPost === void 0 ? null : /* @__PURE__ */ jsxs("div", { className: styles$6.totalBlogPost, children: [
         "Total Blog Posts: ",
@@ -2490,7 +2534,7 @@ const metadata$1 = {
   title: "Patrick Desjardins Blog",
   description: "Patrick Desjardins Blog"
 };
-async function Page$9() {
+async function Page$a() {
   const pageNumber = 1;
   const posts = await getAllPosts();
   const totalPage = getTotalPages(posts);
@@ -2525,7 +2569,7 @@ async function Page$9() {
     }
   );
 }
-function Page$8() {
+function Page$9() {
   return /* @__PURE__ */ jsx(BlogBody, { topTitle: "Search Posts", children: /* @__PURE__ */ jsx("div", { id: "blog-search-root" }) });
 }
 const blog = { "generating-documentation-with-ai": { "instanceUrl": "https://mastodon.social", "postedAt": "2026-07-13T18:26:57Z", "statusId": "116914075539914003", "statusUrl": "https://mastodon.social/@mrdesjardins/116914075539914003" }, "hateoas-as-the-natural-interface-for-autonomous-agents": { "instanceUrl": "https://mastodon.social", "postedAt": "2026-07-17T18:03:07Z", "statusId": "116936631044734799", "statusUrl": "https://mastodon.social/@mrdesjardins/116936631044734799" }, "how-to-unit-test-private-method-in-typescript-2026-edition": { "instanceUrl": "https://mastodon.social", "postedAt": "2026-07-09T18:46:24Z", "statusId": "116891502774809766", "statusUrl": "https://mastodon.social/@mrdesjardins/116891502774809766" }, "mastodon-thread-static-website": { "instanceUrl": "https://mastodon.social", "postedAt": "2026-06-20T18:05:37Z", "statusId": "116783758549131307", "statusUrl": "https://mastodon.social/@mrdesjardins/116783758549131307" }, "using-epaper-for-studying": { "instanceUrl": "https://mastodon.social", "postedAt": "2026-07-20T18:53:33Z", "statusId": "116953816283863299", "statusUrl": "https://mastodon.social/@mrdesjardins/116953816283863299" } };
@@ -2571,28 +2615,36 @@ function MastodonComments(props2) {
   ] });
 }
 const blogPostContainer$1 = "app_blog__slug__Page__blogPostContainer";
+const articleNavigation$1 = "app_blog__slug__Page__articleNavigation";
 const blogPostDate$1 = "app_blog__slug__Page__blogPostDate";
 const styles$4 = {
   blogPostContainer: blogPostContainer$1,
+  articleNavigation: articleNavigation$1,
   blogPostDate: blogPostDate$1
 };
-async function generateMetadata$5(props2) {
+async function generateMetadata$6(props2) {
   const post = await getPostBySlug(props2.params.slug);
   if (post === void 0) {
     throw new Error("Post not found");
   }
   return {
     title: "Patrick Desjardins Blog - " + post.frontmatter.title,
-    description: post.frontmatter.title
+    description: plainTextExcerpt(post.rawFileContent)
   };
 }
-async function Page$7(props2) {
+async function Page$8(props2) {
   const posts = await getAllPosts();
+  posts.sort(sortByMetadataDateDesc);
   const totalPages = getTotalPages(posts);
   const post = await getPostBySlug(props2.params.slug);
   if (post === void 0) {
     throw new Error("Post not found");
   }
+  const postIndex = posts.findIndex(
+    (candidate) => candidate.metadata.slug === post.metadata.slug
+  );
+  const newerPost = postIndex > 0 ? posts[postIndex - 1] : void 0;
+  const olderPost = postIndex >= 0 ? posts[postIndex + 1] : void 0;
   return /* @__PURE__ */ jsx(
     BlogBody,
     {
@@ -2601,27 +2653,45 @@ async function Page$7(props2) {
       topTitle: post.frontmatter.title,
       children: /* @__PURE__ */ jsxs("div", { className: styles$4.blogPostContainer, children: [
         /* @__PURE__ */ jsxs("p", { className: styles$4.blogPostDate, children: [
-          "Posted on: ",
-          post.frontmatter.date
+          "Posted on:",
+          " ",
+          /* @__PURE__ */ jsx("time", { dateTime: post.frontmatter.date, children: post.frontmatter.date })
         ] }),
         post.contentReact,
+        newerPost !== void 0 || olderPost !== void 0 ? /* @__PURE__ */ jsxs(
+          "nav",
+          {
+            className: styles$4.articleNavigation,
+            "aria-label": "Adjacent articles",
+            children: [
+              newerPost === void 0 ? null : /* @__PURE__ */ jsxs(Link, { rel: "prev", href: `/blog/${newerPost.metadata.slug}`, children: [
+                "← Newer: ",
+                newerPost.frontmatter.title
+              ] }),
+              olderPost === void 0 ? null : /* @__PURE__ */ jsxs(Link, { rel: "next", href: `/blog/${olderPost.metadata.slug}`, children: [
+                "Older: ",
+                olderPost.frontmatter.title,
+                " →"
+              ] })
+            ]
+          }
+        ) : null,
         /* @__PURE__ */ jsx(MastodonComments, { kind: "blog", slug: post.metadata.slug })
       ] })
     }
   );
 }
-async function generateMetadata$4(props2) {
+async function generateMetadata$5(props2) {
   return {
     title: "Patrick Desjardins Blog - Year " + String(props2.params.year),
     description: "Patrick Desjardins Blog - Year " + String(props2.params.year)
   };
 }
-async function Page$6(props2) {
+async function Page$7(props2) {
   const year = Number(props2.params.year);
   const posts = await getAllPosts();
-  const totalPages = getTotalPages(posts);
   const postForYear = posts.filter((file) => file.metadata.year === year).sort(sortByMetadataDateDesc);
-  return /* @__PURE__ */ jsx(BlogBody, { totalPages, year, topTitle: "Blog Posts", children: postForYear.map((node) => /* @__PURE__ */ jsx(
+  return /* @__PURE__ */ jsx(BlogBody, { year, topTitle: "Blog Posts", children: postForYear.map((node) => /* @__PURE__ */ jsx(
     BlogEntry,
     {
       id: node.metadata.fileName,
@@ -2633,13 +2703,13 @@ async function Page$6(props2) {
     node.metadata.fileName
   )) });
 }
-async function generateMetadata$3(props2) {
+async function generateMetadata$4(props2) {
   return {
     title: "Patrick Desjardins Blog - Page number " + String(props2.params.pageNumber),
     description: "Patrick Desjardins Blog - Page number " + String(props2.params.pageNumber)
   };
 }
-async function Page$5(props2) {
+async function Page$6(props2) {
   const posts = await getAllPosts();
   posts.sort(sortByMetadataDateDesc);
   const currentPage = Number(props2.params.pageNumber);
@@ -2667,6 +2737,44 @@ async function Page$5(props2) {
       ))
     }
   );
+}
+async function categoryName(slug) {
+  const posts = await getAllPosts();
+  for (const post of posts) {
+    const category = post.frontmatter.categories.find(
+      (value2) => categorySlug(value2) === slug
+    );
+    if (category !== void 0) {
+      return category;
+    }
+  }
+  return slug;
+}
+async function generateMetadata$3(props2) {
+  const name = await categoryName(props2.params.category);
+  return {
+    title: `${name} articles — Patrick Desjardins`,
+    description: `Technical articles about ${name} by Patrick Desjardins.`
+  };
+}
+async function Page$5(props2) {
+  const posts = (await getAllPosts()).filter(
+    (post) => post.frontmatter.categories.some(
+      (category) => categorySlug(category) === props2.params.category
+    )
+  ).sort(sortByMetadataDateDesc);
+  const name = await categoryName(props2.params.category);
+  return /* @__PURE__ */ jsx(BlogBody, { topTitle: `Articles about ${name}`, children: posts.map((post) => /* @__PURE__ */ jsx(
+    BlogEntry,
+    {
+      id: post.metadata.fileName,
+      slug: post.metadata.slug,
+      title: post.frontmatter.title,
+      date: post.frontmatter.date,
+      categories: post.frontmatter.categories
+    },
+    post.metadata.fileName
+  )) });
 }
 const blogEntry = "app_philosophy__components_PhilosophyEntry__blogEntry";
 const blogEntryArticleTitle = "app_philosophy__components_PhilosophyEntry__blogEntryArticleTitle";
@@ -2731,12 +2839,14 @@ function PhilosophyBlogBody(props2) {
   for (let i = LAST_YEAR; i >= PHILOSOPHY_FIRST_YEAR; i--) {
     years.push(i);
   }
-  const pages = [];
-  if (props2.totalPages !== void 0 && props2.totalPages > 0) {
-    for (let i = 1; i <= props2.totalPages; i++) {
-      pages.push(i);
-    }
-  }
+  const totalPages = props2.isArticle === true || props2.year !== void 0 ? 0 : props2.totalPages ?? 0;
+  const currentPage = props2.currentPage ?? 1;
+  const firstVisiblePage = Math.max(1, currentPage - 2);
+  const lastVisiblePage = Math.min(totalPages, currentPage + 2);
+  const pages = Array.from(
+    { length: Math.max(0, lastVisiblePage - firstVisiblePage + 1) },
+    (_, index) => firstVisiblePage + index
+  );
   return /* @__PURE__ */ jsxs("div", { className: styles$2.blogBodyShell, children: [
     /* @__PURE__ */ jsx("a", { className: styles$2.skipLink, href: "#content", children: "Skip to content" }),
     /* @__PURE__ */ jsxs("header", { children: [
@@ -2767,17 +2877,44 @@ function PhilosophyBlogBody(props2) {
     pages.length > 0 || props2.totalBlogPost !== void 0 ? /* @__PURE__ */ jsxs("footer", { children: [
       pages.length > 0 ? /* @__PURE__ */ jsxs("div", { className: styles$2.paginationBar, children: [
         /* @__PURE__ */ jsx("div", { className: styles$2.paginationTitle, children: "Essays by page" }),
-        /* @__PURE__ */ jsx("div", { className: styles$2.paginationLinks, children: pages.map((page) => /* @__PURE__ */ jsx(
-          Link,
-          {
-            className: clsx({
-              [styles$2.currentLink]: page === props2.currentPage
-            }),
-            href: `/philosophy/page/${page}`,
-            children: page
-          },
-          page
-        )) })
+        /* @__PURE__ */ jsxs("div", { className: styles$2.paginationLinks, children: [
+          currentPage > 1 ? /* @__PURE__ */ jsx(
+            Link,
+            {
+              rel: "prev",
+              href: `/philosophy/page/${currentPage - 1}`,
+              children: "← Previous"
+            }
+          ) : null,
+          firstVisiblePage > 1 ? /* @__PURE__ */ jsxs(Fragment, { children: [
+            /* @__PURE__ */ jsx(Link, { href: "/philosophy/page/1", children: "1" }),
+            /* @__PURE__ */ jsx("span", { "aria-hidden": "true", children: "…" })
+          ] }) : null,
+          pages.map((page) => /* @__PURE__ */ jsx(
+            Link,
+            {
+              "aria-current": page === currentPage ? "page" : void 0,
+              className: clsx({
+                [styles$2.currentLink]: page === props2.currentPage
+              }),
+              href: `/philosophy/page/${page}`,
+              children: page
+            },
+            page
+          )),
+          lastVisiblePage < totalPages ? /* @__PURE__ */ jsxs(Fragment, { children: [
+            /* @__PURE__ */ jsx("span", { "aria-hidden": "true", children: "…" }),
+            /* @__PURE__ */ jsx(Link, { href: `/philosophy/page/${totalPages}`, children: totalPages })
+          ] }) : null,
+          currentPage < totalPages ? /* @__PURE__ */ jsx(
+            Link,
+            {
+              rel: "next",
+              href: `/philosophy/page/${currentPage + 1}`,
+              children: "Next →"
+            }
+          ) : null
+        ] })
       ] }) : null,
       props2.totalBlogPost === void 0 ? null : /* @__PURE__ */ jsxs("div", { className: styles$2.totalPosts, children: [
         "Total essays: ",
@@ -2836,10 +2973,12 @@ function Page$3() {
 const blogPostContainer = "app_philosophy__slug__Page__blogPostContainer";
 const blogPostContent = "app_philosophy__slug__Page__blogPostContent";
 const blogPostDate = "app_philosophy__slug__Page__blogPostDate";
+const articleNavigation = "app_philosophy__slug__Page__articleNavigation";
 const styles = {
   blogPostContainer,
   blogPostContent,
-  blogPostDate
+  blogPostDate,
+  articleNavigation
 };
 const EMPTY_PHILOSOPHY_SLUG = "__no-published-essays";
 async function generateMetadata$2(props2) {
@@ -2855,7 +2994,7 @@ async function generateMetadata$2(props2) {
   }
   return {
     title: "Philosophy — " + post.frontmatter.title,
-    description: post.frontmatter.title
+    description: plainTextExcerpt(post.rawFileContent)
   };
 }
 async function Page$2(props2) {
@@ -2868,6 +3007,11 @@ async function Page$2(props2) {
   if (post === void 0) {
     throw new Error("Philosophy post not found");
   }
+  const postIndex = posts.findIndex(
+    (candidate) => candidate.metadata.slug === post.metadata.slug
+  );
+  const newerPost = postIndex > 0 ? posts[postIndex - 1] : void 0;
+  const olderPost = postIndex >= 0 ? posts[postIndex + 1] : void 0;
   return /* @__PURE__ */ jsx(
     PhilosophyBlogBody,
     {
@@ -2876,10 +3020,29 @@ async function Page$2(props2) {
       topTitle: post.frontmatter.title,
       children: /* @__PURE__ */ jsxs("div", { className: styles.blogPostContainer, children: [
         /* @__PURE__ */ jsxs("p", { className: styles.blogPostDate, children: [
-          "Posted on: ",
-          post.frontmatter.date
+          "Posted on:",
+          " ",
+          /* @__PURE__ */ jsx("time", { dateTime: post.frontmatter.date, children: post.frontmatter.date })
         ] }),
         /* @__PURE__ */ jsx("div", { className: styles.blogPostContent, children: post.contentReact }),
+        newerPost !== void 0 || olderPost !== void 0 ? /* @__PURE__ */ jsxs(
+          "nav",
+          {
+            className: styles.articleNavigation,
+            "aria-label": "Adjacent essays",
+            children: [
+              newerPost === void 0 ? null : /* @__PURE__ */ jsxs(Link, { rel: "prev", href: `/philosophy/${newerPost.metadata.slug}`, children: [
+                "← Newer: ",
+                newerPost.frontmatter.title
+              ] }),
+              olderPost === void 0 ? null : /* @__PURE__ */ jsxs(Link, { rel: "next", href: `/philosophy/${olderPost.metadata.slug}`, children: [
+                "Older: ",
+                olderPost.frontmatter.title,
+                " →"
+              ] })
+            ]
+          }
+        ) : null,
         /* @__PURE__ */ jsx(MastodonComments, { kind: "philosophy", slug: post.metadata.slug })
       ] })
     }
@@ -2894,9 +3057,8 @@ async function generateMetadata$1(props2) {
 async function Page$1(props2) {
   const year = Number(props2.params.year);
   const posts = await getAllPhilosophyPosts();
-  const totalPages = getTotalPages(posts);
   const postForYear = posts.filter((file) => file.metadata.year === year).sort(sortByMetadataDateDesc);
-  return /* @__PURE__ */ jsx(PhilosophyBlogBody, { totalPages, year, topTitle: "Essays", children: postForYear.map((node) => /* @__PURE__ */ jsx(
+  return /* @__PURE__ */ jsx(PhilosophyBlogBody, { year, topTitle: "Essays", children: postForYear.map((node) => /* @__PURE__ */ jsx(
     PhilosophyEntry,
     {
       id: node.metadata.fileName,
@@ -3003,6 +3165,34 @@ async function sitemap() {
       priority: 0.65
     })
   );
+  const archiveEntries = [
+    ...Array.from(
+      { length: Math.ceil(posts.length / MAX_POSTS_PER_PAGE) },
+      (_, index) => `${BASE_URL$1}/blog/page/${index + 1}`
+    ),
+    ...Array.from(
+      { length: Math.max(1, Math.ceil(philosophyPosts.length / MAX_POSTS_PER_PAGE)) },
+      (_, index) => `${BASE_URL$1}/philosophy/page/${index + 1}`
+    ),
+    ...Array.from(
+      { length: LAST_YEAR - FIRST_YEAR + 1 },
+      (_, index) => `${BASE_URL$1}/blog/for/${LAST_YEAR - index}`
+    ),
+    ...Array.from(
+      { length: LAST_YEAR - PHILOSOPHY_FIRST_YEAR + 1 },
+      (_, index) => `${BASE_URL$1}/philosophy/for/${LAST_YEAR - index}`
+    ),
+    ...[
+      ...new Set(
+        posts.flatMap((post) => post.frontmatter.categories.map(categorySlug))
+      )
+    ].map((category) => `${BASE_URL$1}/blog/category/${category}`)
+  ].map((url) => ({
+    url,
+    lastModified: /* @__PURE__ */ new Date(),
+    changeFrequency: "monthly",
+    priority: 0.5
+  }));
   return [
     {
       url: BASE_URL$1,
@@ -3023,13 +3213,20 @@ async function sitemap() {
       priority: 0.85
     },
     {
+      url: `${BASE_URL$1}/blog/search`,
+      lastModified: /* @__PURE__ */ new Date(),
+      changeFrequency: "monthly",
+      priority: 0.5
+    },
+    {
       url: `${BASE_URL$1}/philosophy/search`,
       lastModified: /* @__PURE__ */ new Date(),
       changeFrequency: "monthly",
       priority: 0.5
     },
     ...postEntries,
-    ...philosophyEntries
+    ...philosophyEntries,
+    ...archiveEntries
   ];
 }
 const BASE_URL = "https://patrickdesjardins.com";
@@ -3056,17 +3253,35 @@ function gaScript() {
     return "";
   }
   const id = escapeHtml(gaMeasurementId2);
-  return `<script async src="https://www.googletagmanager.com/gtag/js?id=${id}"><\/script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","${id}");<\/script>`;
+  return `<script async src="https://www.googletagmanager.com/gtag/js?id=${id}"><\/script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}var analyticsConsent="denied";try{analyticsConsent=localStorage.getItem("analytics-consent")==="granted"?"granted":"denied";}catch{}gtag("consent","default",{analytics_storage:analyticsConsent,ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied"});gtag("js",new Date());gtag("config","${id}");<\/script>`;
 }
-function renderDocument(body, metadata2, assets) {
+function renderDocument(body, metadata2, assets, routePath = assets.routePath ?? "/") {
   const app = renderToStaticMarkup(/* @__PURE__ */ jsx(RootLayout$1, { children: body }));
   const css = assets.css.map((href) => `<link rel="stylesheet" href="${escapeHtml(href)}">`).join("");
   const js = assets.js.map((src) => `<script type="module" src="${escapeHtml(src)}"><\/script>`).join("");
+  const title = pageTitle(metadata2);
+  const description = pageDescription(metadata2);
+  const canonicalPath = routePath === "/blog/page/1" ? "/blog" : routePath === "/philosophy/page/1" ? "/philosophy" : routePath;
+  const canonicalUrl = `${BASE_URL}${canonicalPath === "/" ? "" : canonicalPath}`;
+  const socialImage = `${BASE_URL}/images/backgrounds/patrickdesjardins_conference_bw.webp`;
+  const isArticle = /^\/(?:blog|philosophy)\/(?!page\/|for\/|search$)/.test(routePath);
   const head = [
     `<meta charset="utf-8">`,
     `<meta name="viewport" content="width=device-width, initial-scale=1">`,
-    `<title>${escapeHtml(pageTitle(metadata2))}</title>`,
-    `<meta name="description" content="${escapeHtml(pageDescription(metadata2))}">`,
+    `<meta name="referrer" content="strict-origin-when-cross-origin">`,
+    `<title>${escapeHtml(title)}</title>`,
+    `<meta name="description" content="${escapeHtml(description)}">`,
+    `<link rel="canonical" href="${escapeHtml(canonicalUrl)}">`,
+    `<meta property="og:title" content="${escapeHtml(title)}">`,
+    `<meta property="og:description" content="${escapeHtml(description)}">`,
+    `<meta property="og:url" content="${escapeHtml(canonicalUrl)}">`,
+    `<meta property="og:type" content="${isArticle ? "article" : "website"}">`,
+    `<meta property="og:site_name" content="Patrick Desjardins">`,
+    `<meta property="og:image" content="${escapeHtml(socialImage)}">`,
+    `<meta name="twitter:card" content="summary_large_image">`,
+    `<meta name="twitter:title" content="${escapeHtml(title)}">`,
+    `<meta name="twitter:description" content="${escapeHtml(description)}">`,
+    `<meta name="twitter:image" content="${escapeHtml(socialImage)}">`,
     css,
     gaScript()
   ].join("");
@@ -3112,19 +3327,20 @@ async function renderRouteDocument(renderPage, metadata2, assets) {
   return renderDocument(await renderPage(), await metadata2(), assets);
 }
 async function renderPath(routePath, assets) {
+  assets = { ...assets, routePath };
   if (routePath === "/") {
     return await renderRouteDocument(() => /* @__PURE__ */ jsx(Index, {}), value(metadata$2), assets);
   }
   if (routePath === "/blog") {
     return await renderRouteDocument(
-      async () => withBlogLayout(await Page$9()),
+      async () => withBlogLayout(await Page$a()),
       value(metadata$1),
       assets
     );
   }
   if (routePath === "/blog/search") {
     return await renderRouteDocument(
-      () => withBlogLayout(/* @__PURE__ */ jsx(Page$8, {})),
+      () => withBlogLayout(/* @__PURE__ */ jsx(Page$9, {})),
       value({
         title: "Patrick Desjardins Blog Search",
         description: "Patrick Desjardins Blog Search"
@@ -3163,8 +3379,8 @@ async function renderPath(routePath, assets) {
   if (blogPageMatch !== null) {
     const pageProps = props({ pageNumber: blogPageMatch[1] });
     return await renderRouteDocument(
-      async () => withBlogLayout(await Page$5(pageProps)),
-      async () => await generateMetadata$3(pageProps),
+      async () => withBlogLayout(await Page$6(pageProps)),
+      async () => await generateMetadata$4(pageProps),
       assets
     );
   }
@@ -3172,8 +3388,17 @@ async function renderPath(routePath, assets) {
   if (blogYearMatch !== null) {
     const yearProps = props({ year: blogYearMatch[1] });
     return await renderRouteDocument(
-      async () => withBlogLayout(await Page$6(yearProps)),
-      async () => await generateMetadata$4(yearProps),
+      async () => withBlogLayout(await Page$7(yearProps)),
+      async () => await generateMetadata$5(yearProps),
+      assets
+    );
+  }
+  const blogCategoryMatch = /^\/blog\/category\/([^/]+)$/.exec(routePath);
+  if (blogCategoryMatch !== null) {
+    const categoryProps = props({ category: blogCategoryMatch[1] });
+    return await renderRouteDocument(
+      async () => withBlogLayout(await Page$5(categoryProps)),
+      async () => await generateMetadata$3(categoryProps),
       assets
     );
   }
@@ -3181,8 +3406,8 @@ async function renderPath(routePath, assets) {
   if (blogPostMatch !== null) {
     const postProps = props({ slug: blogPostMatch[1] });
     return await renderRouteDocument(
-      async () => withBlogLayout(await Page$7(postProps)),
-      async () => await generateMetadata$5(postProps),
+      async () => withBlogLayout(await Page$8(postProps)),
+      async () => await generateMetadata$6(postProps),
       assets
     );
   }
@@ -3233,17 +3458,17 @@ async function buildRoutes(assets) {
       path: routePath,
       outputPath: routeFilePath(routePath),
       dependencies: [...shared, ...dependencies],
-      render: async () => renderDocument(await renderPage(), await metadata2(), assets)
+      render: async () => renderDocument(await renderPage(), await metadata2(), assets, routePath)
     });
   }
   add("/", [], () => /* @__PURE__ */ jsx(Index, {}), value(metadata$2));
   add(
     "/blog",
     blogDeps,
-    async () => withBlogLayout(await Page$9()),
+    async () => withBlogLayout(await Page$a()),
     value(metadata$1)
   );
-  add("/blog/search", blogDeps, () => withBlogLayout(/* @__PURE__ */ jsx(Page$8, {})), value({
+  add("/blog/search", blogDeps, () => withBlogLayout(/* @__PURE__ */ jsx(Page$9, {})), value({
     title: "Patrick Desjardins Blog Search",
     description: "Patrick Desjardins Blog Search"
   }));
@@ -3266,8 +3491,8 @@ async function buildRoutes(assets) {
     add(
       `/blog/page/${pageNumber}`,
       blogDeps,
-      async () => withBlogLayout(await Page$5(pageProps)),
-      async () => await generateMetadata$3(pageProps)
+      async () => withBlogLayout(await Page$6(pageProps)),
+      async () => await generateMetadata$4(pageProps)
     );
   }
   for (let year = LAST_YEAR; year >= FIRST_YEAR; year -= 1) {
@@ -3275,8 +3500,24 @@ async function buildRoutes(assets) {
     add(
       `/blog/for/${year}`,
       blogDeps,
-      async () => withBlogLayout(await Page$6(yearProps)),
-      async () => await generateMetadata$4(yearProps)
+      async () => withBlogLayout(await Page$7(yearProps)),
+      async () => await generateMetadata$5(yearProps)
+    );
+  }
+  const categories = [
+    ...new Set(
+      sortedBlogPosts.flatMap(
+        (post) => post.frontmatter.categories.map(categorySlug)
+      )
+    )
+  ].sort();
+  for (const category of categories) {
+    const categoryProps = props({ category });
+    add(
+      `/blog/category/${category}`,
+      blogDeps,
+      async () => withBlogLayout(await Page$5(categoryProps)),
+      async () => await generateMetadata$3(categoryProps)
     );
   }
   for (const post of sortedBlogPosts) {
@@ -3284,8 +3525,8 @@ async function buildRoutes(assets) {
     add(
       `/blog/${post.metadata.slug}`,
       [postDependency(post)],
-      async () => withBlogLayout(await Page$7(postProps)),
-      async () => await generateMetadata$5(postProps)
+      async () => withBlogLayout(await Page$8(postProps)),
+      async () => await generateMetadata$6(postProps)
     );
   }
   for (let pageNumber = 1; pageNumber <= philosophyTotalPages; pageNumber += 1) {
