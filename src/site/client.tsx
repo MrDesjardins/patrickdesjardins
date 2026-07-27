@@ -18,7 +18,13 @@ import { staticStyleModules } from "./style-entry";
 import { onCLS, onFCP, onINP, onLCP, onTTFB, type Metric } from "web-vitals";
 import { sendTelemetryEvent } from "../lib/telemetry";
 
-void staticStyleModules;
+// The HTML is produced by a separate server renderer, so the client never
+// reads these CSS-module locals. Reference them through an observable side
+// effect the bundler cannot elide; a bare `void` lets Rollup tree-shake the
+// imports so their stylesheets (site layout, homepage sections) never ship.
+(
+  window as typeof window & { __staticStyleModules?: unknown }
+).__staticStyleModules = staticStyleModules;
 
 const trackedMetrics = new Set(["CLS", "LCP", "INP", "FCP", "TTFB"]);
 function reportMetric(metric: Metric): void {
@@ -41,7 +47,12 @@ document.addEventListener("click", (event) => {
   if (!(target instanceof Element)) return;
   const link = target.closest("a");
   const href = link?.getAttribute("href");
-  if (href === undefined || href === null || href.startsWith("/") || href.startsWith("#")) {
+  if (
+    href === undefined ||
+    href === null ||
+    href.startsWith("/") ||
+    href.startsWith("#")
+  ) {
     return;
   }
   try {
@@ -71,9 +82,10 @@ try {
     notice.innerHTML =
       '<div>This site uses optional analytics to understand performance and improve articles. No advertising storage is used.</div><div class="analytics-consent__actions"><button type="button" data-consent="granted">Allow analytics</button><button type="button" data-consent="denied">Decline</button></div>';
     notice.addEventListener("click", (event) => {
-      const button = event.target instanceof Element
-        ? event.target.closest<HTMLButtonElement>("button[data-consent]")
-        : null;
+      const button =
+        event.target instanceof Element
+          ? event.target.closest<HTMLButtonElement>("button[data-consent]")
+          : null;
       const consent = button?.dataset.consent;
       if (consent === "granted" || consent === "denied") {
         setAnalyticsConsent(consent);
@@ -97,17 +109,19 @@ if (document.getElementById("blog-search-root") !== null) {
     if (root === null) return;
     const BlogSearchClient = searchModule.default;
     const SearchErrorBoundary = boundaryModule.SearchErrorBoundary;
-    reactDomModule.createRoot(root).render(
-      reactModule.createElement(
-        reactModule.StrictMode,
-        null,
+    reactDomModule
+      .createRoot(root)
+      .render(
         reactModule.createElement(
-          SearchErrorBoundary,
+          reactModule.StrictMode,
           null,
-          reactModule.createElement(BlogSearchClient),
+          reactModule.createElement(
+            SearchErrorBoundary,
+            null,
+            reactModule.createElement(BlogSearchClient),
+          ),
         ),
-      ),
-    );
+      );
   });
 }
 
@@ -122,17 +136,19 @@ if (document.getElementById("philosophy-search-root") !== null) {
     if (root === null) return;
     const PhilosophySearchClient = searchModule.default;
     const SearchErrorBoundary = boundaryModule.SearchErrorBoundary;
-    reactDomModule.createRoot(root).render(
-      reactModule.createElement(
-        reactModule.StrictMode,
-        null,
+    reactDomModule
+      .createRoot(root)
+      .render(
         reactModule.createElement(
-          SearchErrorBoundary,
+          reactModule.StrictMode,
           null,
-          reactModule.createElement(PhilosophySearchClient),
+          reactModule.createElement(
+            SearchErrorBoundary,
+            null,
+            reactModule.createElement(PhilosophySearchClient),
+          ),
         ),
-      ),
-    );
+      );
   });
 }
 
@@ -167,9 +183,7 @@ for (const root of document.querySelectorAll<HTMLElement>(
   });
 }
 
-if (
-  document.querySelector('pre code[class*="language-"]') !== null
-) {
+if (document.querySelector('pre code[class*="language-"]') !== null) {
   void import("./highlight").then((module) => {
     module.highlightAll();
   });
