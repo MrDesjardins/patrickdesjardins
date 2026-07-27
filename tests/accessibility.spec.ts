@@ -10,17 +10,7 @@ const staticRoutes = [
 ];
 
 function axeForPage(page: Page): AxeBuilder {
-  return new AxeBuilder({ page: page })
-    .exclude("iframe")
-    .disableRules([
-      // Existing visual design and third-party widgets still have contrast debt.
-      // Keep structural/name/role/form checks active while that legacy work is
-      // handled separately.
-      "color-contrast",
-      // The homepage portfolio sections use h5 for card labels. That visual
-      // hierarchy predates this focused accessibility pass.
-      "heading-order",
-    ]);
+  return new AxeBuilder({ page: page }).exclude("iframe");
 }
 
 for (const route of staticRoutes) {
@@ -41,6 +31,18 @@ test("has no axe violations on one blog post", async ({ page }) => {
     .getAttribute("href");
 
   await page.goto(href ?? "/blog/628");
+  const results = await axeForPage(page).analyze();
+  expect(results.violations).toEqual([]);
+});
+
+test("has no axe violations on one philosophy essay", async ({ page }) => {
+  await page.goto("/philosophy");
+  const href = await page
+    .locator('article a[href^="/philosophy/"]')
+    .first()
+    .getAttribute("href");
+
+  await page.goto(href ?? "/philosophy/council-of-the-owls");
   const results = await axeForPage(page).analyze();
   expect(results.violations).toEqual([]);
 });

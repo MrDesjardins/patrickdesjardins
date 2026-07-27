@@ -142,9 +142,27 @@
   margin-top: -12px;
 }
 
+.articleNavigation {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 32px;
+  padding-block: 24px;
+  border-top: 1px solid currentColor;
+}
+
+.articleNavigation a {
+  max-width: 46%;
+}
+
 @media only screen and (max-width: 500px) {
   .blogPostContent > p:first-of-type::first-letter {
     font-size: 3em;
     line-height: 0.95;
+  }
+
+  .articleNavigation a {
+    max-width: 100%;
   }
 }

@@ -9,7 +9,8 @@ export const CodeSandbox = (props: CodeSandboxProps): React.ReactElement => {
       src={`https://codesandbox.io/embed/${props.codeSandboxId}`}
       style={{
         width: "100%",
-        height: "500px",
+        height: "min(500px, 70vh)",
+        minHeight: "320px",
         border: 0,
         borderRadius: "4px",
         overflow: "hidden",

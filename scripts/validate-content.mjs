@@ -9,6 +9,15 @@ const COLLECTIONS = [
 const POST_EXTENSIONS = new Set([".md", ".mdx"]);
 const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
+function isValidIsoDate(value) {
+  if (!ISO_DATE_PATTERN.test(value)) {
+    return false;
+  }
+  const parsed = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(parsed.getTime()) &&
+    parsed.toISOString().slice(0, 10) === value;
+}
+
 function walkFiles(root) {
   if (!fs.existsSync(root)) {
     return [];
@@ -82,12 +91,12 @@ function validatePost(filePath, collection, slugOwners) {
     }
     if (typeof frontmatter.date !== "string" || !ISO_DATE_PATTERN.test(frontmatter.date)) {
       errors.push("date must use YYYY-MM-DD format");
+    } else if (!isValidIsoDate(frontmatter.date)) {
+      errors.push(`date is not valid: ${frontmatter.date}`);
     } else if (frontmatter.date.slice(0, 4) !== yearFolder) {
       warnings.push(
         `date year ${frontmatter.date.slice(0, 4)} does not match folder ${yearFolder}`,
       );
-    } else if (Number.isNaN(Date.parse(`${frontmatter.date}T00:00:00Z`))) {
-      errors.push(`date is not valid: ${frontmatter.date}`);
     }
     if (
       collection.requireCategories &&

@@ -16,8 +16,14 @@
 
 .blogEntryDetails {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   line-height: 20px;
+}
+
+.searchScore {
+  color: var(--blog-date-foreground-color);
+  font-size: 14px;
 }
 
 .blogSearchEntry a {

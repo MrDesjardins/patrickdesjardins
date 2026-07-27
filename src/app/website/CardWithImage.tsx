@@ -16,8 +16,8 @@ export const CardWithImage = (
         <p className={styles.cardFixedWidthImage}>{props.image}</p>
       </div>
       <div className={styles2.cardWithImageContainerText}>
-        <h5>{props.title}</h5>
-        <h6>{props.subtitle}</h6>
+        <h3>{props.title}</h3>
+        <h4>{props.subtitle}</h4>
         <p>{props.description}</p>
       </div>
     </div>

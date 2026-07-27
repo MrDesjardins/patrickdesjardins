@@ -1,0 +1,39 @@
+.analytics-consent {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  left: 16px;
+  z-index: 1000;
+  max-width: 680px;
+  margin: auto;
+  padding: 16px;
+  color: #fff;
+  background: #242328;
+  border: 2px solid #fff;
+  border-radius: 6px;
+  font: 16px/1.5 "Open Sans", sans-serif;
+}
+
+.analytics-consent__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.analytics-consent button {
+  min-height: 44px;
+  padding: 8px 16px;
+  color: #000;
+  background: #fff;
+  border: 2px solid #fff;
+  border-radius: 4px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.analytics-consent button:focus-visible {
+  outline: 3px solid #ffb4af;
+  outline-offset: 3px;
+}

@@ -13,42 +13,128 @@ import "@fontsource/eb-garamond/700-italic.css";
 import "../app/blog/[slug]/linenumber.css";
 import "../app/blog/[slug]/theme.css";
 import "../app/philosophy/[slug]/paper-prism.css";
+import "./consent.css";
 import { staticStyleModules } from "./style-entry";
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import { OutboundLinkTelemetry } from "../app/OutboundLinkTelemetry";
-import { WebVitals } from "../app/WebVitals";
-import { MastodonCommentsClient } from "../app/_components/MastodonCommentsClient";
-import BlogSearchClient from "../app/blog/search/SearchClient";
-import { SearchErrorBoundary } from "../app/blog/search/SearchErrorBoundary";
-import PhilosophySearchClient from "../app/philosophy/search/PhilosophySearchClient";
+import { onCLS, onFCP, onINP, onLCP, onTTFB, type Metric } from "web-vitals";
+import { sendTelemetryEvent } from "../lib/telemetry";
 
 void staticStyleModules;
 
-function mount(
-  rootId: string,
-  element: React.ReactElement,
-): void {
-  const root = document.getElementById(rootId);
-  if (root === null) {
+const trackedMetrics = new Set(["CLS", "LCP", "INP", "FCP", "TTFB"]);
+function reportMetric(metric: Metric): void {
+  if (trackedMetrics.has(String(metric.name))) {
+    sendTelemetryEvent("web_vital", {
+      metric_name: String(metric.name),
+      metric_value: Math.round(metric.value),
+      metric_rating: String(metric.rating),
+    });
+  }
+}
+onCLS(reportMetric);
+onFCP(reportMetric);
+onINP(reportMetric);
+onLCP(reportMetric);
+onTTFB(reportMetric);
+
+document.addEventListener("click", (event) => {
+  const target = event.target;
+  if (!(target instanceof Element)) return;
+  const link = target.closest("a");
+  const href = link?.getAttribute("href");
+  if (href === undefined || href === null || href.startsWith("/") || href.startsWith("#")) {
     return;
   }
+  try {
+    const url = new URL(href, window.location.href);
+    if (url.hostname !== window.location.hostname) {
+      sendTelemetryEvent("outbound_link_click", { link_host: url.hostname });
+    }
+  } catch {
+    // Ignore malformed third-party links.
+  }
+});
 
-  createRoot(root).render(<StrictMode>{element}</StrictMode>);
+function setAnalyticsConsent(value: "granted" | "denied"): void {
+  try {
+    localStorage.setItem("analytics-consent", value);
+  } catch {
+    // Consent still applies to the current page when storage is unavailable.
+  }
+  window.gtag?.("consent", "update", { analytics_storage: value });
 }
 
-mount(
-  "blog-search-root",
-  <SearchErrorBoundary>
-    <BlogSearchClient />
-  </SearchErrorBoundary>,
-);
-mount(
-  "philosophy-search-root",
-  <SearchErrorBoundary>
-    <PhilosophySearchClient />
-  </SearchErrorBoundary>,
-);
+try {
+  if (localStorage.getItem("analytics-consent") === null) {
+    const notice = document.createElement("aside");
+    notice.className = "analytics-consent";
+    notice.setAttribute("aria-label", "Analytics preferences");
+    notice.innerHTML =
+      '<div>This site uses optional analytics to understand performance and improve articles. No advertising storage is used.</div><div class="analytics-consent__actions"><button type="button" data-consent="granted">Allow analytics</button><button type="button" data-consent="denied">Decline</button></div>';
+    notice.addEventListener("click", (event) => {
+      const button = event.target instanceof Element
+        ? event.target.closest<HTMLButtonElement>("button[data-consent]")
+        : null;
+      const consent = button?.dataset.consent;
+      if (consent === "granted" || consent === "denied") {
+        setAnalyticsConsent(consent);
+        notice.remove();
+      }
+    });
+    document.body.appendChild(notice);
+  }
+} catch {
+  // Do not block the static page when browser storage is unavailable.
+}
+
+if (document.getElementById("blog-search-root") !== null) {
+  void Promise.all([
+    import("react"),
+    import("react-dom/client"),
+    import("../app/blog/search/SearchClient"),
+    import("../app/blog/search/SearchErrorBoundary"),
+  ]).then(([reactModule, reactDomModule, searchModule, boundaryModule]) => {
+    const root = document.getElementById("blog-search-root");
+    if (root === null) return;
+    const BlogSearchClient = searchModule.default;
+    const SearchErrorBoundary = boundaryModule.SearchErrorBoundary;
+    reactDomModule.createRoot(root).render(
+      reactModule.createElement(
+        reactModule.StrictMode,
+        null,
+        reactModule.createElement(
+          SearchErrorBoundary,
+          null,
+          reactModule.createElement(BlogSearchClient),
+        ),
+      ),
+    );
+  });
+}
+
+if (document.getElementById("philosophy-search-root") !== null) {
+  void Promise.all([
+    import("react"),
+    import("react-dom/client"),
+    import("../app/philosophy/search/PhilosophySearchClient"),
+    import("../app/blog/search/SearchErrorBoundary"),
+  ]).then(([reactModule, reactDomModule, searchModule, boundaryModule]) => {
+    const root = document.getElementById("philosophy-search-root");
+    if (root === null) return;
+    const PhilosophySearchClient = searchModule.default;
+    const SearchErrorBoundary = boundaryModule.SearchErrorBoundary;
+    reactDomModule.createRoot(root).render(
+      reactModule.createElement(
+        reactModule.StrictMode,
+        null,
+        reactModule.createElement(
+          SearchErrorBoundary,
+          null,
+          reactModule.createElement(PhilosophySearchClient),
+        ),
+      ),
+    );
+  });
+}
 
 for (const root of document.querySelectorAll<HTMLElement>(
   "[data-mastodon-comments-root]",
@@ -62,15 +148,23 @@ for (const root of document.querySelectorAll<HTMLElement>(
     continue;
   }
 
-  createRoot(root).render(
-    <StrictMode>
-      <MastodonCommentsClient
-        instanceUrl={instanceUrl}
-        statusId={statusId}
-        statusUrl={statusUrl}
-      />
-    </StrictMode>,
-  );
+  void Promise.all([
+    import("react"),
+    import("react-dom/client"),
+    import("../app/_components/MastodonCommentsClient"),
+  ]).then(([reactModule, reactDomModule, module]) => {
+    reactDomModule.createRoot(root).render(
+      reactModule.createElement(
+        reactModule.StrictMode,
+        null,
+        reactModule.createElement(module.MastodonCommentsClient, {
+          instanceUrl: instanceUrl,
+          statusId: statusId,
+          statusUrl: statusUrl,
+        }),
+      ),
+    );
+  });
 }
 
 if (
@@ -80,13 +174,3 @@ if (
     module.highlightAll();
   });
 }
-
-const telemetryRoot = document.createElement("div");
-telemetryRoot.hidden = true;
-document.body.appendChild(telemetryRoot);
-createRoot(telemetryRoot).render(
-  <StrictMode>
-    <OutboundLinkTelemetry />
-    <WebVitals />
-  </StrictMode>,
-);

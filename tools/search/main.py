@@ -5,6 +5,7 @@ import re
 import struct
 import sys
 from dataclasses import dataclass
+from datetime import datetime, timezone
 
 import numpy as np
 import yaml
@@ -39,6 +40,9 @@ class Document:
     title: str
     content_hash: str
     text: str
+    date: str = ""
+    categories: tuple[str, ...] = ()
+    excerpt: str = ""
 
 
 def strip_frontmatter_and_syntax(content: str) -> str:
@@ -64,6 +68,14 @@ def parse_title(content: str) -> str:
     return "Untitled"
 
 
+def parse_frontmatter(content: str) -> dict:
+    match = re.match(r"^---\n(.*?\n)---\n", content, flags=re.DOTALL)
+    if match is None:
+        return {}
+    parsed = yaml.safe_load(match.group(1))
+    return parsed if isinstance(parsed, dict) else {}
+
+
 def content_hash(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
@@ -84,15 +96,35 @@ def scan_documents(posts_dir: str) -> list[Document]:
             abs_path = os.path.join(root, filename)
             with open(abs_path, "r", encoding="utf-8") as file:
                 content = file.read()
+            frontmatter = parse_frontmatter(content)
+            date = str(frontmatter.get("date", ""))
+            if date:
+                try:
+                    if (
+                        datetime.strptime(date[:10], "%Y-%m-%d").date()
+                        > datetime.now(timezone.utc).date()
+                    ):
+                        continue
+                except ValueError:
+                    continue
             text = strip_frontmatter_and_syntax(content)
+            raw_categories = frontmatter.get("categories", [])
+            categories = (
+                tuple(str(value) for value in raw_categories)
+                if isinstance(raw_categories, list)
+                else ()
+            )
             documents.append(
                 Document(
                     rel_path=rel_path(abs_path),
                     abs_path=abs_path,
                     filename=filename,
-                    title=parse_title(content),
+                    title=str(frontmatter.get("title", parse_title(content))),
                     content_hash=content_hash(text),
                     text=text,
+                    date=date,
+                    categories=categories,
+                    excerpt=(text[:157].rstrip() + "…") if len(text) > 160 else text,
                 )
             )
 
@@ -233,6 +265,9 @@ def generate_index_for_collection(
                 "rel_path": doc.rel_path,
                 "filename": doc.filename,
                 "title": doc.title,
+                "date": doc.date,
+                "categories": list(doc.categories),
+                "excerpt": doc.excerpt,
             }
         )
         row_index = len(vectors)

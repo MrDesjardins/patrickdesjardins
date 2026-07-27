@@ -19,13 +19,13 @@
   }
 }
 
-.cardWithImageContainer > .cardWithImageContainerText > h5,
-.cardWithImageContainer > .cardWithImageContainerText > h6 {
+.cardWithImageContainer > .cardWithImageContainerText > h3,
+.cardWithImageContainer > .cardWithImageContainerText > h4 {
   text-align: left;
   margin: 6px 0 6px 0;
 }
 
-.cardWithImageContainer > .cardWithImageContainerText > h6 {
+.cardWithImageContainer > .cardWithImageContainerText > h4 {
   font-style: italic;
   color: var(--text-color1);
 }

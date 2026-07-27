@@ -15,6 +15,9 @@ interface Post {
   path: string;
   filename: string;
   title: string;
+  date?: string;
+  categories?: string[];
+  excerpt?: string;
 }
 
 export default function Page(): React.ReactElement {
@@ -102,10 +105,20 @@ export default function Page(): React.ReactElement {
     const queryVector = output.data as number[];
 
     // Run the cosine similarity against all embeddings
-    const scoredResults = embeddingsRef.current.map((vec, i) => ({
-      post: indexRef.current[i],
-      score: cosineSimilarity(queryVector, vec),
-    }));
+    const normalizedQuery = trimmedQuery.toLowerCase();
+    const scoredResults = embeddingsRef.current.map((vec, i) => {
+      const post = indexRef.current[i];
+      const titleMatch = post.title.toLowerCase().includes(normalizedQuery);
+      const categoryMatch = (post.categories ?? []).some((category) =>
+        category.toLowerCase().includes(normalizedQuery)
+      );
+      return {
+        post: post,
+        score: cosineSimilarity(queryVector, vec) +
+          (titleMatch ? 0.2 : 0) +
+          (categoryMatch ? 0.1 : 0),
+      };
+    });
 
     // Descending sort by score and take top 10
     scoredResults.sort((a, b) => b.score - a.score);
@@ -186,6 +199,9 @@ export default function Page(): React.ReactElement {
               slug={slugFromMdxFilename(post.filename)}
               title={post.title}
               score={score}
+              date={post.date ?? ""}
+              categories={post.categories ?? []}
+              excerpt={post.excerpt ?? ""}
             />
           ))}
         </ul>

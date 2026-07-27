@@ -3,8 +3,6 @@ name: GitHub Pages
 on:
   push:
     branches: [master]
-    paths-ignore:
-      - ".github/**"
   schedule:
     - cron: "0 17 * * *"
   workflow_dispatch:
@@ -87,6 +85,25 @@ jobs:
 
       - name: Test
         run: pnpm run test:ci
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Test native site generator
+        run: cargo test --manifest-path tools/sitegen/Cargo.toml
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.2.0
+        with:
+          enable-cache: true
+
+      - name: Install Python dependencies
+        run: uv sync
+        working-directory: tools
+
+      - name: Test publishing and search tools
+        run: uv run python -m unittest discover tests
+        working-directory: tools
 
   search-index:
     runs-on: ubuntu-latest

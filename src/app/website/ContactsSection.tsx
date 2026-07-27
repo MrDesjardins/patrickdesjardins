@@ -31,14 +31,14 @@ export const ContactSection = (): React.ReactElement => {
       <div className={styles2.contactContainer}>
         <div className={styles2.contactDetail}>
           <FontAwesomeIcon icon={faPaperPlane} />
-          <h5>
+          <h4>
             <a href="mailto:mrdesjardins@gmail.com">mrdesjardins@gmail.com</a>
-          </h5>
+          </h4>
         </div>
 
         <div className={styles2.contactDetail}>
           <FontAwesomeIcon icon={faMapMarker} />
-          <h5>United States, California</h5>
+          <h4>United States, California</h4>
         </div>
       </div>
       <div className={styles2.contactContainer2}>

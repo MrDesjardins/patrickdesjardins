@@ -29,6 +29,17 @@
 .heading {
   color: var(--blog-title-foreground-color);
 }
+.articleParentLink {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: var(--link-foreground-color);
+}
+.articleParentLink:focus-visible {
+  outline: 3px solid var(--link-foreground-color);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
 .siteTitle {
   font-size: 3rem;
   color: var(--blog-title-foreground-color);

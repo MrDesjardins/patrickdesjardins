@@ -18,7 +18,7 @@
   --background2: #f0f0f0;
   --background3: #fff;
 
-  --link-background1: #eb4c44; /*Match the color of the image (red)*/
+  --link-background1: #c63a34;
 
   --size-column: 400px;
 }
@@ -57,7 +57,7 @@
 * Header: My name and my job description
 */
 .topHeader {
-  word-break: break-all; /* For Small Resolution*/
+  overflow-wrap: anywhere;
   padding: 16px;
 }
 

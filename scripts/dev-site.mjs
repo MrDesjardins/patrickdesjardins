@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import http from "node:http";
 import { createServer as createViteServer, loadEnv } from "vite";
-import { generateStaticModuleCss } from "./generate-static-modules-css.mjs";
 
 const port = Number(process.env.PORT ?? 3000);
 const mode = "development";
@@ -37,9 +36,6 @@ function shouldReload(filePath) {
   );
 }
 
-const DEV_STATIC_MODULES_PATH = "/@dev/static-modules.css";
-let staticModulesCss = generateStaticModuleCss();
-
 const vite = await createViteServer({
   appType: "custom",
   logLevel: "info",
@@ -50,28 +46,18 @@ const vite = await createViteServer({
 });
 
 vite.watcher.on("change", (filePath) => {
-  if (filePath.endsWith(".module.css")) {
-    staticModulesCss = generateStaticModuleCss();
-  }
   if (shouldReload(filePath)) {
     vite.ws.send({ type: "full-reload" });
   }
 });
 
 const devAssets = {
-  css: [DEV_STATIC_MODULES_PATH, "/src/site/dev-global.css"],
+  css: ["/src/site/dev-global.css"],
   js: ["/@vite/client", "/src/site/client.tsx"],
 };
 
 const server = http.createServer((request, response) => {
   const pathname = requestPath(request.url);
-  if (pathname === DEV_STATIC_MODULES_PATH) {
-    response.statusCode = 200;
-    response.setHeader("Content-Type", "text/css; charset=utf-8");
-    response.end(staticModulesCss);
-    return;
-  }
-
   vite.middlewares(request, response, async () => {
     try {
       const renderer = await vite.ssrLoadModule("/src/site/render.tsx");

@@ -8,7 +8,8 @@ export const YouTube = (props: YouTubeProps): React.ReactElement => {
     <iframe
       style={{
         width: "100%",
-        height: "500px",
+        aspectRatio: "16 / 9",
+        minHeight: "240px",
         border: 0,
         borderRadius: "4px",
         overflow: "hidden",

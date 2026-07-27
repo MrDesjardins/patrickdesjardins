@@ -13,6 +13,9 @@ import BlogYearPage, {
 import BlogPaginationPage, {
   generateMetadata as generateBlogPaginationMetadata,
 } from "../app/blog/page/[pageNumber]/page";
+import BlogCategoryPage, {
+  generateMetadata as generateBlogCategoryMetadata,
+} from "../app/blog/category/[category]/page";
 import PhilosophyPage, {
   metadata as philosophyMetadata,
 } from "../app/philosophy/page";
@@ -43,11 +46,13 @@ import {
   type MdxData,
 } from "../lib/api";
 import { sortByMetadataDateDesc } from "../_utils/list";
+import { categorySlug } from "../app/blog/_components/BlogCategories";
 import { type Metadata } from "./next";
 
 export interface AssetLinks {
   css: string[];
   js: string[];
+  routePath?: string;
 }
 
 export interface SiteRoute {
@@ -100,13 +105,14 @@ function gaScript(): string {
   }
 
   const id = escapeHtml(gaMeasurementId);
-  return `<script async src="https://www.googletagmanager.com/gtag/js?id=${id}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","${id}");</script>`;
+  return `<script async src="https://www.googletagmanager.com/gtag/js?id=${id}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}var analyticsConsent="denied";try{analyticsConsent=localStorage.getItem("analytics-consent")==="granted"?"granted":"denied";}catch{}gtag("consent","default",{analytics_storage:analyticsConsent,ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied"});gtag("js",new Date());gtag("config","${id}");</script>`;
 }
 
 function renderDocument(
   body: React.ReactNode,
   metadata: Metadata | undefined,
   assets: AssetLinks,
+  routePath = assets.routePath ?? "/",
 ): string {
   const app = renderToStaticMarkup(<RootLayout>{body}</RootLayout>);
   const css = assets.css
@@ -115,11 +121,33 @@ function renderDocument(
   const js = assets.js
     .map((src) => `<script type="module" src="${escapeHtml(src)}"></script>`)
     .join("");
+  const title = pageTitle(metadata);
+  const description = pageDescription(metadata);
+  const canonicalPath = routePath === "/blog/page/1"
+    ? "/blog"
+    : routePath === "/philosophy/page/1"
+      ? "/philosophy"
+      : routePath;
+  const canonicalUrl = `${BASE_URL}${canonicalPath === "/" ? "" : canonicalPath}`;
+  const socialImage = `${BASE_URL}/images/backgrounds/patrickdesjardins_conference_bw.webp`;
+  const isArticle = /^\/(?:blog|philosophy)\/(?!page\/|for\/|search$)/.test(routePath);
   const head = [
     `<meta charset="utf-8">`,
     `<meta name="viewport" content="width=device-width, initial-scale=1">`,
-    `<title>${escapeHtml(pageTitle(metadata))}</title>`,
-    `<meta name="description" content="${escapeHtml(pageDescription(metadata))}">`,
+    `<meta name="referrer" content="strict-origin-when-cross-origin">`,
+    `<title>${escapeHtml(title)}</title>`,
+    `<meta name="description" content="${escapeHtml(description)}">`,
+    `<link rel="canonical" href="${escapeHtml(canonicalUrl)}">`,
+    `<meta property="og:title" content="${escapeHtml(title)}">`,
+    `<meta property="og:description" content="${escapeHtml(description)}">`,
+    `<meta property="og:url" content="${escapeHtml(canonicalUrl)}">`,
+    `<meta property="og:type" content="${isArticle ? "article" : "website"}">`,
+    `<meta property="og:site_name" content="Patrick Desjardins">`,
+    `<meta property="og:image" content="${escapeHtml(socialImage)}">`,
+    `<meta name="twitter:card" content="summary_large_image">`,
+    `<meta name="twitter:title" content="${escapeHtml(title)}">`,
+    `<meta name="twitter:description" content="${escapeHtml(description)}">`,
+    `<meta name="twitter:image" content="${escapeHtml(socialImage)}">`,
     css,
     gaScript(),
   ].join("");
@@ -189,6 +217,7 @@ export async function renderPath(
   routePath: string,
   assets: AssetLinks,
 ): Promise<string> {
+  assets = { ...assets, routePath: routePath };
   if (routePath === "/") {
     return await renderRouteDocument(() => <HomePage />, value(homeMetadata), assets);
   }
@@ -253,6 +282,16 @@ export async function renderPath(
     return await renderRouteDocument(
       async () => withBlogLayout(await BlogYearPage(yearProps)),
       async () => await generateBlogYearMetadata(yearProps),
+      assets,
+    );
+  }
+
+  const blogCategoryMatch = /^\/blog\/category\/([^/]+)$/.exec(routePath);
+  if (blogCategoryMatch !== null) {
+    const categoryProps = props({ category: blogCategoryMatch[1] });
+    return await renderRouteDocument(
+      async () => withBlogLayout(await BlogCategoryPage(categoryProps)),
+      async () => await generateBlogCategoryMetadata(categoryProps),
       assets,
     );
   }
@@ -325,7 +364,7 @@ export async function buildRoutes(assets: AssetLinks): Promise<SiteRoute[]> {
       outputPath: routeFilePath(routePath),
       dependencies: [...shared, ...dependencies],
       render: async () =>
-        renderDocument(await renderPage(), await metadata(), assets),
+        renderDocument(await renderPage(), await metadata(), assets, routePath),
     });
   }
 
@@ -372,6 +411,23 @@ export async function buildRoutes(assets: AssetLinks): Promise<SiteRoute[]> {
       blogDeps,
       async () => withBlogLayout(await BlogYearPage(yearProps)),
       async () => await generateBlogYearMetadata(yearProps),
+    );
+  }
+
+  const categories = [
+    ...new Set(
+      sortedBlogPosts.flatMap((post) =>
+        post.frontmatter.categories.map(categorySlug)
+      ),
+    ),
+  ].sort();
+  for (const category of categories) {
+    const categoryProps = props({ category: category });
+    add(
+      `/blog/category/${category}`,
+      blogDeps,
+      async () => withBlogLayout(await BlogCategoryPage(categoryProps)),
+      async () => await generateBlogCategoryMetadata(categoryProps),
     );
   }
 

@@ -8,16 +8,16 @@
   display: grid;
   grid-template-columns: 1fr 2fr;
 }
-.statisticContainerCard h5,
-.statisticContainerCard h6 {
+.statisticContainerCard div[class="count-number"],
+.statisticContainerCard p {
   text-align: left;
 }
-.statisticContainerCard h5 {
+.statisticContainerCard div[class="count-number"] {
   font-size: 24px;
   padding: 0;
   margin: 0;
 }
-.statisticContainerCard h6 {
+.statisticContainerCard p {
   font-size: 14px;
   padding: 0;
   margin: 12px 0 0 0;

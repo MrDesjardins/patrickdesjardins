@@ -13,11 +13,15 @@ Themes: https://github.com/PrismJS/prism-themes
 Create a post:
 
 ```bash
-npm run content:new -- --title "My Post Title" --date 2026-06-14 --kind blog
+npm run content:new -- --title "My Post Title" --date 2026-06-14 --kind blog --category typescript
 ```
 
 Use `--kind philosophy` for philosophy essays and `--extension md` when MD is
 preferred over MDX.
+
+Blog categories are static discovery routes under `/blog/category/{category}`.
+Choose an existing category when practical so related articles remain easy to
+browse.
 
 Validate and preview:
 

@@ -10,7 +10,7 @@ export const AboutMeSection = (): React.ReactElement => {
       <h2>About Me</h2>
       <div className={styles2.sectionAboutMeContainer}>
         <div className={styles2.sectionAboutMeContainerContent}>
-          <h5>Polyvalent</h5>
+          <h3>Polyvalent</h3>
           <p>
             I adjust rapidly and efficiently to any environment. The proof is in
             my life. I have relocated from a French world to an English one.
@@ -24,7 +24,7 @@ export const AboutMeSection = (): React.ReactElement => {
         </div>
 
         <div className={styles2.sectionAboutMeContainerContent}>
-          <h5>Leader</h5>
+          <h3>Leader</h3>
           <p>
             In every position, I took the lead to improve the current situation
             or put practices in place with the people around me. I am not a loud
@@ -39,7 +39,7 @@ export const AboutMeSection = (): React.ReactElement => {
         </div>
 
         <div className={styles2.sectionAboutMeContainerContent}>
-          <h5>Doer</h5>
+          <h3>Doer</h3>
           <p>
             Expert in doing: think, plan, and execute. I design and write just
             enough to have the team understand the direction and lift apparent
@@ -53,7 +53,7 @@ export const AboutMeSection = (): React.ReactElement => {
         </div>
 
         <div className={styles2.sectionAboutMeContainerContent}>
-          <h5>Naturally Initiative Seeker</h5>
+          <h3>Naturally Initiative Seeker</h3>
           <p>
             My innate nature gave me the quality to find solutions to any
             problems. My experiences, motivation, and capability to learn fast
@@ -64,7 +64,7 @@ export const AboutMeSection = (): React.ReactElement => {
         </div>
 
         <div className={styles2.sectionAboutMeContainerContent}>
-          <h5>Sharer</h5>
+          <h3>Sharer</h3>
           <p>
             While performing my main tasks, I thrive on discovering initiatives
             to improve my team and the products. In addition, I am known to
@@ -73,7 +73,7 @@ export const AboutMeSection = (): React.ReactElement => {
         </div>
 
         <div className={styles2.sectionAboutMeContainerContent}>
-          <h5>Fast Pareto Practitioner</h5>
+          <h3>Fast Pareto Practitioner</h3>
           <p>
             I lean toward simple and fast solutions with a preference to do the
             heavy 80% of the work using 20% of my time. I truly excel working on

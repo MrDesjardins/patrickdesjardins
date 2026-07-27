@@ -1,5 +1,12 @@
 import { type MetadataRoute } from "next";
 import { getAllPhilosophyPosts, getAllPosts } from "../lib/api";
+import {
+  FIRST_YEAR,
+  LAST_YEAR,
+  MAX_POSTS_PER_PAGE,
+  PHILOSOPHY_FIRST_YEAR,
+} from "../constants/constants";
+import { categorySlug } from "./blog/_components/BlogCategories";
 
 const BASE_URL = "https://patrickdesjardins.com";
 
@@ -24,6 +31,34 @@ export default async function sitemap(): Promise<MetadataRoute["Sitemap"]> {
       priority: 0.65,
     }),
   );
+  const archiveEntries: MetadataRoute["Sitemap"] = [
+    ...Array.from(
+      { length: Math.ceil(posts.length / MAX_POSTS_PER_PAGE) },
+      (_, index) => `${BASE_URL}/blog/page/${index + 1}`,
+    ),
+    ...Array.from(
+      { length: Math.max(1, Math.ceil(philosophyPosts.length / MAX_POSTS_PER_PAGE)) },
+      (_, index) => `${BASE_URL}/philosophy/page/${index + 1}`,
+    ),
+    ...Array.from(
+      { length: LAST_YEAR - FIRST_YEAR + 1 },
+      (_, index) => `${BASE_URL}/blog/for/${LAST_YEAR - index}`,
+    ),
+    ...Array.from(
+      { length: LAST_YEAR - PHILOSOPHY_FIRST_YEAR + 1 },
+      (_, index) => `${BASE_URL}/philosophy/for/${LAST_YEAR - index}`,
+    ),
+    ...[
+      ...new Set(
+        posts.flatMap((post) => post.frontmatter.categories.map(categorySlug)),
+      ),
+    ].map((category) => `${BASE_URL}/blog/category/${category}`),
+  ].map((url) => ({
+    url: url,
+    lastModified: new Date(),
+    changeFrequency: "monthly",
+    priority: 0.5,
+  }));
 
   return [
     {
@@ -45,6 +80,12 @@ export default async function sitemap(): Promise<MetadataRoute["Sitemap"]> {
       priority: 0.85,
     },
     {
+      url: `${BASE_URL}/blog/search`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
       url: `${BASE_URL}/philosophy/search`,
       lastModified: new Date(),
       changeFrequency: "monthly",
@@ -52,5 +93,6 @@ export default async function sitemap(): Promise<MetadataRoute["Sitemap"]> {
     },
     ...postEntries,
     ...philosophyEntries,
+    ...archiveEntries,
   ];
 }

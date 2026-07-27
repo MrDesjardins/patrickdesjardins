@@ -15,6 +15,9 @@ interface Post {
   path: string;
   filename: string;
   title: string;
+  date?: string;
+  categories?: string[];
+  excerpt?: string;
 }
 
 export default function PhilosophySearchClient(): React.ReactElement {
@@ -103,10 +106,15 @@ export default function PhilosophySearchClient(): React.ReactElement {
 
     const queryVector = output.data as number[];
 
-    const scoredResults = embeddingsRef.current.map((vec, i) => ({
-      post: indexRef.current[i],
-      score: cosineSimilarity(queryVector, vec),
-    }));
+    const normalizedQuery = trimmedQuery.toLowerCase();
+    const scoredResults = embeddingsRef.current.map((vec, i) => {
+      const post = indexRef.current[i];
+      return {
+        post: post,
+        score: cosineSimilarity(queryVector, vec) +
+          (post.title.toLowerCase().includes(normalizedQuery) ? 0.2 : 0),
+      };
+    });
 
     scoredResults.sort((a, b) => b.score - a.score);
     const endTime = performance.now();
@@ -188,6 +196,8 @@ export default function PhilosophySearchClient(): React.ReactElement {
               slug={slugFromMdxFilename(post.filename)}
               title={post.title}
               score={score}
+              date={post.date ?? ""}
+              excerpt={post.excerpt ?? ""}
             />
           ))}
         </ul>

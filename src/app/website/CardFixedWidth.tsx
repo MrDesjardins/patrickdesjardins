@@ -10,7 +10,7 @@ export const CardFixedWidth = (
 ): React.ReactElement => {
   return (
     <div className={styles.sectionFixedWitdhContent}>
-      <h5>{props.title}</h5>
+      <h3>{props.title}</h3>
       <p className={styles.cardFixedWidthImage}>{props.image}</p>
       <p>{props.description}</p>
       <p>

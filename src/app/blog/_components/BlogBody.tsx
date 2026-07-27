@@ -24,12 +24,14 @@ export function BlogBody(props: BlogBodyProps): React.ReactElement {
   for (let i = LAST_YEAR; i >= FIRST_YEAR; i--) {
     years.push(i);
   }
-  const pages = [];
-  if (props.totalPages !== undefined && props.totalPages > 0) {
-    for (let i = 1; i <= props.totalPages; i++) {
-      pages.push(i);
-    }
-  }
+  const totalPages = props.isArticle === true ? 0 : (props.totalPages ?? 0);
+  const currentPage = props.currentPage ?? 1;
+  const firstVisiblePage = Math.max(1, currentPage - 2);
+  const lastVisiblePage = Math.min(totalPages, currentPage + 2);
+  const pages = Array.from(
+    { length: Math.max(0, lastVisiblePage - firstVisiblePage + 1) },
+    (_, index) => firstVisiblePage + index,
+  );
 
   return (
     <div className={styles.BlogBody}>
@@ -93,7 +95,12 @@ export function BlogBody(props: BlogBodyProps): React.ReactElement {
       </header>
       <main id="content" className={styles.main}>
         {props.isArticle === true ? (
-          <h1 className={styles.heading}>{props.topTitle}</h1>
+          <>
+            <Link className={styles.articleParentLink} href="/blog">
+              ← All technical posts
+            </Link>
+            <h1 className={styles.heading}>{props.topTitle}</h1>
+          </>
         ) : (
           <h2 className={styles.heading}>{props.topTitle}</h2>
         )}
@@ -107,10 +114,22 @@ export function BlogBody(props: BlogBodyProps): React.ReactElement {
                 Chronological Blog Articles by Page
               </div>
               <div className={styles.paginationLinks}>
+                {currentPage > 1 ? (
+                  <Link rel="prev" href={`/blog/page/${currentPage - 1}`}>
+                    ← Previous
+                  </Link>
+                ) : null}
+                {firstVisiblePage > 1 ? (
+                  <>
+                    <Link href="/blog/page/1">1</Link>
+                    <span aria-hidden="true">…</span>
+                  </>
+                ) : null}
                 {pages.map((page) => {
                   return (
                     <Link
                       key={page}
+                      aria-current={page === currentPage ? "page" : undefined}
                       className={clsx({
                         [styles.currentLink]: page === props.currentPage,
                       })}
@@ -120,6 +139,17 @@ export function BlogBody(props: BlogBodyProps): React.ReactElement {
                     </Link>
                   );
                 })}
+                {lastVisiblePage < totalPages ? (
+                  <>
+                    <span aria-hidden="true">…</span>
+                    <Link href={`/blog/page/${totalPages}`}>{totalPages}</Link>
+                  </>
+                ) : null}
+                {currentPage < totalPages ? (
+                  <Link rel="next" href={`/blog/page/${currentPage + 1}`}>
+                    Next →
+                  </Link>
+                ) : null}
               </div>
             </div>
           ) : null}

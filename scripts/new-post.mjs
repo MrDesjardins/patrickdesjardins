@@ -19,6 +19,8 @@ function parseArgs(argv) {
       options.kind = readValue(argv, ++i, arg);
     } else if (arg === "--extension") {
       options.extension = readValue(argv, ++i, arg).replace(/^\./, "");
+    } else if (arg === "--category") {
+      options.category = readValue(argv, ++i, arg);
     } else if (arg === "--help" || arg === "-h") {
       printHelp();
       process.exit(0);
@@ -41,6 +43,9 @@ function parseArgs(argv) {
   if (!["md", "mdx"].includes(options.extension)) {
     throw new Error('--extension must be "md" or "mdx".');
   }
+  if (options.kind === "blog" && (options.category ?? "").trim() === "") {
+    throw new Error("--category is required for blog posts.");
+  }
 
   return options;
 }
@@ -59,6 +64,7 @@ Options:
   --date YYYY-MM-DD        Publish date, defaults to today
   --kind blog|philosophy   Content collection, defaults to blog
   --extension md|mdx       File extension, defaults to mdx
+  --category CATEGORY      Required category for blog posts
 `);
 }
 
@@ -89,7 +95,7 @@ function main() {
   fs.mkdirSync(dir, { recursive: true });
   const categories =
     options.kind === "blog"
-      ? "categories:\n  - Uncategorized\n"
+      ? `categories:\n  - "${options.category.replace(/"/g, '\\"')}"\n`
       : "categories:\n";
   const content = `---\ntitle: "${options.title.replace(/"/g, '\\"')}"\ndate: "${options.date}"\n${categories}---\n\n`;
   fs.writeFileSync(filePath, content, "utf8");

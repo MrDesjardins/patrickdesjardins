@@ -23,12 +23,14 @@ export function PhilosophyBlogBody(
   for (let i = LAST_YEAR; i >= PHILOSOPHY_FIRST_YEAR; i--) {
     years.push(i);
   }
-  const pages = [];
-  if (props.totalPages !== undefined && props.totalPages > 0) {
-    for (let i = 1; i <= props.totalPages; i++) {
-      pages.push(i);
-    }
-  }
+  const totalPages = props.isArticle === true ? 0 : (props.totalPages ?? 0);
+  const currentPage = props.currentPage ?? 1;
+  const firstVisiblePage = Math.max(1, currentPage - 2);
+  const lastVisiblePage = Math.min(totalPages, currentPage + 2);
+  const pages = Array.from(
+    { length: Math.max(0, lastVisiblePage - firstVisiblePage + 1) },
+    (_, index) => firstVisiblePage + index,
+  );
 
   return (
     <div className={styles.blogBodyShell}>
@@ -110,9 +112,24 @@ export function PhilosophyBlogBody(
             <div className={styles.paginationBar}>
               <div className={styles.paginationTitle}>Essays by page</div>
               <div className={styles.paginationLinks}>
+                {currentPage > 1 ? (
+                  <Link
+                    rel="prev"
+                    href={`/philosophy/page/${currentPage - 1}`}
+                  >
+                    ← Previous
+                  </Link>
+                ) : null}
+                {firstVisiblePage > 1 ? (
+                  <>
+                    <Link href="/philosophy/page/1">1</Link>
+                    <span aria-hidden="true">…</span>
+                  </>
+                ) : null}
                 {pages.map((page) => (
                   <Link
                     key={page}
+                    aria-current={page === currentPage ? "page" : undefined}
                     className={clsx({
                       [styles.currentLink]: page === props.currentPage,
                     })}
@@ -121,6 +138,22 @@ export function PhilosophyBlogBody(
                     {page}
                   </Link>
                 ))}
+                {lastVisiblePage < totalPages ? (
+                  <>
+                    <span aria-hidden="true">…</span>
+                    <Link href={`/philosophy/page/${totalPages}`}>
+                      {totalPages}
+                    </Link>
+                  </>
+                ) : null}
+                {currentPage < totalPages ? (
+                  <Link
+                    rel="next"
+                    href={`/philosophy/page/${currentPage + 1}`}
+                  >
+                    Next →
+                  </Link>
+                ) : null}
               </div>
             </div>
           ) : null}

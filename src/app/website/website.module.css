@@ -71,7 +71,7 @@ section.contactSection a:hover {
 }
 
 .sectionMainpage h3,
-.sectionMainpage h5 {
+.sectionMainpage h4 {
   color: var(--text-color3);
   text-align: center;
 }
@@ -79,7 +79,7 @@ section.contactSection a:hover {
 .sectionMainpage h3 {
   font-size: 22px;
 }
-.sectionMainpage h5 {
+.sectionMainpage h4 {
   font-size: 18px;
 }
 

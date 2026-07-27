@@ -1,5 +1,5 @@
 import styles from "./BlogSearchEntry.module.css";
-// import { BlogCategories } from "./BlogCategories";
+import { BlogCategories } from "./BlogCategories";
 import Link from "next/link";
 export interface BlogSearchEntryProps {
   id: string;
@@ -7,6 +7,9 @@ export interface BlogSearchEntryProps {
   title: string;
   slug: string;
   score: number;
+  date: string;
+  categories: string[];
+  excerpt: string;
 }
 export const BlogSearchEntry = (
   props: BlogSearchEntryProps,
@@ -17,18 +20,24 @@ export const BlogSearchEntry = (
         <h2 className={styles.blogSearchEntryArticleTitle}>
           <Link href={`/blog/${props.slug}`}>
             {props.position + 1}{". "}
-            {props.title} ({formatScore(props.score)})
+            {props.title}
           </Link>
         </h2>
-        {/* <div className={styles.blogEntryDetails}>
-        <span className={styles.blogEntryDate}>Posted: {props.date}</span>
-        <BlogCategories categories={props.categories} />
-      </div> */}
+        <div className={styles.blogEntryDetails}>
+          <time className={styles.blogEntryDate} dateTime={props.date}>
+            Posted: {props.date}
+          </time>
+          <BlogCategories categories={props.categories} />
+        </div>
+        <p>{props.excerpt}</p>
+        <span className={styles.searchScore}>
+          Relevance: {formatScore(props.score)}
+        </span>
       </article>
     </li>
   );
 };
 
 function formatScore(score: number): string {
-  return (score * 100).toFixed(0) + "%";
+  return (Math.min(1, Math.max(0, score)) * 100).toFixed(0) + "%";
 }

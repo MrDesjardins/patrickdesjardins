@@ -3,7 +3,7 @@ export type TelemetryParams = Record<string, string | number | boolean>;
 declare global {
   interface Window {
     gtag?: (
-      command: "event",
+      command: "event" | "consent",
       eventName: string,
       params?: TelemetryParams,
     ) => void;

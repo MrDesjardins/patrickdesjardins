@@ -47,6 +47,30 @@ export interface MdxData {
   frontmatter: Frontmatter;
 }
 
+export function plainTextExcerpt(content: string, maxLength = 160): string {
+  const body = content.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, "");
+  const text = body
+    .split(/\r?\n/)
+    .filter((line) => {
+      const value = line.trim();
+      return value !== "" &&
+        !value.startsWith("#") &&
+        !value.startsWith("!") &&
+        !value.startsWith("<") &&
+        !value.startsWith("```") &&
+        !value.startsWith("~~~");
+    })
+    .join(" ")
+    .replace(/\[([^\]]+)]\([^)]+\)/g, "$1")
+    .replace(/[`*_>]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (text.length <= maxLength) {
+    return text;
+  }
+  return `${text.slice(0, maxLength).trimEnd()}…`;
+}
+
 function parseFrontmatter(content: string): {
   frontmatter: Frontmatter;
   body: string;

@@ -27,6 +27,8 @@ This repository is Patrick Desjardins' static website and blog. Keep changes sim
 - Client components only work in production when the generated HTML in `out/` contains their mount point. Adding code to `src/site/client.tsx` is not enough.
 - React-rendered static routes use the SSR bundle at `out/server/render.js`; when changing files that feed that renderer, make sure the Rust incremental build invalidates the bundle before rerendering HTML.
 - Any feature that depends on data attributes, placeholder roots, IDs, or static page markup must be checked in the generated HTML after `rtk npm run build`.
+- Production documents emit canonical, Open Graph, Twitter, and article JSON-LD metadata from both renderers. Keep the head builders in `src/site/render.tsx` and `tools/sitegen/src/main.rs` in sync.
+- Philosophy native pages must retain the literal `philosophy-site` wrapper class because `paper-prism.css` scopes its code theme to that class.
 - For article-page changes, search the relevant generated file under `out/blog/*.html` or `out/philosophy/*.html` for the expected marker before calling the work complete.
 - If a new local data file affects generated article HTML, add it as a route dependency in the Rust generator. Otherwise a data-only edit may not rebuild the affected page.
 - When adding behavior to one rendering path, add a regression test for the production path. Prefer a Rust `sitegen` test for native-rendered article markup.
@@ -38,6 +40,15 @@ This repository is Patrick Desjardins' static website and blog. Keep changes sim
 - Text must not overlap, overflow buttons, or require horizontal scrolling on normal mobile widths.
 - Keep UI around articles quiet and content-first. Do not add marketing-style sections, heavy cards, or decorative layout elements to article pages.
 - Use CSS modules for component styling and include new modules in `src/site/style-entry.ts` when static extraction needs them.
+- The production page links Vite's client CSS only. `style-entry.ts` ensures CSS used by native-rendered HTML is present; do not re-add `static-modules.css` as a second stylesheet.
+
+## Discovery and Metadata Rules
+
+- Blog categories are public static routes at `/blog/category/{normalized-category}`. Category labels in listings and search results must link to those routes.
+- Category normalization is lowercase ASCII with non-alphanumeric runs replaced by `-`. Keep the TypeScript and Rust implementations equivalent.
+- Article descriptions default to a plain-text excerpt. Preserve useful frontmatter-free excerpts in metadata, feeds, and search output.
+- Search generation must exclude future-dated content using the same UTC publishing boundary as production rendering.
+- Article pages should retain back-to-collection and adjacent-article navigation.
 
 ## Mastodon Discussion Rules
 
@@ -60,6 +71,8 @@ This repository is Patrick Desjardins' static website and blog. Keep changes sim
 - Keep CI jobs split by purpose where possible: quality, search index, Mastodon registry, build, deploy, social posting.
 - Do not make content-only pushes pay for unnecessary code checks unless the workflow already requires them.
 - Google Analytics is a static build-time concern. The GitHub Pages build must pass `NEXT_PUBLIC_GA_MEASUREMENT_ID` so both the React SSR renderer and Rust native renderer can emit the GA tag into generated HTML.
+- Analytics storage defaults to denied and is enabled only after the visitor's explicit choice, persisted in `analytics-consent`.
+- GitHub Pages ignores Netlify-style `_headers` directives. Do not rely on `_headers` for security or cache policy without changing the hosting/CDN layer.
 
 ## Content Rules
 

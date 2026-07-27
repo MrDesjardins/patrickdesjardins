@@ -17,7 +17,7 @@ const SCHEMA_VERSION: u32 = 2;
 const FIRST_YEAR: i32 = 2011;
 const PHILOSOPHY_FIRST_YEAR: i32 = 2026;
 const MAX_POSTS_PER_PAGE: usize = 10;
-const MAX_RSS_ITEMS: usize = 50;
+const MAX_RSS_ITEMS: usize = 200;
 const BASE_URL: &str = "https://patrickdesjardins.com";
 const MARKDOWN_RENDERER_VERSION: &str = "rust-md-2026-06-19-a11y";
 const SHORTCODE_RENDERER_VERSION: &str = "shortcodes-2026-06-14";
@@ -340,12 +340,11 @@ fn assets_from_vite_manifest(out_dir: &Path) -> Result<Assets> {
     let Some(client_entry) = manifest.get("src/site/client.tsx") else {
         return Ok(Assets::default());
     };
-    let mut css = client_entry
+    let css = client_entry
         .css
         .iter()
         .map(|asset| format!("/{asset}"))
         .collect::<Vec<_>>();
-    css.push("/assets/static-modules.css".to_string());
     Ok(Assets {
         css,
         js: vec![format!("/{}", client_entry.file)],
@@ -587,6 +586,18 @@ fn build_routes(root: &Path) -> Result<Vec<Route>> {
     for year in (FIRST_YEAR..=last_year).rev() {
         routes.push(route(&format!("/blog/for/{year}"), &shared, &blog_deps));
     }
+    let blog_categories = blog_posts
+        .iter()
+        .flat_map(|post| post.categories.iter())
+        .map(|category| category_slug(category))
+        .collect::<BTreeSet<_>>();
+    for category in blog_categories {
+        routes.push(route(
+            &format!("/blog/category/{category}"),
+            &shared,
+            &blog_deps,
+        ));
+    }
     for post in &blog_posts {
         routes.push(route(
             &format!("/blog/{}", post.slug),
@@ -625,33 +636,6 @@ fn build_routes(root: &Path) -> Result<Vec<Route>> {
     Ok(routes)
 }
 
-fn class_names(css: &str) -> BTreeSet<String> {
-    let mut names = BTreeSet::new();
-    let chars = css.as_bytes();
-    let mut index = 0;
-    while index + 1 < chars.len() {
-        if chars[index] == b'.' {
-            let start = index + 1;
-            let first = chars[start];
-            if first == b'_' || first.is_ascii_alphabetic() {
-                let mut end = start + 1;
-                while end < chars.len()
-                    && (chars[end] == b'_'
-                        || chars[end] == b'-'
-                        || chars[end].is_ascii_alphanumeric())
-                {
-                    end += 1;
-                }
-                names.insert(css[start..end].to_string());
-                index = end;
-                continue;
-            }
-        }
-        index += 1;
-    }
-    names
-}
-
 fn css_module_class_name(root: &Path, local_name: &str, filename: &Path) -> Result<String> {
     let src = root.join("src");
     let mut relative = slash(filename.strip_prefix(src)?);
@@ -667,77 +651,6 @@ fn css_module_class_name(root: &Path, local_name: &str, filename: &Path) -> Resu
         })
         .collect::<String>();
     Ok(format!("{safe}__{local_name}"))
-}
-
-fn protect_urls(css: &str) -> (String, Vec<String>) {
-    let mut output = String::new();
-    let mut protected = Vec::new();
-    let mut rest = css;
-    while let Some(start) = rest.find("url(") {
-        let Some(end) = rest[start..].find(')') else {
-            break;
-        };
-        output.push_str(&rest[..start]);
-        let full_end = start + end + 1;
-        let placeholder = format!("__STATIC_CSS_URL_{}__", protected.len());
-        protected.push(rest[start..full_end].to_string());
-        output.push_str(&placeholder);
-        rest = &rest[full_end..];
-    }
-    output.push_str(rest);
-    (output, protected)
-}
-
-fn transform_css_module(root: &Path, file: &Path) -> Result<String> {
-    let css = fs::read_to_string(file)?;
-    let names = class_names(&css);
-    let (mut transformed, protected) = protect_urls(&css);
-    for name in names {
-        transformed = transformed.replace(
-            &format!(".{name}"),
-            &format!(".{}", css_module_class_name(root, &name, file)?),
-        );
-    }
-    for (index, url) in protected.iter().enumerate() {
-        transformed = transformed.replace(&format!("__STATIC_CSS_URL_{index}__"), url);
-    }
-    Ok(format!(
-        "\n/* {} */\n{transformed}\n",
-        relative(root, file)?
-    ))
-}
-
-fn css_module_sort_key(root: &Path, file: &Path) -> Result<String> {
-    let file = relative(root, file)?;
-    let prefix = if file == "src/app/layout.module.css" {
-        "00"
-    } else if file.ends_with("/layout.module.css") {
-        "10"
-    } else if file == "src/app/website/website.module.css" {
-        "20"
-    } else {
-        "30"
-    };
-    Ok(format!("{prefix}:{file}"))
-}
-
-fn write_static_module_css(root: &Path, out_dir: &Path) -> Result<()> {
-    let mut css_files = walk_files(root, "src/app")?
-        .into_iter()
-        .filter(|file| file.to_string_lossy().ends_with(".module.css"))
-        .collect::<Vec<_>>();
-    css_files.sort_by_key(|file| css_module_sort_key(root, file).unwrap_or_default());
-    let output_path = out_dir.join("assets/static-modules.css");
-    if let Some(parent) = output_path.parent() {
-        fs::create_dir_all(parent)?;
-    }
-    let mut output = String::new();
-    for file in css_files {
-        output.push_str(&transform_css_module(root, &file)?);
-        output.push('\n');
-    }
-    fs::write(output_path, output)?;
-    Ok(())
 }
 
 fn run_command(root: &Path, program: &str, args: &[&str]) -> Result<()> {
@@ -790,7 +703,7 @@ fn run_vite_builds(root: &Path, out_dir: &Path) -> Result<()> {
     ssr.join()
         .map_err(|_| anyhow::anyhow!("ssr vite build thread panicked"))??;
     trim_ssr_output(out_dir);
-    write_static_module_css(&root, out_dir)
+    Ok(())
 }
 
 fn trim_ssr_output(out_dir: &Path) {
@@ -832,7 +745,7 @@ fn ga_script(node_env: &str, measurement_id: &str) -> String {
 
     let id = escape_html(measurement_id);
     format!(
-        r#"<script async src="https://www.googletagmanager.com/gtag/js?id={id}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments);}}gtag("js",new Date());gtag("config","{id}");</script>"#
+        r#"<script async src="https://www.googletagmanager.com/gtag/js?id={id}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){{dataLayer.push(arguments);}}var analyticsConsent="denied";try{{analyticsConsent=localStorage.getItem("analytics-consent")==="granted"?"granted":"denied";}}catch{{}}gtag("consent","default",{{analytics_storage:analyticsConsent,ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied"}});gtag("js",new Date());gtag("config","{id}");</script>"#
     )
 }
 
@@ -851,15 +764,37 @@ fn escape_xml(value: &str) -> String {
 
 fn rss_pub_date(date: &str) -> Result<String> {
     let date_part = date.get(..10).unwrap_or(date);
-    Ok(String::from_utf8(
-        Command::new("date")
-            .args(["-u", "-d", date_part, "+%a, %d %b %Y %H:%M:%S +0000"])
-            .output()
-            .with_context(|| format!("format RSS pubDate for {date_part}"))?
-            .stdout,
-    )?
-    .trim()
-    .to_string())
+    let parts = date_part
+        .split('-')
+        .map(str::parse::<i32>)
+        .collect::<std::result::Result<Vec<_>, _>>()
+        .with_context(|| format!("parse RSS date {date_part}"))?;
+    if parts.len() != 3 {
+        bail!("RSS date must use YYYY-MM-DD: {date_part}");
+    }
+    let (year, month, day) = (parts[0], parts[1], parts[2]);
+    let month_name = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    ]
+    .get((month - 1) as usize)
+    .with_context(|| format!("invalid month in RSS date {date_part}"))?;
+    let mut adjusted_year = year;
+    let mut adjusted_month = month;
+    if adjusted_month < 3 {
+        adjusted_month += 12;
+        adjusted_year -= 1;
+    }
+    let weekday_index = (day
+        + (13 * (adjusted_month + 1)) / 5
+        + adjusted_year
+        + adjusted_year / 4
+        - adjusted_year / 100
+        + adjusted_year / 400)
+        .rem_euclid(7) as usize;
+    let weekday = ["Sat", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri"][weekday_index];
+    Ok(format!(
+        "{weekday}, {day:02} {month_name} {year:04} 00:00:00 +0000"
+    ))
 }
 
 fn plain_text_excerpt(body: &str, max_len: usize) -> String {
@@ -979,10 +914,18 @@ fn class(root: &Path, module: &str, local: &str) -> Result<String> {
     css_module_class_name(root, local, &root.join(module))
 }
 
+struct ArticleMeta {
+    headline: String,
+    date_published: String,
+    collection: Collection,
+}
+
 fn page_document(
     root: &Path,
     title: &str,
     description: &str,
+    canonical_path: &str,
+    article: Option<&ArticleMeta>,
     assets: &Assets,
     body: &str,
     head_extra: Option<&str>,
@@ -1006,8 +949,43 @@ fn page_document(
         .collect::<String>();
     let extra = head_extra.unwrap_or("");
     let ga = ga_script_from_env();
+    let canonical_url = format!("{BASE_URL}{canonical_path}");
+    let page_type = if article.is_some() { "article" } else { "website" };
+    let social_image = format!("{BASE_URL}/images/backgrounds/patrickdesjardins_conference_bw.webp");
+    let social = format!(
+        r#"<link rel="canonical" href="{}"><meta property="og:title" content="{}"><meta property="og:description" content="{}"><meta property="og:url" content="{}"><meta property="og:type" content="{page_type}"><meta property="og:site_name" content="Patrick Desjardins"><meta property="og:image" content="{}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{}"><meta name="twitter:description" content="{}"><meta name="twitter:image" content="{}">"#,
+        escape_html(&canonical_url),
+        escape_html(title),
+        escape_html(description),
+        escape_html(&canonical_url),
+        escape_html(&social_image),
+        escape_html(title),
+        escape_html(description),
+        escape_html(&social_image),
+    );
+    let structured_data = article.map_or_else(String::new, |value| {
+        let article_type = match value.collection {
+            Collection::Blog => "BlogPosting",
+            Collection::Philosophy => "Article",
+        };
+        let json = serde_json::json!({
+            "@context": "https://schema.org",
+            "@type": article_type,
+            "headline": value.headline,
+            "description": description,
+            "datePublished": value.date_published,
+            "author": {
+                "@type": "Person",
+                "name": "Patrick Desjardins",
+                "url": BASE_URL
+            },
+            "mainEntityOfPage": canonical_url,
+            "image": social_image
+        });
+        format!(r#"<script type="application/ld+json">{json}</script>"#)
+    });
     Ok(format!(
-        r#"<!doctype html><html lang="en" class="{html_class}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{}</title><meta name="description" content="{}">{extra}{css}{ga}</head><body class="{body_class}">{body}{js}</body></html>"#,
+        r#"<!doctype html><html lang="en" class="{html_class}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="strict-origin-when-cross-origin"><title>{}</title><meta name="description" content="{}">{social}{structured_data}{extra}{css}{ga}</head><body class="{body_class}">{body}{js}</body></html>"#,
         escape_html(title),
         escape_html(description),
     ))
@@ -1065,6 +1043,8 @@ fn detail_dependency(route: &Route) -> Option<(Collection, String)> {
     let collection = if route.path.starts_with("/blog/")
         && !route.path.starts_with("/blog/page/")
         && !route.path.starts_with("/blog/for/")
+        && !route.path.starts_with("/blog/category/")
+        && route.path != "/blog/search"
     {
         Collection::Blog
     } else if route.path.starts_with("/philosophy/")
@@ -1149,7 +1129,7 @@ fn render_shortcode(name: &str, attrs: &BTreeMap<String, String>) -> Result<Stri
                 .cloned()
                 .unwrap_or_else(|| format!("YouTube video {id}"));
             Ok(format!(
-                r#"<iframe style="width:100%;height:500px;border:0;border-radius:4px;overflow:hidden" src="https://www.youtube.com/embed/{}" title="{}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"><a href="https://www.youtube.com/watch?v={}">Watch {}</a></iframe>"#,
+                r#"<iframe style="width:100%;aspect-ratio:16/9;min-height:240px;border:0;border-radius:4px;overflow:hidden" src="https://www.youtube.com/embed/{}" title="{}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"><a href="https://www.youtube.com/watch?v={}">Watch {}</a></iframe>"#,
                 escape_html(id),
                 escape_html(&title),
                 escape_html(id),
@@ -1165,7 +1145,7 @@ fn render_shortcode(name: &str, attrs: &BTreeMap<String, String>) -> Result<Stri
                 .cloned()
                 .unwrap_or_else(|| format!("CodeSandbox example {id}"));
             Ok(format!(
-                r#"<iframe src="https://codesandbox.io/embed/{}" style="width:100%;height:500px;border:0;border-radius:4px;overflow:hidden" title="{}" loading="lazy" allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking" sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"><a href="https://codesandbox.io/s/{}">Open {}</a></iframe>"#,
+                r#"<iframe src="https://codesandbox.io/embed/{}" style="width:100%;height:min(500px,70vh);min-height:320px;border:0;border-radius:4px;overflow:hidden" title="{}" loading="lazy" allow="accelerometer; ambient-light-sensor; camera; encrypted-media; geolocation; gyroscope; hid; microphone; midi; payment; usb; vr; xr-spatial-tracking" sandbox="allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts"><a href="https://codesandbox.io/s/{}">Open {}</a></iframe>"#,
                 escape_html(id),
                 escape_html(&title),
                 escape_html(id),
@@ -1312,6 +1292,19 @@ fn read_or_render_fragment(root: &Path, out_dir: &Path, post: &Post) -> Result<(
     Ok((html, key))
 }
 
+fn category_slug(category: &str) -> String {
+    category
+        .trim()
+        .to_ascii_lowercase()
+        .chars()
+        .map(|value| if value.is_ascii_alphanumeric() { value } else { '-' })
+        .collect::<String>()
+        .split('-')
+        .filter(|part| !part.is_empty())
+        .collect::<Vec<_>>()
+        .join("-")
+}
+
 fn render_categories(root: &Path, categories: &[String]) -> Result<String> {
     let container = class(
         root,
@@ -1326,7 +1319,8 @@ fn render_categories(root: &Path, categories: &[String]) -> Result<String> {
     let mut html = format!(r#"<span class="{container}">"#);
     for category in categories {
         html.push_str(&format!(
-            r#"<span class="{item}">{}</span>"#,
+            r#"<a class="{item}" href="/blog/category/{}">{}</a>"#,
+            escape_html(&category_slug(category)),
             escape_html(category)
         ));
     }
@@ -1383,6 +1377,45 @@ fn render_mastodon_comments(root: &Path, collection: Collection, slug: &str) -> 
     ))
 }
 
+fn render_article_navigation(
+    root: &Path,
+    collection: Collection,
+    posts: &[Post],
+    slug: &str,
+) -> Result<String> {
+    let Some(index) = posts.iter().position(|post| post.slug == slug) else {
+        return Ok(String::new());
+    };
+    let module = match collection {
+        Collection::Blog => "src/app/blog/[slug]/Page.module.css",
+        Collection::Philosophy => "src/app/philosophy/[slug]/Page.module.css",
+    };
+    let navigation = class(root, module, "articleNavigation")?;
+    let prefix = collection.route_prefix();
+    let mut links = String::new();
+    if let Some(newer) = index.checked_sub(1).and_then(|value| posts.get(value)) {
+        links.push_str(&format!(
+            r#"<a rel="prev" href="/{prefix}/{}">← Newer: {}</a>"#,
+            escape_html(&newer.slug),
+            escape_html(&newer.title)
+        ));
+    }
+    if let Some(older) = posts.get(index + 1) {
+        links.push_str(&format!(
+            r#"<a rel="next" href="/{prefix}/{}">Older: {} →</a>"#,
+            escape_html(&older.slug),
+            escape_html(&older.title)
+        ));
+    }
+    if links.is_empty() {
+        Ok(String::new())
+    } else {
+        Ok(format!(
+            r#"<nav class="{navigation}" aria-label="Adjacent articles">{links}</nav>"#
+        ))
+    }
+}
+
 fn render_entry(root: &Path, post: &Post) -> Result<String> {
     let module = match post.collection {
         Collection::Blog => "src/app/blog/_components/BlogEntry.module.css",
@@ -1393,10 +1426,11 @@ fn render_entry(root: &Path, post: &Post) -> Result<String> {
     let details = class(root, module, "blogEntryDetails")?;
     let date = class(root, module, "blogEntryDate")?;
     Ok(format!(
-        r#"<article class="{entry}"><h2 class="{title}"><a href="/{}/{}">{}</a></h2><div class="{details}"><span class="{date}">Posted: {}</span>{}</div></article>"#,
+        r#"<article class="{entry}"><h2 class="{title}"><a href="/{}/{}">{}</a></h2><div class="{details}"><time class="{date}" datetime="{}">Posted: {}</time>{}</div></article>"#,
         post.collection.route_prefix(),
         escape_html(&post.slug),
         escape_html(&post.title),
+        escape_html(&post.date),
         escape_html(&post.date),
         render_categories(root, &post.categories)?,
     ))
@@ -1531,9 +1565,13 @@ fn content_body(root: &Path, options: BodyOptions<'_>, children: &str) -> Result
         format!(r#"<h1 class="{site_title_class}">{site_title_content}</h1>"#)
     };
     let article_parent_markup =
-        if options.collection == Collection::Philosophy && options.is_article {
+        if options.is_article {
             let parent_link = class(root, body_module, "articleParentLink")?;
-            format!(r#"<a class="{parent_link}" href="/philosophy">← All philosophy essays</a>"#)
+            let (href, label) = match options.collection {
+                Collection::Blog => ("/blog", "← All technical posts"),
+                Collection::Philosophy => ("/philosophy", "← All philosophy essays"),
+            };
+            format!(r#"<a class="{parent_link}" href="{href}">{label}</a>"#)
         } else {
             String::new()
         };
@@ -1549,7 +1587,9 @@ fn content_body(root: &Path, options: BodyOptions<'_>, children: &str) -> Result
         )
     };
     let mut footer = String::new();
-    if options.total_pages.unwrap_or(0) > 0 || options.total_posts.is_some() {
+    if !options.is_article
+        && (options.total_pages.unwrap_or(0) > 0 || options.total_posts.is_some())
+    {
         footer.push_str("<footer>");
         if let Some(total_pages) = options.total_pages.filter(|value| *value > 0) {
             let bar = class(root, body_module, "paginationBar")?;
@@ -1563,15 +1603,44 @@ fn content_body(root: &Path, options: BodyOptions<'_>, children: &str) -> Result
             footer.push_str(&format!(
                 r#"<div class="{bar}"><div class="{title}">{label}</div><div class="{links}">"#
             ));
-            for page in 1..=total_pages {
+            let current_page = options.current_page.unwrap_or(1).clamp(1, total_pages);
+            let start_page = current_page.saturating_sub(2).max(1);
+            let end_page = (current_page + 2).min(total_pages);
+            if current_page > 1 {
+                footer.push_str(&format!(
+                    r#"<a rel="prev" href="/{}/page/{}">← Previous</a>"#,
+                    options.collection.route_prefix(),
+                    current_page - 1
+                ));
+            }
+            if start_page > 1 {
+                footer.push_str(&format!(
+                    r#"<a href="/{}/page/1">1</a><span aria-hidden="true">…</span>"#,
+                    options.collection.route_prefix()
+                ));
+            }
+            for page in start_page..=end_page {
                 let active = if Some(page) == options.current_page {
-                    format!(r#" class="{current}""#)
+                    format!(r#" class="{current}" aria-current="page""#)
                 } else {
                     String::new()
                 };
                 footer.push_str(&format!(
                     r#"<a{active} href="/{}/page/{page}">{page}</a>"#,
                     options.collection.route_prefix()
+                ));
+            }
+            if end_page < total_pages {
+                footer.push_str(&format!(
+                    r#"<span aria-hidden="true">…</span><a href="/{}/page/{total_pages}">{total_pages}</a>"#,
+                    options.collection.route_prefix()
+                ));
+            }
+            if current_page < total_pages {
+                footer.push_str(&format!(
+                    r#"<a rel="next" href="/{}/page/{}">Next →</a>"#,
+                    options.collection.route_prefix(),
+                    current_page + 1
                 ));
             }
             footer.push_str("</div></div>");
@@ -1597,8 +1666,13 @@ fn content_body(root: &Path, options: BodyOptions<'_>, children: &str) -> Result
         }
         footer.push_str("</footer>");
     }
+    let wrapper_classes = if options.collection == Collection::Philosophy {
+        format!("philosophy-site {wrapper}")
+    } else {
+        wrapper
+    };
     Ok(format!(
-        r##"<div class="{wrapper}"><div class="{body}"><a class="{skip_link}" href="#content">Skip to content</a><header>{site_title_markup}{header_extra}</header><main id="content" class="{main}">{article_parent_markup}{heading_markup}{children}</main>{footer}</div></div>"##,
+        r##"<div class="{wrapper_classes}"><div class="{body}"><a class="{skip_link}" href="#content">Skip to content</a><header>{site_title_markup}{header_extra}</header><main id="content" class="{main}">{article_parent_markup}{heading_markup}{children}</main>{footer}</div></div>"##,
     ))
 }
 
@@ -1629,6 +1703,8 @@ fn render_content_route(
         Collection::Philosophy => "Philosophy — Patrick Desjardins".to_string(),
     };
     let mut description = title.clone();
+    let mut article_meta = None;
+    let custom_top_title;
     let children;
     let body_options;
     if route.path == prefix {
@@ -1738,6 +1814,39 @@ fn render_content_route(
             total_pages: Some(total_pages),
             total_posts: None,
         };
+    } else if collection == Collection::Blog && route.path.starts_with("/blog/category/") {
+        if let Some(category) = route.path.strip_prefix("/blog/category/") {
+            let category_name = posts
+                .iter()
+                .flat_map(|post| post.categories.iter())
+                .find(|value| category_slug(value) == category)
+                .cloned()
+                .unwrap_or_else(|| category.to_string());
+            children = posts
+                .iter()
+                .filter(|post| {
+                    post.categories
+                        .iter()
+                        .any(|value| category_slug(value) == category)
+                })
+                .map(|post| render_entry(root, post))
+                .collect::<Result<String>>()?;
+            title = format!("{category_name} articles — Patrick Desjardins");
+            description =
+                format!("Technical articles about {category_name} by Patrick Desjardins.");
+            custom_top_title = format!("Articles about {category_name}");
+            body_options = BodyOptions {
+                collection,
+                top_title: &custom_top_title,
+                current_page: None,
+                is_article: false,
+                year: None,
+                total_pages: None,
+                total_posts: None,
+            };
+        } else {
+            return Ok(false);
+        }
     } else if let Some(slug) = route.path.strip_prefix(&format!("{prefix}/")) {
         let Some(post) = posts.iter().find(|post| post.slug == slug) else {
             return Ok(false);
@@ -1756,8 +1865,10 @@ fn render_content_route(
             fragment
         };
         let comments = render_mastodon_comments(root, collection, &post.slug)?;
+        let adjacent = render_article_navigation(root, collection, posts, &post.slug)?;
         children = format!(
-            r#"<div class="{container}"><p class="{date}">Posted on: {}</p>{content}{comments}</div>"#,
+            r#"<div class="{container}"><p class="{date}">Posted on: <time datetime="{}">{}</time></p>{content}{adjacent}{comments}</div>"#,
+            escape_html(&post.date),
             escape_html(&post.date)
         );
         title = if collection == Collection::Blog {
@@ -1765,7 +1876,12 @@ fn render_content_route(
         } else {
             format!("Philosophy — {}", post.title)
         };
-        description = post.title.clone();
+        description = plain_text_excerpt(&post.body, 160);
+        article_meta = Some(ArticleMeta {
+            headline: post.title.clone(),
+            date_published: post.date.clone(),
+            collection,
+        });
         content_manifest.insert(
             post.dependency.clone(),
             ContentCacheEntry {
@@ -1792,10 +1908,19 @@ fn render_content_route(
         return Ok(false);
     };
     let body = content_body(root, body_options, &children)?;
+    let canonical_path = if route.path == "/blog/page/1" {
+        "/blog"
+    } else if route.path == "/philosophy/page/1" {
+        "/philosophy"
+    } else {
+        &route.path
+    };
     let document = page_document(
         root,
         &title,
         &description,
+        canonical_path,
+        article_meta.as_ref(),
         assets,
         &body,
         Some(&rss_head_link(collection)),
@@ -1822,9 +1947,44 @@ fn render_sitemap(out_dir: &Path, blog_posts: &[Post], philosophy_posts: &[Post]
             r#"<url><loc>{BASE_URL}/philosophy</loc><lastmod>{today_iso}</lastmod><changefreq>weekly</changefreq><priority>0.85</priority></url>"#
         ),
         format!(
+            r#"<url><loc>{BASE_URL}/blog/search</loc><lastmod>{today_iso}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>"#
+        ),
+        format!(
             r#"<url><loc>{BASE_URL}/philosophy/search</loc><lastmod>{today_iso}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>"#
         ),
     ];
+    for page in 1..=total_pages(blog_posts) {
+        urls.push(format!(
+            r#"<url><loc>{BASE_URL}/blog/page/{page}</loc><lastmod>{today_iso}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>"#
+        ));
+    }
+    for page in 1..=total_pages(philosophy_posts).max(1) {
+        urls.push(format!(
+            r#"<url><loc>{BASE_URL}/philosophy/page/{page}</loc><lastmod>{today_iso}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>"#
+        ));
+    }
+    let last_year = current_year_utc()?;
+    for year in (FIRST_YEAR..=last_year).rev() {
+        urls.push(format!(
+            r#"<url><loc>{BASE_URL}/blog/for/{year}</loc><lastmod>{today_iso}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>"#
+        ));
+    }
+    for year in (PHILOSOPHY_FIRST_YEAR..=last_year).rev() {
+        urls.push(format!(
+            r#"<url><loc>{BASE_URL}/philosophy/for/{year}</loc><lastmod>{today_iso}</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>"#
+        ));
+    }
+    let categories = blog_posts
+        .iter()
+        .flat_map(|post| post.categories.iter())
+        .map(|category| category_slug(category))
+        .collect::<BTreeSet<_>>();
+    for category in categories {
+        urls.push(format!(
+            r#"<url><loc>{BASE_URL}/blog/category/{}</loc><lastmod>{today_iso}</lastmod><changefreq>monthly</changefreq><priority>0.55</priority></url>"#,
+            escape_html(&category)
+        ));
+    }
     for post in blog_posts {
         urls.push(format!(
             r#"<url><loc>{BASE_URL}/blog/{}</loc><lastmod>{}T00:00:00.000Z</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>"#,
@@ -1865,6 +2025,7 @@ fn render_detail_route(
     route: &Route,
     collection: Collection,
     dependency: &str,
+    posts: &[Post],
 ) -> Result<(String, ContentCacheEntry)> {
     let post = post_from_dependency(root, dependency, collection)?;
     let total_pages = route_total_pages(all_routes, collection);
@@ -1882,8 +2043,10 @@ fn render_detail_route(
         fragment
     };
     let comments = render_mastodon_comments(root, collection, &post.slug)?;
+    let adjacent = render_article_navigation(root, collection, posts, &post.slug)?;
     let children = format!(
-        r#"<div class="{container}"><p class="{date}">Posted on: {}</p>{content}{comments}</div>"#,
+        r#"<div class="{container}"><p class="{date}">Posted on: <time datetime="{}">{}</time></p>{content}{adjacent}{comments}</div>"#,
+        escape_html(&post.date),
         escape_html(&post.date)
     );
     let title = if collection == Collection::Blog {
@@ -1907,7 +2070,13 @@ fn render_detail_route(
     let document = page_document(
         root,
         &title,
-        &post.title,
+        &plain_text_excerpt(&post.body, 160),
+        &route.path,
+        Some(&ArticleMeta {
+            headline: post.title.clone(),
+            date_published: post.date.clone(),
+            collection,
+        }),
         assets,
         &body,
         Some(&rss_head_link(collection)),
@@ -1983,11 +2152,16 @@ fn render_routes_native_first(
             .iter()
             .all(|route| detail_dependency(route).is_some());
     if detail_only {
+        let (blog_posts, philosophy_posts) = all_content_posts(root)?;
         let rendered = routes
             .par_iter()
             .map(|route| {
                 let Some((collection, dependency)) = detail_dependency(route) else {
                     bail!("expected detail route: {}", route.path);
+                };
+                let posts = match collection {
+                    Collection::Blog => &blog_posts,
+                    Collection::Philosophy => &philosophy_posts,
                 };
                 render_detail_route(
                     root,
@@ -1997,6 +2171,7 @@ fn render_routes_native_first(
                     route,
                     collection,
                     &dependency,
+                    posts,
                 )
             })
             .collect::<Result<Vec<_>>>()?;
@@ -2225,7 +2400,6 @@ fn should_rebuild_assets(
         return true;
     };
     if !file_exists(&out_dir.join(".vite/manifest.json"))
-        || !file_exists(&out_dir.join("assets/static-modules.css"))
         || !file_exists(&out_dir.join("server/render.js"))
     {
         return true;
@@ -2296,7 +2470,6 @@ fn main() -> Result<()> {
         }
         if force_full
             || !file_exists(&out_dir.join(".vite/manifest.json"))
-            || !file_exists(&out_dir.join("assets/static-modules.css"))
             || !file_exists(&out_dir.join("server/render.js"))
         {
             run_vite_builds(&root, &out_dir)?;
@@ -2586,6 +2759,14 @@ mod tests {
     }
 
     #[test]
+    fn rss_date_formatting_is_platform_independent() {
+        assert_eq!(
+            rss_pub_date("2026-07-27").expect("format RSS date"),
+            "Mon, 27 Jul 2026 00:00:00 +0000"
+        );
+    }
+
+    #[test]
     fn ga_script_renders_only_for_production_measurement_id() {
         let html = ga_script("production", "G-TEST<1>");
         assert!(html.contains("https://www.googletagmanager.com/gtag/js?id=G-TEST&lt;1&gt;"));
@@ -2635,7 +2816,6 @@ mod tests {
         fs::create_dir_all(out_dir.join("assets")).expect("create assets dir");
         fs::create_dir_all(out_dir.join("server")).expect("create server dir");
         fs::write(out_dir.join(".vite/manifest.json"), "{}").expect("write manifest");
-        fs::write(out_dir.join("assets/static-modules.css"), "").expect("write css");
         fs::write(out_dir.join("server/render.js"), "").expect("write renderer");
 
         let mut previous = Manifest {
@@ -2737,6 +2917,32 @@ mod tests {
 
         assert!(html.contains(r#"href="/philosophy">Philosophy</a>"#));
         assert!(html.contains(r#"href="/philosophy">← All philosophy essays</a>"#));
+        assert!(html.contains(r#"class="philosophy-site "#));
         assert!(html.contains(">Council of the Owls</h1>"));
+    }
+
+    #[test]
+    fn native_document_emits_article_discovery_metadata() {
+        let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+        let html = page_document(
+            &root,
+            "Example article",
+            "A useful article description.",
+            "/blog/example",
+            Some(&ArticleMeta {
+                headline: "Example article".to_string(),
+                date_published: "2026-07-27".to_string(),
+                collection: Collection::Blog,
+            }),
+            &Assets::default(),
+            "<main>Article</main>",
+            None,
+        )
+        .expect("render article document");
+
+        assert!(html.contains(r#"rel="canonical" href="https://patrickdesjardins.com/blog/example""#));
+        assert!(html.contains(r#"property="og:type" content="article""#));
+        assert!(html.contains(r#"type="application/ld+json""#));
+        assert!(html.contains(r#""@type":"BlogPosting""#));
     }
 }

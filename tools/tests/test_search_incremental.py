@@ -140,6 +140,24 @@ class SearchIncrementalTests(unittest.TestCase):
         self.assertTrue(np.allclose(saved[0], new_vector))
         self.assertTrue(os.path.exists(os.path.join(self.web_dir, "embeddings.bin")))
 
+    def test_scan_excludes_future_dated_documents(self):
+        future_path = os.path.join(self.posts_dir, "future.mdx")
+        with open(future_path, "w", encoding="utf-8") as file:
+            file.write(
+                '---\ntitle: "Future"\ndate: "2999-01-01"\ncategories:\n - test\n---\nHidden'
+            )
+        current_path = os.path.join(self.posts_dir, "current.mdx")
+        with open(current_path, "w", encoding="utf-8") as file:
+            file.write(
+                '---\ntitle: "Current"\ndate: "2026-01-01"\ncategories:\n - test\n---\nVisible'
+            )
+
+        documents = self.main.scan_documents(self.posts_dir)
+
+        self.assertEqual([doc.filename for doc in documents], ["current.mdx"])
+        self.assertEqual(documents[0].categories, ("test",))
+        self.assertEqual(documents[0].excerpt, "Visible")
+
 
 if __name__ == "__main__":
     unittest.main()

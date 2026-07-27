@@ -7,6 +7,8 @@ export interface PhilosophyBlogSearchEntryProps {
   title: string;
   slug: string;
   score: number;
+  date: string;
+  excerpt: string;
 }
 
 export const PhilosophyBlogSearchEntry = (
@@ -19,14 +21,17 @@ export const PhilosophyBlogSearchEntry = (
           <Link href={`/philosophy/${props.slug}`}>
             {props.position + 1}
             {". "}
-            {props.title} ({formatScore(props.score)})
+            {props.title}
           </Link>
         </h2>
+        <time dateTime={props.date}>Posted: {props.date}</time>
+        <p>{props.excerpt}</p>
+        <span>Relevance: {formatScore(props.score)}</span>
       </article>
     </li>
   );
 };
 
 function formatScore(score: number): string {
-  return (score * 100).toFixed(0) + "%";
+  return (Math.min(1, Math.max(0, score)) * 100).toFixed(0) + "%";
 }

@@ -1,4 +1,7 @@
 .blogPostContainer table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
   border: 1px solid var(--blog-section-border-color);
   border-collapse: collapse;
   margin-left: auto;
@@ -18,6 +21,37 @@
   font-size: 22px;
   margin-bottom: 24px;
   text-align: justify;
+}
+
+.articleNavigation {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-block: 24px;
+  border-top: 1px solid var(--blog-section-border-color);
+}
+
+.articleNavigation a {
+  max-width: 46%;
+}
+
+@media only screen and (max-width: 500px) {
+  .blogPostContainer p,
+  .blogPostContainer ol,
+  .blogPostContainer ul {
+    font-size: 18px;
+    line-height: 30px;
+    text-align: left;
+  }
+
+  .blogPostContainer blockquote {
+    margin-inline: 0;
+  }
+
+  .articleNavigation a {
+    max-width: 100%;
+  }
 }
 .blogPostContainer th,
 .blogPostContainer td {
