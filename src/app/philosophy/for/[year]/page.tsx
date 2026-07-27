@@ -3,7 +3,7 @@ import {
   LAST_YEAR,
   PHILOSOPHY_FIRST_YEAR,
 } from "../../../../constants/constants";
-import { getAllPhilosophyPosts, getTotalPages } from "../../../../lib/api";
+import { getAllPhilosophyPosts } from "../../../../lib/api";
 import { PhilosophyEntry } from "../../_components/PhilosophyEntry";
 import { PhilosophyBlogBody } from "../../_components/PhilosophyBlogBody";
 import { sortByMetadataDateDesc } from "../../../../_utils/list";
@@ -34,13 +34,12 @@ export default async function Page(props: {
 }): Promise<React.ReactElement> {
   const year = Number(props.params.year);
   const posts = await getAllPhilosophyPosts();
-  const totalPages = getTotalPages(posts);
   const postForYear = posts
     .filter((file) => file.metadata.year === year)
     .sort(sortByMetadataDateDesc);
 
   return (
-    <PhilosophyBlogBody totalPages={totalPages} year={year} topTitle="Essays">
+    <PhilosophyBlogBody year={year} topTitle="Essays">
       {postForYear.map((node) => (
         <PhilosophyEntry
           key={node.metadata.fileName}

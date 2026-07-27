@@ -23,7 +23,10 @@ export function PhilosophyBlogBody(
   for (let i = LAST_YEAR; i >= PHILOSOPHY_FIRST_YEAR; i--) {
     years.push(i);
   }
-  const totalPages = props.isArticle === true ? 0 : (props.totalPages ?? 0);
+  const totalPages =
+    props.isArticle === true || props.year !== undefined
+      ? 0
+      : (props.totalPages ?? 0);
   const currentPage = props.currentPage ?? 1;
   const firstVisiblePage = Math.max(1, currentPage - 2);
   const lastVisiblePage = Math.min(totalPages, currentPage + 2);

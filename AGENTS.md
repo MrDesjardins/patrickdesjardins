@@ -49,6 +49,7 @@ This repository is Patrick Desjardins' static website and blog. Keep changes sim
 - Article descriptions default to a plain-text excerpt. Preserve useful frontmatter-free excerpts in metadata, feeds, and search output.
 - Search generation must exclude future-dated content using the same UTC publishing boundary as production rendering.
 - Article pages should retain back-to-collection and adjacent-article navigation.
+- Year archive pages must not show global chronological pagination, because those links leave the selected year archive.
 
 ## Mastodon Discussion Rules
 

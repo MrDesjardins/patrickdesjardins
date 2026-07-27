@@ -1,6 +1,6 @@
 import { type Metadata } from "next";
 import { FIRST_YEAR, LAST_YEAR } from "../../../../constants/constants";
-import { getAllPosts, getTotalPages } from "../../../../lib/api";
+import { getAllPosts } from "../../../../lib/api";
 import { BlogEntry } from "../../_components/BlogEntry";
 import { BlogBody } from "../../_components/BlogBody";
 import { sortByMetadataDateDesc } from "../../../../_utils/list";
@@ -31,13 +31,12 @@ export default async function Page(props: {
 }): Promise<React.ReactElement> {
   const year = Number(props.params.year);
   const posts = await getAllPosts();
-  const totalPages = getTotalPages(posts);
   const postForYear = posts
     .filter((file) => file.metadata.year === year)
     .sort(sortByMetadataDateDesc);
 
   return (
-    <BlogBody totalPages={totalPages} year={year} topTitle="Blog Posts">
+    <BlogBody year={year} topTitle="Blog Posts">
       {postForYear.map((node) => (
         <BlogEntry
           key={node.metadata.fileName}

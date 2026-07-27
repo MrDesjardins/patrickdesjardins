@@ -1588,6 +1588,7 @@ fn content_body(root: &Path, options: BodyOptions<'_>, children: &str) -> Result
     };
     let mut footer = String::new();
     if !options.is_article
+        && options.year.is_none()
         && (options.total_pages.unwrap_or(0) > 0 || options.total_posts.is_some())
     {
         footer.push_str("<footer>");
@@ -1811,7 +1812,7 @@ fn render_content_route(
             current_page: None,
             is_article: false,
             year: Some(year),
-            total_pages: Some(total_pages),
+            total_pages: None,
             total_posts: None,
         };
     } else if collection == Collection::Blog && route.path.starts_with("/blog/category/") {
@@ -2919,6 +2920,29 @@ mod tests {
         assert!(html.contains(r#"href="/philosophy">← All philosophy essays</a>"#));
         assert!(html.contains(r#"class="philosophy-site "#));
         assert!(html.contains(">Council of the Owls</h1>"));
+    }
+
+    #[test]
+    fn native_year_archive_does_not_render_global_pagination() {
+        let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
+        let html = content_body(
+            &root,
+            BodyOptions {
+                collection: Collection::Blog,
+                top_title: "Blog Posts",
+                current_page: None,
+                is_article: false,
+                year: Some(2026),
+                total_pages: Some(42),
+                total_posts: None,
+            },
+            "<article>Year archive entry</article>",
+        )
+        .expect("render blog year archive shell");
+
+        assert!(html.contains(r#"href="/blog/for/2026">2026</a>"#));
+        assert!(!html.contains("Chronological Blog Articles by Page"));
+        assert!(!html.contains(r#"href="/blog/page/"#));
     }
 
     #[test]
