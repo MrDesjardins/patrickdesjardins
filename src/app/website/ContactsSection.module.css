@@ -56,6 +56,16 @@ section.contactSection a {
   color: var(--header-color1);
 }
 
+/*
+The email link sits on the light section background (--background2), where the
+white --header-color1 fails contrast. Only the social-icon row
+(.contactContainer2) has the dark background that white text needs, so keep the
+top contact row's links dark and readable.
+*/
+section.contactSection .contactContainer a {
+  color: var(--text-color3);
+}
+
 section.contactSection a:hover {
   background-color: var(--link-background1);
 }

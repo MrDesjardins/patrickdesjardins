@@ -41,6 +41,15 @@ This repository is Patrick Desjardins' static website and blog. Keep changes sim
 - Keep UI around articles quiet and content-first. Do not add marketing-style sections, heavy cards, or decorative layout elements to article pages.
 - Use CSS modules for component styling and include new modules in `src/site/style-entry.ts` when static extraction needs them.
 - The production page links Vite's client CSS only. `style-entry.ts` ensures CSS used by native-rendered HTML is present; do not re-add `static-modules.css` as a second stylesheet.
+- `style-entry.ts` only ships CSS if `client.tsx` keeps `staticStyleModules` reachable through an observable side effect (e.g. assigning it to `window`). A bare `void staticStyleModules` lets Rollup tree-shake every static module's stylesheet and silently ship unstyled pages — a dependency bump can flip this with no build error. After any build touching the client bundle or CSS modules, confirm the shared styles shipped: `grep -c "app_layout__" out/assets/client-*.css` must be non-zero (this class backs the site-wide layout, so its absence unstyles every page).
+
+## Accessibility Rules
+
+- CI runs an axe accessibility gate (`tests/accessibility.spec.ts`) over `/`, `/blog`, `/philosophy`, their search pages, and one article each. A single violation fails the build and blocks deploy.
+- The axe/Playwright check needs a real browser and cannot run in the agent sandbox (Chromium is blocked). `jsdom` does not resolve computed colors, so a `jsdom` + `axe-core` script silently reports zero color-contrast violations even on a broken page — do not trust it as a substitute. Verify color changes by hand.
+- For any color or CSS change, compute WCAG contrast against the ACTUAL rendered colors: resolve the CSS variables in `src/app/layout.module.css` against the section background the text sits on. Section backgrounds alternate `--background2` (#f0f0f0 light) / `--background3` (#fff) / `--background1` (#3a393f dark); body text `--text-color1` (#666), headings `--text-color3` (#000), `--header-color1` (#fff). Need ≥4.5:1 (≥3:1 for large/bold text ≥24px).
+- A shared link/text color that passes on one background often fails on another (e.g. white contact links are fine on the dark icon row but fail on the light section). Scope the color to the container whose background it actually sits on.
+- Fixing rendering or restoring CSS can UNMASK contrast bugs hidden while elements were unstyled (unstyled ≈ black on white, which passes). Re-audit contrast after any change that alters which styles ship, not just the elements you touched.
 
 ## Discovery and Metadata Rules
 
@@ -95,16 +104,22 @@ categories:
 
 ## Verification
 
+Pushing to `master` deploys to production. Never push until every CI check that can run locally passes. Run the full set below — not just the ones related to your change — because a CSS, dependency, or rendering change can break a surface you did not touch.
+
 Use RTK first for commands that can emit medium or high output.
 
-Common checks:
+Pre-push checklist (mirror of the CI `quality` and `build-site` jobs):
 
 ```bash
+rtk npm run files:check
 rtk npm run content:validate
-rtk npm run test:ci
+rtk npm run images:check
 rtk npm run lint
+rtk npm run test:ci
 rtk npm run build
 ```
+
+The only CI gate that cannot be reproduced locally is the axe accessibility test (needs a browser; see Accessibility Rules). For CSS/color changes, do the manual contrast audit before pushing, and after a build inspect the generated `out/**` HTML and `out/assets/client-*.css` to confirm the expected classes and colors actually shipped.
 
 For Python tools tests:
 
