@@ -11,7 +11,7 @@ export const AchievementsSection = (): React.ReactElement => {
       className={clsx(
         styles.sectionMainpage,
         styles.sectionVisualTwo,
-        styles2.achievementContainerBackground
+        styles2.achievementContainerBackground,
       )}
     >
       <div className={styles2.achievementOverlay}>
@@ -63,8 +63,8 @@ export const AchievementsSection = (): React.ReactElement => {
                 height: 95,
                 color: "rgb(255, 255, 255)",
                 position: "relative",
-                border: "2px solid rgb(3, 169, 244)",
-                background: "rgb(3, 169, 244)",
+                border: "2px solid rgb(2, 119, 189)",
+                background: "rgb(2, 119, 189)",
                 borderRadius: 3,
                 padding: "5px 10px",
                 fontFamily:
@@ -77,7 +77,7 @@ export const AchievementsSection = (): React.ReactElement => {
                 viewBox="0 0 250 250"
                 style={{
                   fill: "rgb(255, 255, 255)",
-                  color: "rgb(3, 169, 244)",
+                  color: "rgb(2, 119, 189)",
                   position: "absolute",
                   top: 0,
                   right: 0,
@@ -130,7 +130,7 @@ export const AchievementsSection = (): React.ReactElement => {
                   <a
                     href="https://github.com/MrDesjardins"
                     target="_blank"
-                    style={{ fill: "rgb(255, 255, 255)" }}
+                    style={{ color: "rgb(255, 255, 255)" }}
                     rel="noreferrer"
                   >
                     MrDesjardins
