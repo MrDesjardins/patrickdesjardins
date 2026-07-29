@@ -53,6 +53,13 @@ export default async function sitemap(): Promise<MetadataRoute["Sitemap"]> {
         posts.flatMap((post) => post.frontmatter.categories.map(categorySlug)),
       ),
     ].map((category) => `${BASE_URL}/blog/category/${category}`),
+    ...[
+      ...new Set(
+        philosophyPosts.flatMap((post) =>
+          post.frontmatter.categories.map(categorySlug),
+        ),
+      ),
+    ].map((category) => `${BASE_URL}/philosophy/category/${category}`),
   ].map((url) => ({
     url: url,
     lastModified: new Date(),

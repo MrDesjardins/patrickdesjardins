@@ -622,6 +622,18 @@ fn build_routes(root: &Path) -> Result<Vec<Route>> {
             &philosophy_deps,
         ));
     }
+    let philosophy_categories = philosophy_posts
+        .iter()
+        .flat_map(|post| post.categories.iter())
+        .map(|category| category_slug(category))
+        .collect::<BTreeSet<_>>();
+    for category in philosophy_categories {
+        routes.push(route(
+            &format!("/philosophy/category/{category}"),
+            &shared,
+            &philosophy_deps,
+        ));
+    }
     for post in &philosophy_posts {
         routes.push(route(
             &format!("/philosophy/{}", post.slug),
@@ -1305,7 +1317,11 @@ fn category_slug(category: &str) -> String {
         .join("-")
 }
 
-fn render_categories(root: &Path, categories: &[String]) -> Result<String> {
+fn render_categories(
+    root: &Path,
+    collection: Collection,
+    categories: &[String],
+) -> Result<String> {
     let container = class(
         root,
         "src/app/blog/_components/BlogCategories.module.css",
@@ -1316,10 +1332,11 @@ fn render_categories(root: &Path, categories: &[String]) -> Result<String> {
         "src/app/blog/_components/BlogCategories.module.css",
         "item",
     )?;
+    let prefix = collection.route_prefix();
     let mut html = format!(r#"<span class="{container}">"#);
     for category in categories {
         html.push_str(&format!(
-            r#"<a class="{item}" href="/blog/category/{}">{}</a>"#,
+            r#"<a class="{item}" href="/{prefix}/category/{}">{}</a>"#,
             escape_html(&category_slug(category)),
             escape_html(category)
         ));
@@ -1432,7 +1449,7 @@ fn render_entry(root: &Path, post: &Post) -> Result<String> {
         escape_html(&post.title),
         escape_html(&post.date),
         escape_html(&post.date),
-        render_categories(root, &post.categories)?,
+        render_categories(root, post.collection, &post.categories)?,
     ))
 }
 
@@ -1815,39 +1832,47 @@ fn render_content_route(
             total_pages: None,
             total_posts: None,
         };
-    } else if collection == Collection::Blog && route.path.starts_with("/blog/category/") {
-        if let Some(category) = route.path.strip_prefix("/blog/category/") {
-            let category_name = posts
-                .iter()
-                .flat_map(|post| post.categories.iter())
-                .find(|value| category_slug(value) == category)
-                .cloned()
-                .unwrap_or_else(|| category.to_string());
-            children = posts
-                .iter()
-                .filter(|post| {
-                    post.categories
-                        .iter()
-                        .any(|value| category_slug(value) == category)
-                })
-                .map(|post| render_entry(root, post))
-                .collect::<Result<String>>()?;
-            title = format!("{category_name} articles — Patrick Desjardins");
-            description =
-                format!("Technical articles about {category_name} by Patrick Desjardins.");
-            custom_top_title = format!("Articles about {category_name}");
-            body_options = BodyOptions {
-                collection,
-                top_title: &custom_top_title,
-                current_page: None,
-                is_article: false,
-                year: None,
-                total_pages: None,
-                total_posts: None,
-            };
-        } else {
-            return Ok(false);
+    } else if let Some(category) =
+        route.path.strip_prefix(&format!("{prefix}/category/"))
+    {
+        let category_name = posts
+            .iter()
+            .flat_map(|post| post.categories.iter())
+            .find(|value| category_slug(value) == category)
+            .cloned()
+            .unwrap_or_else(|| category.to_string());
+        children = posts
+            .iter()
+            .filter(|post| {
+                post.categories
+                    .iter()
+                    .any(|value| category_slug(value) == category)
+            })
+            .map(|post| render_entry(root, post))
+            .collect::<Result<String>>()?;
+        match collection {
+            Collection::Blog => {
+                title = format!("{category_name} articles — Patrick Desjardins");
+                description =
+                    format!("Technical articles about {category_name} by Patrick Desjardins.");
+                custom_top_title = format!("Articles about {category_name}");
+            }
+            Collection::Philosophy => {
+                title = format!("Philosophy — {category_name} essays");
+                description =
+                    format!("Philosophy essays about {category_name} by Patrick Desjardins.");
+                custom_top_title = format!("Essays about {category_name}");
+            }
         }
+        body_options = BodyOptions {
+            collection,
+            top_title: &custom_top_title,
+            current_page: None,
+            is_article: false,
+            year: None,
+            total_pages: None,
+            total_posts: None,
+        };
     } else if let Some(slug) = route.path.strip_prefix(&format!("{prefix}/")) {
         let Some(post) = posts.iter().find(|post| post.slug == slug) else {
             return Ok(false);
@@ -1983,6 +2008,17 @@ fn render_sitemap(out_dir: &Path, blog_posts: &[Post], philosophy_posts: &[Post]
     for category in categories {
         urls.push(format!(
             r#"<url><loc>{BASE_URL}/blog/category/{}</loc><lastmod>{today_iso}</lastmod><changefreq>monthly</changefreq><priority>0.55</priority></url>"#,
+            escape_html(&category)
+        ));
+    }
+    let philosophy_categories = philosophy_posts
+        .iter()
+        .flat_map(|post| post.categories.iter())
+        .map(|category| category_slug(category))
+        .collect::<BTreeSet<_>>();
+    for category in philosophy_categories {
+        urls.push(format!(
+            r#"<url><loc>{BASE_URL}/philosophy/category/{}</loc><lastmod>{today_iso}</lastmod><changefreq>monthly</changefreq><priority>0.55</priority></url>"#,
             escape_html(&category)
         ));
     }

@@ -30,6 +30,9 @@ import PhilosophyYearPage, {
 import PhilosophyPaginationPage, {
   generateMetadata as generatePhilosophyPaginationMetadata,
 } from "../app/philosophy/page/[pageNumber]/page";
+import PhilosophyCategoryPage, {
+  generateMetadata as generatePhilosophyCategoryMetadata,
+} from "../app/philosophy/category/[category]/page";
 import NotFoundPage from "../app/not-found";
 import robots from "../app/robots";
 import sitemap from "../app/sitemap";
@@ -326,6 +329,17 @@ export async function renderPath(
     );
   }
 
+  const philosophyCategoryMatch =
+    /^\/philosophy\/category\/([^/]+)$/.exec(routePath);
+  if (philosophyCategoryMatch !== null) {
+    const categoryProps = props({ category: philosophyCategoryMatch[1] });
+    return await renderRouteDocument(
+      async () => withPhilosophyLayout(await PhilosophyCategoryPage(categoryProps)),
+      async () => await generatePhilosophyCategoryMetadata(categoryProps),
+      assets,
+    );
+  }
+
   const philosophyPostMatch = /^\/philosophy\/([^/]+)$/.exec(routePath);
   if (philosophyPostMatch !== null) {
     const postProps = props({ slug: philosophyPostMatch[1] });
@@ -458,6 +472,23 @@ export async function buildRoutes(assets: AssetLinks): Promise<SiteRoute[]> {
       philosophyDeps,
       async () => withPhilosophyLayout(await PhilosophyYearPage(yearProps)),
       async () => await generatePhilosophyYearMetadata(yearProps),
+    );
+  }
+
+  const philosophyCategories = [
+    ...new Set(
+      sortedPhilosophyPosts.flatMap((post) =>
+        post.frontmatter.categories.map(categorySlug)
+      ),
+    ),
+  ].sort();
+  for (const category of philosophyCategories) {
+    const categoryProps = props({ category: category });
+    add(
+      `/philosophy/category/${category}`,
+      philosophyDeps,
+      async () => withPhilosophyLayout(await PhilosophyCategoryPage(categoryProps)),
+      async () => await generatePhilosophyCategoryMetadata(categoryProps),
     );
   }
 

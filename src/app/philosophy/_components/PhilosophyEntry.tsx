@@ -20,7 +20,10 @@ export const PhilosophyEntry = (
       </h2>
       <div className={styles.blogEntryDetails}>
         <span className={styles.blogEntryDate}>Posted: {props.date}</span>
-        <BlogCategories categories={props.categories} />
+        <BlogCategories
+          categories={props.categories}
+          basePath="/philosophy/category"
+        />
       </div>
     </article>
   );
