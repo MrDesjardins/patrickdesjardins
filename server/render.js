@@ -43,8 +43,8 @@ const styles$c = {
   imageWrapper
 };
 const gaMeasurementId = "G-6EH8HNYV13";
-const buildCommit = "bf837373f04e59ff767d1261d8b706b113bfb49e";
-const buildTime = "30470387196";
+const buildCommit = "4add3a2f73fa0985a3540abd85fb8c5a6e5eaf24";
+const buildTime = "30471755440";
 function isTelemetryEnabled() {
   return typeof window !== "undefined" && typeof window.gtag === "function" && gaMeasurementId !== void 0 && gaMeasurementId.length > 0;
 }
@@ -2380,11 +2380,12 @@ function categorySlug(category) {
 }
 const BlogCategories = (props2) => {
   var _a;
+  const basePath = props2.basePath ?? "/blog/category";
   return /* @__PURE__ */ jsx("span", { className: styles$7.container, children: (_a = props2.categories ?? []) == null ? void 0 : _a.map((c) => /* @__PURE__ */ jsx(
     Link,
     {
       className: styles$7.item,
-      href: `/blog/category/${categorySlug(c)}`,
+      href: `${basePath}/${categorySlug(c)}`,
       children: c
     },
     c
@@ -2534,7 +2535,7 @@ const metadata$1 = {
   title: "Patrick Desjardins Blog",
   description: "Patrick Desjardins Blog"
 };
-async function Page$a() {
+async function Page$b() {
   const pageNumber = 1;
   const posts = await getAllPosts();
   const totalPage = getTotalPages(posts);
@@ -2569,7 +2570,7 @@ async function Page$a() {
     }
   );
 }
-function Page$9() {
+function Page$a() {
   return /* @__PURE__ */ jsx(BlogBody, { topTitle: "Search Posts", children: /* @__PURE__ */ jsx("div", { id: "blog-search-root" }) });
 }
 const blog = { "generating-documentation-with-ai": { "instanceUrl": "https://mastodon.social", "postedAt": "2026-07-13T18:26:57Z", "statusId": "116914075539914003", "statusUrl": "https://mastodon.social/@mrdesjardins/116914075539914003" }, "hateoas-as-the-natural-interface-for-autonomous-agents": { "instanceUrl": "https://mastodon.social", "postedAt": "2026-07-17T18:03:07Z", "statusId": "116936631044734799", "statusUrl": "https://mastodon.social/@mrdesjardins/116936631044734799" }, "how-to-unit-test-private-method-in-typescript-2026-edition": { "instanceUrl": "https://mastodon.social", "postedAt": "2026-07-09T18:46:24Z", "statusId": "116891502774809766", "statusUrl": "https://mastodon.social/@mrdesjardins/116891502774809766" }, "mastodon-thread-static-website": { "instanceUrl": "https://mastodon.social", "postedAt": "2026-06-20T18:05:37Z", "statusId": "116783758549131307", "statusUrl": "https://mastodon.social/@mrdesjardins/116783758549131307" }, "using-epaper-for-studying": { "instanceUrl": "https://mastodon.social", "postedAt": "2026-07-20T18:53:33Z", "statusId": "116953816283863299", "statusUrl": "https://mastodon.social/@mrdesjardins/116953816283863299" } };
@@ -2622,7 +2623,7 @@ const styles$4 = {
   articleNavigation: articleNavigation$1,
   blogPostDate: blogPostDate$1
 };
-async function generateMetadata$6(props2) {
+async function generateMetadata$7(props2) {
   const post = await getPostBySlug(props2.params.slug);
   if (post === void 0) {
     throw new Error("Post not found");
@@ -2632,7 +2633,7 @@ async function generateMetadata$6(props2) {
     description: plainTextExcerpt(post.rawFileContent)
   };
 }
-async function Page$8(props2) {
+async function Page$9(props2) {
   const posts = await getAllPosts();
   posts.sort(sortByMetadataDateDesc);
   const totalPages = getTotalPages(posts);
@@ -2681,13 +2682,13 @@ async function Page$8(props2) {
     }
   );
 }
-async function generateMetadata$5(props2) {
+async function generateMetadata$6(props2) {
   return {
     title: "Patrick Desjardins Blog - Year " + String(props2.params.year),
     description: "Patrick Desjardins Blog - Year " + String(props2.params.year)
   };
 }
-async function Page$7(props2) {
+async function Page$8(props2) {
   const year = Number(props2.params.year);
   const posts = await getAllPosts();
   const postForYear = posts.filter((file) => file.metadata.year === year).sort(sortByMetadataDateDesc);
@@ -2703,13 +2704,13 @@ async function Page$7(props2) {
     node.metadata.fileName
   )) });
 }
-async function generateMetadata$4(props2) {
+async function generateMetadata$5(props2) {
   return {
     title: "Patrick Desjardins Blog - Page number " + String(props2.params.pageNumber),
     description: "Patrick Desjardins Blog - Page number " + String(props2.params.pageNumber)
   };
 }
-async function Page$6(props2) {
+async function Page$7(props2) {
   const posts = await getAllPosts();
   posts.sort(sortByMetadataDateDesc);
   const currentPage = Number(props2.params.pageNumber);
@@ -2738,7 +2739,7 @@ async function Page$6(props2) {
     }
   );
 }
-async function categoryName(slug) {
+async function categoryName$1(slug) {
   const posts = await getAllPosts();
   for (const post of posts) {
     const category = post.frontmatter.categories.find(
@@ -2750,20 +2751,20 @@ async function categoryName(slug) {
   }
   return slug;
 }
-async function generateMetadata$3(props2) {
-  const name = await categoryName(props2.params.category);
+async function generateMetadata$4(props2) {
+  const name = await categoryName$1(props2.params.category);
   return {
     title: `${name} articles — Patrick Desjardins`,
     description: `Technical articles about ${name} by Patrick Desjardins.`
   };
 }
-async function Page$5(props2) {
+async function Page$6(props2) {
   const posts = (await getAllPosts()).filter(
     (post) => post.frontmatter.categories.some(
       (category) => categorySlug(category) === props2.params.category
     )
   ).sort(sortByMetadataDateDesc);
-  const name = await categoryName(props2.params.category);
+  const name = await categoryName$1(props2.params.category);
   return /* @__PURE__ */ jsx(BlogBody, { topTitle: `Articles about ${name}`, children: posts.map((post) => /* @__PURE__ */ jsx(
     BlogEntry,
     {
@@ -2794,7 +2795,13 @@ const PhilosophyEntry = (props2) => {
         "Posted: ",
         props2.date
       ] }),
-      /* @__PURE__ */ jsx(BlogCategories, { categories: props2.categories })
+      /* @__PURE__ */ jsx(
+        BlogCategories,
+        {
+          categories: props2.categories,
+          basePath: "/philosophy/category"
+        }
+      )
     ] })
   ] });
 };
@@ -2927,7 +2934,7 @@ const metadata = {
   title: "Philosophy — Patrick Desjardins",
   description: "Essays and notes on philosophy by Patrick Desjardins."
 };
-async function Page$4() {
+async function Page$5() {
   const pageNumber = 1;
   const posts = await getAllPhilosophyPosts();
   const totalPage = getTotalPages(posts);
@@ -2967,7 +2974,7 @@ function PhilosophyLayout({
 }) {
   return /* @__PURE__ */ jsx("div", { className: `philosophy-site ${styles$1.philosophyRoot}`, children });
 }
-function Page$3() {
+function Page$4() {
   return /* @__PURE__ */ jsx(PhilosophyBlogBody, { topTitle: "Search essays", children: /* @__PURE__ */ jsx("div", { id: "philosophy-search-root" }) });
 }
 const blogPostContainer = "app_philosophy__slug__Page__blogPostContainer";
@@ -2981,7 +2988,7 @@ const styles = {
   articleNavigation
 };
 const EMPTY_PHILOSOPHY_SLUG = "__no-published-essays";
-async function generateMetadata$2(props2) {
+async function generateMetadata$3(props2) {
   if (props2.params.slug === EMPTY_PHILOSOPHY_SLUG) {
     return {
       title: "Philosophy — Patrick Desjardins",
@@ -2997,7 +3004,7 @@ async function generateMetadata$2(props2) {
     description: plainTextExcerpt(post.rawFileContent)
   };
 }
-async function Page$2(props2) {
+async function Page$3(props2) {
   const posts = await getAllPhilosophyPosts();
   const totalPages = getTotalPages(posts);
   const post = await getPhilosophyPostBySlug(props2.params.slug);
@@ -3048,13 +3055,13 @@ async function Page$2(props2) {
     }
   );
 }
-async function generateMetadata$1(props2) {
+async function generateMetadata$2(props2) {
   return {
     title: "Philosophy — " + String(props2.params.year),
     description: "Philosophy essays from " + String(props2.params.year) + " — Patrick Desjardins"
   };
 }
-async function Page$1(props2) {
+async function Page$2(props2) {
   const year = Number(props2.params.year);
   const posts = await getAllPhilosophyPosts();
   const postForYear = posts.filter((file) => file.metadata.year === year).sort(sortByMetadataDateDesc);
@@ -3070,13 +3077,13 @@ async function Page$1(props2) {
     node.metadata.fileName
   )) });
 }
-async function generateMetadata(props2) {
+async function generateMetadata$1(props2) {
   return {
     title: "Philosophy — page " + String(props2.params.pageNumber),
     description: "Philosophy essays by Patrick Desjardins — page " + String(props2.params.pageNumber)
   };
 }
-async function Page(props2) {
+async function Page$1(props2) {
   const posts = await getAllPhilosophyPosts();
   posts.sort(sortByMetadataDateDesc);
   const currentPage = Number(props2.params.pageNumber);
@@ -3104,6 +3111,44 @@ async function Page(props2) {
       ))
     }
   );
+}
+async function categoryName(slug) {
+  const posts = await getAllPhilosophyPosts();
+  for (const post of posts) {
+    const category = post.frontmatter.categories.find(
+      (value2) => categorySlug(value2) === slug
+    );
+    if (category !== void 0) {
+      return category;
+    }
+  }
+  return slug;
+}
+async function generateMetadata(props2) {
+  const name = await categoryName(props2.params.category);
+  return {
+    title: `Philosophy — ${name} essays`,
+    description: `Philosophy essays about ${name} by Patrick Desjardins.`
+  };
+}
+async function Page(props2) {
+  const posts = (await getAllPhilosophyPosts()).filter(
+    (post) => post.frontmatter.categories.some(
+      (category) => categorySlug(category) === props2.params.category
+    )
+  ).sort(sortByMetadataDateDesc);
+  const name = await categoryName(props2.params.category);
+  return /* @__PURE__ */ jsx(PhilosophyBlogBody, { topTitle: `Essays about ${name}`, children: posts.map((post) => /* @__PURE__ */ jsx(
+    PhilosophyEntry,
+    {
+      id: post.metadata.fileName,
+      slug: post.metadata.slug,
+      title: post.frontmatter.title,
+      date: post.frontmatter.date,
+      categories: post.frontmatter.categories
+    },
+    post.metadata.fileName
+  )) });
 }
 function NotFound() {
   return /* @__PURE__ */ jsx(
@@ -3186,7 +3231,14 @@ async function sitemap() {
       ...new Set(
         posts.flatMap((post) => post.frontmatter.categories.map(categorySlug))
       )
-    ].map((category) => `${BASE_URL$1}/blog/category/${category}`)
+    ].map((category) => `${BASE_URL$1}/blog/category/${category}`),
+    ...[
+      ...new Set(
+        philosophyPosts.flatMap(
+          (post) => post.frontmatter.categories.map(categorySlug)
+        )
+      )
+    ].map((category) => `${BASE_URL$1}/philosophy/category/${category}`)
   ].map((url) => ({
     url,
     lastModified: /* @__PURE__ */ new Date(),
@@ -3333,14 +3385,14 @@ async function renderPath(routePath, assets) {
   }
   if (routePath === "/blog") {
     return await renderRouteDocument(
-      async () => withBlogLayout(await Page$a()),
+      async () => withBlogLayout(await Page$b()),
       value(metadata$1),
       assets
     );
   }
   if (routePath === "/blog/search") {
     return await renderRouteDocument(
-      () => withBlogLayout(/* @__PURE__ */ jsx(Page$9, {})),
+      () => withBlogLayout(/* @__PURE__ */ jsx(Page$a, {})),
       value({
         title: "Patrick Desjardins Blog Search",
         description: "Patrick Desjardins Blog Search"
@@ -3350,14 +3402,14 @@ async function renderPath(routePath, assets) {
   }
   if (routePath === "/philosophy") {
     return await renderRouteDocument(
-      async () => withPhilosophyLayout(await Page$4()),
+      async () => withPhilosophyLayout(await Page$5()),
       value(metadata),
       assets
     );
   }
   if (routePath === "/philosophy/search") {
     return await renderRouteDocument(
-      () => withPhilosophyLayout(/* @__PURE__ */ jsx(Page$3, {})),
+      () => withPhilosophyLayout(/* @__PURE__ */ jsx(Page$4, {})),
       value({
         title: "Philosophy Search",
         description: "Search philosophy essays by Patrick Desjardins"
@@ -3379,8 +3431,8 @@ async function renderPath(routePath, assets) {
   if (blogPageMatch !== null) {
     const pageProps = props({ pageNumber: blogPageMatch[1] });
     return await renderRouteDocument(
-      async () => withBlogLayout(await Page$6(pageProps)),
-      async () => await generateMetadata$4(pageProps),
+      async () => withBlogLayout(await Page$7(pageProps)),
+      async () => await generateMetadata$5(pageProps),
       assets
     );
   }
@@ -3388,8 +3440,8 @@ async function renderPath(routePath, assets) {
   if (blogYearMatch !== null) {
     const yearProps = props({ year: blogYearMatch[1] });
     return await renderRouteDocument(
-      async () => withBlogLayout(await Page$7(yearProps)),
-      async () => await generateMetadata$5(yearProps),
+      async () => withBlogLayout(await Page$8(yearProps)),
+      async () => await generateMetadata$6(yearProps),
       assets
     );
   }
@@ -3397,8 +3449,8 @@ async function renderPath(routePath, assets) {
   if (blogCategoryMatch !== null) {
     const categoryProps = props({ category: blogCategoryMatch[1] });
     return await renderRouteDocument(
-      async () => withBlogLayout(await Page$5(categoryProps)),
-      async () => await generateMetadata$3(categoryProps),
+      async () => withBlogLayout(await Page$6(categoryProps)),
+      async () => await generateMetadata$4(categoryProps),
       assets
     );
   }
@@ -3406,8 +3458,8 @@ async function renderPath(routePath, assets) {
   if (blogPostMatch !== null) {
     const postProps = props({ slug: blogPostMatch[1] });
     return await renderRouteDocument(
-      async () => withBlogLayout(await Page$8(postProps)),
-      async () => await generateMetadata$6(postProps),
+      async () => withBlogLayout(await Page$9(postProps)),
+      async () => await generateMetadata$7(postProps),
       assets
     );
   }
@@ -3415,8 +3467,8 @@ async function renderPath(routePath, assets) {
   if (philosophyPageMatch !== null) {
     const pageProps = props({ pageNumber: philosophyPageMatch[1] });
     return await renderRouteDocument(
-      async () => withPhilosophyLayout(await Page(pageProps)),
-      async () => await generateMetadata(pageProps),
+      async () => withPhilosophyLayout(await Page$1(pageProps)),
+      async () => await generateMetadata$1(pageProps),
       assets
     );
   }
@@ -3424,8 +3476,17 @@ async function renderPath(routePath, assets) {
   if (philosophyYearMatch !== null) {
     const yearProps = props({ year: philosophyYearMatch[1] });
     return await renderRouteDocument(
-      async () => withPhilosophyLayout(await Page$1(yearProps)),
-      async () => await generateMetadata$1(yearProps),
+      async () => withPhilosophyLayout(await Page$2(yearProps)),
+      async () => await generateMetadata$2(yearProps),
+      assets
+    );
+  }
+  const philosophyCategoryMatch = /^\/philosophy\/category\/([^/]+)$/.exec(routePath);
+  if (philosophyCategoryMatch !== null) {
+    const categoryProps = props({ category: philosophyCategoryMatch[1] });
+    return await renderRouteDocument(
+      async () => withPhilosophyLayout(await Page(categoryProps)),
+      async () => await generateMetadata(categoryProps),
       assets
     );
   }
@@ -3433,8 +3494,8 @@ async function renderPath(routePath, assets) {
   if (philosophyPostMatch !== null) {
     const postProps = props({ slug: philosophyPostMatch[1] });
     return await renderRouteDocument(
-      async () => withPhilosophyLayout(await Page$2(postProps)),
-      async () => await generateMetadata$2(postProps),
+      async () => withPhilosophyLayout(await Page$3(postProps)),
+      async () => await generateMetadata$3(postProps),
       assets
     );
   }
@@ -3465,20 +3526,20 @@ async function buildRoutes(assets) {
   add(
     "/blog",
     blogDeps,
-    async () => withBlogLayout(await Page$a()),
+    async () => withBlogLayout(await Page$b()),
     value(metadata$1)
   );
-  add("/blog/search", blogDeps, () => withBlogLayout(/* @__PURE__ */ jsx(Page$9, {})), value({
+  add("/blog/search", blogDeps, () => withBlogLayout(/* @__PURE__ */ jsx(Page$a, {})), value({
     title: "Patrick Desjardins Blog Search",
     description: "Patrick Desjardins Blog Search"
   }));
   add(
     "/philosophy",
     philosophyDeps,
-    async () => withPhilosophyLayout(await Page$4()),
+    async () => withPhilosophyLayout(await Page$5()),
     value(metadata)
   );
-  add("/philosophy/search", philosophyDeps, () => withPhilosophyLayout(/* @__PURE__ */ jsx(Page$3, {})), value({
+  add("/philosophy/search", philosophyDeps, () => withPhilosophyLayout(/* @__PURE__ */ jsx(Page$4, {})), value({
     title: "Philosophy Search",
     description: "Search philosophy essays by Patrick Desjardins"
   }));
@@ -3491,8 +3552,8 @@ async function buildRoutes(assets) {
     add(
       `/blog/page/${pageNumber}`,
       blogDeps,
-      async () => withBlogLayout(await Page$6(pageProps)),
-      async () => await generateMetadata$4(pageProps)
+      async () => withBlogLayout(await Page$7(pageProps)),
+      async () => await generateMetadata$5(pageProps)
     );
   }
   for (let year = LAST_YEAR; year >= FIRST_YEAR; year -= 1) {
@@ -3500,8 +3561,8 @@ async function buildRoutes(assets) {
     add(
       `/blog/for/${year}`,
       blogDeps,
-      async () => withBlogLayout(await Page$7(yearProps)),
-      async () => await generateMetadata$5(yearProps)
+      async () => withBlogLayout(await Page$8(yearProps)),
+      async () => await generateMetadata$6(yearProps)
     );
   }
   const categories = [
@@ -3516,8 +3577,8 @@ async function buildRoutes(assets) {
     add(
       `/blog/category/${category}`,
       blogDeps,
-      async () => withBlogLayout(await Page$5(categoryProps)),
-      async () => await generateMetadata$3(categoryProps)
+      async () => withBlogLayout(await Page$6(categoryProps)),
+      async () => await generateMetadata$4(categoryProps)
     );
   }
   for (const post of sortedBlogPosts) {
@@ -3525,8 +3586,8 @@ async function buildRoutes(assets) {
     add(
       `/blog/${post.metadata.slug}`,
       [postDependency(post)],
-      async () => withBlogLayout(await Page$8(postProps)),
-      async () => await generateMetadata$6(postProps)
+      async () => withBlogLayout(await Page$9(postProps)),
+      async () => await generateMetadata$7(postProps)
     );
   }
   for (let pageNumber = 1; pageNumber <= philosophyTotalPages; pageNumber += 1) {
@@ -3534,8 +3595,8 @@ async function buildRoutes(assets) {
     add(
       `/philosophy/page/${pageNumber}`,
       philosophyDeps,
-      async () => withPhilosophyLayout(await Page(pageProps)),
-      async () => await generateMetadata(pageProps)
+      async () => withPhilosophyLayout(await Page$1(pageProps)),
+      async () => await generateMetadata$1(pageProps)
     );
   }
   for (let year = LAST_YEAR; year >= PHILOSOPHY_FIRST_YEAR; year -= 1) {
@@ -3543,8 +3604,24 @@ async function buildRoutes(assets) {
     add(
       `/philosophy/for/${year}`,
       philosophyDeps,
-      async () => withPhilosophyLayout(await Page$1(yearProps)),
-      async () => await generateMetadata$1(yearProps)
+      async () => withPhilosophyLayout(await Page$2(yearProps)),
+      async () => await generateMetadata$2(yearProps)
+    );
+  }
+  const philosophyCategories = [
+    ...new Set(
+      sortedPhilosophyPosts.flatMap(
+        (post) => post.frontmatter.categories.map(categorySlug)
+      )
+    )
+  ].sort();
+  for (const category of philosophyCategories) {
+    const categoryProps = props({ category });
+    add(
+      `/philosophy/category/${category}`,
+      philosophyDeps,
+      async () => withPhilosophyLayout(await Page(categoryProps)),
+      async () => await generateMetadata(categoryProps)
     );
   }
   for (const post of sortedPhilosophyPosts) {
@@ -3552,8 +3629,8 @@ async function buildRoutes(assets) {
     add(
       `/philosophy/${post.metadata.slug}`,
       [postDependency(post)],
-      async () => withPhilosophyLayout(await Page$2(postProps)),
-      async () => await generateMetadata$2(postProps)
+      async () => withPhilosophyLayout(await Page$3(postProps)),
+      async () => await generateMetadata$3(postProps)
     );
   }
   return routes;
