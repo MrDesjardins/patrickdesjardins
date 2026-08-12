@@ -1,0 +1,23 @@
+---
+title: "5-8x Coding Improvement that Could be Doubled"
+date: "2026-08-14"
+categories:
+ - "ai"
+ - "llm"
+ - "slc"
+ - "lifecycle"
+---
+
+In the two previous blog posts [about new ai work process](/blog/new-ai-work-process-of-5-days) and in [ai first lifecycle](blog/the-ai-first-lifecycle), I discussed the impact of AI on software development and experimented with a new way of developing software. In this article, I'll discuss my conclusions after three months of using several different approaches.
+
+The last three months have been interesting, especially because the small squad I led was completely unfamiliar with the technologies we used to build a TypeScript and React Native app for iOS and Android. We worked from a monorepository that contained almost all the business logic for the project. What was missing was the deployment infrastructure, some security measures, and new mechanisms such as push notifications. Overall, the experience with AI was a great success, and we were able to deliver a product to production in about four months.
+
+One of the main lessons was that the new process of blitzing and refactoring, learning, and improving worked until management became more anxious during the final month. At that point, old habits, from the top down, derailed our new process. We went from the innovative approach of three days of AI coding, combining, and improving to traditional fixes and changes made on the fly. During that time, we saw a spike in pull requests and errors.
+
+Once we deployed, I was able to analyze our performance by comparing the output of individual people before and after using AI. I compared the number of lines of code added, removed, and modified. I also compared the number of pull requests and the number of lines of code per pull request. Without going into specifics, I can say that the results varied from person to person, but pull requests were about four times larger. Overall, our velocity increased by a factor of five to eight. We produced more code and more features, all under quite different conditions.
+
+In the title, I mentioned that we could have doubled that velocity. I have strongly believed this since I joined the company. I even mentioned it to an SVP during my first two months. The reason is simple: existing processes. The red tape, top-down approaches, and long lists of approvers, including directors, managers, leads, principals, designers, and PMs, make every move costly, whether technical or feature-related. I estimate that this accounts for 50% of the problem.
+
+The fix is simple: fewer cooks in the kitchen. Have people focus on their specific areas of expertise. There is no need for everyone to agree on everything. Move faster, then iterate using quantitative metrics and qualitative feedback from something that exists instead of holding very long discussions with large groups of people across separate meetings. The more people involved, the harder it is to schedule everyone at the same time. More communication means more delays. Furthermore, meetings often lack focus because key stakeholders are involved in too many initiatives. I have noticed that this causes information to slip through the cracks, even when it has already been discussed. Perhaps having laptops open while everyone chats with AI does not help, but I cannot be sure. It is only a hypothesis.
+
+My personal conclusion is that AI will soon help propel not only coding but also planning, bug fixing, and prioritization. However, the real issue remains human. Not because humans are not efficient or smart, but because we tend to complicate situations that should not be complicated.
