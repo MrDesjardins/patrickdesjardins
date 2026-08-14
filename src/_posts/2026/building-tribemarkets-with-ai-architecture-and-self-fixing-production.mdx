@@ -1,0 +1,199 @@
+---
+title: "Building TribeMarkets with AI: Architecture and Self-Fixing Production"
+date: "2026-08-21"
+categories:
+ - "ai"
+ - "architecture"
+ - "devops"
+ - "tribemarkets"
+---
+
+I have been building [TribeMarkets](https://tribemarkets.com) as a small but serious experiment: a private,
+play-money prediction-market platform where communities create Tribes, open
+markets, stake internal credits, and resolve outcomes.
+
+The interesting part is not only the product. It is the way the product is
+built. I am using AI throughout the software lifecycle, from planning and
+implementation to testing, code review, deployment, and production diagnosis.
+The goal is not to ask an AI to write a lot of code and hope for the best. The
+goal is to create a system in which fast code generation is surrounded by clear
+boundaries and increasingly automated verification.
+
+## The architecture: a modular monolith
+
+TribeMarkets is intentionally a modular monolith. The backend is one FastAPI
+application backed by one PostgreSQL database. The frontend is a React and
+TypeScript single-page application served separately and communicating with the
+backend through a REST API.
+
+![](/images/blog/Blueprint_monolith.webp)
+
+The modular part is important. Authentication, communities, currencies,
+wallets, the ledger, markets, settlements, notifications, and auditing are
+separate domain packages. The monolithic part is also important: there is no
+distributed transaction problem between the market engine and the ledger, and
+there are fewer moving pieces to deploy while the product is small.
+
+Routes are deliberately thin. A route parses a request, invokes a service, and
+returns a response. The service owns authorization and the transaction
+boundary. Domain rules stay out of HTTP handlers, and repositories focus on
+persistence queries. This structure gives both humans and AI agents a map of
+where a change belongs.
+
+## Tenant isolation is a domain rule
+
+The central product concept is the Tribe. Users can belong to multiple Tribes,
+and each Tribe has its own members, currency, markets, balances, permissions,
+notifications, and audit history.
+
+That means authorization cannot be implemented only by hiding buttons in the
+frontend. Every service operation re-checks the authenticated user, active
+membership, role, and Tribe scope. A non-member generally receives a not-found
+response for private Tribe resources so that the existence of private data is
+not leaked.
+
+The role hierarchy is explicit:
+
+![](/images/blog/Blueprint_roles.webp)
+
+## The ledger is more important than the UI
+
+TribeMarkets uses play-money credits, but the money rules still need to be
+correct. Balances are not stored as an authoritative number. They are derived
+from an immutable, double-entry ledger.
+
+Every movement is a balanced transaction: a grant moves credits from a mint
+account to a user's available account, a stake moves credits into a reserved
+account, and settlement moves reserved credits back to winners. Ledger rows are
+append-only, and balance-changing operations use idempotency keys so a network
+retry does not accidentally spend twice.
+
+Settlement math is pure and integer-exact. It works in the smallest currency
+units, applies deterministic largest-remainder rounding, and uses a stable
+position identifier as a tie-breaker. The total payout must equal the pool
+exactly.
+
+This is a good example of where AI is useful but not authoritative. An AI can
+suggest settlement code or generate edge cases, but the invariants, tests, and
+database constraints define what is acceptable.
+
+## How AI is used to build the system
+
+I treat the repository instructions as part of the development environment.
+They describe the layering rules, money invariants, authorization requirements,
+testing model, documentation obligations, and the difference between test
+types. An agent starts by discovering the relevant routes, schemas, services,
+repositories, models, migrations, frontend screens, and tests before changing
+anything.
+
+The usual workflow is:
+
+1. Describe the behavior and acceptance criteria.
+2. Have an agent inspect every producer and consumer of that behavior.
+3. Implement the change through the layers instead of patching one screen.
+4. Add or update unit, integration, system, and end-to-end tests.
+5. Update the in-product help and developer documentation when behavior or
+   APIs change.
+6. Run automated checks and review the resulting diff for security, tenancy,
+   money, accessibility, and mobile regressions.
+
+The test categories are intentionally distinct:
+
+- **Unit tests** test an atomic function's inputs and outputs.
+- **Integration tests** exercise collaborating code without mocking the calls
+  between those functions.
+- **System tests** exercise a higher-level application workflow, often against
+  the real PostgreSQL test database, without requiring a real browser.
+- **End-to-end tests** use Playwright to exercise what a user sees and does in
+  the browser.
+
+AI makes it inexpensive to create tests, but quantity is not the same as
+coverage. The valuable part is connecting each test to an invariant or a user
+journey: cross-Tribe isolation, exact decimal handling, role permissions,
+voided-market refunds, OAuth account linking, notification routing, and mobile
+layout behavior.
+
+## The production feedback loop
+
+Production errors are sent to a self-hosted [Bugsink](https://www.bugsink.com/) instance. Backend
+unhandled exceptions and frontend error-boundary failures become grouped
+issues. Bugsink is not a general-purpose stream of every application log, and
+ordinary request logs are not sent to an AI model.
+
+The repository contains a scheduled GitHub Actions workflow that runs every
+fifteen minutes. Its job is not to silently edit production. Its job is to
+prepare a guarded draft pull request when there is enough evidence that a
+repeatable production issue may have a low-risk code fix.
+
+![](/images/blog/Blueprint_gitworkflow.webp)
+
+## What the auto-fix workflow actually does
+
+The workflow has several layers of defense.
+
+First, it filters candidates. The issue must be unresolved, associated with a
+production environment, and have at least two occurrences. Security,
+infrastructure, and uncertain classifications are not automatically turned
+into patches.
+
+Second, the issue and source context are scrubbed and size-bounded before they
+are sent to the model. Common credentials, bearer tokens, URI passwords,
+emails, and secret query parameters are redacted. Only selected source files
+from allowlisted directories are considered.
+
+Third, the model must return a structured plan containing a classification,
+confidence, summary, root cause, patch, changed files, tests, risk flags, and
+an explicit decision about whether a pull request is appropriate. The current
+workflow requires a confidence of at least 0.85 and rejects plans with risk
+flags or mismatched changed-file declarations.
+
+Fourth, the patch is constrained. It may touch only existing application,
+frontend, script, or test files. It cannot create or delete files, modify the
+auto-fix machinery itself, or change arbitrary infrastructure. Every automatic
+fix must add or update at least one test.
+
+Finally, the patch is tested before a pull request is opened. The checks include
+the repository harness, Python linting and strict typing, unit tests,
+integration tests against a freshly migrated PostgreSQL database, and
+`git diff --check`. Frontend changes additionally run TypeScript typechecking,
+ESLint, the production build, and the frontend test suite.
+
+The workflow has a stable issue/fingerprint/release key. That prevents the
+same production problem from opening a new pull request on every scheduled
+run. It is also limited to one pull request per run and three automation pull
+requests in a rolling twenty-four-hour period.
+
+## Why the pull request remains a draft
+
+Calling this a self-fixing system is useful shorthand, but it is not an
+autonomous production mutation system. The model can misunderstand a stack
+trace, make a plausible but incomplete change, or write a test that confirms
+the wrong behavior. A passing test suite is evidence, not proof.
+
+The workflow therefore creates a draft pull request and never merges or
+deploys. A human reviews the root cause, patch, tests, security implications,
+and product behavior. If the automation behaves unexpectedly, the GitHub
+Actions workflow can be disabled immediately, and the daily and per-run limits
+provide additional containment.
+
+This separation is important: AI can reduce the time between an error and a
+reviewable proposal without being granted production credentials or merge
+authority.
+
+## The practical lesson
+
+The biggest benefit of AI has not been generating individual functions faster.
+It has been making it practical to work on the entire engineering loop at
+once: architecture, implementation, tests, documentation, observability, and
+repair.
+
+That speed only works when the system has strong boundaries. A modular
+architecture gives agents a place to put changes. Domain invariants prevent
+convenient shortcuts from corrupting money or permissions. Layered tests catch
+different classes of mistakes. GitHub Actions and Bugsink close the loop after
+deployment.
+
+The result is not software that fixes itself perfectly. It is a development
+system that can notice recurring failures, prepare a constrained proposal, and
+bring the problem back into the same tested review process that produced the
+original software.
