@@ -2,6 +2,10 @@
   max-width: 100%;
 }
 
+.blogPostContent {
+  font-family: "IM Fell English", "EB Garamond", Georgia, serif;
+}
+
 .blogPostContent > p:first-of-type::first-letter {
   float: left;
   font-size: 4em;

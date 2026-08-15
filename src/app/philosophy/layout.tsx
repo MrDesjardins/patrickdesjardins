@@ -6,6 +6,8 @@ import "@fontsource/eb-garamond/600.css";
 import "@fontsource/eb-garamond/600-italic.css";
 import "@fontsource/eb-garamond/700.css";
 import "@fontsource/eb-garamond/700-italic.css";
+import "@fontsource/im-fell-english/400.css";
+import "@fontsource/im-fell-english/400-italic.css";
 import styles from "./layout.module.css";
 
 export default function PhilosophyLayout({

@@ -10,6 +10,8 @@
 @import "@fontsource/eb-garamond/600-italic.css";
 @import "@fontsource/eb-garamond/700.css";
 @import "@fontsource/eb-garamond/700-italic.css";
+@import "@fontsource/im-fell-english/400.css";
+@import "@fontsource/im-fell-english/400-italic.css";
 @import "../app/blog/[slug]/linenumber.css";
 @import "../app/blog/[slug]/theme.css";
 @import "../app/philosophy/[slug]/paper-prism.css";
