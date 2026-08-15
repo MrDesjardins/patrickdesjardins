@@ -1,5 +1,11 @@
 {
   "blog": {
+    "5-8x-coding-improvement-that-could-be-doubled": {
+      "instanceUrl": "https://mastodon.social",
+      "postedAt": "2026-08-14T17:51:09Z",
+      "statusId": "117095128612468837",
+      "statusUrl": "https://mastodon.social/@mrdesjardins/117095128612468837"
+    },
     "generating-documentation-with-ai": {
       "instanceUrl": "https://mastodon.social",
       "postedAt": "2026-07-13T18:26:57Z",
@@ -67,6 +73,12 @@
       "postedAt": "2026-07-29T18:13:50Z",
       "statusId": "117004620965621967",
       "statusUrl": "https://mastodon.social/@mrdesjardins/117004620965621967"
+    },
+    "the-hill-that-was-not-a-mountain": {
+      "instanceUrl": "https://mastodon.social",
+      "postedAt": "2026-08-14T17:51:10Z",
+      "statusId": "117095128787178422",
+      "statusUrl": "https://mastodon.social/@mrdesjardins/117095128787178422"
     },
     "the-peacock-perfect-trial": {
       "instanceUrl": "https://mastodon.social",
