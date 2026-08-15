@@ -41,7 +41,11 @@
   font-weight: bold;
 }
 
-.historyOverlayColumn1 p,
-.historyOverlayColumn2 p {
+.historyOverlay .historyOverlayColumn1 p,
+.historyOverlay .historyOverlayColumn2 p {
+  color: #fff;
+}
+
+.historyOverlayColumn1 h2 {
   color: var(--header-color1);
 }
