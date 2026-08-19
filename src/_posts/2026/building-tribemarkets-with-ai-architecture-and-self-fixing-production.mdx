@@ -12,6 +12,8 @@ I have been building [TribeMarkets](https://tribemarkets.com) as a small but ser
 play-money prediction-market platform where communities create Tribes, open
 markets, stake internal credits, and resolve outcomes.
 
+![](/images/blog/TribeMarketsFrontpage.png)
+
 The interesting part is not only the product. It is the way the product is
 built. I am using AI throughout the software lifecycle, from planning and
 implementation to testing, code review, deployment, and production diagnosis.
@@ -179,6 +181,14 @@ provide additional containment.
 This separation is important: AI can reduce the time between an error and a
 reviewable proposal without being granted production credentials or merge
 authority.
+
+## Deployment
+
+Deployment relies on Railway which contains many services that used Codex and the Railway CLI for the initial configuration. The ease to get started and then to deploy worth the cost. Having AI with the Railway CLI is a breeze and while it performs infrastructure changes, debugs and tweaking, I can focus on features.
+
+![](/images/blog/RailwayPredictionMarket.png)
+
+Above this text is the image of the configuration of the backend, frontend, database and also the bug tracker used to automatically fix bugs in production.
 
 ## The practical lesson
 

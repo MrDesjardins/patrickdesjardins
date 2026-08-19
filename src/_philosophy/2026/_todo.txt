@@ -8,9 +8,10 @@
 ⏲️ 2026-09-11: The Wind That Was Always There
 ⏲️ 2026-09-01: The Dam and the Shiny Pebbles
 ⏲️ 2026-08-26: The Rhinoceros and the Shiny River
-⏲️ 2026-08-18: The Hill That Was Not a Mountain
+⏲️ 2026-08-20: LLMs and Genuine Discontinuities: Hume’s Problem of Induction
 
 === Published
+✅ 2026-08-18: The Hill That Was Not a Mountain
 ✅ 2026-08-12: The Fox Who Carried Two Baskets
 ✅ 2026-07-29: The Heritage of the Harness
 ✅ 2026-07-27: Reason and Senses: Key idea of Western Philosophy Across Philosophers
