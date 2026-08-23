@@ -1,0 +1,156 @@
+<!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="strict-origin-when-cross-origin"><title>Patrick Desjardins Blog - Building TribeMarkets with AI: Architecture and Self-Fixing Production</title><meta name="description" content="I have been building  as a small but serious experiment: a private, play-money prediction-market platform where communities create Tribes, open markets, stake i…"><link rel="canonical" href="https://patrickdesjardins.com/blog/building-tribemarkets-with-ai-architecture-and-self-fixing-production"><meta property="og:title" content="Patrick Desjardins Blog - Building TribeMarkets with AI: Architecture and Self-Fixing Production"><meta property="og:description" content="I have been building  as a small but serious experiment: a private, play-money prediction-market platform where communities create Tribes, open markets, stake i…"><meta property="og:url" content="https://patrickdesjardins.com/blog/building-tribemarkets-with-ai-architecture-and-self-fixing-production"><meta property="og:type" content="article"><meta property="og:site_name" content="Patrick Desjardins"><meta property="og:image" content="https://patrickdesjardins.com/images/backgrounds/patrickdesjardins_conference_bw.webp"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Patrick Desjardins Blog - Building TribeMarkets with AI: Architecture and Self-Fixing Production"><meta name="twitter:description" content="I have been building  as a small but serious experiment: a private, play-money prediction-market platform where communities create Tribes, open markets, stake i…"><meta name="twitter:image" content="https://patrickdesjardins.com/images/backgrounds/patrickdesjardins_conference_bw.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Patrick Desjardins","url":"https://patrickdesjardins.com"},"datePublished":"2026-08-21","description":"I have been building  as a small but serious experiment: a private, play-money prediction-market platform where communities create Tribes, open markets, stake i…","headline":"Building TribeMarkets with AI: Architecture and Self-Fixing Production","image":"https://patrickdesjardins.com/images/backgrounds/patrickdesjardins_conference_bw.webp","mainEntityOfPage":"https://patrickdesjardins.com/blog/building-tribemarkets-with-ai-architecture-and-self-fixing-production"}</script><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-5w_31dpB.css"><script async src="https://www.googletagmanager.com/gtag/js?id=G-6EH8HNYV13"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}var analyticsConsent="denied";try{analyticsConsent=localStorage.getItem("analytics-consent")==="granted"?"granted":"denied";}catch{}gtag("consent","default",{analytics_storage:analyticsConsent,ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied"});gtag("js",new Date());gtag("config","G-6EH8HNYV13");</script></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><a class="app_blog__components_BlogBody__skipLink" href="#content">Skip to content</a><header><div class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</div><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main id="content" class="app_blog__components_BlogBody__main"><a class="app_blog__components_BlogBody__articleParentLink" href="/blog">← All technical posts</a><h1 class="app_blog__components_BlogBody__heading">Building TribeMarkets with AI: Architecture and Self-Fixing Production</h1><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: <time datetime="2026-08-21">2026-08-21</time></p><p>I have been building <a href="https://tribemarkets.com">TribeMarkets</a> as a small but serious experiment: a private,
+play-money prediction-market platform where communities create Tribes, open
+markets, stake internal credits, and resolve outcomes.</p>
+<p><img src="/images/blog/TribeMarketsFrontpage.png" alt="" /></p>
+<p>The interesting part is not only the product. It is the way the product is
+built. I am using AI throughout the software lifecycle, from planning and
+implementation to testing, code review, deployment, and production diagnosis.
+The goal is not to ask an AI to write a lot of code and hope for the best. The
+goal is to create a system in which fast code generation is surrounded by clear
+boundaries and increasingly automated verification.</p>
+<h2>The architecture: a modular monolith</h2>
+<p>TribeMarkets is intentionally a modular monolith. The backend is one FastAPI
+application backed by one PostgreSQL database. The frontend is a React and
+TypeScript single-page application served separately and communicating with the
+backend through a REST API.</p>
+<p><img src="/images/blog/Blueprint_monolith.webp" alt="" /></p>
+<p>The modular part is important. Authentication, communities, currencies,
+wallets, the ledger, markets, settlements, notifications, and auditing are
+separate domain packages. The monolithic part is also important: there is no
+distributed transaction problem between the market engine and the ledger, and
+there are fewer moving pieces to deploy while the product is small.</p>
+<p>Routes are deliberately thin. A route parses a request, invokes a service, and
+returns a response. The service owns authorization and the transaction
+boundary. Domain rules stay out of HTTP handlers, and repositories focus on
+persistence queries. This structure gives both humans and AI agents a map of
+where a change belongs.</p>
+<h2>Tenant isolation is a domain rule</h2>
+<p>The central product concept is the Tribe. Users can belong to multiple Tribes,
+and each Tribe has its own members, currency, markets, balances, permissions,
+notifications, and audit history.</p>
+<p>That means authorization cannot be implemented only by hiding buttons in the
+frontend. Every service operation re-checks the authenticated user, active
+membership, role, and Tribe scope. A non-member generally receives a not-found
+response for private Tribe resources so that the existence of private data is
+not leaked.</p>
+<p>The role hierarchy is explicit:</p>
+<p><img src="/images/blog/Blueprint_roles.webp" alt="" /></p>
+<h2>The ledger is more important than the UI</h2>
+<p>TribeMarkets uses play-money credits, but the money rules still need to be
+correct. Balances are not stored as an authoritative number. They are derived
+from an immutable, double-entry ledger.</p>
+<p>Every movement is a balanced transaction: a grant moves credits from a mint
+account to a user's available account, a stake moves credits into a reserved
+account, and settlement moves reserved credits back to winners. Ledger rows are
+append-only, and balance-changing operations use idempotency keys so a network
+retry does not accidentally spend twice.</p>
+<p>Settlement math is pure and integer-exact. It works in the smallest currency
+units, applies deterministic largest-remainder rounding, and uses a stable
+position identifier as a tie-breaker. The total payout must equal the pool
+exactly.</p>
+<p>This is a good example of where AI is useful but not authoritative. An AI can
+suggest settlement code or generate edge cases, but the invariants, tests, and
+database constraints define what is acceptable.</p>
+<h2>How AI is used to build the system</h2>
+<p>I treat the repository instructions as part of the development environment.
+They describe the layering rules, money invariants, authorization requirements,
+testing model, documentation obligations, and the difference between test
+types. An agent starts by discovering the relevant routes, schemas, services,
+repositories, models, migrations, frontend screens, and tests before changing
+anything.</p>
+<p>The usual workflow is:</p>
+<ol>
+<li>Describe the behavior and acceptance criteria.</li>
+<li>Have an agent inspect every producer and consumer of that behavior.</li>
+<li>Implement the change through the layers instead of patching one screen.</li>
+<li>Add or update unit, integration, system, and end-to-end tests.</li>
+<li>Update the in-product help and developer documentation when behavior or
+APIs change.</li>
+<li>Run automated checks and review the resulting diff for security, tenancy,
+money, accessibility, and mobile regressions.</li>
+</ol>
+<p>The test categories are intentionally distinct:</p>
+<ul>
+<li><strong>Unit tests</strong> test an atomic function's inputs and outputs.</li>
+<li><strong>Integration tests</strong> exercise collaborating code without mocking the calls
+between those functions.</li>
+<li><strong>System tests</strong> exercise a higher-level application workflow, often against
+the real PostgreSQL test database, without requiring a real browser.</li>
+<li><strong>End-to-end tests</strong> use Playwright to exercise what a user sees and does in
+the browser.</li>
+</ul>
+<p>AI makes it inexpensive to create tests, but quantity is not the same as
+coverage. The valuable part is connecting each test to an invariant or a user
+journey: cross-Tribe isolation, exact decimal handling, role permissions,
+voided-market refunds, OAuth account linking, notification routing, and mobile
+layout behavior.</p>
+<h2>The production feedback loop</h2>
+<p>Production errors are sent to a self-hosted <a href="https://www.bugsink.com/">Bugsink</a> instance. Backend
+unhandled exceptions and frontend error-boundary failures become grouped
+issues. Bugsink is not a general-purpose stream of every application log, and
+ordinary request logs are not sent to an AI model.</p>
+<p>The repository contains a scheduled GitHub Actions workflow that runs every
+fifteen minutes. Its job is not to silently edit production. Its job is to
+prepare a guarded draft pull request when there is enough evidence that a
+repeatable production issue may have a low-risk code fix.</p>
+<p><img src="/images/blog/Blueprint_gitworkflow.webp" alt="" /></p>
+<h2>What the auto-fix workflow actually does</h2>
+<p>The workflow has several layers of defense.</p>
+<p>First, it filters candidates. The issue must be unresolved, associated with a
+production environment, and have at least two occurrences. Security,
+infrastructure, and uncertain classifications are not automatically turned
+into patches.</p>
+<p>Second, the issue and source context are scrubbed and size-bounded before they
+are sent to the model. Common credentials, bearer tokens, URI passwords,
+emails, and secret query parameters are redacted. Only selected source files
+from allowlisted directories are considered.</p>
+<p>Third, the model must return a structured plan containing a classification,
+confidence, summary, root cause, patch, changed files, tests, risk flags, and
+an explicit decision about whether a pull request is appropriate. The current
+workflow requires a confidence of at least 0.85 and rejects plans with risk
+flags or mismatched changed-file declarations.</p>
+<p>Fourth, the patch is constrained. It may touch only existing application,
+frontend, script, or test files. It cannot create or delete files, modify the
+auto-fix machinery itself, or change arbitrary infrastructure. Every automatic
+fix must add or update at least one test.</p>
+<p>Finally, the patch is tested before a pull request is opened. The checks include
+the repository harness, Python linting and strict typing, unit tests,
+integration tests against a freshly migrated PostgreSQL database, and
+<code>git diff --check</code>. Frontend changes additionally run TypeScript typechecking,
+ESLint, the production build, and the frontend test suite.</p>
+<p>The workflow has a stable issue/fingerprint/release key. That prevents the
+same production problem from opening a new pull request on every scheduled
+run. It is also limited to one pull request per run and three automation pull
+requests in a rolling twenty-four-hour period.</p>
+<h2>Why the pull request remains a draft</h2>
+<p>Calling this a self-fixing system is useful shorthand, but it is not an
+autonomous production mutation system. The model can misunderstand a stack
+trace, make a plausible but incomplete change, or write a test that confirms
+the wrong behavior. A passing test suite is evidence, not proof.</p>
+<p>The workflow therefore creates a draft pull request and never merges or
+deploys. A human reviews the root cause, patch, tests, security implications,
+and product behavior. If the automation behaves unexpectedly, the GitHub
+Actions workflow can be disabled immediately, and the daily and per-run limits
+provide additional containment.</p>
+<p>This separation is important: AI can reduce the time between an error and a
+reviewable proposal without being granted production credentials or merge
+authority.</p>
+<h2>Deployment</h2>
+<p>Deployment relies on Railway which contains many services that used Codex and the Railway CLI for the initial configuration. The ease to get started and then to deploy worth the cost. Having AI with the Railway CLI is a breeze and while it performs infrastructure changes, debugs and tweaking, I can focus on features.</p>
+<p><img src="/images/blog/RailwayPredictionMarket.png" alt="" /></p>
+<p>Above this text is the image of the configuration of the backend, frontend, database and also the bug tracker used to automatically fix bugs in production.</p>
+<h2>The practical lesson</h2>
+<p>The biggest benefit of AI has not been generating individual functions faster.
+It has been making it practical to work on the entire engineering loop at
+once: architecture, implementation, tests, documentation, observability, and
+repair.</p>
+<p>That speed only works when the system has strong boundaries. A modular
+architecture gives agents a place to put changes. Domain invariants prevent
+convenient shortcuts from corrupting money or permissions. Layered tests catch
+different classes of mistakes. GitHub Actions and Bugsink close the loop after
+deployment.</p>
+<p>The result is not software that fixes itself perfectly. It is a development
+system that can notice recurring failures, prepare a constrained proposal, and
+bring the problem back into the same tested review process that produced the
+original software.</p>
+<nav class="app_blog__slug__Page__articleNavigation" aria-label="Adjacent articles"><a rel="next" href="/blog/humans-are-becoming-simple-megaphones">Older: Humans are Becoming Simple Megaphones →</a></nav><section class="app__components_MastodonComments__mastodonComments" aria-labelledby="mastodon-comments"><h2 id="mastodon-comments">Discussion</h2><p>Replies are loaded from the public Mastodon thread for this article.</p><div class="app__components_MastodonComments__mastodonActions"><a class="app__components_MastodonComments__mastodonLink" href="https://mastodon.social/@mrdesjardins/117134665305406120">Reply on Mastodon</a></div><div data-mastodon-comments-root data-instance-url="https://mastodon.social" data-status-id="117134665305406120" data-status-url="https://mastodon.social/@mrdesjardins/117134665305406120"><p class="app__components_MastodonComments__mastodonStatus">Loading replies from Mastodon...</p></div></section></div></main></div></div><script type="module" src="/assets/client-DujAiIxT.js"></script></body></html>
