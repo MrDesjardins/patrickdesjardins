@@ -30,6 +30,7 @@ Rules:
 - 2-3 sentences maximum
 - One key insight or takeaway, no fluff
 - Professional but conversational tone
+- Write in first person singular ("I"), never "we" or "our" — this is a personal blog, not a company
 - Do NOT include a URL
 - End with 2-3 relevant hashtags on their own line
 - Do not make it cringe or clickbaity
@@ -53,6 +54,7 @@ Rules:
 - Explicitly call it a philosophical essay
 - Briefly describe the essay's topic in 1-2 concise sentences
 - Professional but conversational tone
+- Write in first person singular ("I"), never "we" or "our" — this is a personal blog, not a company
 - Do NOT include a URL
 - End with exactly this hashtag on its own line: {hashtag_line}
 - Do not make it cringe or clickbaity

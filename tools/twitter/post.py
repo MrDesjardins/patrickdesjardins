@@ -45,6 +45,7 @@ Rules:
 - 1-2 sentences maximum
 - Focus on one technical insight or concrete takeaway
 - No fluff, no clickbait, no emojis
+- Write in first person singular ("I"), never "we" or "our" — this is a personal blog, not a company
 - Do NOT include a URL
 - End with 1-2 relevant hashtags
 - Never use this character: —
@@ -67,6 +68,7 @@ Rules:
 - Explicitly call it a philosophical essay
 - Briefly describe the essay's topic in 1-2 concise sentences
 - No fluff, no clickbait, no emojis
+- Write in first person singular ("I"), never "we" or "our" — this is a personal blog, not a company
 - Do NOT include a URL
 - End with exactly this hashtag: {hashtag_line}
 - Never use this character: —
