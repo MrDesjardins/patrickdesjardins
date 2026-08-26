@@ -1,0 +1,155 @@
+---
+title: "Oktopai: A Local Fleet of Specialized Coding Knowledge"
+date: "2026-08-26"
+categories:
+ - "ai"
+ - "llm"
+ - "model"
+---
+
+## What if a local computer could load knowledge on-the-fly?
+
+The most interesting local-LLM idea to me is not finding one enormous model
+that can do everything. It is building an orchestration of models and
+letting a local orchestrator choose the right one for each task.
+
+That is the idea behind **oktopai**: an experimental, privacy-preserving coding
+orchestrator that routes work to specialized local knowledge and hot-swaps them
+through the available GPU memory. For example, I have a RTX 5080 with 16 VRAM, what if I can swap many specialized model of less than 16 gig quickly to perform a task like building a website. I could swap from a TypeScript model, a SQL model, a CSS model, a NextJS model, etc.
+
+![](/images/blog/oktopai_training.png)
+
+The first (model) or mode generically I call "knowledge" will focus on TypeScript, Next.js, CSS, SQLite, testing, and
+general coding. I do not yet use model in my vocabulary because I am learning different way like with LoRa on-top of basic model that could potentially remains loaded. 
+The goal remains the same: a TypeScript task should not need to compete for attention (GPU space) with
+the knowledge required to write a SQL migration. A model focused on CSS layout
+should spend its capacity on layout, responsive behavior, and accessibility. 
+
+The goal is not to pretend that a small model is automatically better. The goal
+is to test whether specialization, reliable tools, and model lifecycle
+management can make a small local machine substantially more useful. 
+The hypothesis, like Neo from the Matrix, is that we can load the desired knowledge when desired. Contrary to the movie, we need to unload the knowledge for space efficiency. 
+Another image is if you have a team of engineer, you might have one expert in frontend and one backend: it is natural to split expertises, like oktopai does.
+From my perspective, if I need one piece of knowledge, I do not need to know the rest. 
+For example, I do not need my French's knowledge or how CSS works to code a TypeScript function, thus I can unload them, do the TypeScript task and then having the orchestrator decides which knowledge to load. It does not mean I am unloading all the "brain" but the specializations.
+
+## The central experiment
+
+Today, a developer often chooses between a large remote model and a smaller
+local model. The remote model may be more capable, but repository code can be
+sensitive and usage costs accumulate. A
+local model preserves privacy, but a single small model can struggle with the
+breadth of modern software development.
+
+Oktopai explores a different tradeoff:
+
+```text
+coding task
+    ↓
+model local router
+    ↓
+TypeScript / Next.js / CSS / SQLite specialist
+    ↓
+repository tools and project context
+    ↓
+compiler, tests, browser, or database verification
+```
+
+The active knowledge is loaded into the GPU while it is needed. Other knowledge can
+remain on disk, in the operating system cache, or in system memory. When the
+task changes, oktopai can unload an old model and load the next one. Multiple
+logical knowledge may also share one physical base model or use small adapters.
+
+This treats GPU memory as a working set rather than a permanent home for the
+entire model fleet.
+
+## Specialization is more than a system prompt
+
+The first prototype can give the same base model different system prompts. That
+is useful for testing routing, but it is not enough for the long-term idea.
+
+The planned training loop is teacher–student distillation:
+
+1. a stronger coding model generates TypeScript or agent/tool trajectories
+2. the repository compiler, tests, browser checks, or SQLite checks verify them
+3. accepted examples become training data for a smaller student
+4. the student is first trained efficiently with a LoRA adapter
+5. a winning adapter can be merged and quantized into a standalone specialist
+6. the resulting artifact is benchmarked against the original base model
+
+LoRA and distillation are complementary. Distillation describes where the
+learning signal comes from. LoRA is an efficient way to update and store the
+student during experimentation. The final system may use adapters, standalone
+models, or both.
+
+## Why tools matter
+
+A coding model is only useful if it can help finish a change. Producing a
+plausible answer is not the same as repairing a repository.
+
+Oktopai therefore treats tool use as part of specialization. A TypeScript
+knowledge should know when to inspect a file, search imports, read `package.json`,
+run the project compiler, apply a minimal patch, and run the relevant tests. It
+should report what it actually verified instead of inventing successful command
+output.
+
+The same principle applies to the future knowledge:
+
+- Next.js needs build and server/client-boundary checks
+- CSS needs browser, viewport, and accessibility checks
+- SQLite needs schema inspection, migrations, query plans, and safe test data
+- TypeScript needs strict compiler and test verification
+
+The host owns permissions and execution. The model proposes structured tool
+actions, while oktopai records the trajectory and enforces safety boundaries.
+
+## The first practical milestone
+
+The first end-to-end target is a small website built and repaired locally. It
+will combine TypeScript, Next.js, CSS, and SQLite in one executable fixture.
+The benchmark will contain intentional failures and hidden checks:
+
+- a TypeScript generic or narrowing error
+- a Next.js server/client component mistake
+- a responsive CSS or accessibility regression
+- a SQLite migration or query error
+- tests that reveal whether the repair actually works
+
+We will compare three approaches:
+
+1. one shared local coding model
+2. one model with different prompts
+3. a hot-swapped fleet of specialized models or adapters
+
+The important measurements will be verified task success, tool reliability,
+cold-start and warm-start latency, model memory, generation speed, and total
+time to a working repository. Token speed matters, but a fast answer that does
+not compile is not a successful result.
+
+## Next Steps
+
+The project is deliberately proceeding in stages. First we prove routing,
+sessions, runtime abstraction, lifecycle events, and hot-swapping without
+training anything. Then we build a strong TypeScript data pipeline from public,
+repository-grounded tasks and independently verified teacher outputs. Only
+after the TypeScript process shows a measurable gain will we expand it to
+Next.js, CSS, and SQLite.
+
+For expensive teacher generation and training experiments, we can use a rented
+GPU such as Runpod for under 1$/hour. The local repository remains the source of truth: remote
+jobs are bounded pilots, write incrementally to persistent storage, return raw
+outputs and checksums, and are terminated after local verification. This keeps
+the experiment fast without turning cloud compute into an uncontrolled expense
+or a hidden dependency.
+
+## Hypothesis
+
+My hypothesis that I am testing is to see how usable it is to have specialized model and swapping them in and out of GPU for a local experience that would be enough to complete programming tasks.
+
+> A local orchestrator can combine narrow, verifiable coding knowledge, load and
+> unload them within constrained GPU memory, and complete real multi-domain
+> coding tasks with better relevance, speed, privacy, or cost than one small
+> general model.
+
+If the measurements support that claim, oktopai could make modest local
+hardware feel much broader without pretending that its hardware has changed. To be continued...
