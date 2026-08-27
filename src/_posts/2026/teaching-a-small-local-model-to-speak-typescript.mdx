@@ -1,0 +1,295 @@
+---
+title: "Teaching a small local model to speak typescript"
+date: "2026-08-31"
+categories:
+ - "ai"
+ - "llm"
+ - "neural network"
+ - "ml"
+ - "model"
+ - "oktopai"
+---
+
+## Teaching a small model a big model's good habits
+
+I am experimenting with an idea called **oktopai**: instead of asking one
+small local model to know every programming language and framework, can I
+keep several focused specialists and load the right one when it is needed?
+
+The first specialist is TypeScript. The goal is not simply to make a model
+sound as if it knows TypeScript. The goal is for it to produce code that a
+real TypeScript compiler accepts, while remaining fast and private on a local
+GPU.
+
+## The teacher and the student
+
+Imagine a junior programmer learning from a very experienced programmer. The
+experienced programmer solves many problems and explains the solutions. The
+junior programmer studies those examples and gradually learns useful patterns.
+
+That is the teacher–student process:
+
+```text
+strong teacher model
+        ↓ writes an answer
+TypeScript compiler and tests
+        ↓ reject incorrect answers
+verified examples
+        ↓ teach
+small student model
+```
+
+The teacher is `Qwen3-Coder 30B` in this experiment. The student is a much
+smaller `Qwen2.5-Coder 3B` model. The teacher does not directly become the
+student. It creates examples, and the student learns from them.
+
+This matters because a small model has less room for general knowledge. I
+am trying to spend more of that limited capacity on decisions that matter
+for TypeScript: generics, narrowing, discriminated unions, async code, module
+boundaries, compiler errors, and safe refactoring.
+
+## Neural-network ?
+
+Training happens in repeated **steps**. In one step, the student reads a small
+batch of examples, predicts the next tokens, compares its prediction with the
+teacher's answer, and calculates an error. Backpropagation then makes a tiny
+adjustment to the trainable weights.
+
+It is like practising a musical passage. One practice attempt does not make a
+musician perfect. The model revisits examples over several passes, adjusting
+itself each time. Twelve thousand steps therefore means twelve thousand small
+learning updates; it does not mean twelve thousand unique TypeScript
+questions.
+
+For this run, the base model is kept unchanged and a LoRA adapter stores the
+specialization. LoRA means "Low-Rank Adaptation" and it leaves all the existing
+weights frozen and trains a small number of extra ones instead. The student's
+original knowledge stays intact, and the new weights only change how it
+responds. Because that extra part is small, training uses less memory and
+finishes faster, and the output is an adapter file of a few megabytes instead
+of a multi-gigabyte model. This is similar to adding a replaceable TypeScript
+training module to the student's existing knowledge. If the adapter proves useful, it
+can later be merged into a standalone model and quantized for fast Ollama
+inference. By the way, Ollama is a free tool that runs language models on your own
+machine, so the model answers locally without sending anything to a cloud
+service.
+
+## Am I removing the model's useless knowledge?
+
+No. LoRA training does not reach inside the
+base model and erase its knowledge of Python, history, or anything else. The
+base model remains frozen, and the TypeScript adapter adds a learned bias: for
+this kind of request, prefer these TypeScript patterns, explanations, and
+formats.
+
+Instead of trying to cut knowledge out, I start from a small student model so
+it never carries much unnecessary knowledge in the first place. A 3B model has
+a limited budget, and picking a compact base keeps that budget from being
+spent on things the TypeScript specialist does not need.
+
+Think of the base model, the one of the student, as a general-purpose toolbox. 
+I am not throwing away
+the screwdrivers to make room for TypeScript tools. I am adding a labelled
+drawer and teaching the model which tools to reach for first. When the adapter
+is removed, the original toolbox is still there.
+
+This can make the specialist behave as if irrelevant knowledge has been
+silenced, but it has not truly been deleted. A merged or fully fine-tuned
+model may change some existing behaviour, and an aggressive training run can
+cause forgetting, but neither is a reliable way to remove a specific piece of
+knowledge on purpose. The practical goal is narrower and safer: improve
+TypeScript performance while watching for regressions on general coding tasks.
+
+The hot-swapping design relies on this. I can keep one base model loaded
+and attach or swap small adapters, or use separate merged specialists when
+that gives better speed. The router chooses the right expertise; it does not
+pretend that every other skill has disappeared.
+
+## What did not work well at first
+
+The first versions looked promising on paper but produced weak models. There
+were several reasons.
+
+Some examples came from compiler fixtures whose purpose was to test whether
+TypeScript rejects code. Those files are valuable to the TypeScript project,
+but they are not always good demonstrations of code a coding assistant should
+write. A model trained on them can learn the wrong lesson: reproduce a test
+artifact instead of solving the user's problem.
+
+The initial local teacher also produced many answers that looked plausible but
+did not compile. I measured this instead of assuming that fluent text was
+useful. The early repository corpus passed only `71` of `2,450` strict compilation
+checks. A later prompt improved that to `503`, but it was still not good enough
+to train on.
+
+Finally, a low training loss is not the same as a good coding model. The
+student can memorize the shape of training answers while still failing new
+problems. Speed is not quality either: a model that answers at 250 tokens per
+second but writes invalid code is not a successful specialist.
+
+Those runs were kept as measurements, but they were not promoted as useful
+models.
+
+## Generating better examples
+
+I changed the data-generation contract. Instead of asking the teacher to
+write a loose explanation, each task asks for a standalone TypeScript answer
+with a precise purpose. The generated code is isolated in a temporary file and
+compiled with strict TypeScript settings.
+
+Only accepted examples enter the student dataset. I also label task families
+so that the corpus is not just thousands of variations of one easy pattern.
+The current verified corpus covers six families, including type errors,
+generics, narrowing, asynchronous code, modules, and practical refactoring.
+
+The stronger teacher generated 2,450 answers, and all 2,450 passed the strict
+compiler gate. That is a much more meaningful starting point than merely
+having 2,450 lines of generated text.
+
+## What does one generated task look like?
+
+The source tasks were mined from the public TypeScript repository and grouped
+into useful families. The repository gave me realistic themes and APIs; the
+teacher turned each theme into a standalone coding exercise. For example, a
+task might ask for a generic function that preserves the type of the selected
+property:
+
+```json
+{
+  "family": "generics",
+  "prompt": "Write a strict TypeScript function pick<T, K extends keyof T>(object, key) that returns object[key]. Include a usage example whose inferred type is string.",
+  "answer": "function pick<T, K extends keyof T>(object: T, key: K): T[K] {\n  return object[key];\n}\n\nconst user = { name: 'Mina', age: 32 };\nconst name: string = pick(user, 'name');"
+}
+```
+
+The answer is not accepted because it looks nice. Oktopai writes the code to
+an isolated file and runs the strict TypeScript compiler. The compiler checks
+that the generic constraint, indexed access, and usage example really agree.
+Rejected answers and compiler diagnostics are retained as experiment data,
+but are not silently mixed into the positive student-training set.
+
+The pipeline can be pictured like this:
+
+![](/images/blog/teaching_small_model_oktopai1.png)
+
+
+## Should I generate more than 2,450 tasks?
+
+Probably yes, but simply making the number larger is not enough. Two thousand
+near-duplicates can be less useful than a few hundred carefully balanced
+examples. More data becomes valuable when it adds new concepts, realistic
+repository context, difficult counterexamples, different coding styles, and
+tests that catch subtle type errors.
+
+The current 2,450 examples are a strong verification milestone, not a claim
+that TypeScript has been completely covered. Before the next major training
+run, I should expand the corpus in controlled batches, deduplicate it, keep
+families balanced, and reserve a fixed untouched evaluation set. I should
+also add multi-file repairs, compiler-diagnostic-to-fix tasks, JavaScript to
+TypeScript migrations, declaration files, configuration files, and tests that
+exercise runtime behaviour as well as type checking.
+
+New data has to earn its cost. I should measure whether a
+new batch improves the held-out score and family coverage. If 10,000 more
+examples do not improve those measurements, generating 100,000 would mostly
+make training slower and overfitting easier.
+
+## How can I make it fast and keep many specialists?
+
+There are two different speeds to improve. Training speed is how quickly the
+student learns during the experiment. Inference speed is how quickly oktopai
+answers a developer. The long-term product goal is mostly about inference:
+fast, useful answers from a model that fits comfortably in local GPU memory.
+
+The main strategy is to keep the expensive general knowledge shared and make
+the specialist knowledge small:
+
+- Start with a compact base model, such as 3B parameters, instead of copying a
+  large teacher into every specialist.
+- Train a small LoRA adapter for TypeScript, CSS, SQL, or Next.js. Several
+  adapters can share one base model, so the GPU does not need a complete copy
+  of each model.
+- Merge an adapter into a standalone model only when that improves serving
+  speed or compatibility. Merging is a packaging choice, not extra knowledge.
+- Quantize the served model to formats such as 4-bit or 8-bit. This reduces
+  memory and often increases token throughput, with a possible quality cost
+  that must be measured.
+- Keep the active model on the GPU. Loading from disk for every request would
+  make a fast model feel slow, so oktopai tracks warm models and uses an LRU
+  policy when VRAM is full.
+- Keep conversation state outside the model. Shorter, carefully selected
+  context means fewer prompt tokens and faster responses.
+- Use GPU-optimized local runtimes, continuous batching when there are several
+  requests, and later investigate speculative decoding with a small draft
+  model.
+
+The target is not the highest possible tokens per second on its own. A
+tiny model can be extremely fast and still give poor answers. I will record
+tokens per second, time to first token, total latency, compiler acceptance,
+and held-out task quality together as the experiment goes on.
+
+## What does loading many models really mean?
+
+Suppose a graphics card has 16 GB of VRAM. Two quantized 3B models might fit at
+the same time, depending on their context caches and runtime overhead. Ten
+models probably will not. Oktopai therefore treats models as a working set:
+
+![](/images/blog/teaching_small_model_oktopai2.png)
+
+A model that is not currently needed can remain as weights on disk, in the
+operating-system file cache, or in system RAM. That is not the same as keeping
+it active on the GPU. When a new specialist is needed, loading it incurs a
+cold-start cost. If two logical experts share the same base model, only their
+small adapters or prompt configuration need to change, avoiding a complete
+model reload.
+
+The best arrangement will depend on the machine and the workload. One merged
+3B TypeScript model may give the best single-request throughput. A shared base
+plus several adapters may allow more expertise to stay available. Two smaller
+models may run concurrently, while a larger specialist may need exclusive GPU
+access. The lifecycle benchmark will measure these alternatives instead of
+assuming that more models loaded is automatically faster.
+
+My planned speed experiments are therefore incremental: first establish a
+quality baseline, then compare FP16, 8-bit, and 4-bit serving; warm versus cold
+starts; one model versus shared-base adapters; and sequential versus parallel
+requests. A configuration only makes the final local fleet if it keeps the
+TypeScript answers good.
+
+## What happens now
+
+The 3B student is being trained on those verified answers using CUDA (locally on my 5080 RTX). During
+training, checkpoints are saved so that progress is recoverable. When the run
+finishes, the student will face a separate held-out suite that it has never
+seen.
+
+The decision process is deliberately strict:
+
+- compare the student with the original 3B model
+- compile both answers and measure task acceptance
+- inspect family-by-family coverage
+- record generation speed and time to first output
+- promote the adapter only if correctness improves without an unacceptable
+  regression elsewhere
+
+If the student fails this test, the result is still useful. It tells me that
+the data, task design, training recipe, or model size needs work. I will not
+call a model specialized merely because it completed a long training run.
+
+## Why this connects to hot-swapping
+
+The final vision is a local team of small experts. Oktopai can route a request
+to the TypeScript specialist, a CSS specialist, a Next.js specialist, or a
+database specialist. The active model is loaded into GPU memory while it is
+needed; another model can be unloaded or left in system storage.
+
+The common conversation and repository context stay outside the model, so a
+switch does not erase the session. The GPU becomes a workspace for the
+current expert rather than a permanent home for every expert I may want.
+
+That is the experiment: can several genuinely useful, narrowly trained local
+models outperform one mediocre general-purpose local model for their own
+tasks, while remaining fast enough to use interactively?
+
+I am still testing the hypothesis. The compiler gates, held-out evaluations,
+raw outputs, timings, and failed experiments are all part of the answer.

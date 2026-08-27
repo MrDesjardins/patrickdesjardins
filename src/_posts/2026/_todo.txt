@@ -3,6 +3,7 @@
 
 === Completed waiting
 
+⏲️ 2026-08-31: Teaching a small local model to speak typescript
 ⏲️ 2026-08-26: Oktopai: A Local Fleet of Specialized Coding Knowledge
 
 === Published
