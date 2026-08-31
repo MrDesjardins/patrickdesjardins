@@ -1,0 +1,226 @@
+<!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="strict-origin-when-cross-origin"><title>Patrick Desjardins Blog - Teaching a small local model to speak typescript</title><meta name="description" content="I am experimenting with an idea called **oktopai**: instead of asking one small local model to know every programming language and framework, can I keep several…"><link rel="canonical" href="https://patrickdesjardins.com/blog/teaching-a-small-local-model-to-speak-typescript"><meta property="og:title" content="Patrick Desjardins Blog - Teaching a small local model to speak typescript"><meta property="og:description" content="I am experimenting with an idea called **oktopai**: instead of asking one small local model to know every programming language and framework, can I keep several…"><meta property="og:url" content="https://patrickdesjardins.com/blog/teaching-a-small-local-model-to-speak-typescript"><meta property="og:type" content="article"><meta property="og:site_name" content="Patrick Desjardins"><meta property="og:image" content="https://patrickdesjardins.com/images/backgrounds/patrickdesjardins_conference_bw.webp"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Patrick Desjardins Blog - Teaching a small local model to speak typescript"><meta name="twitter:description" content="I am experimenting with an idea called **oktopai**: instead of asking one small local model to know every programming language and framework, can I keep several…"><meta name="twitter:image" content="https://patrickdesjardins.com/images/backgrounds/patrickdesjardins_conference_bw.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Patrick Desjardins","url":"https://patrickdesjardins.com"},"datePublished":"2026-08-31","description":"I am experimenting with an idea called **oktopai**: instead of asking one small local model to know every programming language and framework, can I keep several…","headline":"Teaching a small local model to speak typescript","image":"https://patrickdesjardins.com/images/backgrounds/patrickdesjardins_conference_bw.webp","mainEntityOfPage":"https://patrickdesjardins.com/blog/teaching-a-small-local-model-to-speak-typescript"}</script><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-5w_31dpB.css"><script async src="https://www.googletagmanager.com/gtag/js?id=G-6EH8HNYV13"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}var analyticsConsent="denied";try{analyticsConsent=localStorage.getItem("analytics-consent")==="granted"?"granted":"denied";}catch{}gtag("consent","default",{analytics_storage:analyticsConsent,ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied"});gtag("js",new Date());gtag("config","G-6EH8HNYV13");</script></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><a class="app_blog__components_BlogBody__skipLink" href="#content">Skip to content</a><header><div class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</div><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main id="content" class="app_blog__components_BlogBody__main"><a class="app_blog__components_BlogBody__articleParentLink" href="/blog">← All technical posts</a><h1 class="app_blog__components_BlogBody__heading">Teaching a small local model to speak typescript</h1><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: <time datetime="2026-08-31">2026-08-31</time></p><h2>Teaching a small model a big model's good habits</h2>
+<p>I am experimenting with an idea called <strong>oktopai</strong>: instead of asking one
+small local model to know every programming language and framework, can I
+keep several focused specialists and load the right one when it is needed?</p>
+<p>The first specialist is TypeScript. The goal is not simply to make a model
+sound as if it knows TypeScript. The goal is for it to produce code that a
+real TypeScript compiler accepts, while remaining fast and private on a local
+GPU.</p>
+<h2>The teacher and the student</h2>
+<p>Imagine a junior programmer learning from a very experienced programmer. The
+experienced programmer solves many problems and explains the solutions. The
+junior programmer studies those examples and gradually learns useful patterns.</p>
+<p>That is the teacher–student process:</p>
+<pre class="language-text" tabindex="0"><code class="language-text code-highlight">strong teacher model
+        ↓ writes an answer
+TypeScript compiler and tests
+        ↓ reject incorrect answers
+verified examples
+        ↓ teach
+small student model
+</code></pre>
+<p>The teacher is <code>Qwen3-Coder 30B</code> in this experiment. The student is a much
+smaller <code>Qwen2.5-Coder 3B</code> model. The teacher does not directly become the
+student. It creates examples, and the student learns from them.</p>
+<p>This matters because a small model has less room for general knowledge. I
+am trying to spend more of that limited capacity on decisions that matter
+for TypeScript: generics, narrowing, discriminated unions, async code, module
+boundaries, compiler errors, and safe refactoring.</p>
+<h2>Neural-network ?</h2>
+<p>Training happens in repeated <strong>steps</strong>. In one step, the student reads a small
+batch of examples, predicts the next tokens, compares its prediction with the
+teacher's answer, and calculates an error. Backpropagation then makes a tiny
+adjustment to the trainable weights.</p>
+<p>It is like practising a musical passage. One practice attempt does not make a
+musician perfect. The model revisits examples over several passes, adjusting
+itself each time. Twelve thousand steps therefore means twelve thousand small
+learning updates; it does not mean twelve thousand unique TypeScript
+questions.</p>
+<p>For this run, the base model is kept unchanged and a LoRA adapter stores the
+specialization. LoRA means "Low-Rank Adaptation" and it leaves all the existing
+weights frozen and trains a small number of extra ones instead. The student's
+original knowledge stays intact, and the new weights only change how it
+responds. Because that extra part is small, training uses less memory and
+finishes faster, and the output is an adapter file of a few megabytes instead
+of a multi-gigabyte model. This is similar to adding a replaceable TypeScript
+training module to the student's existing knowledge. If the adapter proves useful, it
+can later be merged into a standalone model and quantized for fast Ollama
+inference. By the way, Ollama is a free tool that runs language models on your own
+machine, so the model answers locally without sending anything to a cloud
+service.</p>
+<h2>Am I removing the model's useless knowledge?</h2>
+<p>No. LoRA training does not reach inside the
+base model and erase its knowledge of Python, history, or anything else. The
+base model remains frozen, and the TypeScript adapter adds a learned bias: for
+this kind of request, prefer these TypeScript patterns, explanations, and
+formats.</p>
+<p>Instead of trying to cut knowledge out, I start from a small student model so
+it never carries much unnecessary knowledge in the first place. A 3B model has
+a limited budget, and picking a compact base keeps that budget from being
+spent on things the TypeScript specialist does not need.</p>
+<p>Think of the base model, the one of the student, as a general-purpose toolbox.
+I am not throwing away
+the screwdrivers to make room for TypeScript tools. I am adding a labelled
+drawer and teaching the model which tools to reach for first. When the adapter
+is removed, the original toolbox is still there.</p>
+<p>This can make the specialist behave as if irrelevant knowledge has been
+silenced, but it has not truly been deleted. A merged or fully fine-tuned
+model may change some existing behaviour, and an aggressive training run can
+cause forgetting, but neither is a reliable way to remove a specific piece of
+knowledge on purpose. The practical goal is narrower and safer: improve
+TypeScript performance while watching for regressions on general coding tasks.</p>
+<p>The hot-swapping design relies on this. I can keep one base model loaded
+and attach or swap small adapters, or use separate merged specialists when
+that gives better speed. The router chooses the right expertise; it does not
+pretend that every other skill has disappeared.</p>
+<h2>What did not work well at first</h2>
+<p>The first versions looked promising on paper but produced weak models. There
+were several reasons.</p>
+<p>Some examples came from compiler fixtures whose purpose was to test whether
+TypeScript rejects code. Those files are valuable to the TypeScript project,
+but they are not always good demonstrations of code a coding assistant should
+write. A model trained on them can learn the wrong lesson: reproduce a test
+artifact instead of solving the user's problem.</p>
+<p>The initial local teacher also produced many answers that looked plausible but
+did not compile. I measured this instead of assuming that fluent text was
+useful. The early repository corpus passed only <code>71</code> of <code>2,450</code> strict compilation
+checks. A later prompt improved that to <code>503</code>, but it was still not good enough
+to train on.</p>
+<p>Finally, a low training loss is not the same as a good coding model. The
+student can memorize the shape of training answers while still failing new
+problems. Speed is not quality either: a model that answers at 250 tokens per
+second but writes invalid code is not a successful specialist.</p>
+<p>Those runs were kept as measurements, but they were not promoted as useful
+models.</p>
+<h2>Generating better examples</h2>
+<p>I changed the data-generation contract. Instead of asking the teacher to
+write a loose explanation, each task asks for a standalone TypeScript answer
+with a precise purpose. The generated code is isolated in a temporary file and
+compiled with strict TypeScript settings.</p>
+<p>Only accepted examples enter the student dataset. I also label task families
+so that the corpus is not just thousands of variations of one easy pattern.
+The current verified corpus covers six families, including type errors,
+generics, narrowing, asynchronous code, modules, and practical refactoring.</p>
+<p>The stronger teacher generated 2,450 answers, and all 2,450 passed the strict
+compiler gate. That is a much more meaningful starting point than merely
+having 2,450 lines of generated text.</p>
+<h2>What does one generated task look like?</h2>
+<p>The source tasks were mined from the public TypeScript repository and grouped
+into useful families. The repository gave me realistic themes and APIs; the
+teacher turned each theme into a standalone coding exercise. For example, a
+task might ask for a generic function that preserves the type of the selected
+property:</p>
+<pre class="language-json" tabindex="0"><code class="language-json code-highlight">{
+  "family": "generics",
+  "prompt": "Write a strict TypeScript function pick&lt;T, K extends keyof T&gt;(object, key) that returns object[key]. Include a usage example whose inferred type is string.",
+  "answer": "function pick&lt;T, K extends keyof T&gt;(object: T, key: K): T[K] {\n  return object[key];\n}\n\nconst user = { name: 'Mina', age: 32 };\nconst name: string = pick(user, 'name');"
+}
+</code></pre>
+<p>The answer is not accepted because it looks nice. Oktopai writes the code to
+an isolated file and runs the strict TypeScript compiler. The compiler checks
+that the generic constraint, indexed access, and usage example really agree.
+Rejected answers and compiler diagnostics are retained as experiment data,
+but are not silently mixed into the positive student-training set.</p>
+<p>The pipeline can be pictured like this:</p>
+<p><img src="/images/blog/teaching_small_model_oktopai1.png" alt="" /></p>
+<h2>Should I generate more than 2,450 tasks?</h2>
+<p>Probably yes, but simply making the number larger is not enough. Two thousand
+near-duplicates can be less useful than a few hundred carefully balanced
+examples. More data becomes valuable when it adds new concepts, realistic
+repository context, difficult counterexamples, different coding styles, and
+tests that catch subtle type errors.</p>
+<p>The current 2,450 examples are a strong verification milestone, not a claim
+that TypeScript has been completely covered. Before the next major training
+run, I should expand the corpus in controlled batches, deduplicate it, keep
+families balanced, and reserve a fixed untouched evaluation set. I should
+also add multi-file repairs, compiler-diagnostic-to-fix tasks, JavaScript to
+TypeScript migrations, declaration files, configuration files, and tests that
+exercise runtime behaviour as well as type checking.</p>
+<p>New data has to earn its cost. I should measure whether a
+new batch improves the held-out score and family coverage. If 10,000 more
+examples do not improve those measurements, generating 100,000 would mostly
+make training slower and overfitting easier.</p>
+<h2>How can I make it fast and keep many specialists?</h2>
+<p>There are two different speeds to improve. Training speed is how quickly the
+student learns during the experiment. Inference speed is how quickly oktopai
+answers a developer. The long-term product goal is mostly about inference:
+fast, useful answers from a model that fits comfortably in local GPU memory.</p>
+<p>The main strategy is to keep the expensive general knowledge shared and make
+the specialist knowledge small:</p>
+<ul>
+<li>Start with a compact base model, such as 3B parameters, instead of copying a
+large teacher into every specialist.</li>
+<li>Train a small LoRA adapter for TypeScript, CSS, SQL, or Next.js. Several
+adapters can share one base model, so the GPU does not need a complete copy
+of each model.</li>
+<li>Merge an adapter into a standalone model only when that improves serving
+speed or compatibility. Merging is a packaging choice, not extra knowledge.</li>
+<li>Quantize the served model to formats such as 4-bit or 8-bit. This reduces
+memory and often increases token throughput, with a possible quality cost
+that must be measured.</li>
+<li>Keep the active model on the GPU. Loading from disk for every request would
+make a fast model feel slow, so oktopai tracks warm models and uses an LRU
+policy when VRAM is full.</li>
+<li>Keep conversation state outside the model. Shorter, carefully selected
+context means fewer prompt tokens and faster responses.</li>
+<li>Use GPU-optimized local runtimes, continuous batching when there are several
+requests, and later investigate speculative decoding with a small draft
+model.</li>
+</ul>
+<p>The target is not the highest possible tokens per second on its own. A
+tiny model can be extremely fast and still give poor answers. I will record
+tokens per second, time to first token, total latency, compiler acceptance,
+and held-out task quality together as the experiment goes on.</p>
+<h2>What does loading many models really mean?</h2>
+<p>Suppose a graphics card has 16 GB of VRAM. Two quantized 3B models might fit at
+the same time, depending on their context caches and runtime overhead. Ten
+models probably will not. Oktopai therefore treats models as a working set:</p>
+<p><img src="/images/blog/teaching_small_model_oktopai2.png" alt="" /></p>
+<p>A model that is not currently needed can remain as weights on disk, in the
+operating-system file cache, or in system RAM. That is not the same as keeping
+it active on the GPU. When a new specialist is needed, loading it incurs a
+cold-start cost. If two logical experts share the same base model, only their
+small adapters or prompt configuration need to change, avoiding a complete
+model reload.</p>
+<p>The best arrangement will depend on the machine and the workload. One merged
+3B TypeScript model may give the best single-request throughput. A shared base
+plus several adapters may allow more expertise to stay available. Two smaller
+models may run concurrently, while a larger specialist may need exclusive GPU
+access. The lifecycle benchmark will measure these alternatives instead of
+assuming that more models loaded is automatically faster.</p>
+<p>My planned speed experiments are therefore incremental: first establish a
+quality baseline, then compare FP16, 8-bit, and 4-bit serving; warm versus cold
+starts; one model versus shared-base adapters; and sequential versus parallel
+requests. A configuration only makes the final local fleet if it keeps the
+TypeScript answers good.</p>
+<h2>What happens now</h2>
+<p>The 3B student is being trained on those verified answers using CUDA (locally on my 5080 RTX). During
+training, checkpoints are saved so that progress is recoverable. When the run
+finishes, the student will face a separate held-out suite that it has never
+seen.</p>
+<p>The decision process is deliberately strict:</p>
+<ul>
+<li>compare the student with the original 3B model</li>
+<li>compile both answers and measure task acceptance</li>
+<li>inspect family-by-family coverage</li>
+<li>record generation speed and time to first output</li>
+<li>promote the adapter only if correctness improves without an unacceptable
+regression elsewhere</li>
+</ul>
+<p>If the student fails this test, the result is still useful. It tells me that
+the data, task design, training recipe, or model size needs work. I will not
+call a model specialized merely because it completed a long training run.</p>
+<h2>Why this connects to hot-swapping</h2>
+<p>The final vision is a local team of small experts. Oktopai can route a request
+to the TypeScript specialist, a CSS specialist, a Next.js specialist, or a
+database specialist. The active model is loaded into GPU memory while it is
+needed; another model can be unloaded or left in system storage.</p>
+<p>The common conversation and repository context stay outside the model, so a
+switch does not erase the session. The GPU becomes a workspace for the
+current expert rather than a permanent home for every expert I may want.</p>
+<p>That is the experiment: can several genuinely useful, narrowly trained local
+models outperform one mediocre general-purpose local model for their own
+tasks, while remaining fast enough to use interactively?</p>
+<p>I am still testing the hypothesis. The compiler gates, held-out evaluations,
+raw outputs, timings, and failed experiments are all part of the answer.</p>
+<nav class="app_blog__slug__Page__articleNavigation" aria-label="Adjacent articles"><a rel="next" href="/blog/oktopai-a-local-fleet-of-specialized-coding-knowledge">Older: Oktopai: A Local Fleet of Specialized Coding Knowledge →</a></nav><section class="app__components_MastodonComments__mastodonComments" aria-labelledby="mastodon-comments"><h2 id="mastodon-comments">Discussion</h2><p>Replies are loaded from the public Mastodon thread for this article.</p><div class="app__components_MastodonComments__mastodonActions"><a class="app__components_MastodonComments__mastodonLink" href="https://mastodon.social/@mrdesjardins/117192323039303415">Reply on Mastodon</a></div><div data-mastodon-comments-root data-instance-url="https://mastodon.social" data-status-id="117192323039303415" data-status-url="https://mastodon.social/@mrdesjardins/117192323039303415"><p class="app__components_MastodonComments__mastodonStatus">Loading replies from Mastodon...</p></div></section></div></main></div></div><script type="module" src="/assets/client-D4dMbVeR.js"></script></body></html>
