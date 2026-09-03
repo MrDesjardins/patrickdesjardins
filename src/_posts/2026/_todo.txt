@@ -3,10 +3,13 @@
 
 === Completed waiting
 
-⏲️ 2026-08-31: Teaching a small local model to speak typescript
-⏲️ 2026-08-26: Oktopai: A Local Fleet of Specialized Coding Knowledge
+⏲️ 2026-09-05: 
+
 
 === Published
+✅ 2026-09-05: What a week of teaching a local coding model actually taught me
+✅ 2026-08-31: Teaching a small local model to speak typescript
+✅ 2026-08-26: Oktopai: A Local Fleet of Specialized Coding Knowledge
 ✅ 2026-08-21: Building TribeMarkets with AI: Architecture and Self-Fixing Production
 ✅ 2026-08-19: Humans are Becoming Simple Microphones
 ✅ 2026-08-14: 5-8x Coding Improvement that Could be Doubled
