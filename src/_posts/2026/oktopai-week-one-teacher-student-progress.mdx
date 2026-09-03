@@ -92,6 +92,13 @@ evaluation suite. The actual 200-task result above comes from the fixed
 held-out suite, not from those 585 records. The probe still made the student
 worse. More data was not the missing ingredient.
 
+The validation loss shown in the third panel is the model's prediction error on
+examples reserved during training. Lower validation loss generally means the
+model is getting better at predicting those validation answers. It is useful
+for detecting learning and overfitting, but it is not the same as producing a
+correct repair on a new task. That is why the patch-emitter chart can show loss
+going up and down while compiler-verified quality stays exactly the same.
+
 ## How far are we from a useful oktopai specialist?
 
 There are two different finish lines. The engineering pipeline needs to work,
