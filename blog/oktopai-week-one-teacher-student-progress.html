@@ -1,0 +1,127 @@
+<!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="strict-origin-when-cross-origin"><title>Patrick Desjardins Blog - What a week of teaching a local coding model actually taught me</title><meta name="description" content="This week I worked on **oktopai**, an experiment in local coding specialists. The idea is simple: use a stronger model as a teacher, use compiler-verified examp…"><link rel="canonical" href="https://patrickdesjardins.com/blog/oktopai-week-one-teacher-student-progress"><meta property="og:title" content="Patrick Desjardins Blog - What a week of teaching a local coding model actually taught me"><meta property="og:description" content="This week I worked on **oktopai**, an experiment in local coding specialists. The idea is simple: use a stronger model as a teacher, use compiler-verified examp…"><meta property="og:url" content="https://patrickdesjardins.com/blog/oktopai-week-one-teacher-student-progress"><meta property="og:type" content="article"><meta property="og:site_name" content="Patrick Desjardins"><meta property="og:image" content="https://patrickdesjardins.com/images/backgrounds/patrickdesjardins_conference_bw.webp"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Patrick Desjardins Blog - What a week of teaching a local coding model actually taught me"><meta name="twitter:description" content="This week I worked on **oktopai**, an experiment in local coding specialists. The idea is simple: use a stronger model as a teacher, use compiler-verified examp…"><meta name="twitter:image" content="https://patrickdesjardins.com/images/backgrounds/patrickdesjardins_conference_bw.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Patrick Desjardins","url":"https://patrickdesjardins.com"},"datePublished":"2026-09-05","description":"This week I worked on **oktopai**, an experiment in local coding specialists. The idea is simple: use a stronger model as a teacher, use compiler-verified examp…","headline":"What a week of teaching a local coding model actually taught me","image":"https://patrickdesjardins.com/images/backgrounds/patrickdesjardins_conference_bw.webp","mainEntityOfPage":"https://patrickdesjardins.com/blog/oktopai-week-one-teacher-student-progress"}</script><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-5w_31dpB.css"><script async src="https://www.googletagmanager.com/gtag/js?id=G-6EH8HNYV13"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}var analyticsConsent="denied";try{analyticsConsent=localStorage.getItem("analytics-consent")==="granted"?"granted":"denied";}catch{}gtag("consent","default",{analytics_storage:analyticsConsent,ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied"});gtag("js",new Date());gtag("config","G-6EH8HNYV13");</script></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><a class="app_blog__components_BlogBody__skipLink" href="#content">Skip to content</a><header><div class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</div><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main id="content" class="app_blog__components_BlogBody__main"><a class="app_blog__components_BlogBody__articleParentLink" href="/blog">← All technical posts</a><h1 class="app_blog__components_BlogBody__heading">What a week of teaching a local coding model actually taught me</h1><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: <time datetime="2026-09-05">2026-09-05</time></p><h2>One week of making the experiment measurable</h2>
+<p>This week I worked on <strong>oktopai</strong>, an experiment in local coding specialists.
+The idea is simple: use a stronger model as a teacher, use compiler-verified
+examples to train a smaller student, and eventually load the right specialist
+only when it is needed.</p>
+<p>The important part is the word <em>verified</em>. A fluent answer is not necessarily a
+good programming answer. For TypeScript, the first useful question is whether
+the code compiles. For repository work, that is still not enough: the edit must
+touch the right file, fix the reported problem, and survive an independent
+replay.</p>
+<p>I group related problems into <strong>task families</strong>. A family is simply a category
+of TypeScript work, such as generic indexed access, null narrowing, overloads,
+or record dictionaries. Measuring families matters because an average score
+can hide a specialist that is excellent at one kind of problem and unusable at
+another.</p>
+<p><img src="/images/blog/oktopai-week-one-progress.png" alt="oktopai progress across teacher acceptance, held-out student verification, and patch-emitter iterations" /></p>
+<p><em>The panels use different denominators: 2,450 teacher attempts, 200 held-out
+student tasks, and 20 patch-emitter tasks. They should be read as separate
+measurements, not as one combined accuracy score.</em></p>
+<h2>The teacher–student setup</h2>
+<p>The teacher was Qwen3-Coder 30B. The student was Qwen2.5-Coder 3B with a LoRA
+adapter. LoRA leaves the base model frozen and stores the specialization in a
+small, replaceable set of weights.</p>
+<p>The pipeline looked like this:</p>
+<pre class="language-text" tabindex="0"><code class="language-text code-highlight">task → teacher answer → strict compiler/test gate → student training
+                                      ↓
+                              rejected examples retained
+</code></pre>
+<p>The teacher produced a corpus of 2,450 compiler-verified examples. That sounds
+like a success, but the first student trained on it verified only 57 of 200
+unseen tasks. The unchanged 3B base verified 94 of 200.</p>
+<p>Those 200 tasks are a fixed evaluation suite kept apart from training. The
+student never studies their answers. Both the base and the student receive the
+same 200 tasks, and their generated code is checked with the same executable
+validators. This makes the comparison fair and prevents a training score from
+being mistaken for real improvement.</p>
+<p>The student was faster in some measurements, but speed did not compensate for
+writing less correct code. The adapter was therefore kept as a research
+artifact and not exported or promoted.</p>
+<h2>The numbers, in one view</h2>
+<p>These are two different measurements, so I am deliberately not putting them
+on one fake shared scale.</p>
+<p>Teacher data acceptance:</p>
+<pre class="language-text" tabindex="0"><code class="language-text code-highlight">Qwen2.5-Coder 7B, first prompt       71 / 2450     2.9%  |
+Qwen2.5-Coder 7B, corrected prompt  503 / 2450    20.5%  |████
+Qwen3-Coder 30B teacher            2450 / 2450   100.0%  |████████████████████
+</code></pre>
+<p>Fixed 200-task student verification:</p>
+<pre class="language-text" tabindex="0"><code class="language-text code-highlight">Qwen2.5-Coder 3B base                 94 / 200    47.0%  |█████████
+Original teacher-trained student      57 / 200    28.5%  |██████
+Balanced external-data probe          31 / 200    15.5%  |███
+</code></pre>
+<p>The second chart is the more important one for deciding whether a student is
+useful. The balanced external-data probe was carefully prepared: it had 585
+candidate training records, no duplicate IDs, no exact overlap with the teacher
+corpus, and a better source balance. It was split into 467 training records, 61
+validation records, and 57 probe-test records. It was not the 200-task
+evaluation suite. The actual 200-task result above comes from the fixed
+held-out suite, not from those 585 records. The probe still made the student
+worse. More data was not the missing ingredient.</p>
+<p>The validation loss shown in the third panel is the model's prediction error on
+examples reserved during training. Lower validation loss generally means the
+model is getting better at predicting those validation answers. It is useful
+for detecting learning and overfitting, but it is not the same as producing a
+correct repair on a new task. That is why the patch-emitter chart can show loss
+going up and down while compiler-verified quality stays exactly the same.</p>
+<h2>How far are we from a useful oktopai specialist?</h2>
+<p>There are two different finish lines. The engineering pipeline needs to work,
+and the model needs to beat the unchanged base model on new TypeScript tasks.
+We have mostly reached the first finish line. We have not reached the second.</p>
+<table><thead><tr><th>Gate</th><th>Current state</th><th>Meaning</th></tr></thead><tbody>
+<tr><td>Local training and adapter loading</td><td>Complete</td><td>The 3B student can be trained and run on the RTX 5080.</td></tr>
+<tr><td>Trusted data and executable verification</td><td>Complete</td><td>Compiler checks, replay, manifests, and a machine heartbeat exist.</td></tr>
+<tr><td>Useful student quality</td><td>Not met</td><td>The best teacher-trained student scored 57/200 versus 94/200 for the base.</td></tr>
+<tr><td>Release confidence</td><td>Not met</td><td>No candidate has cleared the required cross-family and regression gates.</td></tr>
+</tbody></table>
+<p>In other words, oktopai has a working research instrument, not yet a useful
+TypeScript product specialist. The trajectory model is a promising separate
+line: one synthetic repository gate reached 80/80 valid replays and a
+multi-file gate reached 60/60. That proves the inspect/diagnose/edit/verify
+format can be learned, but those synthetic results do not yet prove broad
+generalization.</p>
+<p>The practical distance is therefore one quality breakthrough, not one missing
+piece of infrastructure. A candidate becomes useful when it beats the base on
+the fixed 200-task suite, improves rather than sacrifices several task
+families, and avoids a regression on general coding. Until then, every adapter
+is deliberately kept as an experiment that can be removed.</p>
+<h2>What helped</h2>
+<p>The compiler gate changed the quality of the discussion. An early external
+teacher pilot accepted only 69 of 500 answers. That stopped a tempting but bad
+idea: spending more money to generate thousands of similarly weak examples.</p>
+<p>The trajectory work helped in another way. Instead of asking only for a final
+answer, I built a contract for inspect, diagnose, edit, observe, retry, and
+final events. The verifier replays edits in a temporary repository and checks
+the compiler result. A synthetic trajectory candidate reached 80/80 validity
+and replay on one held-out gate, then 60/60 on a multi-file gate. That proves
+the format and verifier can work, although it is not yet proof of broad coding
+ability.</p>
+<p>I also added a bounded patch-emitter stage for large files. It asks the model
+for compact exact replacements instead of reproducing an entire file. The
+corpus replay is clean, but four generations—v5, v7, v9, and v10—landed at the
+same 15/20 compiler-success rate on the unchanged local gate. The remaining
+five failures all chose an unchanged downstream canvas condition instead of
+editing the actual numeric source expression.</p>
+<h2>What did not help</h2>
+<p>Low training loss did not predict useful generalization. The student learned
+the shape of the teacher answers, but not reliably the task distribution in
+the held-out suite.</p>
+<p>Adding external examples did not help either. Even after capping families and
+checking for overlap, the new student fell from 57/200 to 31/200. The failures
+clustered in mapped types, null narrowing, overloads, and record dictionaries.
+That looks more like answer-style or objective interference than a simple lack
+of examples.</p>
+<p>This is a useful failure. It tells me to stop treating corpus size as progress.
+The next experiment should isolate task families or change the training
+objective, and it should use the same executable 200-task gate. A new adapter
+must beat the base and the current student before it earns any packaging step.</p>
+<h2>Where this leaves oktopai</h2>
+<p>The project has a working local training loop, a persistent machine heartbeat,
+compiler-backed corpus audits, replayable trajectory verification, and a clear
+promotion rule. It does not yet have a TypeScript specialist that has earned
+promotion.</p>
+<p>That distinction is the real progress of this week. The experiment is now good
+at saying <em>no</em> to attractive but unsupported results. Tomorrow’s work can focus
+on a smaller, more controlled question: can a revised objective teach one
+failure family without damaging the others?</p>
+<nav class="app_blog__slug__Page__articleNavigation" aria-label="Adjacent articles"><a rel="next" href="/blog/teaching-a-small-local-model-to-speak-typescript">Older: Teaching a small local model to speak typescript →</a></nav><section class="app__components_MastodonComments__mastodonComments" aria-labelledby="mastodon-comments"><h2 id="mastodon-comments">Discussion</h2><p>Replies are loaded from the public Mastodon thread for this article.</p><div class="app__components_MastodonComments__mastodonActions"><a class="app__components_MastodonComments__mastodonLink" href="https://mastodon.social/@mrdesjardins/117219918049181760">Reply on Mastodon</a></div><div data-mastodon-comments-root data-instance-url="https://mastodon.social" data-status-id="117219918049181760" data-status-url="https://mastodon.social/@mrdesjardins/117219918049181760"><p class="app__components_MastodonComments__mastodonStatus">Loading replies from Mastodon...</p></div></section></div></main></div></div><script type="module" src="/assets/client-CGw6BQMQ.js"></script></body></html>
