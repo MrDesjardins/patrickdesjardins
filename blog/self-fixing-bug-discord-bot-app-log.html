@@ -1,0 +1,248 @@
+<!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="strict-origin-when-cross-origin"><title>Patrick Desjardins Blog - Porting the Self-Fixing Bug Workflow to a Bot With No Sentry, No Railway, No CI Runner</title><meta name="description" content="I previously wrote about [TribeMarkets' self-fixing production loop](/blog/building-tribemarkets-with-ai-architecture-and-self-fixing-production): a scheduled G…"><link rel="canonical" href="https://patrickdesjardins.com/blog/self-fixing-bug-discord-bot-app-log"><meta property="og:title" content="Patrick Desjardins Blog - Porting the Self-Fixing Bug Workflow to a Bot With No Sentry, No Railway, No CI Runner"><meta property="og:description" content="I previously wrote about [TribeMarkets' self-fixing production loop](/blog/building-tribemarkets-with-ai-architecture-and-self-fixing-production): a scheduled G…"><meta property="og:url" content="https://patrickdesjardins.com/blog/self-fixing-bug-discord-bot-app-log"><meta property="og:type" content="article"><meta property="og:site_name" content="Patrick Desjardins"><meta property="og:image" content="https://patrickdesjardins.com/images/backgrounds/patrickdesjardins_conference_bw.webp"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Patrick Desjardins Blog - Porting the Self-Fixing Bug Workflow to a Bot With No Sentry, No Railway, No CI Runner"><meta name="twitter:description" content="I previously wrote about [TribeMarkets' self-fixing production loop](/blog/building-tribemarkets-with-ai-architecture-and-self-fixing-production): a scheduled G…"><meta name="twitter:image" content="https://patrickdesjardins.com/images/backgrounds/patrickdesjardins_conference_bw.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Patrick Desjardins","url":"https://patrickdesjardins.com"},"datePublished":"2026-09-16","description":"I previously wrote about [TribeMarkets' self-fixing production loop](/blog/building-tribemarkets-with-ai-architecture-and-self-fixing-production): a scheduled G…","headline":"Porting the Self-Fixing Bug Workflow to a Bot With No Sentry, No Railway, No CI Runner","image":"https://patrickdesjardins.com/images/backgrounds/patrickdesjardins_conference_bw.webp","mainEntityOfPage":"https://patrickdesjardins.com/blog/self-fixing-bug-discord-bot-app-log"}</script><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-5w_31dpB.css"><script async src="https://www.googletagmanager.com/gtag/js?id=G-6EH8HNYV13"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}var analyticsConsent="denied";try{analyticsConsent=localStorage.getItem("analytics-consent")==="granted"?"granted":"denied";}catch{}gtag("consent","default",{analytics_storage:analyticsConsent,ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied"});gtag("js",new Date());gtag("config","G-6EH8HNYV13");</script></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><a class="app_blog__components_BlogBody__skipLink" href="#content">Skip to content</a><header><div class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</div><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main id="content" class="app_blog__components_BlogBody__main"><a class="app_blog__components_BlogBody__articleParentLink" href="/blog">← All technical posts</a><h1 class="app_blog__components_BlogBody__heading">Porting the Self-Fixing Bug Workflow to a Bot With No Sentry, No Railway, No CI Runner</h1><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: <time datetime="2026-09-16">2026-09-16</time></p><p>I previously wrote about <a href="/blog/building-tribemarkets-with-ai-architecture-and-self-fixing-production">TribeMarkets' self-fixing production
+loop</a>:
+a scheduled GitHub Actions workflow that reads grouped errors from Bugsink and,
+under a long list of guardrails, prepares a draft pull request for a
+repeatable production bug. I wanted the same closed loop for a much older,
+much less glamorous project: <a href="https://github.com/MrDesjardins/python-discord-scheduler-bot">python-discord-scheduler-bot</a>,
+a Python Discord bot that schedules gaming sessions for a Rainbow Six Siege
+community, running as a systemd service on a mini PC under my desk.</p>
+<p>The problem is that almost none of <a href="https://tribemarkets.com/">TribeMarkets'</a> infrastructure exists here.
+There is no Bugsink or Sentry. Errors go to a rotating <code>app.log</code> file written
+by Python's own <code>logging</code> module. There is no Railway. The bot runs directly
+on a box I SSH into. There is no GitHub Actions runner with a clean, disposable
+checkout on every run. There is one git clone, and it's the same one the bot
+process reads its code from. Every guardrail from the original design had to
+be re-derived for a much more fragile execution environment, and two of the
+bugs I hit while building it were more interesting than the feature itself.</p>
+<h2>Sourcing incidents from a log file instead of an error tracker</h2>
+<p>Bugsink hands you pre-grouped issues with occurrence counts for free. A raw
+<code>app.log</code> doesn't group anything, it's just lines. The bot already logs in a
+consistent format (see <code>deps/log.py</code>), so the first job is turning that into
+something fingerprintable:</p>
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">LOG_LINE_RE = re.compile(
+    r"^(?P&lt;ts&gt;\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) - (?P&lt;level&gt;\w+) - (?P&lt;message&gt;.*)$"
+)
+
+def normalize_message(message: str) -&gt; str:
+    """Collapse variable data (ids, quoted values, numbers) so recurring errors fingerprint the same."""
+    normalized = QUOTED_RE.sub("&lt;val&gt;", message)
+    normalized = NUMBER_RE.sub("&lt;n&gt;", normalized)
+    return normalized.strip()
+
+def fingerprint(message: str) -&gt; str:
+    return hashlib.sha256(normalize_message(message).encode("utf-8")).hexdigest()[:20]
+</code></pre>
+<p>Stripping quoted values and numbers before hashing means <code>"User '12345' not found in guild '998877'"</code> and <code>"User '99' not found in guild '11'"</code> collapse to
+the same fingerprint. Occurrence counts are then scoped to the current release
+(the short git SHA), so a fix that lands in a new deploy doesn't inherit a
+stale count from before the fix. It starts filing incidents fresh only if the
+same bug is actually still happening.</p>
+<p>Because <code>app.log</code> rotates (<code>RotatingFileHandler</code>, <code>backupCount=2</code>), a naive
+"read from where I left off" approach breaks the moment a rotation happens
+between two scheduled runs. The checkpoint is the file's inode plus a byte
+offset, and on a mismatch the script walks both rotated backups to make sure
+nothing between runs gets silently dropped:</p>
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">def read_new_log_records(log_path: Path, state: LogState) -&gt; list[LogRecord]:
+    current_stat = log_path.stat()
+    records: list[LogRecord] = []
+    if state.checkpoint_inode is not None and state.checkpoint_inode != current_stat.st_ino:
+        backups = [log_path.with_suffix(log_path.suffix + f".{n}") for n in (1, 2)]
+        matched_index = next(
+            (i for i, b in enumerate(backups) if b.exists() and b.stat().st_ino == state.checkpoint_inode),
+            None,
+        )
+        if matched_index is not None:
+            matched_backup = backups[matched_index]
+            with matched_backup.open("r", encoding="utf-8", errors="replace") as handle:
+                handle.seek(state.checkpoint_offset)
+                records.extend(parse_log_lines(handle.read()))
+            for newer_backup in reversed(backups[:matched_index]):
+                if newer_backup.exists():
+                    records.extend(parse_log_lines(newer_backup.read_text(encoding="utf-8", errors="replace")))
+        state.checkpoint_offset = 0
+    ...
+</code></pre>
+<p>Once a fingerprint repeats at least <code>AUTO_FIX_MIN_OCCURRENCES</code> times in the
+current release, it becomes a durable GitHub issue, not a pull request yet,
+just a tracked record that survives even if the automation never manages a
+confident fix.</p>
+<h2>No CI runner means the machine validating the patch is the machine running the bot</h2>
+<p>This is where the port stopped being a straight copy. On TribeMarkets, GitHub
+Actions gives every run a disposable VM: clone, patch, test, throw away. Here,
+the only place with the repo, the dependencies, and a working test setup is
+the production box itself, the same directory <code>gametimescheduler.service</code>
+runs the bot from.</p>
+<p>My first version did the obvious, wrong thing: <code>git checkout -b</code>, run the
+validation suite in place, <code>git checkout --detach HEAD</code> in a <code>finally</code> block.
+It worked in manual testing. It was also a production incident waiting to
+happen, and a code review of my own commit caught it before it shipped:</p>
+<blockquote>
+<p>Critical fix: <code>validate_patch</code>/commit/push were running <code>git checkout -b</code>,
+<code>make unit-test</code>, and <code>git checkout --detach HEAD</code> directly in <code>repo_root</code>,
+which is the same directory <code>gametimescheduler.service</code> runs the bot from. A
+restart during validation (or a concurrent <code>deployment/update.sh</code>) could
+pick up an unmerged candidate patch, and the <code>finally</code> block left the
+checkout in a detached HEAD instead of back on <code>main</code>.</p>
+</blockquote>
+<p>Two independent things could go wrong at once. A systemd restart mid-validation
+would read whatever half-applied patch was on disk at that instant, and a
+concurrent <code>deployment/update.sh</code> pull would race the branch switch outright.
+The fix is a disposable <code>git worktree</code>, built from the exact commit currently
+deployed, so <code>repo_root</code> is never written to, only ever read for the log
+file, the current commit, and source context:</p>
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">def create_worktree(repo_root: Path, branch: str) -&gt; Path:
+    """Check out ``branch`` in a disposable ``git worktree`` instead of ``repo_root`` itself."""
+    base = Path(tempfile.mkdtemp(prefix="log-autofix-wt-"))
+    worktree_path = base / "wt"
+    run_command(repo_root, ["git", "worktree", "add", "-b", branch, str(worktree_path), "HEAD"])
+    venv_source = repo_root / ".venv"
+    if venv_source.is_dir():
+        (worktree_path / ".venv").symlink_to(venv_source, target_is_directory=True)
+    return worktree_path
+</code></pre>
+<p>Patch application, <code>black --check</code>, <code>mypy</code>, and <code>make unit-test</code> now all run
+inside <code>worktree_path</code>. Cleanup is best-effort and never raises, since it
+always runs from a <code>finally</code>:</p>
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">def remove_worktree(repo_root: Path, worktree_path: Path, branch: str) -&gt; None:
+    subprocess.run(["git", "worktree", "remove", "--force", str(worktree_path)],
+                    cwd=repo_root, capture_output=True, check=False)
+    subprocess.run(["git", "worktree", "prune"], cwd=repo_root, capture_output=True, check=False)
+    subprocess.run(["git", "branch", "-D", branch], cwd=repo_root, capture_output=True, check=False)
+</code></pre>
+<p>The unit test for this isn't just "does the worktree exist." It asserts that
+<code>repo_root</code> is on the exact same branch, at the exact same HEAD, with an empty
+<code>git status --porcelain</code>, both before and after a commit happens inside the
+worktree:</p>
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">def test_create_worktree_never_touches_the_live_repo_root(tmp_path: Path) -&gt; None:
+    repo = tmp_path / "repo"
+    _init_repo(repo)
+    original_head = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=repo, check=True, capture_output=True, text=True
+    ).stdout.strip()
+
+    worktree = create_worktree(repo, "automation/log-autofix/test123")
+    try:
+        (worktree / "marker.txt").write_text("patched content\n", encoding="utf-8")
+        _run_git(worktree, "add", "marker.txt")
+        _run_git(worktree, "commit", "-q", "-m", "patch")
+        assert (repo / "marker.txt").read_text(encoding="utf-8") == "main content\n"
+    finally:
+        remove_worktree(repo, worktree, "automation/log-autofix/test123")
+</code></pre>
+<p>That's a test whose entire job is proving a negative: that the thing running
+in production is unaffected by the thing being validated next to it.</p>
+<p>A second consequence of running on a shared box instead of an ephemeral
+runner: a manual debugging run can now overlap a scheduled timer fire, or two
+timer fires can overlap if <code>make unit-test</code> runs long. Both would race on the
+same state file and worktree bookkeeping, so the whole <code>process()</code> call is
+wrapped in a non-blocking file lock that lives outside the repo (so it never
+needs a <code>.gitignore</code> entry):</p>
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">lock_path = Path(tempfile.gettempdir()) / f"log-autofix-{config.repo_root.name}.lock"
+try:
+    with FileLock(str(lock_path)).acquire(timeout=0):
+        report = process(config)
+except FileLockTimeout:
+    print("log-autofix: another run is already in progress; skipping", file=sys.stderr)
+    return 0
+</code></pre>
+<h2>Systemd instead of a cron-shaped GitHub Actions schedule</h2>
+<p>There's no Actions YAML here. The equivalent is a plain <code>.service</code> + <code>.timer</code>
+pair, deliberately <em>not</em> auto-installed by the normal deploy script, since
+turning this on requires secrets to exist on the box first:</p>
+<pre class="language-plaintext" tabindex="0"><code class="language-plaintext code-highlight"># systemd/gametimescheduler-log-autofix.timer
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=15min
+Persistent=true
+</code></pre>
+<p><code>deployment/update.sh</code> only keeps the unit files in sync after they already
+exist under <code>/etc/systemd/system/</code>. Enabling the automation for the first
+time is a manual, one-time step documented in <code>systemd/README.md</code>, with the
+same triage-only (<code>AUTO_FIX_ENABLED=false</code>) mode as the original design so I
+could watch it file issues for a while before trusting it to open PRs.</p>
+<h2>Two bugs that only showed up against the real thing</h2>
+<p>The rest of the guardrails carried over almost unchanged from the TribeMarkets
+design: secrets are scrubbed before anything reaches a model, the model must
+return a structured plan with an explicit <code>can_open_pr</code> boolean and a
+confidence score, patches are restricted to an allowlist of directories and
+must touch at least one test file, and every automatic PR is opened as a draft
+that the workflow never merges. What's worth writing down are two failures
+that only surfaced once this ran against production instead of against mocks.</p>
+<p><strong>The script never actually read its own secrets.</strong> It documented reading
+<code>GITHUB_REPOSITORY</code>, <code>GITHUB_TOKEN</code>, and <code>NVIDIA_API_KEY</code> from <code>.env</code>, the same
+convention <code>bot.py</code> uses, but nobody had called <code>load_dotenv()</code>. It worked
+fine from an interactive shell where those variables happened to already be
+exported, and failed silently everywhere else, including under the systemd
+timer. Found by running it manually on production right after enabling the
+timer:</p>
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">from dotenv import load_dotenv
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+# Same convention as bot.py: read secrets/tuning knobs from the repo-root .env.
+load_dotenv(ROOT_DIR / ".env")
+</code></pre>
+<p><strong>The default model was simply too slow to use synchronously.</strong> The initial
+default, <code>moonshotai/Kimi-K3</code> (about 2.8 trillion parameters), was the natural
+choice since it's the model the original TribeMarkets script defaults to.
+Verified directly against NVIDIA's API, a real request timed out after 302
+seconds with a 504 from NVIDIA's own gateway. That's not a client-side
+timeout, the gateway itself gave up. That's not viable for a script meant to
+run synchronously every 15 minutes. <code>z-ai/glm-5.3-flash</code> responded in about 46
+seconds and became the new default.</p>
+<p>Switching models surfaced a third, quieter issue: some NVIDIA-hosted reasoning
+models can return <code>"content": null</code> alongside populated <code>reasoning_content</code>
+when the response gets cut off before the final answer, most often with
+<code>finish_reason == "length"</code>. The original code treated that as "non-JSON
+output," technically true, but useless for debugging. Now it's a distinct,
+diagnosable error:</p>
+<pre class="language-python" tabindex="0"><code class="language-python code-highlight">def chat_completion_output(payload: dict[str, Any]) -&gt; tuple[str, str]:
+    """Return ``(content_text, finish_reason)``."""
+    choices = payload.get("choices")
+    if not isinstance(choices, list) or not choices:
+        return "", ""
+    first = choices[0]
+    finish_reason = str(first.get("finish_reason") or "")
+    message = first.get("message")
+    if not isinstance(message, dict):
+        return "", finish_reason
+    content = message.get("content")
+    if isinstance(content, str):
+        return content, finish_reason
+    ...
+</code></pre><pre class="language-python" tabindex="0"><code class="language-python code-highlight">text, finish_reason = chat_completion_output(payload)
+if not text.strip():
+    detail = f" (finish_reason={finish_reason!r})" if finish_reason else ""
+    raise ModelOutputError(
+        f"NVIDIA returned empty content{detail}; the model likely spent its token "
+        "budget on internal reasoning before answering"
+    )
+</code></pre>
+<p>Neither of these would show up in a unit test written against a mocked API
+response, because the mock is exactly what wouldn't have exhibited the
+behavior. Both were found by insisting on a real triage-only run against real
+production before trusting the automation with write access.</p>
+<h2>What carried over, and what didn't</h2>
+<p>The shape of the guardrails is identical to TribeMarkets: filter candidates by
+occurrence count and classification, scrub before sending anything to a model,
+require a structured plan with an explicit confidence threshold and no risk
+flags, restrict patches to an allowlist that excludes the automation script
+itself, require a test in every patch, validate with the same lint/type/test
+suite a human would run, cap PRs per run and per day, and never merge or
+deploy automatically. That part is genuinely portable: it's a policy, not
+infrastructure.</p>
+<p>What isn't portable is the plumbing underneath it, and that's the part that
+actually took the iteration. No error tracker means building fingerprinting
+and log-rotation recovery from scratch, and no disposable CI runner means the
+validation sandbox has to be built by hand: a <code>git worktree</code>, a file lock,
+and a healthy amount of paranoia about what "the same directory the bot is
+running from" actually means while a patch is being tested next to it.</p>
+<p>The full source for this automation lives in
+<a href="https://github.com/MrDesjardins/python-discord-scheduler-bot/blob/main/scripts/log_autofix.py"><code>scripts/log_autofix.py</code></a>
+in the bot's repository, alongside its tests in
+<a href="https://github.com/MrDesjardins/python-discord-scheduler-bot/blob/main/tests/log_autofix_unit_test.py"><code>tests/log_autofix_unit_test.py</code></a>
+and the systemd setup notes in
+<a href="https://github.com/MrDesjardins/python-discord-scheduler-bot/blob/main/systemd/README.md"><code>systemd/README.md</code></a>.</p>
+<nav class="app_blog__slug__Page__articleNavigation" aria-label="Adjacent articles"><a rel="next" href="/blog/oktopai-a-2-36x-compiler-speedup-from-typescript-7-and-the-latest-teacher-student-results">Older: oktopai: A 2.36x Compiler Speedup From TypeScript 7 and the Latest Teacher-Student Results →</a></nav></div></main></div></div><script type="module" src="/assets/client-D2adNqIN.js"></script></body></html>
