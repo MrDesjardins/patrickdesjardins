@@ -1,0 +1,63 @@
+---
+title: "Building AudioRouter: From Google Doc to a Multi-Day Autonomous Codex Goal"
+date: "2026-09-09"
+categories:
+  - "ai"
+  - "agent"
+  - "rust"
+---
+
+I have been experimenting with a new project called [AudioRouter](https://github.com/MrDesjardins/audiorouter), and the process behind it says more about where AI-assisted development is heading than the project itself does. AudioRouter is a Windows application that routes, modifies, and configures system audio, in the spirit of tools like [VoiceMeeter Banana](https://vb-audio.com/Voicemeeter/banana.htm) and [Audio Hijack](https://rogueamoeba.com/audiohijack/), but with the explicit goal of opening that configuration surface to any LLM. Instead of clicking through a mixer UI, an assistant should be able to inspect your audio graph and safely reroute your microphone into a game, mute your desktop audio in a call, or apply a compressor, through the same API a human uses.
+
+What I want to write about here is not the audio engineering. It is the development process: how a task this complex went from a Google Doc to a set of markdown specifications to an autonomous Codex goal that has now been running for over two days straight without me babysitting it.
+
+## Why this project is a good stress test
+
+AudioRouter is deliberately hard. Most of the application logic, control plane, and realtime audio graph is written in Rust, but Windows does not let you stop at userspace. A virtual audio device on Windows effectively requires a driver, which means C++ and the [WDK](https://learn.microsoft.com/en-us/windows-hardware/drivers/download-the-wdk) enter the picture at the boundary where Rust cannot reach. That mix, a Rust backend with a narrow, carefully isolated C++/driver layer, plus a React/TypeScript UI, is exactly the kind of project where an AI agent's judgment about scope, safety, and sequencing matters as much as its ability to write code.
+
+That is also why I did not start by asking an agent to build it.
+
+## Step 1: writing the product in prose, not prompts
+
+The first pass was about two pages in a Google Doc, written the old-fashioned way. No AI involved yet. This was pure product thinking: what does routing audio on Windows actually feel like today, what is painful about it, and what would "easy" look like. Three of those pages were manual specification, my own opinions about workflows, safety, and what a session/graph model should support.
+
+The other twenty pages were a structured teardown of competitive software, mainly VoiceMeeter Banana and Audio Hijack features that I filtered down to what I personally like using. Not a marketing comparison, but a working list of what those tools get right (visual signal chains, virtual buses, per-app capture) and where they get uncomfortable (cryptic routing matrices, driver installs that scare non-technical users, no automation surface at all). That competitive analysis became the backbone of the product requirements. AudioRouter's job is to keep the power of those tools while removing the friction for the user to configure, and to add something neither of them has, a real API that an LLM can drive. These twenty pages required some iteration from copy-pasting many audio sources, filtering out and identifying the main features and audio configurations the product should have. For example, I wanted suppose for VST Plugins (version 2 and 3).
+
+![](/images/blog/audiorouter_markdowns.png)
+
+## Step 2: turning prose into specification with Codex Astra
+
+Once the Google Doc was solid, I handed it to Codex Astra to turn into markdown specifications rather than code. This step mattered more than it sounds. A Google Doc is a pitch but the markdown specifications are a contract. Astra's job was to take the text and produce numbered, testable requirements split by concern: product outcomes, workflows, architecture, the graph model, Windows capture, virtual devices, processing, recording, the API, security, CLI/MCP automation, persistence, quality budgets, and a delivery/milestone map.
+
+The repository ended up with a `docs/spec/` folder of about fifteen focused documents instead of one giant requirements file, each owned by specific milestones, each with `MUST`/`SHOULD` language and traceable requirement IDs like `ARCH-04` or `API-07`. That structure is what made the next step possible.
+
+## The architecture that came out of it: Rust core, API in the middle, CLI and MCP as thin adapters
+
+The architecture specification is a good example of how much clearer a markdown-driven design gets versus a paragraph in a doc. The rule the spec enforces, and that Astra kept surfacing throughout the other documents, is that there is exactly one backend authority per Windows session. The UI, the CLI, and an MCP server for LLMs are all adapters that go through the same versioned local API; none of them is allowed a private fast path into the audio engine or the configuration store.
+
+![](/images/blog/audiorouter_architecture.webp)
+
+A few things fall out of that diagram that were specified before a single line of code existed:
+
+- The API is JSON-RPC over a local named pipe, scoped to the signed-in Windows user, with generated schemas so the desktop shell, the CLI, and the MCP adapter can never drift from each other.
+- Every mutation goes through a plan/commit transaction (`graph.plan` then `graph.commit`), so an LLM proposing a change gets a preview, a diff, and warnings before anything touches live audio, and a revision conflict instead of a silent overwrite if something else changed first.
+- The realtime audio callback is off-limits to everything: no allocation, no disk or network I/O, no blocking locks, no logging. The Rust control plane compiles a graph, and only a fully prepared, validated generation is ever published to the realtime engine.
+- The virtual driver is the one place C++ is allowed to exist, deliberately boxed in behind a small, documented, unsafe boundary, with a privileged installer that accepts nothing but an allowlisted set of operations.
+
+The CLI and MCP server are not separate implementations of any of this; they are typed convenience wrappers over the same API that the UI uses, with `audiorouter mcp serve` exposing focused read tools (`list_devices`, `inspect_routes`, `get_session`) and write tools (`plan_graph_change`, `apply_graph_change`, `control_recorder`) that ultimately produce the same plan/commit calls. That is the whole point of opening this up to an LLM: the assistant gets no special unlimited authority, it gets the same scoped, revisioned, previewable path a human has.
+
+## Step 3: letting Codex Luna run the goal
+
+With the specs and architecture settled, I started a Codex Luna goal against this repository and let it work. It has now been running continuously for more than two days, working through milestones (M00 feasibility through M08 release), writing Rust across a dozen crates, wiring up the DSP chain, the plugin worker sandbox, the CLI, and the MCP server, updating an active plan document as it goes, and recording evidence for what it has actually verified versus what still needs real Windows hardware to confirm.
+
+The reason I trust letting it run unattended for that long comes directly from step 2. Because the requirements existed as markdown before any code did, I could review what the agent was about to build before it started, instead of reviewing a wall of diffs after the fact. And because the milestones and the active plan are themselves markdown files that the agent updates as part of its own workflow, they function as the project's ticketing system. There is no separate Jira board to keep in sync: `docs/plans/active/current.md` is the running log of what shipped, what evidence backs it, and what the next task is, and the milestone files are the acceptance criteria. The specs are not documentation written after the fact to describe the code; they are the source of truth the code is judged against, and the agent is expected to update them, not just the code, when a decision changes.
+
+That loop, humans iterate on markdown specs, an agent executes against them and updates the plan as it goes, is what let me hand off a genuinely hard project (Rust realtime audio, Windows driver boundaries, plugin sandboxing) and step away for two days instead of reviewing every step.
+
+## The other surprise: usage limits
+
+The unplanned part of this experiment is that Codex Luna, on the $20 tier, has been running for more than two days on this goal without hitting a daily or weekly limit. 
+
+![](/images/blog/audiorouter_llm_2days.png)
+
+That is a meaningfully different economics than what I have experienced running long, autonomous work with Claude at a comparable price point, where I have hit usage ceilings well before two straight days of continuous agentic work. For a task shaped like this one, long-running, spec-driven, low-supervision, that gap in runway is a real factor in which tool I reach for next time.

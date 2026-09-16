@@ -1,0 +1,305 @@
+---
+title: "Porting the Self-Fixing Bug Workflow to a Bot With No Sentry, No Railway, No CI Runner"
+date: "2026-09-16"
+categories:
+ - "ai"
+ - "devops"
+ - "python"
+ - "discord"
+---
+
+I previously wrote about [TribeMarkets' self-fixing production
+loop](/blog/building-tribemarkets-with-ai-architecture-and-self-fixing-production):
+a scheduled GitHub Actions workflow that reads grouped errors from Bugsink and,
+under a long list of guardrails, prepares a draft pull request for a
+repeatable production bug. I wanted the same closed loop for a much older,
+much less glamorous project: [python-discord-scheduler-bot](https://github.com/MrDesjardins/python-discord-scheduler-bot),
+a Python Discord bot that schedules gaming sessions for a Rainbow Six Siege
+community, running as a systemd service on a mini PC under my desk.
+
+The problem is that almost none of [TribeMarkets'](https://tribemarkets.com/) infrastructure exists here.
+There is no Bugsink or Sentry. Errors go to a rotating `app.log` file written
+by Python's own `logging` module. There is no Railway. The bot runs directly
+on a box I SSH into. There is no GitHub Actions runner with a clean, disposable
+checkout on every run. There is one git clone, and it's the same one the bot
+process reads its code from. Every guardrail from the original design had to
+be re-derived for a much more fragile execution environment, and two of the
+bugs I hit while building it were more interesting than the feature itself.
+
+## Sourcing incidents from a log file instead of an error tracker
+
+Bugsink hands you pre-grouped issues with occurrence counts for free. A raw
+`app.log` doesn't group anything, it's just lines. The bot already logs in a
+consistent format (see `deps/log.py`), so the first job is turning that into
+something fingerprintable:
+
+```python
+LOG_LINE_RE = re.compile(
+    r"^(?P<ts>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) - (?P<level>\w+) - (?P<message>.*)$"
+)
+
+def normalize_message(message: str) -> str:
+    """Collapse variable data (ids, quoted values, numbers) so recurring errors fingerprint the same."""
+    normalized = QUOTED_RE.sub("<val>", message)
+    normalized = NUMBER_RE.sub("<n>", normalized)
+    return normalized.strip()
+
+def fingerprint(message: str) -> str:
+    return hashlib.sha256(normalize_message(message).encode("utf-8")).hexdigest()[:20]
+```
+
+Stripping quoted values and numbers before hashing means `"User '12345' not
+found in guild '998877'"` and `"User '99' not found in guild '11'"` collapse to
+the same fingerprint. Occurrence counts are then scoped to the current release
+(the short git SHA), so a fix that lands in a new deploy doesn't inherit a
+stale count from before the fix. It starts filing incidents fresh only if the
+same bug is actually still happening.
+
+Because `app.log` rotates (`RotatingFileHandler`, `backupCount=2`), a naive
+"read from where I left off" approach breaks the moment a rotation happens
+between two scheduled runs. The checkpoint is the file's inode plus a byte
+offset, and on a mismatch the script walks both rotated backups to make sure
+nothing between runs gets silently dropped:
+
+```python
+def read_new_log_records(log_path: Path, state: LogState) -> list[LogRecord]:
+    current_stat = log_path.stat()
+    records: list[LogRecord] = []
+    if state.checkpoint_inode is not None and state.checkpoint_inode != current_stat.st_ino:
+        backups = [log_path.with_suffix(log_path.suffix + f".{n}") for n in (1, 2)]
+        matched_index = next(
+            (i for i, b in enumerate(backups) if b.exists() and b.stat().st_ino == state.checkpoint_inode),
+            None,
+        )
+        if matched_index is not None:
+            matched_backup = backups[matched_index]
+            with matched_backup.open("r", encoding="utf-8", errors="replace") as handle:
+                handle.seek(state.checkpoint_offset)
+                records.extend(parse_log_lines(handle.read()))
+            for newer_backup in reversed(backups[:matched_index]):
+                if newer_backup.exists():
+                    records.extend(parse_log_lines(newer_backup.read_text(encoding="utf-8", errors="replace")))
+        state.checkpoint_offset = 0
+    ...
+```
+
+Once a fingerprint repeats at least `AUTO_FIX_MIN_OCCURRENCES` times in the
+current release, it becomes a durable GitHub issue, not a pull request yet,
+just a tracked record that survives even if the automation never manages a
+confident fix.
+
+## No CI runner means the machine validating the patch is the machine running the bot
+
+This is where the port stopped being a straight copy. On TribeMarkets, GitHub
+Actions gives every run a disposable VM: clone, patch, test, throw away. Here,
+the only place with the repo, the dependencies, and a working test setup is
+the production box itself, the same directory `gametimescheduler.service`
+runs the bot from.
+
+My first version did the obvious, wrong thing: `git checkout -b`, run the
+validation suite in place, `git checkout --detach HEAD` in a `finally` block.
+It worked in manual testing. It was also a production incident waiting to
+happen, and a code review of my own commit caught it before it shipped:
+
+> Critical fix: `validate_patch`/commit/push were running `git checkout -b`,
+> `make unit-test`, and `git checkout --detach HEAD` directly in `repo_root`,
+> which is the same directory `gametimescheduler.service` runs the bot from. A
+> restart during validation (or a concurrent `deployment/update.sh`) could
+> pick up an unmerged candidate patch, and the `finally` block left the
+> checkout in a detached HEAD instead of back on `main`.
+
+Two independent things could go wrong at once. A systemd restart mid-validation
+would read whatever half-applied patch was on disk at that instant, and a
+concurrent `deployment/update.sh` pull would race the branch switch outright.
+The fix is a disposable `git worktree`, built from the exact commit currently
+deployed, so `repo_root` is never written to, only ever read for the log
+file, the current commit, and source context:
+
+```python
+def create_worktree(repo_root: Path, branch: str) -> Path:
+    """Check out ``branch`` in a disposable ``git worktree`` instead of ``repo_root`` itself."""
+    base = Path(tempfile.mkdtemp(prefix="log-autofix-wt-"))
+    worktree_path = base / "wt"
+    run_command(repo_root, ["git", "worktree", "add", "-b", branch, str(worktree_path), "HEAD"])
+    venv_source = repo_root / ".venv"
+    if venv_source.is_dir():
+        (worktree_path / ".venv").symlink_to(venv_source, target_is_directory=True)
+    return worktree_path
+```
+
+Patch application, `black --check`, `mypy`, and `make unit-test` now all run
+inside `worktree_path`. Cleanup is best-effort and never raises, since it
+always runs from a `finally`:
+
+```python
+def remove_worktree(repo_root: Path, worktree_path: Path, branch: str) -> None:
+    subprocess.run(["git", "worktree", "remove", "--force", str(worktree_path)],
+                    cwd=repo_root, capture_output=True, check=False)
+    subprocess.run(["git", "worktree", "prune"], cwd=repo_root, capture_output=True, check=False)
+    subprocess.run(["git", "branch", "-D", branch], cwd=repo_root, capture_output=True, check=False)
+```
+
+The unit test for this isn't just "does the worktree exist." It asserts that
+`repo_root` is on the exact same branch, at the exact same HEAD, with an empty
+`git status --porcelain`, both before and after a commit happens inside the
+worktree:
+
+```python
+def test_create_worktree_never_touches_the_live_repo_root(tmp_path: Path) -> None:
+    repo = tmp_path / "repo"
+    _init_repo(repo)
+    original_head = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=repo, check=True, capture_output=True, text=True
+    ).stdout.strip()
+
+    worktree = create_worktree(repo, "automation/log-autofix/test123")
+    try:
+        (worktree / "marker.txt").write_text("patched content\n", encoding="utf-8")
+        _run_git(worktree, "add", "marker.txt")
+        _run_git(worktree, "commit", "-q", "-m", "patch")
+        assert (repo / "marker.txt").read_text(encoding="utf-8") == "main content\n"
+    finally:
+        remove_worktree(repo, worktree, "automation/log-autofix/test123")
+```
+
+That's a test whose entire job is proving a negative: that the thing running
+in production is unaffected by the thing being validated next to it.
+
+A second consequence of running on a shared box instead of an ephemeral
+runner: a manual debugging run can now overlap a scheduled timer fire, or two
+timer fires can overlap if `make unit-test` runs long. Both would race on the
+same state file and worktree bookkeeping, so the whole `process()` call is
+wrapped in a non-blocking file lock that lives outside the repo (so it never
+needs a `.gitignore` entry):
+
+```python
+lock_path = Path(tempfile.gettempdir()) / f"log-autofix-{config.repo_root.name}.lock"
+try:
+    with FileLock(str(lock_path)).acquire(timeout=0):
+        report = process(config)
+except FileLockTimeout:
+    print("log-autofix: another run is already in progress; skipping", file=sys.stderr)
+    return 0
+```
+
+## Systemd instead of a cron-shaped GitHub Actions schedule
+
+There's no Actions YAML here. The equivalent is a plain `.service` + `.timer`
+pair, deliberately *not* auto-installed by the normal deploy script, since
+turning this on requires secrets to exist on the box first:
+
+```
+# systemd/gametimescheduler-log-autofix.timer
+[Timer]
+OnBootSec=10min
+OnUnitActiveSec=15min
+Persistent=true
+```
+
+`deployment/update.sh` only keeps the unit files in sync after they already
+exist under `/etc/systemd/system/`. Enabling the automation for the first
+time is a manual, one-time step documented in `systemd/README.md`, with the
+same triage-only (`AUTO_FIX_ENABLED=false`) mode as the original design so I
+could watch it file issues for a while before trusting it to open PRs.
+
+## Two bugs that only showed up against the real thing
+
+The rest of the guardrails carried over almost unchanged from the TribeMarkets
+design: secrets are scrubbed before anything reaches a model, the model must
+return a structured plan with an explicit `can_open_pr` boolean and a
+confidence score, patches are restricted to an allowlist of directories and
+must touch at least one test file, and every automatic PR is opened as a draft
+that the workflow never merges. What's worth writing down are two failures
+that only surfaced once this ran against production instead of against mocks.
+
+**The script never actually read its own secrets.** It documented reading
+`GITHUB_REPOSITORY`, `GITHUB_TOKEN`, and `NVIDIA_API_KEY` from `.env`, the same
+convention `bot.py` uses, but nobody had called `load_dotenv()`. It worked
+fine from an interactive shell where those variables happened to already be
+exported, and failed silently everywhere else, including under the systemd
+timer. Found by running it manually on production right after enabling the
+timer:
+
+```python
+from dotenv import load_dotenv
+
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+# Same convention as bot.py: read secrets/tuning knobs from the repo-root .env.
+load_dotenv(ROOT_DIR / ".env")
+```
+
+**The default model was simply too slow to use synchronously.** The initial
+default, `moonshotai/Kimi-K3` (about 2.8 trillion parameters), was the natural
+choice since it's the model the original TribeMarkets script defaults to.
+Verified directly against NVIDIA's API, a real request timed out after 302
+seconds with a 504 from NVIDIA's own gateway. That's not a client-side
+timeout, the gateway itself gave up. That's not viable for a script meant to
+run synchronously every 15 minutes. `z-ai/glm-5.3-flash` responded in about 46
+seconds and became the new default.
+
+Switching models surfaced a third, quieter issue: some NVIDIA-hosted reasoning
+models can return `"content": null` alongside populated `reasoning_content`
+when the response gets cut off before the final answer, most often with
+`finish_reason == "length"`. The original code treated that as "non-JSON
+output," technically true, but useless for debugging. Now it's a distinct,
+diagnosable error:
+
+```python
+def chat_completion_output(payload: dict[str, Any]) -> tuple[str, str]:
+    """Return ``(content_text, finish_reason)``."""
+    choices = payload.get("choices")
+    if not isinstance(choices, list) or not choices:
+        return "", ""
+    first = choices[0]
+    finish_reason = str(first.get("finish_reason") or "")
+    message = first.get("message")
+    if not isinstance(message, dict):
+        return "", finish_reason
+    content = message.get("content")
+    if isinstance(content, str):
+        return content, finish_reason
+    ...
+```
+
+```python
+text, finish_reason = chat_completion_output(payload)
+if not text.strip():
+    detail = f" (finish_reason={finish_reason!r})" if finish_reason else ""
+    raise ModelOutputError(
+        f"NVIDIA returned empty content{detail}; the model likely spent its token "
+        "budget on internal reasoning before answering"
+    )
+```
+
+Neither of these would show up in a unit test written against a mocked API
+response, because the mock is exactly what wouldn't have exhibited the
+behavior. Both were found by insisting on a real triage-only run against real
+production before trusting the automation with write access.
+
+## What carried over, and what didn't
+
+The shape of the guardrails is identical to TribeMarkets: filter candidates by
+occurrence count and classification, scrub before sending anything to a model,
+require a structured plan with an explicit confidence threshold and no risk
+flags, restrict patches to an allowlist that excludes the automation script
+itself, require a test in every patch, validate with the same lint/type/test
+suite a human would run, cap PRs per run and per day, and never merge or
+deploy automatically. That part is genuinely portable: it's a policy, not
+infrastructure.
+
+What isn't portable is the plumbing underneath it, and that's the part that
+actually took the iteration. No error tracker means building fingerprinting
+and log-rotation recovery from scratch, and no disposable CI runner means the
+validation sandbox has to be built by hand: a `git worktree`, a file lock,
+and a healthy amount of paranoia about what "the same directory the bot is
+running from" actually means while a patch is being tested next to it.
+
+The full source for this automation lives in
+[`scripts/log_autofix.py`](https://github.com/MrDesjardins/python-discord-scheduler-bot/blob/main/scripts/log_autofix.py)
+in the bot's repository, alongside its tests in
+[`tests/log_autofix_unit_test.py`](https://github.com/MrDesjardins/python-discord-scheduler-bot/blob/main/tests/log_autofix_unit_test.py)
+and the systemd setup notes in
+[`systemd/README.md`](https://github.com/MrDesjardins/python-discord-scheduler-bot/blob/main/systemd/README.md).

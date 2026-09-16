@@ -7,6 +7,9 @@
 
 
 === Published
+✅ 2026-09-15: Porting the Self-Fixing Bug Workflow to a Bot With No Sentry, No Railway, No CI Runner
+✅ 2026-09-11: oktopai: A 2.36x Compiler Speedup From TypeScript 7 and the Latest Teacher-Student Results
+✅ 2026-09-09: Building AudioRouter: From Google Doc to a Multi-Day Autonomous Codex Goal
 ✅ 2026-09-05: What a week of teaching a local coding model actually taught me
 ✅ 2026-08-31: Teaching a small local model to speak typescript
 ✅ 2026-08-26: Oktopai: A Local Fleet of Specialized Coding Knowledge

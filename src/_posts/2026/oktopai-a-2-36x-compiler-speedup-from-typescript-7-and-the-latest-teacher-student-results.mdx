@@ -1,0 +1,37 @@
+---
+title: "oktopai: A 2.36x Compiler Speedup From TypeScript 7 and the Latest Teacher-Student Results"
+date: "2026-09-11"
+categories:
+  - "ai"
+  - "python"
+  - "typescript"
+---
+
+I have been running [oktopai](https://github.com/MrDesjardins/oktopai) for a while now, my experimental, local-only coding orchestrator. The idea is simple to state and hard to earn: route a prompt to a small local model that has been specialized for the task instead of always reaching for a large general one, keep everything on my own GPU, and only claim a win when a fixed, reproducible benchmark says so. Most of the recent work has been unglamorous data engineering and evaluation plumbing rather than a big model breakthrough, and that turned out to be exactly where the most useful discovery of the last few weeks was hiding.
+
+## The bottleneck was not the model, it was the compiler
+
+oktopai's teacher/student pipeline leans hard on TypeScript's own compiler as its source of truth. Every generated candidate, whether it is a teacher trace from a large model, a synthetic training record, a student completion, or a chosen/rejected preference pair, gets validated by actually running `tsc --noEmit` against it. No compile, no admission into the dataset. That is the right way to keep a distillation pipeline honest, but it means the compiler is invoked constantly: once per record, sometimes per batch, across corpora that run into the thousands of pairs.
+
+At some point I noticed my machine was spending a strange amount of wall-clock time just waiting on TypeScript to type-check disposable snippets, not on anything involving the GPU. The training runs themselves were fine; the data preparation and verification loop around them was the slow part. That is the kind of thing that is easy to miss when you are focused on adapter quality, and easy to fix once you notice it.
+
+## Trying TypeScript 7
+
+TypeScript 7.0 is Microsoft's native, Go-based port of the compiler, and the team's own numbers claim up to roughly 10x on large projects thanks to native parallelism instead of running on a single-threaded JS host. That headline figure is for whole-project builds, though, not for a validator that spawns a fresh compiler process per tiny isolated file, so I did not assume it would transfer directly. Instead of swapping the compiler blind, I built a side-by-side harness: install TypeScript 7 in a disposable tool location, expose explicit `tsc6`/`tsc7` paths, and run both compilers over the same corpora before trusting either one.
+
+The first gate was parity, not speed. TypeScript 7.0.2 and the existing TypeScript 5.7.2 fixture had to retain the exact same chosen/rejected IDs across a 1,000-pair semantic-contrastive corpus and a 1,000-pair balanced corpus. They did, on both, so the compiler swap was not silently changing what counted as a passing example.
+
+With parity established, the numbers were:
+
+- **Per-record fallback path** (one process per record, the original bottleneck): TS5.7 took 372.54 seconds versus **157.88 seconds for TS7**, a 2.36x speedup.
+- **Batched isolated-file verifier** (bounded batches of 50 separate `.ts` files, diagnostics mapped back by filename): TS5.7 took 15.15 seconds versus **7.07 seconds for TS7**, a further step down that also preserved identical 1,000/1,000 retained IDs on both corpora.
+
+Neither number is the advertised 10x, and that is expected: this workload is dominated by process-spawn and startup overhead across many small files, not by type-checking one large project tree, so the batched verifier is now the default path, TS7 is now the default compiler for new data-generation and verification jobs, and the old TypeScript executable stays available behind an explicit `--tsc` override for reproducible baseline checks. The lesson generalizes past oktopai: if your AI pipeline leans on `tsc` as a verifier at any real volume, TypeScript 7 is worth the same side-by-side parity check before you adopt it, because the win is real but it is a compiler-startup win, not a free 10x.
+
+## What else has been happening
+
+The teacher/student line stayed disciplined about not calling a result a win just because it trained. A `Qwen3-Coder 30B` teacher produced 2,450/2,450 strictly compiling records, but the `Qwen2.5-Coder 3B` student trained on them still landed at 57/200 on the fixed 200-task benchmark against 94/200 for the unmodified base model. A follow-up balanced probe that mixed in external TypeScript data regressed further, to 31/200, concentrated almost entirely in mapped-type, null-narrowing, overload-signature, and record-dictionary families, while holding steady on the families it already handled. Several DPO preference-tuning runs on top of that data, including a family-weighted variant, all completed cleanly and all landed within noise of the base model's score, so every one of them was held rather than promoted. None of that is a failure of the project, it is the benchmark doing its job and preventing a plausible-looking adapter from shipping on vibes.
+
+The more concrete progress has been infrastructure: a deterministic external TypeScript repair pipeline, a teacher/student data-readiness probe that catches source imbalance before training (one external source was quietly contributing 71% of a corpus), and a batched preference-pair verifier that fixed a real correctness bug where concatenating snippets into one file changed parser recovery and flipped validity decisions. And this past week I opened the repository up: oktopai is now prepared for public release under the MIT license, with the independent-repository-integration experiment removed to keep the surface area focused on the teacher/student and TypeScript-specialist work that is actually paying off.
+
+The throughline across both the compiler migration and the training results is the same discipline: measure before you trust a headline number, whether that number is a vendor's 10x compiler claim or your own adapter's training loss curve.
