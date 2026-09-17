@@ -1,0 +1,64 @@
+---
+title: "Typesafe AI Jev Running 370 Text Rules under 2 seconds"
+date: "2026-09-17"
+categories:
+  - "ai"
+  - "vscode"
+  - "extension"
+  - "typescript"
+  - "jiv"
+  - "typesafe"
+---
+
+I wanted a way to catch coding-rule violations the moment I introduce them, not three days later in a PR review. So one evening I sat down with Claude Code and built a real VS Code/Cursor extension for it. What surprised me most wasn't the idea, is that by using Jev I could run locally by hitting save a large corpus of 370 rules. Furthermore, because these rules live in the repository, the pull request agent could use them later having the same rules.
+
+![](/images/blog/JivPlugin.png)
+
+## What it does
+
+[Jev Realtime Code Check](https://github.com/MrDesjardins/jevrealtimecodecheck) watches your local Git changes and checks them against your own coding rules, using [TypeSafe AI](https://docs.typesafe.ai)'s Jev model. The rules aren't hardcoded into the extension; they live in a directory of Markdown files you write and version-control like any other project file:
+
+~~~md
+---
+applies_to: **/*.ts
+---
+
+# No console statements
+Code must not contain `console.log`, `console.debug`, or `console.info`
+calls. Use a proper logger, or remove them before committing.
+
+Good:
+```ts
+logger.info("Config loaded", { path });
+```
+
+Bad:
+```ts
+console.log("Config loaded", path);
+```
+~~~
+
+That `applies_to` line matters more than it looks. The extension only loads and sends the rule files whose glob actually matches a file in your diff, so a Python-only change never pulls in your TypeScript rules, and a `.tsx` edit only loads your React rules. As a stress test I ended up writing 370 example rules across 11 file types (TypeScript, React, CSS, Sass, Markdown, Python, Go, JSON, YAML, HTML, shell) and confirmed a mixed diff correctly loads only the rule files that apply, nothing more.
+
+<YouTube youTubeId="goVDTUd7-J0" />
+
+For anything Jev flags as an actual violation, a second, smaller request asks two more questions: how severe is this (Minor to Blocking, using Jev's `score` primitive), and which specific block of newly added code is responsible (Jev's `choice` primitive again, this time over the diff's own hunks). The line number for that block is never invented by the model, it's parsed straight out of the diff's hunk headers, so clicking a violation in the sidebar jumps to a real line, and it shows up as an actual Problems-panel diagnostic too.
+
+## How fast this actually went to use Jev?
+
+The whole thing, from a blank repo to an installed extension I could point at real edits, took a single working session. The rough shape of it:
+
+- Scaffolded the extension, the rules parser, and the Git-diff collector.
+- Wired up the Jev API calls (one `choice` question per rule, batched).
+- Built the sidebar UI, grouped by outcome so hundreds of rules don't turn into a wall of green checkmarks.
+- Hit a real `max_tokens_exceeded` error once I scaled the rules up, which pushed the batching from "fixed number of rules per request" to "size the batch by the actual measured payload," since a large diff, not the rule count, turned out to be what blew the request budget.
+- Found and fixed a subtler bug where a global cap on diff "blocks" silently starved every file except the first two from ever getting a click-to-jump location, only caught because I tested against the live API instead of trusting the code.
+
+Total time: 2 hours!
+
+
+## Why I like Jev and using Markdown
+
+The rules are just data. I'm not maintaining a linter plugin or writing custom AST checks, I'm writing a Markdown heading and a sentence, and letting Jev's judgment handle the "is this actually a violation of the specific code that changed" part, including the part regular static analysis is bad at: distinguishing a newly introduced problem from one that was already there before my change.
+
+Source code [in Github](https://github.com/MrDesjardins/jevrealtimecodecheck), and the video above walks through it live.
