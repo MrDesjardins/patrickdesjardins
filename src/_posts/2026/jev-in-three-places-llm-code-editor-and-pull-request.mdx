@@ -1,0 +1,39 @@
+---
+title: "Jev in Three Places: LLM, Code Editor, Pull Request"
+date: "2026-09-18"
+categories:
+  - "ai"
+  - "vscode"
+  - "extension"
+  - "typescript"
+  - "jev"
+  - "typesafe"
+---
+
+Writing 480 rules for [Jev Realtime Code Check](https://github.com/MrDesjardins/jevrealtimecodecheck) only matters if the rules actually get checked at every point where code changes, not just the one moment I happen to be staring at the editor. So this round wasn't about growing the rule corpus further, it was about making sure the same rules apply everywhere code shows up: while I'm editing using LLM like Codex or Claude, on demand when saving a file or working in the IDE, and again once a pull request exists. Same `jev/` folder, same Jev calls, three different triggers. This is critical: you need all AI everywhere to check the same rules!
+
+## Automatically, whenever a change settles
+
+The extension already auto-analyzes on save and on every edit, debounced so it only fires once things pause for about a second. That part was easy. The part I initially got wrong was assuming "on edit" meant "when VS Code's `onDidChangeTextDocument` fires",  which only happens for a document that is open in an editor tab. Claude Code (and any other CLI-driven coding agent) writes files straight to disk. If that file isn't open in a tab, VS Code never sees the change, and my "automatic" analysis was silently not automatic at all for the exact workflow I use most.
+
+The fix was a filesystem watcher instead of relying solely on editor events, filtered so `node_modules`, `.git`, `dist`. Now, it fires whenever generation settles, regardless of whether a human or an agent made the edit.
+
+## Manually, on demand
+
+**Jev: Analyze changes** in the command palette, or the sync icon in the sidebar. Useful when auto-analyze is off, or when I just want to re-check without touching a file.
+
+## On a pull request, with real review comments
+
+This is the one I'm most happy with! `scripts/review-pr.ts` runs the identical rule-matching and Jev pipeline as the extension, but against a PR's committed diff (`base...HEAD`) instead of my working tree, and posts an actual GitHub review comment on each violation it can localize to a file and line:
+
+![](/images/blog/JivPullRequestComment.png)
+
+The line numbers are never invented by the model. They come straight out of the diff's own hunk headers, the same mechanism the editor extension uses for its Problems-panel squiggles. That turned out to matter in practice: my first version collapsed an entire newly-added function into one "block," so every violation inside it got reported on the function's first line regardless of which statement it was actually about. I only caught it because I opened a real PR, deliberately introduced three unrelated bugs, and looked at where the bot's comments actually landed instead of trusting the code. Fixed it so every added line is its own localization candidate, re-ran the PR, and the comments moved to the exact lines.
+
+The GitHub Action requires nothing beyond a `TYPESAFE_API_KEY` secret, reuses the exact same `src/` modules the extension does (no second implementation to keep in sync), skips fork PRs on purpose, and won't repost a comment for a violation it already flagged on an earlier push to the same PR. The best: it takes 17 seconds for the whole workflow to run and cost under 0.01$.
+
+## Same rules, three surfaces
+
+None of this needed a second rules format or a server component. The `jev/*.md` files are just files in the repo; the extension reads them from your working tree, the Action reads them from the checked-out PR branch. Whether a violation gets caught while I'm typing, when I ask for it, or after I've already opened a PR depends entirely on which of the three is convenient at that moment, not on which one "actually has the rules."
+
+Source in [GitHub](https://github.com/MrDesjardins/jevrealtimecodecheck).
