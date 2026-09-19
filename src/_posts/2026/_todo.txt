@@ -7,6 +7,7 @@
 
 
 === Published
+✅ 2026-09-19: Jev Send Guard: A Tone Check Before You Hit Send
 ✅ 2026-09-18: Jev in Three Places: LLM, Code Editor, Pull Request
 ✅ 2026-09-17: Typesafe AI Jev Running 370 Text Rules under 2 seconds
 ✅ 2026-09-15: Porting the Self-Fixing Bug Workflow to a Bot With No Sentry, No Railway, No CI Runner

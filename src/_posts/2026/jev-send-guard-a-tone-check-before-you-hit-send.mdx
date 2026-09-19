@@ -1,0 +1,61 @@
+---
+title: "Jev Send Guard: A Tone Check Before You Hit Send"
+date: "2026-09-19"
+categories:
+  - "ai"
+  - "python"
+  - "jev"
+  - "typesafe"
+  - "privacy"
+  - "project"
+---
+
+I have the habit of sending quickly message and only noticed the tone a minute later when it was already read. [Jev Realtime Code Check](https://github.com/MrDesjardins/jevrealtimecodecheck) already proved that TypeSafe AI's Jev model is fast enough to sit in a save-triggered loop for code review, so the next question was: could the same model catch a bad message before it goes out? That's [Jev Send Guard](https://github.com/MrDesjardins/jev-send-guard): a small background agent for Windows and macOS that watches a short allowlist of apps and nudges you, right next to the text box, when a draft reads as curt, impolite, unprofessional, or missing a clear ask.
+
+<video src="/videos/blog/JevSendDemo1.mp4" controls/>
+
+
+## The idea started as a browser extension, and that was the wrong shape
+
+The first version was a Chrome extension: hook Gmail's send button, hook Discord's Enter key, run two Jev questions on the draft, show a banner if something looked off. It worked, but it only worked in Chrome, and only on the three sites I'd bothered to write DOM selectors for. The actual thing I wanted to catch message before it goes out regardless of the applicaftion. Windows' UI Automation and macOS's Accessibility API expose the live text of *any* focused control in *any* accessibility-compliant app, because that's the same plumbing screen readers use. So the extension became a native background agent instead, and Discord desktop, Slack, and any browser at all became fair game without an adapter per site.
+
+That also meant giving up hooking an actual "send" gesture. There's no generic, reliable "the user just pressed send" event across arbitrary native apps the way there is for a specific website's Enter key. So the trigger changed from "right before you send" to "you paused typing for about a second", close enough in practice, since most people pause briefly before sending anyway. I moved the treshold from 1 second to 600ms and it was perfect.
+
+## What it actually watches
+
+This is the part I was most careful about, because "reads your keystrokes in the background" is not great.
+
+- **Nothing is watched by default.** The allowlist application (exe) starts empty. You explicitly add each app you want checked, one at a time, from the tray icon's Settings window.
+- **It's not a keylogger.** There's no global keyboard hook anywhere in this codebase. The agent polls the OS accessibility tree for whichever control currently has focus and reads that control's *current text value* , the same API a screen reader uses to read a text box aloud. It never records individual keystrokes, and it never persists a draft anywhere. The text lives in memory just long enough to run the local pre-filter and, if needed, one Jev call, then it's gone.
+- **Password fields are a hard rule, not a setting.** Before any text is ever read, the focused control is checked against the OS's own "this is a secure/masked field" flag (`AXSecureTextField` on macOS, the password property in UI Automation on Windows), and skipped outright. This isn't something you can turn off per app.
+- **Browsers are scoped to one website, not "the whole browser."** Adding Chrome or Firefox to the allowlist doesn't mean every page you visit gets read. Settings asks for one exact host, for example I used  `docs.google.com` and it is good enough to focus on comment bubbles only. No browser extension is installed for this. However, on macOS it's a single AppleScript call asking the browser for its active tab's URL (discarding everything except the hostname), and on Windows it's read directly from the address bar's on-screen text, since there's no AppleScript-equivalent API there.
+
+![](/images/blog/JevSendGuardPopup.png)
+
+Adding an app is interactive on purpose, so you're the one who decides what gets watched: click **Add app...**, switch to the target window and type a couple of words there, and the tool detects which process that was from the focus change itself. If it's a browser, it then asks for that one website host before it'll do anything at all.
+
+## Prompt
+
+Under the hood, a flagged draft runs through a small number of `noul` questions against Jev, true/false judgments with a confidence score, which is what makes this fast enough to run on every pause without feeling like "waiting on AI." Four ship built in: does this read as curt or blunt, is there a clear ask if one seems needed, does this read as unprofessional, does this read as impolite or disrespectful. Each is on a fast local pre-filter first, most short, everyday replies ("thanks!", "sounds good") never even reach the network call, only what looks worth a second look does.
+
+![](/images/blog/JevSendGuardSettings.png)
+
+None of that is hardcoded as final. Settings has a **Configure checks...** window where you can edit, per question, whether it's enabled, its severity (red/error or yellow/warning, which is what decides whether the popup shows a stop icon or a warning triangle), the popup message, and the exact instructions sent to Jev.
+
+You're not limited to the four defaults either. **Add new check...** creates a fully custom question, give it a short name, then write what you want Jev to judge. I tested this with one called "overpromising" (does this draft guarantee a specific outcome or timeline that sounds unrealistic), and it flowed through the exact same scoring, popup styling, and per-app toggle logic as the built-in four with zero special-casing. There's also a per-app override, **Edit selected** on a watched app lets you turn off just "unprofessional" for a casual Discord server, say, without touching anything global. Everything lands in a local `config.toml`, nothing here ever requires touching code.
+
+## Two very different OS APIs pretending to be one interface
+
+Windows and macOS don't share an accessibility API, so under the hood there are two backends built to the exact same function signatures, read the focused control's text, is it a password field, is it writable, what's its screen position, so the rest of the codebase (the idle-debounce loop, the Jev call, the popup) never has to know which OS it's running on. Windows uses UI Automation, macOS uses the `AX*` C API through PyObjC. Electron apps turned out to be the interesting edge case on both: Discord's message box doesn't expose its text through the plain "value" property at all, Chromium's accessibility tree renders it as separate leaf nodes the way a screen reader would consume them, so both backends fall back to walking the control's children and concatenating them when the direct read comes back empty. So, on MacOS I have to launch Slack with accessibility on from the command line.
+
+```sh
+open -a "/Applications/Slack.app" --args --force-renderer-accessibility
+```
+
+The popup itself is native on both platforms rather than a single cross-platform toolkit stretched to fit: a `tkinter` window on Windows with `WS_EX_NOACTIVATE` so it never steals the keyboard caret out of what you're typing, and a genuinely native, non-activating `NSPanel` on macOS for the same reason. Same accent-bar-plus-icon card design on both, built twice because a plain Tk window can't host AppKit's panel type and vice versa.
+
+## Conclusion
+
+Windows is validated end-to-end against real apps, Discord desktop, Slack, Firefox with Gmail and Google Docs. macOS is built to the same interface but hasn't had its live-session pass yet. The pure logic (the pre-filter, the idle debounce, config handling, the Jev scoring) has a real test suite behind it using a fake backend that stands in for the real OS APIs, so that part is covered without needing a live GUI session at all — the parts that do need one are exactly the parts I still need to click through on an actual Mac.
+
+Source are in [GitHub](https://github.com/MrDesjardins/jev-send-guard).
