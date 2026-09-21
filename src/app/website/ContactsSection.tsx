@@ -15,6 +15,7 @@ import {
   faAmazon,
   faYoutube,
   faMastodon,
+  faSpotify,
 } from "@fortawesome/free-brands-svg-icons";
 export const ContactSection = (): React.ReactElement => {
   return (
@@ -120,6 +121,16 @@ export const ContactSection = (): React.ReactElement => {
             title="Patrick Desjardins RSS Blog"
           >
             <FontAwesomeIcon icon={faRss} />
+          </a>
+        </div>
+        <div className={styles2.contactDetail}>
+          <a
+            href="https://creators.spotify.com/pod/profile/patrickdesjardins/"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Patrick Desjardins Spotify Podcast"
+          >
+            <FontAwesomeIcon icon={faSpotify} />
           </a>
         </div>
       </div>

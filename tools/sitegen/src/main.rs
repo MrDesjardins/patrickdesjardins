@@ -1538,6 +1538,9 @@ fn content_body(root: &Path, options: BodyOptions<'_>, children: &str) -> Result
                     r#"<li class="{nav_item}"><a class="{nav_text}" href="{href}">{text}</a></li>"#
                 ));
             }
+            nav.push_str(&format!(
+                r#"<li class="{nav_item}"><a class="{nav_text}" href="https://creators.spotify.com/pod/profile/patrickdesjardins/" target="_blank" rel="noopener noreferrer">Spotify Podcast</a></li>"#
+            ));
             for year in (PHILOSOPHY_FIRST_YEAR..=last_year).rev() {
                 let extra = if Some(year) == options.year {
                     format!(" {current}")

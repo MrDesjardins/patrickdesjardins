@@ -80,6 +80,16 @@ export function PhilosophyBlogBody(
                   Search
                 </Link>
               </li>
+              <li className={styles.navLinkItem}>
+                <a
+                  className={styles.navLinkText}
+                  href="https://creators.spotify.com/pod/profile/patrickdesjardins/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Spotify Podcast
+                </a>
+              </li>
               {years.map((y) => (
                 <li key={y} className={styles.navLinkItem}>
                   <Link
