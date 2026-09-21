@@ -6,7 +6,7 @@ import { onCLS, onFCP, onINP, onLCP, onTTFB } from "web-vitals";
 import clsx from "clsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopyright, faPaperPlane, faMapMarker, faRss, faGraduationCap, faCertificate } from "@fortawesome/free-solid-svg-icons";
-import { faTwitter, faLinkedin, faGithub, faStackOverflow, faAmazon, faYoutube, faMastodon } from "@fortawesome/free-brands-svg-icons";
+import { faTwitter, faLinkedin, faGithub, faStackOverflow, faAmazon, faYoutube, faMastodon, faSpotify } from "@fortawesome/free-brands-svg-icons";
 import fs from "fs";
 import path from "path";
 import { evaluate } from "@mdx-js/mdx";
@@ -43,8 +43,8 @@ const styles$c = {
   imageWrapper
 };
 const gaMeasurementId = "G-6EH8HNYV13";
-const buildCommit = "e64ee665223f6287510c1d72578889cd1a02c08c";
-const buildTime = "35531449644";
+const buildCommit = "96c453349626b156d5211761e074b499d958a30c";
+const buildTime = "35647805218";
 function isTelemetryEnabled() {
   return typeof window !== "undefined" && typeof window.gtag === "function" && gaMeasurementId !== void 0 && gaMeasurementId.length > 0;
 }
@@ -983,6 +983,16 @@ const ContactSection = () => {
               rel: "noopener noreferrer",
               title: "Patrick Desjardins RSS Blog",
               children: /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faRss })
+            }
+          ) }),
+          /* @__PURE__ */ jsx("div", { className: styles2$5.contactDetail, children: /* @__PURE__ */ jsx(
+            "a",
+            {
+              href: "https://creators.spotify.com/pod/profile/patrickdesjardins/",
+              target: "_blank",
+              rel: "noopener noreferrer",
+              title: "Patrick Desjardins Spotify Podcast",
+              children: /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faSpotify })
             }
           ) })
         ] })
@@ -2864,6 +2874,16 @@ function PhilosophyBlogBody(props2) {
         /* @__PURE__ */ jsx("li", { className: styles$2.navLinkItem, children: /* @__PURE__ */ jsx(Link, { className: styles$2.navLinkText, href: "/blog", children: "Technical Blog" }) }),
         /* @__PURE__ */ jsx("li", { className: styles$2.navLinkItem, children: /* @__PURE__ */ jsx(Link, { className: styles$2.navLinkText, href: "/philosophy", children: "Philosophy" }) }),
         /* @__PURE__ */ jsx("li", { className: styles$2.navLinkItem, children: /* @__PURE__ */ jsx(Link, { className: styles$2.navLinkText, href: "/philosophy/search", children: "Search" }) }),
+        /* @__PURE__ */ jsx("li", { className: styles$2.navLinkItem, children: /* @__PURE__ */ jsx(
+          "a",
+          {
+            className: styles$2.navLinkText,
+            href: "https://creators.spotify.com/pod/profile/patrickdesjardins/",
+            target: "_blank",
+            rel: "noopener noreferrer",
+            children: "Spotify Podcast"
+          }
+        ) }),
         years.map((y) => /* @__PURE__ */ jsx("li", { className: styles$2.navLinkItem, children: /* @__PURE__ */ jsx(
           Link,
           {
