@@ -1182,6 +1182,23 @@ fn render_shortcode(name: &str, attrs: &BTreeMap<String, String>) -> Result<Stri
                 escape_html(&title),
             ))
         }
+        "ExternalFormatsBanner" => {
+            let mut links = Vec::new();
+            let class = "app__components_ExternalFormatsBanner";
+            if let Some(url) = attrs.get("youtubeUrl") {
+                links.push(format!(r#"<a class="{class}__link" href="{}" target="_blank" rel="noopener noreferrer"><span class="{class}__icon" aria-hidden="true">▶</span><span class="{class}__copy"><span class="{class}__label">YouTube</span><span class="{class}__description">Watch the video</span></span><span class="{class}__arrow" aria-hidden="true">↗</span></a>"#, escape_html(url)));
+            }
+            if let Some(url) = attrs.get("spotifyUrl") {
+                links.push(format!(r#"<a class="{class}__link" href="{}" target="_blank" rel="noopener noreferrer"><span class="{class}__icon" aria-hidden="true">●</span><span class="{class}__copy"><span class="{class}__label">Spotify</span><span class="{class}__description">Listen to the podcast</span></span><span class="{class}__arrow" aria-hidden="true">↗</span></a>"#, escape_html(url)));
+            }
+            if let Some(url) = attrs.get("philpapersUrl") {
+                links.push(format!(r#"<a class="{class}__link" href="{}" target="_blank" rel="noopener noreferrer"><span class="{class}__icon" aria-hidden="true">▤</span><span class="{class}__copy"><span class="{class}__label">PhilPapers</span><span class="{class}__description">Read the paper</span></span><span class="{class}__arrow" aria-hidden="true">↗</span></a>"#, escape_html(url)));
+            }
+            if links.is_empty() {
+                return Ok(String::new());
+            }
+            Ok(format!(r#"<aside class="{class}__banner" aria-label="Available formats"><div class="{class}__heading">Also available as</div><div class="{class}__links">{}</div></aside>"#, links.join("")))
+        }
         "TocAzureContainerSeries" => Ok(r#"<div><h2>Azure Blog Posts: Docker Images &amp; Kubernetes</h2><ol><li><a href="/blog/azure-docker-container-repository">How to host Docker images on Microsoft Azure</a></li><li><a href="/blog/azure-docker-container-repository-github">How to use Kubernetes with Microsoft Azure and GitHub and how to debug if it does not workout</a></li><li><a href="/blog/azure-intro-kubernetes">An Introduction to Microsoft Azure and Kubernetes using Helm and Docker Images</a></li><li><a href="/blog/azure-kubernetes-public-access">How to Access your Web Application on Kubernetes Azure</a></li><li><a href="/blog/azure-kubernetes-pod-debug-crash">How to Debug a Kubernetes Pod that Crash at Startup (works on Microsoft Azure Kubernetes)?</a></li><li><a href="/blog/helmchart-introduction">How to use Helm Chart to configure dynamically your Kubernetes file for beginner?</a></li></ol></div>"#.to_string()),
         _ => bail!("unsupported MDX shortcode <{name}>"),
     }
@@ -1214,7 +1231,7 @@ fn preprocess_mdx_shortcodes(path: &str, body: &str) -> Result<String> {
                     && candidate_name.chars().any(|ch| ch.is_ascii_lowercase());
                 let known_shortcode = matches!(
                     candidate_name.as_str(),
-                    "YouTube" | "CodeSandbox" | "SoundCloud" | "TocAzureContainerSeries"
+                    "YouTube" | "CodeSandbox" | "SoundCloud" | "TocAzureContainerSeries" | "ExternalFormatsBanner"
                 );
                 if known_shortcode || (looks_like_component && trimmed.starts_with('<')) {
                     let Some(end) = after.find('>') else {

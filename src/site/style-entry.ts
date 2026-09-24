@@ -7,6 +7,7 @@ import blogLayout from "../app/blog/layout.module.css";
 import blogSearchPage from "../app/blog/search/page.module.css";
 import layout from "../app/layout.module.css";
 import mastodonComments from "../app/_components/MastodonComments.module.css";
+import externalFormatsBanner from "../app/_components/ExternalFormatsBanner.module.css";
 import philosophyPostPage from "../app/philosophy/[slug]/Page.module.css";
 import philosophyBody from "../app/philosophy/_components/PhilosophyBlogBody.module.css";
 import philosophySearchEntry from "../app/philosophy/_components/PhilosophyBlogSearchEntry.module.css";
@@ -35,6 +36,7 @@ export const staticStyleModules = [
   blogSearchPage,
   layout,
   mastodonComments,
+  externalFormatsBanner,
   philosophyPostPage,
   philosophyBody,
   philosophySearchEntry,

@@ -1,0 +1,50 @@
+.banner {
+  width: 100%;
+  max-width: 40rem;
+  margin: 0 auto 2rem;
+  padding: 14px;
+  border: 1px solid var(--blog-section-border-color);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--blog-background-color1) 72%, white);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 7%);
+}
+
+.heading {
+  margin: 0 0 10px;
+  color: var(--blog-title-foreground-color);
+  font-family: Georgia, serif;
+  font-size: 0.82em;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+.links { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+.link {
+  display: flex;
+  min-width: 0;
+  min-height: 58px;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border: 1px solid color-mix(in srgb, var(--blog-section-border-color) 75%, transparent);
+  border-radius: 6px;
+  color: var(--blog-title-foreground-color) !important;
+  background: color-mix(in srgb, var(--blog-background-color1) 84%, white);
+  text-decoration: none;
+  transition: background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
+}
+.link:hover { border-color: var(--link-foreground-color); background: var(--blog-background-color1); text-decoration: none !important; transform: translateY(-1px); }
+.link:focus-visible { outline: 3px solid var(--link-foreground-color); outline-offset: 3px; }
+.icon { display: grid; flex: 0 0 30px; width: 30px; height: 30px; place-items: center; }
+.icon svg { width: 26px; height: 26px; fill: var(--link-foreground-color); stroke: none; }
+.iconCutout { fill: none; stroke: var(--blog-background-color1); stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.6; }
+.copy { display: flex; min-width: 0; flex: 1; flex-direction: column; gap: 2px; }
+.label { font-size: 0.9em; font-weight: 700; }
+.description { overflow: hidden; color: var(--blog-date-foreground-color); font-size: 0.72em; text-overflow: ellipsis; white-space: nowrap; }
+.arrow { align-self: flex-start; color: var(--link-foreground-color); font-size: 1em; line-height: 1; }
+
+@media only screen and (max-width: 500px) {
+  .banner { padding: 12px 10px; }
+  .links { grid-template-columns: 1fr; }
+}

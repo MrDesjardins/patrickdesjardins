@@ -13,6 +13,7 @@ import { CodeSandbox } from "../app/blog/_mdxComponents/CodeSandbox";
 import { SoundCloud } from "../app/blog/_mdxComponents/SoundCloud";
 import { TocAzureContainerSeries } from "../app/blog/_mdxComponents/TocAzureContainerSeries";
 import { YouTube } from "../app/blog/_mdxComponents/YouTube";
+import { ExternalFormatsBanner } from "../app/_components/ExternalFormatsBanner";
 import {
   createElement,
   type HTMLAttributes,
@@ -164,6 +165,7 @@ export async function getMdxFileContent(
       CodeSandbox: CodeSandbox,
       YouTube: YouTube,
       SoundCloud: SoundCloud,
+      ExternalFormatsBanner: ExternalFormatsBanner,
     },
   });
   const fileName = extractFileFromFullFilePath(fullPathWithFileName);
