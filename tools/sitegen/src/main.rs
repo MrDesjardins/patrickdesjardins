@@ -20,7 +20,7 @@ const MAX_POSTS_PER_PAGE: usize = 10;
 const MAX_RSS_ITEMS: usize = 200;
 const BASE_URL: &str = "https://patrickdesjardins.com";
 const MARKDOWN_RENDERER_VERSION: &str = "rust-md-2026-06-19-a11y";
-const SHORTCODE_RENDERER_VERSION: &str = "shortcodes-2026-06-14";
+const SHORTCODE_RENDERER_VERSION: &str = "shortcodes-2026-09-23-format-icons";
 const SHELL_TEMPLATE_VERSION: &str = "rust-shell-2026-06-19-a11y";
 const MASTODON_DISCUSSIONS_DEPENDENCY: &str = "src/data/mastodon-discussions.json";
 
@@ -1185,14 +1185,15 @@ fn render_shortcode(name: &str, attrs: &BTreeMap<String, String>) -> Result<Stri
         "ExternalFormatsBanner" => {
             let mut links = Vec::new();
             let class = "app__components_ExternalFormatsBanner";
+            let icon_cutout = format!("{class}__iconCutout");
             if let Some(url) = attrs.get("youtubeUrl") {
-                links.push(format!(r#"<a class="{class}__link" href="{}" target="_blank" rel="noopener noreferrer"><span class="{class}__icon" aria-hidden="true">▶</span><span class="{class}__copy"><span class="{class}__label">YouTube</span><span class="{class}__description">Watch the video</span></span><span class="{class}__arrow" aria-hidden="true">↗</span></a>"#, escape_html(url)));
+                links.push(format!(r#"<a class="{class}__link" href="{}" target="_blank" rel="noopener noreferrer"><span class="{class}__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M21.6 7.2a2.8 2.8 0 0 0-2-2C17.8 4.7 12 4.7 12 4.7s-5.8 0-7.6.5a2.8 2.8 0 0 0-2 2A29 29 0 0 0 1.9 12a29 29 0 0 0 .5 4.8 2.8 2.8 0 0 0 2 2c1.8.5 7.6.5 7.6.5s5.8 0 7.6-.5a2.8 2.8 0 0 0 2-2 29 29 0 0 0 .5-4.8 29 29 0 0 0-.5-4.8Z"/><path class="{icon_cutout}" d="m10 15.3 5-3.3-5-3.3v6.6Z"/></svg></span><span class="{class}__copy"><span class="{class}__label">YouTube</span><span class="{class}__description">Watch the video</span></span><span class="{class}__arrow" aria-hidden="true">↗</span></a>"#, escape_html(url), icon_cutout = icon_cutout));
             }
             if let Some(url) = attrs.get("spotifyUrl") {
-                links.push(format!(r#"<a class="{class}__link" href="{}" target="_blank" rel="noopener noreferrer"><span class="{class}__icon" aria-hidden="true">●</span><span class="{class}__copy"><span class="{class}__label">Spotify</span><span class="{class}__description">Listen to the podcast</span></span><span class="{class}__arrow" aria-hidden="true">↗</span></a>"#, escape_html(url)));
+                links.push(format!(r#"<a class="{class}__link" href="{}" target="_blank" rel="noopener noreferrer"><span class="{class}__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><circle cx="12" cy="12" r="9.5"/><path class="{icon_cutout}" d="M7.2 10.2c3.3-.9 7.1-.7 10 .6M7.8 13c2.7-.7 5.7-.5 8 .5M8.8 15.6c2-.4 4-.3 5.7.3"/></svg></span><span class="{class}__copy"><span class="{class}__label">Spotify</span><span class="{class}__description">Listen to the podcast</span></span><span class="{class}__arrow" aria-hidden="true">↗</span></a>"#, escape_html(url), icon_cutout = icon_cutout));
             }
             if let Some(url) = attrs.get("philpapersUrl") {
-                links.push(format!(r#"<a class="{class}__link" href="{}" target="_blank" rel="noopener noreferrer"><span class="{class}__icon" aria-hidden="true">▤</span><span class="{class}__copy"><span class="{class}__label">PhilPapers</span><span class="{class}__description">Read the paper</span></span><span class="{class}__arrow" aria-hidden="true">↗</span></a>"#, escape_html(url)));
+                links.push(format!(r#"<a class="{class}__link" href="{}" target="_blank" rel="noopener noreferrer"><span class="{class}__icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M5 4.5A2.5 2.5 0 0 1 7.5 2H19v17H7.5A2.5 2.5 0 0 0 5 21.5v-17Z"/><path class="{icon_cutout}" d="M8 6h7M8 9h7M8 12h5M5 17.5c.7-.5 1.5-.7 2.5-.7H19"/></svg></span><span class="{class}__copy"><span class="{class}__label">PhilPapers</span><span class="{class}__description">Read the paper</span></span><span class="{class}__arrow" aria-hidden="true">↗</span></a>"#, escape_html(url), icon_cutout = icon_cutout));
             }
             if links.is_empty() {
                 return Ok(String::new());
