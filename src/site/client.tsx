@@ -100,6 +100,43 @@ try {
   // Do not block the static page when browser storage is unavailable.
 }
 
+const philosophyRoot = document.querySelector<HTMLElement>(".philosophy-site");
+const philosophyThemeToggle = document.querySelector<HTMLButtonElement>(
+  "[data-philosophy-theme-toggle]",
+);
+
+if (philosophyRoot !== null && philosophyThemeToggle !== null) {
+  const updatePhilosophyTheme = (theme: "light" | "dark"): void => {
+    const dark = theme === "dark";
+    philosophyRoot.dataset.theme = theme;
+    philosophyThemeToggle.setAttribute("aria-pressed", String(dark));
+    philosophyThemeToggle.setAttribute(
+      "aria-label",
+      dark ? "Switch to light theme" : "Switch to dark theme",
+    );
+    philosophyThemeToggle.innerHTML = dark
+      ? '<span aria-hidden="true">☀</span> Light theme'
+      : '<span aria-hidden="true">☾</span> Dark theme';
+  };
+
+  let savedTheme: string | null = null;
+  try {
+    savedTheme = localStorage.getItem("philosophy-theme");
+  } catch {
+    // Use the light theme when storage is unavailable.
+  }
+  updatePhilosophyTheme(savedTheme === "dark" ? "dark" : "light");
+  philosophyThemeToggle.addEventListener("click", () => {
+    const theme = philosophyRoot.dataset.theme === "dark" ? "light" : "dark";
+    updatePhilosophyTheme(theme);
+    try {
+      localStorage.setItem("philosophy-theme", theme);
+    } catch {
+      // The current page still updates when storage is unavailable.
+    }
+  });
+}
+
 if (document.getElementById("blog-search-root") !== null) {
   void Promise.all([
     import("react"),

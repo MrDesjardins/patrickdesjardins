@@ -42,6 +42,34 @@
   font-variant-caps: small-caps;
 }
 
+.themeBar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+.themeToggle {
+  min-height: 40px;
+  padding: 6px 11px;
+  border: 1px solid var(--blog-section-border-color);
+  border-radius: 999px;
+  color: var(--blog-title-foreground-color);
+  background: var(--current-link-background-color);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.7em;
+  transition: background-color 140ms ease, border-color 140ms ease;
+}
+
+.themeToggle:hover {
+  border-color: var(--link-foreground-color);
+}
+
+.themeToggle:focus-visible {
+  outline: 3px solid var(--link-foreground-color);
+  outline-offset: 3px;
+}
+
 .siteTitleLink {
   color: inherit;
   text-decoration: none;
@@ -77,6 +105,10 @@
     0 8px 24px rgba(0, 0, 0, 0.06);
   padding: 20px 20px 8px;
   margin-bottom: 24px;
+}
+
+:global(.philosophy-site[data-theme="dark"]) .paperEdge {
+  background: rgb(36 37 34 / 72%);
 }
 
 .navLinks {

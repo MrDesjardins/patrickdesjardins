@@ -41,6 +41,17 @@ export function PhilosophyBlogBody(
         Skip to content
       </a>
       <header>
+        <div className={styles.themeBar}>
+          <button
+            className={styles.themeToggle}
+            type="button"
+            data-philosophy-theme-toggle
+            aria-label="Switch to dark theme"
+            aria-pressed="false"
+          >
+            <span aria-hidden="true">☾</span> Dark theme
+          </button>
+        </div>
         {props.isArticle === true ? (
           <div className={styles.siteTitle}>
             <Link className={styles.siteTitleLink} href="/philosophy">

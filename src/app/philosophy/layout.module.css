@@ -26,6 +26,9 @@
   --blog-blockquote-text-color: #4a4946;
   --blog-blockquote-border-color: #284e7a;
 
+  color: var(--blog-text-color);
+  transition: background-color 180ms ease, color 180ms ease;
+
   background-color: var(--blog-background-color1);
   background-image: linear-gradient(
     180deg,
@@ -33,4 +36,29 @@
     var(--blog-background-color2) 48%,
     var(--blog-background-color1) 100%
   );
+}
+
+.philosophyRoot[data-theme="dark"] {
+  color-scheme: dark;
+  --blog-title-foreground-color: #f1eee6;
+  --blog-date-foreground-color: #b9b5aa;
+  --blogcategory-foreground-color: #ded9cd;
+  --blogcategory-background-color: #343631;
+  --link-foreground-color: #9dc4ee;
+  --current-link-background-color: #343840;
+  --blog-text-color: #e3dfd5;
+  --blog-code-inline-foreground-color: #c5e6ce;
+  --blog-code-inline-background-color: #29332d;
+  --blog-code-highlight-line-background-color: #39352d;
+  --blog-code-line-number-foreground-color: #aaa396;
+  --blog-section-border-color: #5d5a52;
+  --blog-background-color1: #242522;
+  --blog-background-color2: #2d2e2a;
+  --mastodon-reply-background-color: #30312d;
+  --blog-blockquote-text-color: #c9c5bb;
+  --blog-blockquote-border-color: #9dc4ee;
+}
+
+.philosophyRoot[data-theme="dark"] .paperEdge {
+  background: rgb(36 37 34 / 72%);
 }

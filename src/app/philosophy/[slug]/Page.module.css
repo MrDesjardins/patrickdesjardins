@@ -78,6 +78,10 @@
   border: 1px solid var(--blog-section-border-color);
 }
 
+:global(.philosophy-site[data-theme="dark"]) .blogPostContainer pre {
+  background-color: #30312d !important;
+}
+
 .blogPostContainer pre:focus-visible {
   outline: 3px solid var(--link-foreground-color);
   outline-offset: 4px;

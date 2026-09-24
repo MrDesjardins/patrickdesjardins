@@ -1507,6 +1507,16 @@ fn content_body(root: &Path, options: BodyOptions<'_>, children: &str) -> Result
         },
     )?;
     let site_title_class = class(root, body_module, "siteTitle")?;
+    let theme_bar = if options.collection == Collection::Philosophy {
+        Some(class(root, body_module, "themeBar")?)
+    } else {
+        None
+    };
+    let theme_toggle = if options.collection == Collection::Philosophy {
+        Some(class(root, body_module, "themeToggle")?)
+    } else {
+        None
+    };
     let site_title_link_class = if options.collection == Collection::Philosophy {
         Some(class(root, body_module, "siteTitleLink")?)
     } else {
@@ -1600,6 +1610,12 @@ fn content_body(root: &Path, options: BodyOptions<'_>, children: &str) -> Result
         format!(r#"<div class="{site_title_class}">{site_title_content}</div>"#)
     } else {
         format!(r#"<h1 class="{site_title_class}">{site_title_content}</h1>"#)
+    };
+    let theme_toggle_markup = match (theme_bar, theme_toggle) {
+        (Some(bar), Some(toggle)) => format!(
+            r#"<div class="{bar}"><button class="{toggle}" type="button" data-philosophy-theme-toggle aria-label="Switch to dark theme" aria-pressed="false"><span aria-hidden="true">☾</span> Dark theme</button></div>"#
+        ),
+        _ => String::new(),
     };
     let article_parent_markup =
         if options.is_article {
@@ -1710,7 +1726,7 @@ fn content_body(root: &Path, options: BodyOptions<'_>, children: &str) -> Result
         wrapper
     };
     Ok(format!(
-        r##"<div class="{wrapper_classes}"><div class="{body}"><a class="{skip_link}" href="#content">Skip to content</a><header>{site_title_markup}{header_extra}</header><main id="content" class="{main}">{article_parent_markup}{heading_markup}{children}</main>{footer}</div></div>"##,
+        r##"<div class="{wrapper_classes}"><div class="{body}"><a class="{skip_link}" href="#content">Skip to content</a><header>{theme_toggle_markup}{site_title_markup}{header_extra}</header><main id="content" class="{main}">{article_parent_markup}{heading_markup}{children}</main>{footer}</div></div>"##,
     ))
 }
 
