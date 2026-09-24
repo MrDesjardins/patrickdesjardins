@@ -26,7 +26,7 @@ const topPicture = "app_layout__topPicture";
 const topHeaderAnchorLink = "app_layout__topHeaderAnchorLink";
 const wrapper = "app_layout__wrapper";
 const imageWrapper = "app_layout__imageWrapper";
-const styles$c = {
+const styles$d = {
   htmlstyle,
   bodystyle,
   container: container$1,
@@ -43,8 +43,8 @@ const styles$c = {
   imageWrapper
 };
 const gaMeasurementId = "G-6EH8HNYV13";
-const buildCommit = "9a8ec318b3648eea5ba843e7e8d53e37d143f639";
-const buildTime = "35912385492";
+const buildCommit = "97823cc733797d2d2689374656f6d24744468965";
+const buildTime = "35938192159";
 function isTelemetryEnabled() {
   return typeof window !== "undefined" && typeof window.gtag === "function" && gaMeasurementId !== void 0 && gaMeasurementId.length > 0;
 }
@@ -88,11 +88,11 @@ function OutboundLinkTelemetry() {
       if (!(target instanceof Element)) {
         return;
       }
-      const link = target.closest("a");
-      if (link === null) {
+      const link2 = target.closest("a");
+      if (link2 === null) {
         return;
       }
-      const href = link.getAttribute("href");
+      const href = link2.getAttribute("href");
       if (href === null || href.startsWith("/") || href.startsWith("#")) {
         return;
       }
@@ -123,20 +123,20 @@ const metadata$3 = {
 function RootLayout$1({
   children
 }) {
-  return /* @__PURE__ */ jsx("html", { lang: "en", className: styles$c.htmlstyle, children: /* @__PURE__ */ jsxs("body", { className: styles$c.bodystyle, children: [
+  return /* @__PURE__ */ jsx("html", { lang: "en", className: styles$d.htmlstyle, children: /* @__PURE__ */ jsxs("body", { className: styles$d.bodystyle, children: [
     /* @__PURE__ */ jsx(WebVitals, {}),
     /* @__PURE__ */ jsx(OutboundLinkTelemetry, {}),
     children
   ] }) });
 }
 const blogbodystyle = "app_blog_layout__blogbodystyle";
-const styles$b = {
+const styles$c = {
   blogbodystyle
 };
 function RootLayout({
   children
 }) {
-  return /* @__PURE__ */ jsx("div", { className: styles$b.blogbodystyle, children });
+  return /* @__PURE__ */ jsx("div", { className: styles$c.blogbodystyle, children });
 }
 function Image(props2) {
   const { fill, priority, style, loading, ...rest } = props2;
@@ -167,7 +167,7 @@ const sectionVisualOneSubHeader = "app_website_website__sectionVisualOneSubHeade
 const cardFixedWidthImage = "app_website_website__cardFixedWidthImage";
 const cardFixedWidthImageImg = "app_website_website__cardFixedWidthImageImg";
 const sectionSingleFixedWidth = "app_website_website__sectionSingleFixedWidth";
-const styles$a = {
+const styles$b = {
   sectionMainpage,
   sectionPhilosophySub,
   sectionPhilosophyCta,
@@ -191,7 +191,7 @@ const AboutMeSection = () => {
     "section",
     {
       id: "about-me",
-      className: clsx(styles$a.sectionMainpage, styles$a.sectionVisualTwo),
+      className: clsx(styles$b.sectionMainpage, styles$b.sectionVisualTwo),
       children: [
         /* @__PURE__ */ jsx("h2", { children: "About Me" }),
         /* @__PURE__ */ jsxs("div", { className: styles2$8.sectionAboutMeContainer, children: [
@@ -233,14 +233,14 @@ const PhilosophySection = () => {
     "section",
     {
       id: "philosophy",
-      className: clsx(styles$a.sectionMainpage, styles$a.sectionVisualTwo),
+      className: clsx(styles$b.sectionMainpage, styles$b.sectionVisualTwo),
       children: [
         /* @__PURE__ */ jsx("h2", { children: "Philosophy" }),
-        /* @__PURE__ */ jsx("h3", { className: styles$a.sectionPhilosophySub, children: "Personal Essays and Notes" }),
-        /* @__PURE__ */ jsxs("div", { className: styles$a.sectionSingleFixedWidth, children: [
+        /* @__PURE__ */ jsx("h3", { className: styles$b.sectionPhilosophySub, children: "Personal Essays and Notes" }),
+        /* @__PURE__ */ jsxs("div", { className: styles$b.sectionSingleFixedWidth, children: [
           /* @__PURE__ */ jsx("p", { children: "Alongside my technical writing, I keep a separate space for philosophy: longer-form essays, careful argument, and notes that deserve a different pace and tone from day-to-day engineering posts." }),
           /* @__PURE__ */ jsx("p", { children: "I will be trying to write more personal essays and notes here. I will be writing about my life, my thoughts, my experiences, and my opinions. I will also focus on AI and its impact on our lives." }),
-          /* @__PURE__ */ jsx("p", { className: styles$a.sectionPhilosophyCta, children: /* @__PURE__ */ jsx(Link, { href: "/philosophy", children: "Open the philosophy journal" }) })
+          /* @__PURE__ */ jsx("p", { className: styles$b.sectionPhilosophyCta, children: /* @__PURE__ */ jsx(Link, { href: "/philosophy", children: "Open the philosophy journal" }) })
         ] })
       ]
     }
@@ -270,8 +270,8 @@ const AchievementsSection = () => {
     {
       id: "achievements",
       className: clsx(
-        styles$a.sectionMainpage,
-        styles$a.sectionVisualTwo,
+        styles$b.sectionMainpage,
+        styles$b.sectionVisualTwo,
         styles2$7.achievementContainerBackground
       ),
       children: /* @__PURE__ */ jsxs("div", { className: styles2$7.achievementOverlay, children: [
@@ -617,9 +617,9 @@ const AchievementsSection = () => {
   );
 };
 const CardFixedWidth = (props2) => {
-  return /* @__PURE__ */ jsxs("div", { className: styles$a.sectionFixedWitdhContent, children: [
+  return /* @__PURE__ */ jsxs("div", { className: styles$b.sectionFixedWitdhContent, children: [
     /* @__PURE__ */ jsx("h3", { children: props2.title }),
-    /* @__PURE__ */ jsx("p", { className: styles$a.cardFixedWidthImage, children: props2.image }),
+    /* @__PURE__ */ jsx("p", { className: styles$b.cardFixedWidthImage, children: props2.image }),
     /* @__PURE__ */ jsx("p", { children: props2.description }),
     /* @__PURE__ */ jsx("p", { children: /* @__PURE__ */ jsx("a", { href: props2.link, target: "_blank", rel: "noopener noreferrer", children: "Link" }) })
   ] });
@@ -629,10 +629,10 @@ const BookSection = () => {
     "section",
     {
       id: "book",
-      className: clsx(styles$a.sectionMainpage, styles$a.sectionVisualOne),
+      className: clsx(styles$b.sectionMainpage, styles$b.sectionVisualOne),
       children: [
         /* @__PURE__ */ jsx("h2", { children: "Books" }),
-        /* @__PURE__ */ jsxs("div", { className: styles$a.sectionFixedWitdh, children: [
+        /* @__PURE__ */ jsxs("div", { className: styles$b.sectionFixedWitdh, children: [
           /* @__PURE__ */ jsx(
             CardFixedWidth,
             {
@@ -642,7 +642,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of the W3H, What, Why, How Distributed System Book",
                   src: "/images/books/w3h_200width.png",
                   width: 200,
@@ -660,7 +660,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of the book Holistic TypeScript Second Edition",
                   src: "/images/books/HolisticTypeScriptBook.jpg",
                   width: 200,
@@ -678,7 +678,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of the book TypeScript Quick Start",
                   src: "/images/books/booktspackt_200width.jpg",
                   width: 200,
@@ -696,7 +696,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of the book Holistic TypeScript First Edition",
                   src: "/images/books/HolisticTypeScriptBook.jpg",
                   width: 200,
@@ -714,7 +714,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of the book .Net Knowledge Book Volume 6",
                   src: "/images/books/LivreBlog6_200Width.jpg",
                   width: 200,
@@ -732,7 +732,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of the book .Net Knowledge Book Volume 5",
                   src: "/images/books/LivreBlog5_200Width.png",
                   width: 200,
@@ -750,7 +750,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of the book .Net Knowledge Book Volume 4",
                   src: "/images/books/LivreBlog4_200Width.png",
                   width: 200,
@@ -768,7 +768,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of the book .Net Knowledge Book Volume 3",
                   src: "/images/books/LivreBlog3_200Width.png",
                   width: 200,
@@ -786,7 +786,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of the book .Net Knowledge Book Volume 2",
                   src: "/images/books/LivreBlog2_200Width.jpg",
                   width: 200,
@@ -804,7 +804,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of the book .Net Knowledge Book Volume 1",
                   src: "/images/books/LivreBlog1_200Width.png",
                   width: 200,
@@ -822,7 +822,7 @@ const BookSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of the book .Net Knowledge Book Volume 3",
                   src: "/images/books/apress_200width.png",
                   width: 200,
@@ -849,7 +849,7 @@ const ConferencesSection = () => {
     "section",
     {
       id: "conferences",
-      className: clsx(styles$a.sectionMainpage, styles$a.sectionVisualOne),
+      className: clsx(styles$b.sectionMainpage, styles$b.sectionVisualOne),
       children: [
         /* @__PURE__ */ jsx("h2", { children: "CONFERENCES" }),
         /* @__PURE__ */ jsx("h3", { children: "Limited list with public recorded presentation only" }),
@@ -887,8 +887,8 @@ const ContactSection = () => {
     {
       id: "contact",
       className: clsx(
-        styles$a.sectionMainpage,
-        styles$a.sectionVisualOne,
+        styles$b.sectionMainpage,
+        styles$b.sectionVisualOne,
         styles2$5.contactSection
       ),
       children: [
@@ -1010,13 +1010,13 @@ const EducationSection = () => {
     {
       id: "education",
       className: clsx(
-        styles$a.sectionMainpage,
-        styles$a.sectionVisualTwo,
+        styles$b.sectionMainpage,
+        styles$b.sectionVisualTwo,
         styles2$4.educationSection
       ),
       children: [
         /* @__PURE__ */ jsx("h2", { children: "Education" }),
-        /* @__PURE__ */ jsx("div", { className: styles$a.sectionFixedWitdh, children: /* @__PURE__ */ jsxs("ul", { children: [
+        /* @__PURE__ */ jsx("div", { className: styles$b.sectionFixedWitdh, children: /* @__PURE__ */ jsxs("ul", { children: [
           /* @__PURE__ */ jsxs("li", { children: [
             /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faGraduationCap }),
             /* @__PURE__ */ jsx("p", { children: "Master Degree 4 years in Machine Learning at Georgia Tech (Atlanta, USA)" })
@@ -1058,8 +1058,8 @@ const HistorySection = () => {
     {
       id: "past",
       className: clsx(
-        styles$a.sectionMainpage,
-        styles$a.sectionVisualTwo,
+        styles$b.sectionMainpage,
+        styles$b.sectionVisualTwo,
         styles2$3.historyContainerBackground
       ),
       children: /* @__PURE__ */ jsxs("div", { className: styles2$3.historyOverlay, children: [
@@ -1081,10 +1081,10 @@ const CourseSection = () => {
     "section",
     {
       id: "course",
-      className: clsx(styles$a.sectionMainpage, styles$a.sectionVisualOne),
+      className: clsx(styles$b.sectionMainpage, styles$b.sectionVisualOne),
       children: [
         /* @__PURE__ */ jsx("h2", { children: "Courses" }),
-        /* @__PURE__ */ jsxs("div", { className: styles$a.sectionFixedWitdh, children: [
+        /* @__PURE__ */ jsxs("div", { className: styles$b.sectionFixedWitdh, children: [
           /* @__PURE__ */ jsx(
             CardFixedWidth,
             {
@@ -1094,7 +1094,7 @@ const CourseSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of me",
                   src: "/images/portfolio/youtube.jpg",
                   width: 350,
@@ -1112,7 +1112,7 @@ const CourseSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of the online course",
                   src: "/images/portfolio/course3.jpg",
                   width: 350,
@@ -1130,7 +1130,7 @@ const CourseSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of the online course",
                   src: "/images/portfolio/course2.jpg",
                   width: 350,
@@ -1148,7 +1148,7 @@ const CourseSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of the online course",
                   src: "/images/portfolio/course1.jpg",
                   width: 350,
@@ -1169,7 +1169,7 @@ const bodyC = "app_website_NeonGlowOverlay__bodyC";
 const stoolL = "app_website_NeonGlowOverlay__stoolL";
 const stoolR = "app_website_NeonGlowOverlay__stoolR";
 const tableE = "app_website_NeonGlowOverlay__tableE";
-const styles$9 = {
+const styles$a = {
   overlay,
   bodyA,
   bodyB,
@@ -1186,7 +1186,7 @@ function NeonGlowOverlay() {
   return /* @__PURE__ */ jsxs(
     "svg",
     {
-      className: styles$9.overlay,
+      className: styles$a.overlay,
       viewBox: "0 0 1105 683",
       preserveAspectRatio: "xMidYMid slice",
       xmlns: "http://www.w3.org/2000/svg",
@@ -1219,7 +1219,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$9.bodyA,
+            className: styles$a.bodyA,
             d: BODY_PATH,
             fill: "none",
             stroke: "rgba(255,40,5,0.30)",
@@ -1230,7 +1230,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$9.bodyA,
+            className: styles$a.bodyA,
             d: BODY_PATH,
             fill: "none",
             stroke: "rgba(255,60,10,0.80)",
@@ -1241,7 +1241,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$9.bodyA,
+            className: styles$a.bodyA,
             d: BODY_PATH,
             fill: "none",
             stroke: "rgba(255,200,160,1.00)",
@@ -1252,7 +1252,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$9.bodyB,
+            className: styles$a.bodyB,
             d: BODY_PATH,
             fill: "none",
             stroke: "rgba(255,40,5,0.30)",
@@ -1263,7 +1263,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$9.bodyB,
+            className: styles$a.bodyB,
             d: BODY_PATH,
             fill: "none",
             stroke: "rgba(255,60,10,0.80)",
@@ -1274,7 +1274,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$9.bodyB,
+            className: styles$a.bodyB,
             d: BODY_PATH,
             fill: "none",
             stroke: "rgba(255,200,160,1.00)",
@@ -1285,7 +1285,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$9.bodyC,
+            className: styles$a.bodyC,
             d: BODY_PATH,
             fill: "none",
             stroke: "rgba(255,40,5,0.30)",
@@ -1296,7 +1296,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$9.bodyC,
+            className: styles$a.bodyC,
             d: BODY_PATH,
             fill: "none",
             stroke: "rgba(255,60,10,0.80)",
@@ -1307,7 +1307,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$9.bodyC,
+            className: styles$a.bodyC,
             d: BODY_PATH,
             fill: "none",
             stroke: "rgba(255,200,160,1.00)",
@@ -1318,7 +1318,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$9.stoolL,
+            className: styles$a.stoolL,
             d: LEFT_STOOL_PATH,
             fill: "none",
             stroke: "rgba(255,40,5,0.30)",
@@ -1329,7 +1329,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$9.stoolL,
+            className: styles$a.stoolL,
             d: LEFT_STOOL_PATH,
             fill: "none",
             stroke: "rgba(255,60,10,0.80)",
@@ -1340,7 +1340,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$9.stoolL,
+            className: styles$a.stoolL,
             d: LEFT_STOOL_PATH,
             fill: "none",
             stroke: "rgba(255,200,160,1.00)",
@@ -1351,7 +1351,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$9.stoolR,
+            className: styles$a.stoolR,
             d: RIGHT_STOOL_PATH,
             fill: "none",
             stroke: "rgba(255,40,5,0.30)",
@@ -1362,7 +1362,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$9.stoolR,
+            className: styles$a.stoolR,
             d: RIGHT_STOOL_PATH,
             fill: "none",
             stroke: "rgba(255,60,10,0.80)",
@@ -1373,7 +1373,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$9.stoolR,
+            className: styles$a.stoolR,
             d: RIGHT_STOOL_PATH,
             fill: "none",
             stroke: "rgba(255,200,160,1.00)",
@@ -1384,7 +1384,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$9.tableE,
+            className: styles$a.tableE,
             d: TABLE_PATH,
             fill: "none",
             stroke: "rgba(255,40,5,0.30)",
@@ -1395,7 +1395,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$9.tableE,
+            className: styles$a.tableE,
             d: TABLE_PATH,
             fill: "none",
             stroke: "rgba(255,60,10,0.80)",
@@ -1406,7 +1406,7 @@ function NeonGlowOverlay() {
         /* @__PURE__ */ jsx(
           "path",
           {
-            className: styles$9.tableE,
+            className: styles$a.tableE,
             d: TABLE_PATH,
             fill: "none",
             stroke: "rgba(255,200,160,1.00)",
@@ -1423,10 +1423,10 @@ const OpenSourceSection = () => {
     "section",
     {
       id: "open-source",
-      className: clsx(styles$a.sectionMainpage, styles$a.sectionVisualOne),
+      className: clsx(styles$b.sectionMainpage, styles$b.sectionVisualOne),
       children: [
         /* @__PURE__ */ jsx("h2", { children: "Open Source" }),
-        /* @__PURE__ */ jsxs("div", { className: styles$a.sectionFixedWitdh, children: [
+        /* @__PURE__ */ jsxs("div", { className: styles$b.sectionFixedWitdh, children: [
           /* @__PURE__ */ jsx(
             CardFixedWidth,
             {
@@ -1436,7 +1436,7 @@ const OpenSourceSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of the Discord bot",
                   src: "/images/portfolio/DiscordBot.png",
                   width: 350,
@@ -1454,7 +1454,7 @@ const OpenSourceSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of the realtime pixel game",
                   src: "/images/portfolio/realtimepixelgame.png",
                   width: 350,
@@ -1472,7 +1472,7 @@ const OpenSourceSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of a workout screen of the gym app",
                   src: "/images/portfolio/gym-water-dev-panel.png",
                   width: 350,
@@ -1490,7 +1490,7 @@ const OpenSourceSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of the a 2d representation of a third order Hilbert Curve",
                   src: "/images/portfolio/hilbertcurve.png",
                   width: 350,
@@ -1508,7 +1508,7 @@ const OpenSourceSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of the Chrome extension for the Data Access gateway",
                   src: "/images/portfolio/dagextension.jpg",
                   width: 350,
@@ -1526,7 +1526,7 @@ const OpenSourceSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of a UML diagram of the Data Access Gateway library",
                   src: "/images/portfolio/daglib.jpg",
                   width: 350,
@@ -1630,6 +1630,67 @@ const YouTube = (props2) => {
     }
   );
 };
+const banner = "app__components_ExternalFormatsBanner__banner";
+const heading$2 = "app__components_ExternalFormatsBanner__heading";
+const links = "app__components_ExternalFormatsBanner__links";
+const link = "app__components_ExternalFormatsBanner__link";
+const icon = "app__components_ExternalFormatsBanner__icon";
+const iconCutout = "app__components_ExternalFormatsBanner__iconCutout";
+const copy = "app__components_ExternalFormatsBanner__copy";
+const label = "app__components_ExternalFormatsBanner__label";
+const description = "app__components_ExternalFormatsBanner__description";
+const arrow = "app__components_ExternalFormatsBanner__arrow";
+const styles$9 = {
+  banner,
+  heading: heading$2,
+  links,
+  link,
+  icon,
+  iconCutout,
+  copy,
+  label,
+  description,
+  arrow
+};
+function FormatLink(props2) {
+  return /* @__PURE__ */ jsxs("a", { className: styles$9.link, href: props2.href, target: "_blank", rel: "noopener noreferrer", children: [
+    /* @__PURE__ */ jsx("span", { className: styles$9.icon, "aria-hidden": "true", children: props2.icon }),
+    /* @__PURE__ */ jsxs("span", { className: styles$9.copy, children: [
+      /* @__PURE__ */ jsx("span", { className: styles$9.label, children: props2.label }),
+      /* @__PURE__ */ jsx("span", { className: styles$9.description, children: props2.description })
+    ] }),
+    /* @__PURE__ */ jsx("span", { className: styles$9.arrow, "aria-hidden": "true", children: "↗" })
+  ] });
+}
+function YouTubeIcon() {
+  return /* @__PURE__ */ jsxs("svg", { viewBox: "0 0 24 24", focusable: "false", children: [
+    /* @__PURE__ */ jsx("path", { d: "M21.6 7.2a2.8 2.8 0 0 0-2-2C17.8 4.7 12 4.7 12 4.7s-5.8 0-7.6.5a2.8 2.8 0 0 0-2 2A29 29 0 0 0 1.9 12a29 29 0 0 0 .5 4.8 2.8 2.8 0 0 0 2 2c1.8.5 7.6.5 7.6.5s5.8 0 7.6-.5a2.8 2.8 0 0 0 2-2 29 29 0 0 0 .5-4.8 29 29 0 0 0-.5-4.8Z" }),
+    /* @__PURE__ */ jsx("path", { className: styles$9.iconCutout, d: "m10 15.3 5-3.3-5-3.3v6.6Z" })
+  ] });
+}
+function SpotifyIcon() {
+  return /* @__PURE__ */ jsxs("svg", { viewBox: "0 0 24 24", focusable: "false", children: [
+    /* @__PURE__ */ jsx("circle", { cx: "12", cy: "12", r: "9.5" }),
+    /* @__PURE__ */ jsx("path", { className: styles$9.iconCutout, d: "M7.2 10.2c3.3-.9 7.1-.7 10 .6M7.8 13c2.7-.7 5.7-.5 8 .5M8.8 15.6c2-.4 4-.3 5.7.3" })
+  ] });
+}
+function PhilPapersIcon() {
+  return /* @__PURE__ */ jsxs("svg", { viewBox: "0 0 24 24", focusable: "false", children: [
+    /* @__PURE__ */ jsx("path", { d: "M5 4.5A2.5 2.5 0 0 1 7.5 2H19v17H7.5A2.5 2.5 0 0 0 5 21.5v-17Z" }),
+    /* @__PURE__ */ jsx("path", { className: styles$9.iconCutout, d: "M8 6h7M8 9h7M8 12h5M5 17.5c.7-.5 1.5-.7 2.5-.7H19" })
+  ] });
+}
+function ExternalFormatsBanner(props2) {
+  const links2 = [];
+  if (props2.youtubeUrl !== void 0) links2.push({ href: props2.youtubeUrl, label: "YouTube", description: "Watch the video", icon: /* @__PURE__ */ jsx(YouTubeIcon, {}) });
+  if (props2.spotifyUrl !== void 0) links2.push({ href: props2.spotifyUrl, label: "Spotify", description: "Listen to the podcast", icon: /* @__PURE__ */ jsx(SpotifyIcon, {}) });
+  if (props2.philpapersUrl !== void 0) links2.push({ href: props2.philpapersUrl, label: "PhilPapers", description: "Read the paper", icon: /* @__PURE__ */ jsx(PhilPapersIcon, {}) });
+  if (links2.length === 0) return null;
+  return /* @__PURE__ */ jsxs("aside", { className: styles$9.banner, "aria-label": "Available formats", children: [
+    /* @__PURE__ */ jsx("div", { className: styles$9.heading, children: "Also available as" }),
+    /* @__PURE__ */ jsx("div", { className: styles$9.links, children: links2.map((link2) => /* @__PURE__ */ jsx(FormatLink, { ...link2 }, link2.label)) })
+  ] });
+}
 function isDevelopment() {
   return process.env.BLOG_ENV === "development";
 }
@@ -1722,7 +1783,8 @@ async function getMdxFileContent(fullPathWithFileName) {
       TocAzureContainerSeries,
       CodeSandbox,
       YouTube,
-      SoundCloud
+      SoundCloud,
+      ExternalFormatsBanner
     }
   });
   const fileName = extractFileFromFullFilePath(fullPathWithFileName);
@@ -1846,7 +1908,7 @@ const StatisticsSection = () => {
     "section",
     {
       id: "experiences",
-      className: clsx(styles$a.sectionMainpage, styles$a.sectionVisualOne),
+      className: clsx(styles$b.sectionMainpage, styles$b.sectionVisualOne),
       children: /* @__PURE__ */ jsxs("div", { className: styles2$2.statisticContainer, children: [
         /* @__PURE__ */ jsxs("div", { className: styles2$2.statisticContainerCard, children: [
           /* @__PURE__ */ jsx("div", { className: "counterup-photo", children: /* @__PURE__ */ jsx(
@@ -1928,7 +1990,7 @@ const styles2$1 = {
 };
 const CardWithImage = (props2) => {
   return /* @__PURE__ */ jsxs("div", { className: styles2$1.cardWithImageContainer, children: [
-    /* @__PURE__ */ jsx("div", { className: styles2$1.cardWithImageContainerImage, children: /* @__PURE__ */ jsx("p", { className: styles$a.cardFixedWidthImage, children: props2.image }) }),
+    /* @__PURE__ */ jsx("div", { className: styles2$1.cardWithImageContainerImage, children: /* @__PURE__ */ jsx("p", { className: styles$b.cardFixedWidthImage, children: props2.image }) }),
     /* @__PURE__ */ jsxs("div", { className: styles2$1.cardWithImageContainerText, children: [
       /* @__PURE__ */ jsx("h3", { children: props2.title }),
       /* @__PURE__ */ jsx("h4", { children: props2.subtitle }),
@@ -1946,7 +2008,7 @@ const TechnologiesSection = () => {
     "section",
     {
       id: "technologies",
-      className: clsx(styles$a.sectionMainpage, styles$a.sectionVisualTwo),
+      className: clsx(styles$b.sectionMainpage, styles$b.sectionVisualTwo),
       children: [
         /* @__PURE__ */ jsx("h2", { children: "Technologies" }),
         /* @__PURE__ */ jsxs("div", { className: styles2.technologiesColumn, children: [
@@ -2045,12 +2107,12 @@ const WorkSection = () => {
     "section",
     {
       id: "work",
-      className: clsx(styles$a.sectionMainpage, styles$a.sectionVisualOne),
+      className: clsx(styles$b.sectionMainpage, styles$b.sectionVisualOne),
       children: [
         /* @__PURE__ */ jsx("h2", { children: "My Work" }),
-        /* @__PURE__ */ jsx("div", { className: styles$a.sectionVisualOneSubHeader, children: "An excerpt of some of my works from the last few years. See resume for full entries" }),
+        /* @__PURE__ */ jsx("div", { className: styles$b.sectionVisualOneSubHeader, children: "An excerpt of some of my works from the last few years. See resume for full entries" }),
         /* @__PURE__ */ jsx("h3", { children: "Professional Application" }),
-        /* @__PURE__ */ jsxs("div", { className: styles$a.sectionFixedWitdh, children: [
+        /* @__PURE__ */ jsxs("div", { className: styles$b.sectionFixedWitdh, children: [
           /* @__PURE__ */ jsx(
             CardFixedWidth,
             {
@@ -2060,7 +2122,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of Roblox",
                   src: "/images/portfolio/Roblox_Tilt_Black.svg",
                   width: 350,
@@ -2078,7 +2140,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of Adobe Express",
                   src: "/images/portfolio/adobeExpress.png",
                   width: 350,
@@ -2096,7 +2158,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of Jump Trading",
                   src: "/images/portfolio/jumpTrading.png",
                   width: 350,
@@ -2114,7 +2176,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of Netflix",
                   src: "/images/portfolio/netflix.jpg",
                   width: 350,
@@ -2132,7 +2194,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of Microsoft Teams",
                   src: "/images/portfolio/microsoftteam.jpg",
                   width: 350,
@@ -2150,7 +2212,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of Microsoft Visual Studio Delivery Timeline",
                   src: "/images/portfolio/vstsplan.jpg",
                   width: 350,
@@ -2168,7 +2230,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of Microsoft Visual Studio Dashboard",
                   src: "/images/portfolio/vstsdashboard.jpg",
                   width: 350,
@@ -2186,7 +2248,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of Microsoft VSTS Dashboard",
                   src: "/images/portfolio/msdn.jpg",
                   width: 350,
@@ -2204,7 +2266,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of CDPQ",
                   src: "/images/portfolio/cdpq.jpg",
                   width: 350,
@@ -2222,7 +2284,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of CDPQ",
                   src: "/images/portfolio/cdpq.jpg",
                   width: 350,
@@ -2240,7 +2302,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of CDPQ",
                   src: "/images/portfolio/cdpq.jpg",
                   width: 350,
@@ -2258,7 +2320,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of Nutcache",
                   src: "/images/portfolio/nutcache.jpg",
                   width: 350,
@@ -2276,7 +2338,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of Tenrox TimeSheet",
                   src: "/images/portfolio/tenrox.jpg",
                   width: 350,
@@ -2294,7 +2356,7 @@ const WorkSection = () => {
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
-                  className: styles$a.cardFixedWidthImageImg,
+                  className: styles$b.cardFixedWidthImageImg,
                   alt: "Screenshot of StockVirtual.com",
                   src: "/images/portfolio/stockvirtual.jpg",
                   width: 350,
@@ -2313,37 +2375,37 @@ const metadata$2 = {
   description: "Patrick Desjardins Website and Blog"
 };
 function Index() {
-  return /* @__PURE__ */ jsx("div", { className: styles$c.container, children: /* @__PURE__ */ jsxs("main", { children: [
-    /* @__PURE__ */ jsx("header", { className: styles$c.topMenu, children: /* @__PURE__ */ jsxs("nav", { className: styles$c.topHeader, "aria-label": "Primary", children: [
-      /* @__PURE__ */ jsx(Link, { className: styles$c.topHeaderMyName, href: "/", children: "Patrick Desjardins" }),
-      /* @__PURE__ */ jsx("a", { href: "#about-me", className: styles$c.topHeaderAnchorLink, children: "About Me" }),
-      /* @__PURE__ */ jsx("a", { href: "#work", className: styles$c.topHeaderAnchorLink, children: "Works" }),
-      /* @__PURE__ */ jsx("a", { href: "#technologies", className: styles$c.topHeaderAnchorLink, children: "Technologies" }),
-      /* @__PURE__ */ jsx("a", { href: "#achievements", className: styles$c.topHeaderAnchorLink, children: "Achievements" }),
-      /* @__PURE__ */ jsx("a", { href: "#experiences", className: styles$c.topHeaderAnchorLink, children: "Experiences" }),
-      /* @__PURE__ */ jsx("a", { href: "#past", className: styles$c.topHeaderAnchorLink, children: "Past" }),
-      /* @__PURE__ */ jsx("a", { href: "#conferences", className: styles$c.topHeaderAnchorLink, children: "Conferences" }),
-      /* @__PURE__ */ jsx("a", { href: "#contact", className: styles$c.topHeaderAnchorLink, children: "Contact" }),
-      /* @__PURE__ */ jsx(Link, { href: "/blog", className: styles$c.topHeaderBlog, children: "Blog" }),
-      /* @__PURE__ */ jsx(Link, { href: "/philosophy", className: styles$c.topHeaderBlog, children: "Philosophy" })
+  return /* @__PURE__ */ jsx("div", { className: styles$d.container, children: /* @__PURE__ */ jsxs("main", { children: [
+    /* @__PURE__ */ jsx("header", { className: styles$d.topMenu, children: /* @__PURE__ */ jsxs("nav", { className: styles$d.topHeader, "aria-label": "Primary", children: [
+      /* @__PURE__ */ jsx(Link, { className: styles$d.topHeaderMyName, href: "/", children: "Patrick Desjardins" }),
+      /* @__PURE__ */ jsx("a", { href: "#about-me", className: styles$d.topHeaderAnchorLink, children: "About Me" }),
+      /* @__PURE__ */ jsx("a", { href: "#work", className: styles$d.topHeaderAnchorLink, children: "Works" }),
+      /* @__PURE__ */ jsx("a", { href: "#technologies", className: styles$d.topHeaderAnchorLink, children: "Technologies" }),
+      /* @__PURE__ */ jsx("a", { href: "#achievements", className: styles$d.topHeaderAnchorLink, children: "Achievements" }),
+      /* @__PURE__ */ jsx("a", { href: "#experiences", className: styles$d.topHeaderAnchorLink, children: "Experiences" }),
+      /* @__PURE__ */ jsx("a", { href: "#past", className: styles$d.topHeaderAnchorLink, children: "Past" }),
+      /* @__PURE__ */ jsx("a", { href: "#conferences", className: styles$d.topHeaderAnchorLink, children: "Conferences" }),
+      /* @__PURE__ */ jsx("a", { href: "#contact", className: styles$d.topHeaderAnchorLink, children: "Contact" }),
+      /* @__PURE__ */ jsx(Link, { href: "/blog", className: styles$d.topHeaderBlog, children: "Blog" }),
+      /* @__PURE__ */ jsx(Link, { href: "/philosophy", className: styles$d.topHeaderBlog, children: "Philosophy" })
     ] }) }),
-    /* @__PURE__ */ jsxs("div", { className: styles$c.wrapper, children: [
-      /* @__PURE__ */ jsx("div", { className: styles$c.textOnPicture, children: /* @__PURE__ */ jsxs("div", { className: styles$c.homeContent, children: [
+    /* @__PURE__ */ jsxs("div", { className: styles$d.wrapper, children: [
+      /* @__PURE__ */ jsx("div", { className: styles$d.textOnPicture, children: /* @__PURE__ */ jsxs("div", { className: styles$d.homeContent, children: [
         /* @__PURE__ */ jsxs("h1", { children: [
           "Patrick",
           /* @__PURE__ */ jsx("strong", { children: "Desjardins" })
         ] }),
-        /* @__PURE__ */ jsxs("p", { className: styles$c.homeContentTitles, children: [
+        /* @__PURE__ */ jsxs("p", { className: styles$d.homeContentTitles, children: [
           "Roblox Principal Software Engineer",
           /* @__PURE__ */ jsx("br", {}),
           "Formerly Netflix/Jump Trading/Microsoft/Adobe"
         ] })
       ] }) }),
-      /* @__PURE__ */ jsx("div", { className: styles$c.imageWrapper, children: /* @__PURE__ */ jsx(
+      /* @__PURE__ */ jsx("div", { className: styles$d.imageWrapper, children: /* @__PURE__ */ jsx(
         Image,
         {
           priority: true,
-          className: styles$c.topPicture,
+          className: styles$d.topPicture,
           alt: "Patrick Desjardins sitting at Netflix Building F",
           src: "/images/backgrounds/patrickdesjardinsatnetflix.jpg",
           fill: true,
@@ -2819,6 +2881,8 @@ const blogBodyShell = "app_philosophy__components_PhilosophyBlogBody__blogBodySh
 const skipLink = "app_philosophy__components_PhilosophyBlogBody__skipLink";
 const main = "app_philosophy__components_PhilosophyBlogBody__main";
 const siteTitle = "app_philosophy__components_PhilosophyBlogBody__siteTitle";
+const themeBar = "app_philosophy__components_PhilosophyBlogBody__themeBar";
+const themeToggle = "app_philosophy__components_PhilosophyBlogBody__themeToggle";
 const siteTitleLink = "app_philosophy__components_PhilosophyBlogBody__siteTitleLink";
 const articleParentLink = "app_philosophy__components_PhilosophyBlogBody__articleParentLink";
 const siteSubtitle = "app_philosophy__components_PhilosophyBlogBody__siteSubtitle";
@@ -2837,6 +2901,8 @@ const styles$2 = {
   skipLink,
   main,
   siteTitle,
+  themeBar,
+  themeToggle,
   siteTitleLink,
   articleParentLink,
   siteSubtitle,
@@ -2867,6 +2933,20 @@ function PhilosophyBlogBody(props2) {
   return /* @__PURE__ */ jsxs("div", { className: styles$2.blogBodyShell, children: [
     /* @__PURE__ */ jsx("a", { className: styles$2.skipLink, href: "#content", children: "Skip to content" }),
     /* @__PURE__ */ jsxs("header", { children: [
+      /* @__PURE__ */ jsx("div", { className: styles$2.themeBar, children: /* @__PURE__ */ jsxs(
+        "button",
+        {
+          className: styles$2.themeToggle,
+          type: "button",
+          "data-philosophy-theme-toggle": true,
+          "aria-label": "Switch to dark theme",
+          "aria-pressed": "false",
+          children: [
+            /* @__PURE__ */ jsx("span", { "aria-hidden": "true", children: "☾" }),
+            " Dark theme"
+          ]
+        }
+      ) }),
       props2.isArticle === true ? /* @__PURE__ */ jsx("div", { className: styles$2.siteTitle, children: /* @__PURE__ */ jsx(Link, { className: styles$2.siteTitleLink, href: "/philosophy", children: "Philosophy" }) }) : /* @__PURE__ */ jsx("h1", { className: styles$2.siteTitle, children: /* @__PURE__ */ jsx(Link, { className: styles$2.siteTitleLink, href: "/philosophy", children: "Philosophy" }) }),
       /* @__PURE__ */ jsx("p", { className: styles$2.siteSubtitle, children: "Patrick Desjardins — essays and notes" }),
       /* @__PURE__ */ jsx("div", { className: styles$2.paperEdge, children: /* @__PURE__ */ jsx("nav", { "aria-label": "Philosophy", children: /* @__PURE__ */ jsxs("ul", { className: styles$2.navLinks, children: [
@@ -3316,8 +3396,8 @@ function pageTitle(metadata2) {
   return typeof title === "string" && title.length > 0 ? title : String(metadata$3.title);
 }
 function pageDescription(metadata2) {
-  const description = metadata2 == null ? void 0 : metadata2.description;
-  return typeof description === "string" && description.length > 0 ? description : String(metadata$3.description);
+  const description2 = metadata2 == null ? void 0 : metadata2.description;
+  return typeof description2 === "string" && description2.length > 0 ? description2 : String(metadata$3.description);
 }
 function gaScript() {
   const gaMeasurementId2 = "G-6EH8HNYV13";
@@ -3332,7 +3412,7 @@ function renderDocument(body, metadata2, assets, routePath = assets.routePath ??
   const css = assets.css.map((href) => `<link rel="stylesheet" href="${escapeHtml(href)}">`).join("");
   const js = assets.js.map((src) => `<script type="module" src="${escapeHtml(src)}"><\/script>`).join("");
   const title = pageTitle(metadata2);
-  const description = pageDescription(metadata2);
+  const description2 = pageDescription(metadata2);
   const canonicalPath = routePath === "/blog/page/1" ? "/blog" : routePath === "/philosophy/page/1" ? "/philosophy" : routePath;
   const canonicalUrl = `${BASE_URL}${canonicalPath === "/" ? "" : canonicalPath}`;
   const socialImage = `${BASE_URL}/images/backgrounds/patrickdesjardins_conference_bw.webp`;
@@ -3342,17 +3422,17 @@ function renderDocument(body, metadata2, assets, routePath = assets.routePath ??
     `<meta name="viewport" content="width=device-width, initial-scale=1">`,
     `<meta name="referrer" content="strict-origin-when-cross-origin">`,
     `<title>${escapeHtml(title)}</title>`,
-    `<meta name="description" content="${escapeHtml(description)}">`,
+    `<meta name="description" content="${escapeHtml(description2)}">`,
     `<link rel="canonical" href="${escapeHtml(canonicalUrl)}">`,
     `<meta property="og:title" content="${escapeHtml(title)}">`,
-    `<meta property="og:description" content="${escapeHtml(description)}">`,
+    `<meta property="og:description" content="${escapeHtml(description2)}">`,
     `<meta property="og:url" content="${escapeHtml(canonicalUrl)}">`,
     `<meta property="og:type" content="${isArticle ? "article" : "website"}">`,
     `<meta property="og:site_name" content="Patrick Desjardins">`,
     `<meta property="og:image" content="${escapeHtml(socialImage)}">`,
     `<meta name="twitter:card" content="summary_large_image">`,
     `<meta name="twitter:title" content="${escapeHtml(title)}">`,
-    `<meta name="twitter:description" content="${escapeHtml(description)}">`,
+    `<meta name="twitter:description" content="${escapeHtml(description2)}">`,
     `<meta name="twitter:image" content="${escapeHtml(socialImage)}">`,
     css,
     gaScript()
