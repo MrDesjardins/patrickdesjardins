@@ -1,9 +1,9 @@
 === Draft Started
-✍️ 2026-01-28: 
+✍️ 2026-01-28:
 
 === Completed waiting
 
-⏲️ 2026-09-05: 
+⏲️ 2026-10-05: From 15 Minutes to 71 Milliseconds: Big O and a Matrix
 
 
 === Published

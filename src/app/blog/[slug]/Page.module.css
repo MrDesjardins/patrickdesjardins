@@ -1,5 +1,8 @@
 .blogPostContainer table {
   display: block;
+  /* Shrink the scroll box to the table so the border does not leave an empty
+     area on the right; max-width still enables horizontal scroll on mobile. */
+  width: fit-content;
   max-width: 100%;
   overflow-x: auto;
   border: 1px solid var(--blog-section-border-color);
