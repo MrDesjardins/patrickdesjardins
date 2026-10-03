@@ -1,0 +1,144 @@
+---
+title: "From 15 Minutes to 71 Milliseconds: Big O and a Matrix"
+date: "2026-10-05"
+categories:
+  - "performance"
+  - "python"
+  - "algorithm"
+  - "optimization"
+---
+
+I recently worked on a background job written in Python. It takes many ordered lists of items and combines them into a single ordering, with a measure of confidence for each item. In the real container, a job with 2 lists of 100 items took 15 minutes. Today, that same job finishes in 50 milliseconds, and the largest supported job, 100 lists of 100 items, runs in 71 milliseconds. The results are also more accurate than before.
+
+Two improvements combined to get there:
+
+1. **Threads.** The math library started far too many threads on a single CPU. Fixing that took the 15 minutes down to 3 seconds.
+2. **The algorithm.** Even with threads fixed, the largest job still took 108 seconds on one core. Changing the algorithm to use a matrix took it to 71 milliseconds, a 1,527 times speed up.
+
+| 2 lists × 100 items, one CPU container | Time |
+| --- | ---: |
+| Before | 910 s |
+| Threads fixed | 3.0 s |
+| Threads fixed and new algorithm | 0.05 s |
+
+End to end, that is about 18,000 times faster. What I want to share is not a clever trick. It is how a quick big O calculation on the back of a napkin told me exactly where to look, and how I validated that going fast did not break anything.
+
+## The problem in plain words
+
+Each input list is an ordering of the items. The job turns every list into pairwise comparisons: "A is above B", "A is above C", "B is above C", and so on. Then it fits a Bradley Terry model with expectation propagation (EP). Every item gets a hidden "strength" with a mean and an uncertainty. From that, the job returns a strict position, a credible interval, and a position that allows ties when two items cannot be told apart.
+
+The number of comparisons grows fast. For X lists and Y items, a job where every list contains every item has about:
+
+```
+X × Y × (Y − 1) / 2
+```
+
+At 100 × 100, that is 495,000 comparisons.
+
+## The big O that started everything
+
+The job used the `choix` library, which implements sequential EP. Sequential means it visits the comparisons one at a time, and after each one it rewrites the full Y × Y covariance matrix of the model.
+
+So I wrote down the cost:
+
+* Number of comparisons: `O(X × Y²)`
+* Cost of one covariance update: `O(Y²)`
+* Cost of one full pass (a sweep) over the data: `O(X × Y⁴)`
+
+With `X = 100` and `Y = 100`, that is `100 × 100⁴ = 10¹⁰` operations per sweep, driven by a Python loop. When I saw that number, I stopped profiling and started thinking. No amount of micro optimization fixes a `Y⁴` term. The shape of the algorithm had to change.
+
+Two observations came out of staring at that formula.
+
+**First, most comparisons are duplicates.** If 60 lists all put A above B, the old code processed 60 separate identical comparisons. But there are only `Y × (Y − 1)` possible directed pairs. At 100 items, that is 9,900 unique pairs instead of 495,000 comparisons. I could store each pair once with a count.
+
+**Second, the update order was the real enemy.** Sequential EP updates the posterior after every single comparison. Parallel EP computes the update for every comparison from the same posterior, then rebuilds the posterior once per sweep. Same model, same likelihood, same prior, same fixed point. Only the schedule changes.
+
+## Why the matrix is so fast
+
+Here is the part I find beautiful. Once all comparisons are updated together, rebuilding the posterior is just linear algebra. The precision matrix of the model is:
+
+```
+α I + Σ count_k × τ_k × (e_winner − e_loser)(e_winner − e_loser)ᵀ
+```
+
+Each comparison only touches four cells: two on the diagonal and two off the diagonal. So instead of looping, I build the whole matrix in one shot with `numpy.bincount`, then do a single Cholesky solve:
+
+```python
+def pair_matrix(n, winners, losers, weight, alpha):
+    index = np.concatenate([winners * n + winners, losers * n + losers,
+                            winners * n + losers, losers * n + winners])
+    value = np.concatenate([weight, weight, -weight, -weight])
+    matrix = np.bincount(index, value, minlength=n * n).reshape(n, n)
+    matrix[np.diag_indices(n)] += alpha
+    return matrix
+
+precision = pair_matrix(n, winners, losers, counts * tau, alpha)
+cov = cho_solve(cho_factor(precision, lower=True), np.eye(n))
+mean = cov @ shift
+```
+
+The moment matching for every pair is also vectorized, so there is no Python loop over comparisons anymore. The cost of one sweep becomes:
+
+* One Cholesky solve on a `Y × Y matrix: O(Y³)`
+* Vector work over unique pairs: `O(Y²)`
+
+At 100 items, that is about 10⁶ instead of 10¹⁰. And the 10⁶ runs inside optimized native code instead of the Python interpreter.
+
+## Big O versus reality
+
+On paper, that is a 10,000 times improvement per sweep. In practice, parallel EP needs more sweeps than sequential EP. A typical 100 × 100 job converges in about 13 sweeps, and about 25 with the extra precision step I explain later. That is why the measured gain is "only" 1,527 times. I like that the big O was not the final answer. It pointed in the right direction, and the benchmark gave the real number.
+
+| Lists × items | Before, one core | After | Speed up |
+| --- | ---: | ---: | ---: |
+| 10 × 50 | 2.61 s | 14 ms | 187× |
+| 2 × 100 | 3.33 s | 42 ms | 80× |
+| 50 × 50 | 10.54 s | 18 ms | 577× |
+| 35 × 93, partial coverage | 20.03 s | 47 ms | 428× |
+| 100 × 100 | 108.38 s | 71 ms | 1,527× |
+
+The hardest case I found, a low noise job where almost every list agrees, went from 10.87 s to 296 ms. Still 37 times faster.
+
+## The surprise: too many threads on one CPU
+
+While measuring inside a container limited to one CPU, I found a second problem. The container could see every core on the host machine, so OpenBLAS started one thread per core. The matrices are small, so the threads spent their time coordinating instead of computing. A 2 × 100 job took **910 seconds**. Setting `OPENBLAS_NUM_THREADS=1` (and the OMP and MKL equivalents) brought it down to 3 seconds, before touching the algorithm at all.
+
+The lesson: benchmark on your laptop to iterate, but always confirm in an environment that looks like production. That problem was invisible on my machine.
+
+## The process: benchmark first, then change
+
+Before changing any math, I built a small benchmark harness with a frozen copy of the old implementation. Every idea was measured against the same inputs, for both speed and output parity. Here are the three approaches I tried:
+
+| Approach | Speed | Results versus before |
+| --- | --- | --- |
+| Vectorize the pandas loops, keep `choix` | About 12% faster | Identical, but still slow |
+| Parallel EP on pair counts | 37× to 1,527× faster | Matches on every benchmark scenario |
+| Laplace approximation | Another 2× to 3× faster | Only 68% of credible intervals match |
+
+The Laplace approximation was the fastest, and I rejected it. It changes the answer. A faster wrong result is not an optimization, it is a different feature.
+
+## Validation: where it got interesting
+
+My first parity check found two items with swapped strict positions compared to the old version. I assumed my code was wrong. It was more subtle than that.
+
+The old library visits comparisons in a random order on every sweep, and the job never set a seed. It also stopped at a residual of 10⁻⁴. So the old strict order around near ties depended on the random state of the process. For those two items, I ran the old implementation with 50 different seeds: 30 seeds put one item first, and 20 put the other first. When I pushed the old library much closer to convergence, the gap between the two items was about 10⁻¹³. They were an exact tie in the model, and the old output was essentially a coin flip.
+
+That finding led to two improvements:
+
+1. **Precision polishing.** I found a real near tie where two items differed by 1.1 × 10⁻⁶, and stopping at 10⁻⁴ could land on the wrong side. After converging at 10⁻⁴, my version keeps iterating toward 10⁻¹⁰ and keeps the most converged state. Since sweeps are cheap now, this only adds 6 to 23 ms.
+2. **A deterministic tie rule.** Items whose means are within 10⁻⁹ keep their input order. It is not statistically better, it is simply explainable and repeatable instead of random.
+
+To be confident, I ran a large study on 5,000 small, tie heavy matrices. Each one ran through the old implementation with 12 seeds, the new one twice, and an independent reference: the old library pushed to a much tighter tolerance with two seeds. That is 80,000 estimator executions.
+
+| Measure | New | Old |
+| --- | ---: | ---: |
+| Same output on repeat | 5,000 / 5,000 | Random by design |
+| Credible intervals match reference | 5,000 / 5,000 | 59,993 / 60,000 |
+| Exact ties detected | 28,395 / 28,395 | Order flipped for 99.94% |
+| Wrong order on clearly different pairs | 0 / 409,735 | 2,983 / 4,916,820 |
+| Median error on the mean | 1.25 × 10⁻¹⁰ | 3.77 × 10⁻⁶ |
+
+Finally, parallel EP has no convergence guarantee and can oscillate. So I added damping retries and kept the old sequential library as a last resort fallback. A stress test on 1,000 random jobs showed 998 converging with parallel EP and 2 needing the fallback. The slowest job took 1.5 seconds.
+
+## Conclusion
+
+Going from 15 minutes to milliseconds took two fixes. The thread fix was three environment variables that removed a 300 times slowdown. The algorithm fix did not come from a profiler. It came from writing O(X × Y⁴) on paper and realizing that the fix was structural: collapse duplicates into counts, update everything at once, and let one matrix solve do the work that 495,000 Python iterations used to do. The benchmark harness and the validation study are what made me comfortable shipping it, and they also revealed that the old version was less deterministic than anyone thought.
