@@ -7,6 +7,10 @@
 
 
 === Published
+✅ 2026-10-13: AudioRouter's Backend: JSON-RPC, One API for Everything, and Why MCP Barely Grew
+✅ 2026-10-09: What Building AudioRouter Taught Me About Rules, Harness, and What AI Can Do With Neither
+✅ 2026-10-07: AudioRouter: A Visual Audio Router for Windows, With an API and an MCP Server Built In
+✅ 2026-10-04: AudioRouter Shipped: Two Hours of Spec, a Week of Agents, and the Last Ten Percent
 ✅ 2026-09-19: Jev Send Guard: A Tone Check Before You Hit Send
 ✅ 2026-09-18: Jev in Three Places: LLM, Code Editor, Pull Request
 ✅ 2026-09-17: Typesafe AI Jev Running 370 Text Rules under 2 seconds

@@ -1,0 +1,124 @@
+---
+title: "AudioRouter's Backend: JSON-RPC, One API for Everything, and Why MCP Barely Grew"
+date: "2026-10-13"
+categories:
+  - "ai"
+  - "rust"
+  - "audiorouter"
+  - "mcp"
+  - "architecture"
+---
+
+The first three AudioRouter posts talked about how the project got built and what it does. This one is about the part I get asked about the most when I show it to other developers: the backend. How a UI, a command line, an AI assistant, and an optional REST adapter all end up calling the exact same code, and what that costs and buys you.
+
+## JSON-RPC, in plain terms
+
+AudioRouter's entire backend speaks one protocol: [JSON-RPC 2.0](https://www.jsonrpc.org/specification). If you haven't used it, it is close to the simplest thing you can build on top of JSON. You send an object with a method name and some parameters, you get back an object with either a result or an error, and a shared ID ties the two together.
+
+```json
+// request
+{ "jsonrpc": "2.0", "id": "request-41", "method": "graph.plan", "params": { "sessionId": "session-gaming", "baseRevision": 12 } }
+
+// response
+{ "jsonrpc": "2.0", "id": "request-41", "result": { "planId": "plan-42", "baseRevision": 12 } }
+```
+
+That's it. No REST verbs to argue about, no "is this a PUT or a PATCH" debate, no URL design. Every operation is just a method name, like `graph.plan` or `recordings.list`, plus a parameters object. The entire public surface of AudioRouter, 103 methods as of the 0.0.5 release, is a flat list of names instead of a tree of routes.
+
+What AudioRouter adds on top of plain JSON-RPC is the transport and the contract around it, not the protocol itself:
+
+- Messages travel over a local Windows named pipe, not a network socket, framed with a 4 byte length prefix so the backend never has to guess where one message ends and the next begins.
+- You can batch up to 32 requests in one call, and they run independently in the order you sent them. A batch is a convenience for fewer round trips, not a transaction, each request in it succeeds or fails on its own.
+- Every method is described by a machine-readable schema you can ask the backend for at any time (`system.describe`), so a client, or an AI assistant, can discover what exists and what shape it expects without reading source code.
+
+That last point matters more than it sounds. It means the CLI, the desktop UI, and the MCP server are not three separate implementations that happen to agree, they are three thin translators sitting in front of one typed method list.
+
+![](/images/blog/audiorouter_backend_diagram1.webp)
+
+## One API, not four
+
+The architecture rule that everything else follows from: there is exactly one backend process per Windows user, and it owns the configuration database and the running audio graph. The desktop UI does not get a private fast lane into the audio engine just because it happens to be first-party. It calls `graph.plan` and `graph.commit` the same way a Python script using the CLI would.
+
+Concretely, a parameter change, say turning down a microphone's monitor gain, looks like this on the wire:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "request-41",
+  "method": "graph.plan",
+  "params": {
+    "sessionId": "session-gaming",
+    "baseRevision": 12,
+    "operations": [
+      { "op": "node.setParameter", "nodeId": "mic-monitor-gain", "parameter": "gainDb", "value": -12 }
+    ]
+  }
+}
+```
+
+The backend responds with a plan, not a result: a diff, which destinations are affected, any warnings, and an expiry.
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "request-41",
+  "result": {
+    "planId": "plan-42",
+    "baseRevision": 12,
+    "expiresAt": "2026-09-05T20:05:00Z",
+    "diff": [{ "path": "/nodes/mic-monitor-gain/parameters/gainDb", "before": 0, "after": -12 }],
+    "affectedDestinations": ["headphones"],
+    "warnings": []
+  }
+}
+```
+
+Only a second call, `graph.commit`, with that plan ID and an idempotency key, actually changes anything. This two-step shape, plan then commit, is the same for every graph edit in the app, whether it's a human dragging an EQ slider or an AI assistant rerouting your microphone. Nothing skips it. That's the part of the spec ("no private feature paths") that I think did the most work in keeping the UI, CLI, and MCP server from drifting apart from each other as the project grew past a hundred methods.
+
+## Authentication and authorization, the parts that actually matter on a single PC
+
+AudioRouter has no accounts, no passwords, and no cloud login, and that's deliberate. Everything runs as one Windows user talking to one local backend process. But "local" is not the same as "trusted by default," so there are two separate questions being answered here: *is this really a process running as me*, and *what is this specific client allowed to do*.
+
+![](/images/blog/audiorouter_backend_diagram4.jpg)
+
+**Authentication** happens at the pipe. Windows named pipes can report the process ID of whoever connected, and AudioRouter uses that to open the connecting process's security token and compare its user SID against its own. If they don't match, the connection is refused before a single byte of the request is parsed. That check happens in addition to, not instead of, restrictive pipe ACLs, because relying only on default pipe permissions was treated as a real risk in the spec rather than a theoretical one.
+
+**Authorization** happens after that, per client, per method. Every connecting client, the UI, the CLI, an MCP-connected assistant, a Stream Deck talking to the optional localhost HTTP adapter, carries an explicit grant made up of scopes: `read`, `graphWrite`, `sessionControl`, `capture`, `record`, `pluginScan`, `startupWrite`, and `deviceAdministration`. Each of the 103 methods declares the minimum scope it needs, and the backend checks that on every single call, regardless of what the UI already validated or what an MCP tool's own description claims about itself. A tool's name or a natural-language description is just metadata to the backend; it is not a credential.
+
+A concrete example of why that separation exists: `devices.setAccess`, the permission that lets AudioRouter actually open your microphone and speakers, can only be granted by the desktop window itself, interactively, the first time you press Play. The CLI cannot set it. MCP cannot set it. The localhost HTTP adapter gets a 403 if it tries. An AI assistant can be handed full graph-editing rights and still be structurally unable to turn on your microphone for the first time without you clicking a real button in a real window. That's not a prompt-engineering guardrail, it's a scope that one specific grant simply does not contain.
+
+![](/images/blog/audiorouter_backend_diagram2.webp)
+
+## The benefits I didn't fully appreciate until the project was done
+
+**No adapter can drift.** Because the CLI, the UI, and MCP all generate their requests from the same schema, a bug fix or a new field in one method shows up correctly in all three without anyone touching three separate client implementations by hand.
+
+**Auditability for free.** Every mutation carries a client identity, an idempotency key, and lands as one revision. The project's own activity log can show, after the fact, exactly which client changed what, which turned out to matter the one time an MCP tool call did something unexpected during testing, I could see precisely which call caused it instead of guessing.
+
+**Safety that doesn't depend on good intentions.** The plan/commit split means an AI assistant, or a flaky script, can propose a graph change, see the diff and the warnings, and only then commit it. A revision check on commit means a stale plan built against an old graph state fails loudly (`revisionConflict`) instead of silently overwriting a change that happened in between.
+
+**The realtime thread stays untouched by any of this.** None of the API machinery, JSON parsing, permission checks, revision bookkeeping, runs anywhere near the audio callback. The control plane compiles a complete, validated graph generation off-thread and only ever hands the realtime engine something already proven safe to run.
+
+## The drawbacks
+
+**Plan/commit is overhead for small things.** Nudging a slider by one decibel takes two round trips instead of one. The UI hides this by debouncing and coalescing rapid changes, but anyone writing a script against the raw API feels the extra step immediately, and I did, the first few times.
+
+**Idempotency keys are one more thing to get right.** Every mutating call needs a caller-generated key, and reusing a key with a different payload is a hard error (`idempotencyConflict`) on purpose. That's the correct behavior, a crashed request should be safely retryable, but it is one more concept a new integrator has to learn before their first successful write.
+
+**Rate limits are real and will surprise you.** 20 mutation requests per second per client, bursts to 40. That is generous for a human or a well-written assistant, but a naive loop that calls `node.setParameter` on every pixel of mouse movement will hit `rateLimited` quickly. The fix is always client-side coalescing, but you have to know to do it.
+
+**Frozen schemas cut both ways.** Freezing error codes and method shapes in M01 made the rest of the project move faster because nothing downstream had to guess at meaning. It also means a genuinely better shape for an existing method is a versioned negotiation, not a quick rename, by design.
+
+## How this made MCP cheap to keep up to date
+
+This is the part that actually surprised me. The spec's own suggested MCP tool list was intentionally small: a handful of focused read tools (`list_devices`, `get_session`, `inspect_routes`), a handful of write tools (`plan_graph_change`, `apply_graph_change`, `control_recorder`), and one general-purpose `call_api` tool as a fallback for everything else.
+
+As the backend grew from a first handful of methods to 103, I expected the MCP server to need constant rebuilding to keep pace. It didn't, because of that fallback tool. `call_api` takes a method name and a params object and routes it through the exact same validated dispatcher as every named tool, under the exact same scope checks. The moment a new backend method ships, like `recorders.startRecording` or `safety.setPrivacyMute`, it is immediately callable by any MCP client through `call_api`, with zero MCP-side code written for it. No new tool, no redeploy of the assistant integration, nothing. An assistant that already knows how to call `call_api` and has read `system.describe` can use a method that didn't exist when the MCP server was last built.
+
+What did grow over time was a smaller, deliberate set of named convenience tools, task-shaped ones like `play`, `toggle_mic_mute`, `add_tool`, `connect_nodes`, added specifically so an assistant doesn't have to assemble a raw plan/commit pair for the operations people ask for constantly. That list grew to a few dozen tools by 0.0.5, but it grew because it was useful to grow it, not because the API forced it to. The 103 backend methods and the roughly seventy MCP tools are not a one-to-one mapping, most methods are reachable only through `call_api`, and that's fine, because `call_api` was never the fallback of last resort, it was the thing that made the named tools optional in the first place.
+
+![](/images/blog/audiorouter_backend_diagram3.webp)
+
+## Where I'd take this next
+
+If I were starting the backend again, I would keep JSON-RPC, keep plan/commit, and keep the single-API rule without hesitation, those are the decisions that let the last two posts' agent-driven week happen at all. What I'd add is a thinner, generated SDK layer on top of `call_api` for scripting, so the ergonomics of the fallback tool matched the ergonomics of the named convenience tools, because right now the gap between "the two dozen tools that feel designed for you" and "the generic one that feels like reading a spec" is the one place where this architecture's honesty about not having a private fast path also shows up as a little bit of friction.

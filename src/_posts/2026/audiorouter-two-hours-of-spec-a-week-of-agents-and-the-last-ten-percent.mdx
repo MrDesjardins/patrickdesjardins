@@ -1,0 +1,56 @@
+---
+title: "AudioRouter Shipped: Two Hours of Spec, a Week of Agents, and the Last Ten Percent"
+date: "2026-10-04"
+categories:
+  - "ai"
+  - "agent"
+  - "rust"
+  - "audiorouter"
+---
+
+Back in September I wrote about [starting AudioRouter](/blog/building-audiorouter-from-google-doc-to-a-multi-day-autonomous-codex-goal), a Windows audio router built mostly in Rust with a React canvas on top. That post was written two days into the project, while the agent was still running. AudioRouter is now on its [0.0.5 preview release](https://github.com/MrDesjardins/audiorouter/releases/tag/v0.0.5), and now that it is actually done, I want to go back and give the real numbers on where the time went, because they are more lopsided than I expected going in.
+
+## Two hours to get the product down
+
+The first real work session was about two hours with an AI going back and forth with me, pulling apart what I like and dislike about VoiceMeeter Banana and Audio Hijack, writing down what a session and a graph should look like, and spelling out routing and safety behavior I cared about. That session produced a 21 page Google Doc. Not code, not architecture, just the product: what AudioRouter does, what it refuses to do, and what "easy" means for someone who is not an audio engineer.
+
+I then moved that doc into the repository as markdown, split by concern, under `docs/spec/`: product, workflows, architecture, the graph model, Windows capture, virtual devices, processing, recording, the interface, the API, CLI and MCP, persistence, security, quality, and delivery.
+
+![](/images/blog/audiorouter_markdowns.png)
+
+That split matters more than it looks. A Google Doc is something you read top to bottom. Sixteen markdown files with numbered requirement IDs like `ARCH-04` or `API-07` is something an agent can be pointed at, one file at a time, and something a human can review in ten minutes instead of an hour.
+
+After the move, I spent another hour with AI going through the specification itself, line by line, asking it to flag anything vague, contradictory, or untestable, and rewriting the soft parts into `MUST` and `SHOULD` language with acceptance criteria attached. By the end of that hour the specification was something an agent could be handed with very little left to interpret.
+
+So, three hours total of human-directed writing and review before a single line of Rust existed.
+
+## A week, almost nonstop
+
+With the spec settled, I pointed Codex at the repository and let the goal feature run, using the Luna model. This is where the bulk of AudioRouter actually got built: the control plane, the realtime engine, the WASAPI adapters, the DSP chain, the plugin worker sandbox, the CLI, the MCP server, the React canvas, the Tauri shell. It ran for over a week almost without stopping.
+
+![](/images/blog/audiorouter_llm_2days.png)
+
+I was not watching a terminal the whole time. I was watching the commit log. The repository's history makes this obvious in a way a screenshot cannot: in the first two weeks there are thousands of commits, often dozens per hour, each one a small verified step, feature, test, fix, docs. That density is what a healthy run looks like. When the agent started going sideways, chasing a dead end, repeating a fix that did not take, overcomplicating something the spec had already settled, the commit rhythm changed. The messages got repetitive, or a string of "fix" commits appeared where there should have been one. That pattern, not a notification or a progress bar, is how I knew to step in.
+
+I would say that week accounted for about 90 percent of the actual work on AudioRouter: every crate in the Rust workspace, the milestone structure (M00 through M08), the first pass of the UI, and a specification that stayed in sync with the code because the agent was expected to update both together.
+
+## The last ten percent took longer than the first ninety
+
+Getting AudioRouter from "the agent says it's done" to something I was willing to call a preview release took about five more days, roughly an hour of my own time each day. That ratio surprised me. A week of near autonomous work produced 90 percent of the project. Five short sessions, maybe five hours total, produced the last 10 percent, and that 10 percent is where most of the real bugs were.
+
+Some examples, straight from the project's own record of lessons learned:
+
+- A Duck tool, bypassed between two connected Mixers, silently broke the user's route because the dry-bypass allow list had never been tested against that exact combination.
+- Two different tool inspectors in the canvas, EQ and a Compressor, ended up sharing a React key and showed stale controls for the wrong tool after switching selections quickly.
+- A release that passed every automated check still failed Play on a second computer, because a permission the developer's own machine always had was never granted on a fresh install.
+- One-click recording passed its tests with a single clean audio stream, then produced unplayable, header-less files the first time it saw the three-path session I actually use.
+
+None of these were visible from reading code. They only showed up by running the built app the way a real person would: a second computer, a real multi-path session, clicking quickly instead of waiting between actions. That is the kind of catching an agent working against its own tests cannot easily do for itself, because the tests were the thing it wrote.
+
+## What this says about the 90/10 split
+
+The week of autonomous work was genuinely the bulk of the project, and it would not have been possible without those first three hours. The agent never had to guess what "done" meant, because the specification already defined it in testable terms before any code existed. But that same week could not get all the way to a release on its own, because some problems only exist at the intersection of this computer, this hardware, this exact sequence of clicks, and I was the only one who had all three.
+
+![AudioRouter routing a studio voice chain: microphone through a noise gate, denoise, a four point EQ, a compressor and a limiter, sent to Discord, headphones and a recorder at once](/images/blog/audiorouter-streamer-voice-chain.png)
+
+AudioRouter is a real Windows app today because of both halves: a week where I mostly stayed out of the way, and five short sessions where I didn't.

@@ -1,0 +1,36 @@
+---
+title: "What Building AudioRouter Taught Me About Rules, Harness, and What AI Can Do With Neither"
+date: "2026-10-09"
+categories:
+  - "ai"
+  - "agent"
+  - "rust"
+  - "audiorouter"
+  - "architecture"
+---
+
+[AudioRouter](https://github.com/MrDesjardins/audiorouter) is not a simple app. It manages real-time audio on Windows, a domain where the operating system itself does not make things easy: shared vs exclusive WASAPI modes, driver boundaries, clock drift between devices, a callback thread that is not allowed to allocate memory or wait on anything. On top of that sits a visual canvas, live parameter editing, undo, themes, and an API surface meant to be driven by both humans and other AI assistants. None of that is a toy problem, and I built almost all of it by directing AI agents rather than writing the code myself. I want to pull apart why that worked here.
+
+## Two languages, one seam
+
+The project is Rust on the backend and TypeScript/React on the frontend, connected through a versioned API with generated schemas. That split did more for the agent-driven process than I expected going in.
+
+![A hand-drawn version of AudioRouter's architecture: editor, CLI and MCP all going through one versioned API into a Rust control plane, a graph compiler, and a realtime engine, with recording and telemetry hanging off the side](/images/blog/audiorouter_architecture.webp)
+
+The backend owns graph validity, routing, persistence, and the realtime audio path. The frontend owns the canvas, viewport state, and what you see on screen. Nothing in the UI is allowed to reach into the audio engine directly, it calls the same API a CLI or an MCP client would use. That boundary meant an agent working on the canvas could not quietly introduce a bug in the audio thread, and an agent working on the DSP code could not accidentally change what a button does. Two very different kinds of code, written largely in separate passes, stayed honest to each other because the contract between them was explicit and machine checked rather than a shared understanding I had to keep in my own head.
+
+## Strict rules need less harness
+
+"Harness" here means everything you wrap around a model to keep it on track: subagents reviewing each other, automated test loops before a commit is accepted, staged approvals, a planner model checking a worker model's output. I used almost none of that. What I used instead was a specification written in testable requirements before any code existed, `MUST` and `SHOULD` language with IDs like `ARCH-04`, each one assigned to a milestone and backed by an acceptance scenario.
+
+That specification did a surprising amount of the job harness is usually built for. When the rules are specific enough, an agent does not need a second agent watching over its shoulder, it can check its own work against a requirement that says exactly what passing looks like. The project's own running list of validated lessons makes this concrete. One entry describes a regression test that now compiles every tool against every flag pattern in both simple and connected-Mixer layouts, because a single missed combination once broke a live route. Another describes a sine-wave continuity test that requires zero glitches on a real routed tone before any audio-path change can be called done. Those are not processes bolted on by a supervising agent, they are rules a straightforward agent can run and judge itself against. Strict and specific beats layered and generic.
+
+## Where this approach runs out of road
+
+I don't want to overstate it. The project's own evidence record also shows exactly where rules without harness stopped being enough. A release passed every automated check and still failed on a second computer, because the only environment that ever exercised it was the one the developer variable was always set on. A multi-path recording passed its test suite and then produced unplayable files the first time it saw a real three-stream session. Those are the cases where a second pass, a different agent, or a human running the actual build on actual hardware would have caught the problem sooner. More harness, in the form of a dedicated verification agent whose only job is to run the built app the way a real user would, would almost certainly have made this project faster and caught some of the last ten percent of bugs earlier instead of five separate human sessions finding them one at a time.
+
+## What's actually remarkable here
+
+Put plainly: two subscriptions, Anthropic and OpenAI, twenty dollars a month each, produced a real-time Windows audio application with a visual editor, a plugin sandbox, network streaming between two PCs, and an API an AI assistant can safely drive, in about three weeks of calendar time and maybe fifteen hours of my own direct attention. A few years ago this was a small team's quarter, not a side project.
+
+More harness would make the next one faster, and I plan to build some of that in going forward. But it's worth sitting with how far a tight specification and a long unattended agent run got on their own, with no team, no dedicated QA pass, and a budget that fits in a grocery bill.
