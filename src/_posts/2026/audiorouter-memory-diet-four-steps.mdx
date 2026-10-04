@@ -1,0 +1,138 @@
+---
+title: "AudioRouter's Memory Diet: From 960 MB to 30 MB in Four Steps"
+date: "2026-10-20"
+categories:
+  - "ai"
+  - "rust"
+  - "audiorouter"
+  - "performance"
+  - "react"
+---
+
+I noticed something odd while [AudioRouter](https://github.com/MrDesjardins/audiorouter) was running my streaming route: Task Manager showed the window using between 800 MB and 1 GB of memory. 
+For an app whose job is to move audio from a microphone to Discord, that was high.
+The Rust backend handling the audio was under 30 megs. Nearly all of that memory was in the WebView2 process that draws the canvas.
+
+It took four changes, shipped in releases `0.0.9` and `0.0.10`, to fix it. I want to go through them in order, because each one came out of a measurement of what the previous one left behind, not from a guess.
+
+## Step 0: Measure before touching anything
+
+The first reaction to "1 GB of memory" is to call it a leak and start hunting. I asked the agent to measure first, using my real session database and the release build, not a fresh dev build with three nodes on the canvas.
+
+WebView2 is Chromium, so you can attach the Chrome DevTools Protocol to it by launching the app with `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9222`. That gave read-only numbers:
+
+- Renderer process stopped: **65 MB**. After 6 minutes of playback: **600 to 960 MB**.
+- JavaScript heap before a forced garbage collection: 100.7 MB used, 73,000 event listeners.
+- The same heap **after** `HeapProfiler.collectGarbage`: **13.5 MB**, 1,500 listeners. The renderer dropped to 92 MB.
+- Allocation rate: **237 MB every 5 seconds**.
+
+That forced collection settled the question. It was not a leak. The live data was 13.5 MB. Everything else was garbage the page created faster than V8 bothered to clean up. The real question was why a small UI was allocating almost 50 MB per second.
+
+## Step 1: Stop re-rendering the whole app 20 times a second (0.0.9)
+
+While audio plays, the UI asks the backend for diagnostics every 50 ms so the meters on the canvas move smoothly. The result went straight into the top-level `App` state. 
+Between two ticks, the only thing that actually changed was `nodeTelemetry`, the meter levels. But setting App state re-renders everything below it, and in AudioRouter that is roughly **5,200 elements**. About 4,000 of them belonged to legacy panels that are always hidden and never visible to anyone.
+
+So 20 times a second, React rebuilt 5,200 elements to move a few meter bars.
+
+The fix was to treat live meter values as a separate stream instead of app state. A tiny external store holds the latest telemetry, and only the three views that actually show live values subscribe to it: the canvas, the inspector, and the Timing panel.
+
+```tsx
+/** Whether two diagnostics snapshots differ only in their live node telemetry. */
+export function differsOnlyInTelemetry(previous, next): boolean {
+  if (!previous) return false;
+  const before = { ...previous, nodeTelemetry: null };
+  const after = { ...next, nodeTelemetry: null };
+  // ...compare every other key
+}
+```
+
+When a refresh differs only in its telemetry, it goes to the store through `useSyncExternalStore`. When anything else changed (a node was added, the route stopped), it still updates App state as before, so correctness does not depend on the shortcut. 
+The store value is also tied to the diagnostics snapshot it was taken from, so a newer real state change (Stop, for instance) always wins immediately.
+
+Result:
+
+- Allocation: **237 → 149 MB per 5 s**.
+- Renderer: a plateau of **440 to 470 MB** instead of swinging between 600 and 960 MB.
+
+Better, but 149 MB every 5 seconds was still a lot of garbage for moving meters.
+
+## Step 2: Keep meter ticks out of the canvas render (0.0.10)
+
+The next measurement pointed at the canvas itself. Even with App out of the loop, every telemetry tick re-rendered `SessionFlowCanvas`. That component built each node card's JSX from scratch (handles, header, ports, the visual), rebuilt the edge data, and handed React Flow brand-new `nodes` and `edges` arrays. React Flow then had to diff and re-adopt every node on the canvas, 20 times a second, even though the only thing different was the height of a meter bar.
+
+This is the risky part of the codebase. The project's lessons list has a scar from a previous canvas change where nodes lost their measured sizes during telemetry refreshes and the whole graph disappeared. So the plan was explicit about what must not move: measured sizes, selection, drag positions, edge sides.
+
+The change:
+
+1. Build the canvas element once per App render, not inside the per-tick render function.
+2. Add a `LiveCanvasContext` that carries live values only to the pieces that display them: the node visual (meters), the connection lights on the edges, and the Duck trigger link, which also owns the 160 ms "is the signal fresh" flag.
+
+Now a meter tick changes a context value. The node cards, the node array and React Flow's store only change on real state changes.
+
+Because "it feels faster" is not a test, the agent added a Playwright test in Edge, `canvas-live-performance.pw.ts`. It plays a route with 12 nodes and 8 live links where the meters change on every tick and asserts:
+
+- **Zero** node card renders across about 40 ticks (previously one per tick per card).
+- Meters and connection lights still move.
+- Pressing Stop clears the lights immediately.
+- The playing canvas looks right in the dark, light and high-contrast themes.
+
+On my real session (23 nodes, 19 meters, playing) in the release shell:
+
+- Allocation: **149 → 61 MB per 5 s**. Compared to 0.0.8, that's about a quarter of the garbage.
+- Live JS heap: 13.2 MB.
+
+And yet the process still climbed toward ~770 MB over time. A forced GC brought it to 165 MB. Again, not a leak: there was less garbage, but V8 was still in no hurry to collect it.
+
+## Step 3: Tell V8 it cannot have all the RAM (0.0.10)
+
+V8 is smart in a way that looks bad in Task Manager. When the machine has plenty of free RAM and the allocation pressure is low, it postpones the expensive full collections. On my PC with lots of memory, the page grew simply because nothing told it to stop.
+
+The fix is one flag: `--js-flags=--max-old-space-size=256`, capping the old generation heap at 256 MB. Before shipping it, I had the agent run a measured trial on my database by passing the flag through the environment variable:
+
+- Uncapped: renderer climbing to **750 to 770 MB** over 6 minutes.
+- Capped: renderer levelling at **415 to 430 MB** over the same period.
+- CPU profile over 5 seconds: the garbage collector was **1.0%** of main-thread samples. The cap did not turn into a CPU problem.
+
+Over a full 15-minute capped run, the renderer stayed between **340 and 450 MB**, with visible periodic drops whenever a full GC ran.
+
+One small gotcha. Tauri's WebView layer (wry) already passes its own `--disable-features=...` argument to WebView2, and setting additional browser arguments **replaces** those defaults instead of appending to them. So the shipped constant carries both:
+
+```rust
+const WEBVIEW_BROWSER_ARGS: &str =
+    "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection --js-flags=--max-old-space-size=256";
+```
+
+A shell test pins that list, so a future change cannot silently drop either half. The risk is clear: a live heap above 256 MB would crash the page. The live heap is around 13 MB, so there is a lot of room.
+
+## Step 4: Free the whole WebView when the window is closed (0.0.10)
+
+Most of the time I don't look at AudioRouter at all. It sits in the tray and routes audio. Until then, closing the window only hid it, which kept the page (340 to 450 MB), the GPU process (~150 MB) and the other WebView2 processes alive, with their timers still running, to display meters nobody could see.
+
+The audio does not depend on the page. The backend in the shell process owns the route, the devices and the audio thread; the UI is only a client of the same API the CLI and the MCP server use. That architecture decision from the first day is what made this step safe: the window can be destroyed and the music keeps playing.
+
+The only real question was unsaved work. The decision: when you close the window, the UI reports whether it has unsaved route edits. If not, the shell destroys the window entirely. If yes, it only hides it, so nothing is lost. Opening from the tray recreates a fresh page connected to the same database and the same running session. The app also no longer exits when its last window closes; only Quit does.
+
+Measured on my session with audio playing: closing the window freed all **six WebView2 processes (302 MB)**, and the shell stayed at **31 MB**. Reopening from the tray brought the UI back with the audio still live.
+
+That change also made two other features natural: Play and Stop directly from the tray menu, and starting AudioRouter at sign-in straight into the tray with no window at all.
+
+## The whole journey
+
+| Step | Release | Allocation per 5 s | Memory while playing |
+|---|---|---|---|
+| Baseline | 0.0.8 | 237 MB | 600 to 960 MB |
+| Telemetry out of App state | 0.0.9 | 149 MB | 440 to 470 MB |
+| Meter ticks out of the canvas | 0.0.10 | 61 MB | climbs to ~770 MB, GC brings 165 MB |
+| V8 heap capped at 256 MB | 0.0.10 | 61 MB | 340 to 450 MB |
+| Window closed to the tray | 0.0.10 | none | 31 MB |
+
+## What I take from it
+
+The biggest win was the first step, and it was not a clever optimization. It was asking whether the number was a leak or garbage before writing any code. The forced GC answer (13.5 MB live) changed the whole direction: no leak hunt, just stop creating garbage, then let the runtime collect what remains.
+
+Every step after that came from the measurement of the previous one, on my real session in the release build. A dev build with a toy route would have shown none of it: the hidden legacy panels, the 23 nodes, the 19 meters ticking at 20 Hz. The agent did the profiling, the CDP measurements and the regression tests; my part was mostly insisting on numbers before and after each change, and deciding the product question of what closing the window should mean when edits are unsaved.
+
+Two of these became rules in the project's `AGENTS.md`: keep 20 Hz telemetry out of App state, and before calling memory growth a leak, compare the heap before and after a forced garbage collection. There is still one item open: the renderer uses about one core while playing, mostly painting the animated SVG connections, unrelated to memory. That one deserves its own measurement before anyone touches it.
+
+The [0.0.10 release](https://github.com/MrDesjardins/audiorouter/releases/tag/v0.0.10) includes all four changes.
