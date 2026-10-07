@@ -2,14 +2,42 @@ import clsx from "clsx";
 import styles from "./website.module.css";
 import Image from "next/image";
 import { CardFixedWidth } from "./CardFixedWidth";
-export const OpenSourceSection = (): React.ReactElement => {
+export const ProjectsSection = (): React.ReactElement => {
   return (
     <section
-      id="open-source"
+      id="projects"
       className={clsx(styles.sectionMainpage, styles.sectionVisualOne)}
     >
-      <h2>Open Source</h2>
+      <h2>Projects</h2>
       <div className={styles.sectionFixedWitdh}>
+        <CardFixedWidth
+          title="TribeMarkets"
+          description="Creator. A private, play-money prediction-market platform where communities create Tribes, open markets, stake internal credits, and resolve outcomes. Built with AI across the whole lifecycle: planning, implementation, testing, code review, deployment, and self-fixing production diagnosis."
+          link="https://tribemarkets.com"
+          image={
+            <Image
+              className={styles.cardFixedWidthImageImg}
+              alt="Screenshot of the TribeMarkets front page"
+              src="/images/blog/TribeMarketsFrontpage.png"
+              width={350}
+              height={350}
+            />
+          }
+        />
+        <CardFixedWidth
+          title="AudioRouter"
+          description="Main maintainer. A Windows application that routes, modifies, and configures system audio, in the spirit of VoiceMeeter Banana and Audio Hijack, with an API that any LLM can drive. Rust backend and realtime audio graph, a C++ driver layer for the virtual audio device, and a React/TypeScript UI."
+          link="https://github.com/MrDesjardins/audiorouter"
+          image={
+            <Image
+              className={styles.cardFixedWidthImageImg}
+              alt="Screenshot of an AudioRouter voice chain configuration"
+              src="/images/blog/audiorouter-streamer-voice-chain.png"
+              width={350}
+              height={350}
+            />
+          }
+        />
         <CardFixedWidth
           title="Python Discord Schedule Bot"
           description="Main maintainer. Creation of a Discord bot that ask who will be available to play on a daily basis. The bot generates statistics about who play with whom, handle timezone, provides audio messages when people join the voice channel and more."

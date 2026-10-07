@@ -11,7 +11,7 @@ import { HistorySection } from "./website/HistorySection";
 import { CourseSection } from "./website/CourseSection";
 
 import { NeonGlowOverlay } from "./website/NeonGlowOverlay";
-import { OpenSourceSection } from "./website/OpenSourceSection";
+import { ProjectsSection } from "./website/ProjectsSection";
 import { StatisticsSection } from "./website/StatisticsSection";
 import { TechnologiesSection } from "./website/TechnologiesSection";
 import { WorkSection } from "./website/WorkSection";
@@ -96,7 +96,7 @@ export default function Index(): React.ReactElement {
         <AboutMeSection />
         <WorkSection />
         <BookSection />
-        <OpenSourceSection />
+        <ProjectsSection />
         <TechnologiesSection />
         <CourseSection />
         <AchievementsSection />

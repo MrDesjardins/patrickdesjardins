@@ -28,9 +28,9 @@ export const TechnologiesSection = (): React.ReactElement => {
         />
 
         <CardWithImage
-          title="TypeScript and C#"
-          subtitle="Professional TypeScript and C# developer"
-          description="I have been writing C# for more than a decade and recently have focused mostly in TypeScript on many different scale project from few developers to almost a thousand. I love how TypeScript enhances JavaScript to be more efficient and reduce errors. I've been doing internal formation, created online classes and wrote many posts on the subject."
+          title="TypeScript, C#, Python and Rust"
+          subtitle="Professional TypeScript, C#, Python and Rust developer"
+          description="I have been writing C# for more than a decade and recently have focused mostly in TypeScript on many different scale project from few developers to almost a thousand. I love how TypeScript enhances JavaScript to be more efficient and reduce errors. I've been doing internal formation, created online classes and wrote many posts on the subject. I also use Python for tooling, bots and machine learning, and more recently Rust for performance-sensitive work like native site generation and realtime audio."
           image={
             <Image
               alt="Screenshot of Netflix"

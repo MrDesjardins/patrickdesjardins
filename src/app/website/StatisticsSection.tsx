@@ -22,7 +22,7 @@ export const StatisticsSection = (): React.ReactElement => {
             />
           </div>
           <div className="counterup-content">
-            <div className="count-number">13</div>
+            <div className="count-number">14</div>
             <p>Companies</p>
           </div>
         </div>
@@ -38,7 +38,7 @@ export const StatisticsSection = (): React.ReactElement => {
           </div>
           <div className="counterup-content">
             <div className="count-number">
-              {new Date().getFullYear() - 2004 + 1}
+              {new Date().getFullYear() - 2000 + 1}
             </div>
             <p>Years of programming</p>
           </div>
@@ -54,7 +54,7 @@ export const StatisticsSection = (): React.ReactElement => {
             />
           </div>
           <div className="counterup-content">
-            <div className="count-number">28</div>
+            <div className="count-number">33</div>
             <p>Projects finished</p>
           </div>
         </div>

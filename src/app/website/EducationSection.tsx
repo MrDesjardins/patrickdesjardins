@@ -22,6 +22,12 @@ export const EducationSection = (): React.ReactElement => {
           <li>
             <FontAwesomeIcon icon={faGraduationCap} />
             <p>
+              Master Degree in Philosophy at Newlane University (In-Progress)
+            </p>
+          </li>
+          <li>
+            <FontAwesomeIcon icon={faGraduationCap} />
+            <p>
               Master Degree 4 years in Machine Learning at Georgia Tech
               (Atlanta, USA)
             </p>
