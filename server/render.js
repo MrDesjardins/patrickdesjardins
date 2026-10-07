@@ -43,8 +43,8 @@ const styles$d = {
   imageWrapper
 };
 const gaMeasurementId = "G-6EH8HNYV13";
-const buildCommit = "e760d3336d0beee60008b5131e0cd07ac230cad9";
-const buildTime = "37533492336";
+const buildCommit = "5d5ff2805db46e47235e180337866b5ae6d072c4";
+const buildTime = "37553904086";
 function isTelemetryEnabled() {
   return typeof window !== "undefined" && typeof window.gtag === "function" && gaMeasurementId !== void 0 && gaMeasurementId.length > 0;
 }
@@ -1019,6 +1019,10 @@ const EducationSection = () => {
         /* @__PURE__ */ jsx("div", { className: styles$b.sectionFixedWitdh, children: /* @__PURE__ */ jsxs("ul", { children: [
           /* @__PURE__ */ jsxs("li", { children: [
             /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faGraduationCap }),
+            /* @__PURE__ */ jsx("p", { children: "Master Degree in Philosophy at Newlane University (In-Progress)" })
+          ] }),
+          /* @__PURE__ */ jsxs("li", { children: [
+            /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faGraduationCap }),
             /* @__PURE__ */ jsx("p", { children: "Master Degree 4 years in Machine Learning at Georgia Tech (Atlanta, USA)" })
           ] }),
           /* @__PURE__ */ jsxs("li", { children: [
@@ -1418,15 +1422,51 @@ function NeonGlowOverlay() {
     }
   );
 }
-const OpenSourceSection = () => {
+const ProjectsSection = () => {
   return /* @__PURE__ */ jsxs(
     "section",
     {
-      id: "open-source",
+      id: "projects",
       className: clsx(styles$b.sectionMainpage, styles$b.sectionVisualOne),
       children: [
-        /* @__PURE__ */ jsx("h2", { children: "Open Source" }),
+        /* @__PURE__ */ jsx("h2", { children: "Projects" }),
         /* @__PURE__ */ jsxs("div", { className: styles$b.sectionFixedWitdh, children: [
+          /* @__PURE__ */ jsx(
+            CardFixedWidth,
+            {
+              title: "TribeMarkets",
+              description: "Creator. A private, play-money prediction-market platform where communities create Tribes, open markets, stake internal credits, and resolve outcomes. Built with AI across the whole lifecycle: planning, implementation, testing, code review, deployment, and self-fixing production diagnosis.",
+              link: "https://tribemarkets.com",
+              image: /* @__PURE__ */ jsx(
+                Image,
+                {
+                  className: styles$b.cardFixedWidthImageImg,
+                  alt: "Screenshot of the TribeMarkets front page",
+                  src: "/images/blog/TribeMarketsFrontpage.png",
+                  width: 350,
+                  height: 350
+                }
+              )
+            }
+          ),
+          /* @__PURE__ */ jsx(
+            CardFixedWidth,
+            {
+              title: "AudioRouter",
+              description: "Main maintainer. A Windows application that routes, modifies, and configures system audio, in the spirit of VoiceMeeter Banana and Audio Hijack, with an API that any LLM can drive. Rust backend and realtime audio graph, a C++ driver layer for the virtual audio device, and a React/TypeScript UI.",
+              link: "https://github.com/MrDesjardins/audiorouter",
+              image: /* @__PURE__ */ jsx(
+                Image,
+                {
+                  className: styles$b.cardFixedWidthImageImg,
+                  alt: "Screenshot of an AudioRouter voice chain configuration",
+                  src: "/images/blog/audiorouter-streamer-voice-chain.png",
+                  width: 350,
+                  height: 350
+                }
+              )
+            }
+          ),
           /* @__PURE__ */ jsx(
             CardFixedWidth,
             {
@@ -1921,7 +1961,7 @@ const StatisticsSection = () => {
             }
           ) }),
           /* @__PURE__ */ jsxs("div", { className: "counterup-content", children: [
-            /* @__PURE__ */ jsx("div", { className: "count-number", children: "13" }),
+            /* @__PURE__ */ jsx("div", { className: "count-number", children: "14" }),
             /* @__PURE__ */ jsx("p", { children: "Companies" })
           ] })
         ] }),
@@ -1936,7 +1976,7 @@ const StatisticsSection = () => {
             }
           ) }),
           /* @__PURE__ */ jsxs("div", { className: "counterup-content", children: [
-            /* @__PURE__ */ jsx("div", { className: "count-number", children: (/* @__PURE__ */ new Date()).getFullYear() - 2004 + 1 }),
+            /* @__PURE__ */ jsx("div", { className: "count-number", children: (/* @__PURE__ */ new Date()).getFullYear() - 2e3 + 1 }),
             /* @__PURE__ */ jsx("p", { children: "Years of programming" })
           ] })
         ] }),
@@ -1951,7 +1991,7 @@ const StatisticsSection = () => {
             }
           ) }),
           /* @__PURE__ */ jsxs("div", { className: "counterup-content", children: [
-            /* @__PURE__ */ jsx("div", { className: "count-number", children: "28" }),
+            /* @__PURE__ */ jsx("div", { className: "count-number", children: "33" }),
             /* @__PURE__ */ jsx("p", { children: "Projects finished" })
           ] })
         ] }),
@@ -2032,9 +2072,9 @@ const TechnologiesSection = () => {
           /* @__PURE__ */ jsx(
             CardWithImage,
             {
-              title: "TypeScript and C#",
-              subtitle: "Professional TypeScript and C# developer",
-              description: "I have been writing C# for more than a decade and recently have focused mostly in TypeScript on many different scale project from few developers to almost a thousand. I love how TypeScript enhances JavaScript to be more efficient and reduce errors. I've been doing internal formation, created online classes and wrote many posts on the subject.",
+              title: "TypeScript, C#, Python and Rust",
+              subtitle: "Professional TypeScript, C#, Python and Rust developer",
+              description: "I have been writing C# for more than a decade and recently have focused mostly in TypeScript on many different scale project from few developers to almost a thousand. I love how TypeScript enhances JavaScript to be more efficient and reduce errors. I've been doing internal formation, created online classes and wrote many posts on the subject. I also use Python for tooling, bots and machine learning, and more recently Rust for performance-sensitive work like native site generation and realtime audio.",
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
@@ -2419,7 +2459,7 @@ function Index() {
     /* @__PURE__ */ jsx(AboutMeSection, {}),
     /* @__PURE__ */ jsx(WorkSection, {}),
     /* @__PURE__ */ jsx(BookSection, {}),
-    /* @__PURE__ */ jsx(OpenSourceSection, {}),
+    /* @__PURE__ */ jsx(ProjectsSection, {}),
     /* @__PURE__ */ jsx(TechnologiesSection, {}),
     /* @__PURE__ */ jsx(CourseSection, {}),
     /* @__PURE__ */ jsx(AchievementsSection, {}),
