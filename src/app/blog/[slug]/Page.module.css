@@ -141,7 +141,9 @@
   padding: 20px;
   text-align: center;
 }
-.blogPostContainer img {
+/* The white glow suits light screenshots. SVG diagrams are drawn for the
+   dark theme, where the glow would frame them in white. */
+.blogPostContainer img:not([src$=".svg"]) {
   --distance: 16px;
   box-shadow:
     white var(--distance) var(--distance) 20px 0px,

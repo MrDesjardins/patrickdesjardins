@@ -206,6 +206,64 @@ fn file_exists(path: &Path) -> bool {
     path.is_file()
 }
 
+/// Vite copies `public/` into `out/` only when it runs, and incremental builds
+/// skip Vite when the bundles are fresh. Without this sync, a new or edited
+/// image under `public/` never reaches `out/` (and CI restores a cached `out/`).
+/// Copies files that are missing, differ in size, or are newer than their copy.
+/// Files removed from `public/` are left in `out/`.
+fn sync_public_dir(public_dir: &Path, out_dir: &Path) -> Result<usize> {
+    if !public_dir.is_dir() {
+        return Ok(0);
+    }
+    let mut copied = 0;
+    let mut pending = vec![public_dir.to_path_buf()];
+    while let Some(dir) = pending.pop() {
+        for entry in fs::read_dir(&dir).with_context(|| format!("read {}", dir.display()))? {
+            let entry = entry?;
+            let path = entry.path();
+            let file_type = entry.file_type()?;
+            if file_type.is_dir() {
+                pending.push(path);
+                continue;
+            }
+            if !file_type.is_file() {
+                continue;
+            }
+            let target = out_dir.join(path.strip_prefix(public_dir)?);
+            if public_copy_is_current(&path, &target)? {
+                continue;
+            }
+            if let Some(parent) = target.parent() {
+                fs::create_dir_all(parent)?;
+            }
+            fs::copy(&path, &target)
+                .with_context(|| format!("copy {} to {}", path.display(), target.display()))?;
+            copied += 1;
+        }
+    }
+    Ok(copied)
+}
+
+fn report_public_sync(copied: usize) {
+    if copied > 0 {
+        println!("Synced {copied} public file(s) into out/.");
+    }
+}
+
+fn public_copy_is_current(source: &Path, target: &Path) -> Result<bool> {
+    let Ok(target_meta) = fs::metadata(target) else {
+        return Ok(false);
+    };
+    let source_meta = fs::metadata(source)?;
+    if source_meta.len() != target_meta.len() {
+        return Ok(false);
+    }
+    match (source_meta.modified(), target_meta.modified()) {
+        (Ok(source_time), Ok(target_time)) => Ok(source_time <= target_time),
+        _ => Ok(false),
+    }
+}
+
 fn sha256(bytes: &[u8]) -> String {
     let mut hasher = Sha256::new();
     hasher.update(bytes);
@@ -2518,6 +2576,7 @@ fn main() -> Result<()> {
         timer.mark("merge source hashes");
         if stale_reasons(&routes, previous.as_ref(), &source_hashes, &out_dir)?.is_empty() {
             timer.mark("stale reasons");
+            report_public_sync(sync_public_dir(&root.join("public"), &out_dir)?);
             println!(
                 "Generated 0 stale route(s), {} total route(s).",
                 routes.len()
@@ -2548,6 +2607,9 @@ fn main() -> Result<()> {
         {
             run_vite_builds(&root, &out_dir)?;
         }
+    }
+    if !check_only {
+        report_public_sync(sync_public_dir(&root.join("public"), &out_dir)?);
     }
     timer.mark("asset phase");
 
@@ -2939,6 +3001,39 @@ mod tests {
         frontmatter_change.insert("meta:src/_posts/2026/example.mdx".to_string());
         assert!(!route_impacted_by_changes(&detail, &frontmatter_change));
         assert!(route_impacted_by_changes(&listing, &frontmatter_change));
+    }
+
+    #[test]
+    fn sync_public_dir_copies_new_and_changed_files_only() {
+        let root = env::temp_dir().join(format!("sitegen-public-sync-test-{}", std::process::id()));
+        let _ = fs::remove_dir_all(&root);
+        let public_dir = root.join("public");
+        let out_dir = root.join("out");
+        fs::create_dir_all(public_dir.join("images/blog")).expect("create public dir");
+        fs::write(public_dir.join("images/blog/a.svg"), "<svg/>").expect("write a");
+        fs::write(public_dir.join("robots.txt"), "User-agent: *").expect("write robots");
+
+        // A new file reaches out/, including nested directories.
+        assert_eq!(sync_public_dir(&public_dir, &out_dir).expect("first sync"), 2);
+        assert_eq!(
+            fs::read_to_string(out_dir.join("images/blog/a.svg")).expect("read a"),
+            "<svg/>"
+        );
+
+        // Nothing changed: nothing is copied.
+        assert_eq!(sync_public_dir(&public_dir, &out_dir).expect("second sync"), 0);
+
+        // An edited file with a different size replaces the stale copy.
+        fs::write(public_dir.join("images/blog/a.svg"), "<svg width=\"10\"/>").expect("edit a");
+        assert_eq!(sync_public_dir(&public_dir, &out_dir).expect("third sync"), 1);
+        assert_eq!(
+            fs::read_to_string(out_dir.join("images/blog/a.svg")).expect("read edited a"),
+            "<svg width=\"10\"/>"
+        );
+
+        // A missing public directory is not an error.
+        assert_eq!(sync_public_dir(&root.join("missing"), &out_dir).expect("missing dir"), 0);
+        let _ = fs::remove_dir_all(&root);
     }
 
     #[test]

@@ -17,7 +17,7 @@ This repository is Patrick Desjardins' static website and blog. Keep changes sim
 - Extra browser work should be scoped to the pages that need it. For example, Mastodon reply loading should only run when a page has a configured thread.
 - Avoid adding large dependencies for narrow UI behavior. Use existing React, Vite, CSS modules, and small local helpers first.
 - Preserve incremental build behavior. Do not casually change shared files that make every route stale unless the change genuinely affects every route.
-- Run `rtk npm run build` after changes that affect routing, shared CSS, client bundles, content rendering, or generated output.
+- Run `npm run build` after changes that affect routing, shared CSS, client bundles, content rendering, or generated output.
 
 ## Static Rendering Correctness
 
@@ -26,11 +26,13 @@ This repository is Patrick Desjardins' static website and blog. Keep changes sim
 - If an article-page feature is added in React, verify whether the Rust native renderer must also emit the same static shell.
 - Client components only work in production when the generated HTML in `out/` contains their mount point. Adding code to `src/site/client.tsx` is not enough.
 - React-rendered static routes use the SSR bundle at `out/server/render.js`; when changing files that feed that renderer, make sure the Rust incremental build invalidates the bundle before rerendering HTML.
-- Any feature that depends on data attributes, placeholder roots, IDs, or static page markup must be checked in the generated HTML after `rtk npm run build`.
+- Any feature that depends on data attributes, placeholder roots, IDs, or static page markup must be checked in the generated HTML after `npm run build`.
 - Production documents emit canonical, Open Graph, Twitter, and article JSON-LD metadata from both renderers. Keep the head builders in `src/site/render.tsx` and `tools/sitegen/src/main.rs` in sync.
 - Philosophy native pages must retain the literal `philosophy-site` wrapper class because `paper-prism.css` scopes its code theme to that class.
 - For article-page changes, search the relevant generated file under `out/blog/*.html` or `out/philosophy/*.html` for the expected marker before calling the work complete.
 - If a new local data file affects generated article HTML, add it as a route dependency in the Rust generator. Otherwise a data-only edit may not rebuild the affected page.
+- Files under `public/` reach `out/` through Vite's `publicDir` copy, which only runs when the bundles rebuild. The Rust generator therefore syncs new or changed `public/` files (missing, different size, or newer than the copy) into `out/` on every build, including the "0 stale routes" path. CI restores a cached `out/`, so do not remove this sync. Files deleted from `public/` are not removed from `out/`.
+- Blog diagrams are pre-rendered static SVGs, not client-side mermaid. Render them with mermaid-cli outside the repo using a dark theme on the blog background (`#0a080e`), then give each root `<svg>` explicit `width`/`height` equal to its viewBox. Mermaid emits `width="100%"`, which makes an `<img>` stretch to the full column on desktop. The blog's white image glow is disabled for `.svg` sources.
 - When adding behavior to one rendering path, add a regression test for the production path. Prefer a Rust `sitegen` test for native-rendered article markup.
 
 ## Mobile and UI Rules
@@ -106,17 +108,15 @@ categories:
 
 Pushing to `master` deploys to production. Never push until every CI check that can run locally passes. Run the full set below — not just the ones related to your change — because a CSS, dependency, or rendering change can break a surface you did not touch.
 
-Use RTK first for commands that can emit medium or high output.
-
 Pre-push checklist (mirror of the CI `quality` and `build-site` jobs):
 
 ```bash
-rtk npm run files:check
-rtk npm run content:validate
-rtk npm run images:check
-rtk npm run lint
-rtk npm run test:ci
-rtk npm run build
+npm run files:check
+npm run content:validate
+npm run images:check
+npm run lint
+npm run test:ci
+npm run build
 ```
 
 The only CI gate that cannot be reproduced locally is the axe accessibility test (needs a browser; see Accessibility Rules). For CSS/color changes, do the manual contrast audit before pushing, and after a build inspect the generated `out/**` HTML and `out/assets/client-*.css` to confirm the expected classes and colors actually shipped.
