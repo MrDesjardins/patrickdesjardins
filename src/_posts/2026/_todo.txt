@@ -3,6 +3,7 @@
 
 === Completed waiting
 
+⏲️ 2026-11-18: An Unattended Bug-Fixing Agent: Temporal, Jira, a Cloud VM, and a Draft Pull Request
 ⏲️ 2026-10-20: AudioRouter's Memory Diet: From 960 MB to 30 MB in Four Steps
 ⏲️ 2026-10-15: AudioRouter's Backend: JSON-RPC, One API for Everything, and Why MCP Barely Grew
 ⏲️ 2026-10-13: What Building AudioRouter Taught Me About Rules, Harness, and What AI Can Do With Neither
