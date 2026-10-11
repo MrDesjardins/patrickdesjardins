@@ -49,6 +49,7 @@
   border: 1px solid var(--blog-section-border-color);
   border-radius: 6px;
   background: var(--mastodon-reply-background-color);
+  color: #bdbdc5;
 }
 
 .mastodonReplyHeader {
@@ -82,12 +83,13 @@
 
 .mastodonAcct,
 .mastodonTimestamp {
-  color: var(--blog-date-foreground-color);
+  color: #b8b8b8;
   font-size: 0.9rem;
 }
 
-.mastodonReplyText {
+.mastodonReply .mastodonReplyText {
   margin: 0.5rem 0 0;
+  color: #bdbdc5;
   white-space: pre-wrap;
 }
 
@@ -102,7 +104,7 @@
 
 .mastodonWarning {
   margin: 0.5rem 0 0;
-  color: var(--blog-date-foreground-color);
+  color: #b8b8b8;
 }
 
 @media (width <= 700px) {
