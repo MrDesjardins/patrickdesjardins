@@ -8,7 +8,7 @@ categories:
   - "mcp"
 ---
 
-I have been using [AudioRouter](https://github.com/MrDesjardins/audiorouter) daily for my own streaming and gaming setup for a few weeks now, and I wanted to show what it actually does instead of how it was built. Here is my current workflow and a tour of a few of the audio tools:
+I have been building and using [AudioRouter](https://github.com/MrDesjardins/audiorouter) daily for my own streaming and gaming setup for a few weeks now, and I wanted to show what it actually does instead of how it was built. Here is my current workflow and a tour of a few of the audio tools:
 
 <iframe
   width="100%"
@@ -60,4 +60,4 @@ Everything in the UI goes through the same local API the CLI and an AI assistant
 
 On top of that API sits an MCP server, so an AI assistant can inspect and change your routing directly. I use this for the Rainbow Six Siege integration mentioned in the release notes: a small script reads Siege's own match state over its REST feed and calls `sessions.togglePlay`-style methods to duck my Mixer to 30 percent during menus and prep, and back to full during the actual round, no manual toggling during a match. The same API is what the Stream Deck integration in the quickstart docs uses for push button mute, route switching, and recorder start/stop. Nothing in that surface gets more trust than a human clicking the same button in the app; the permission check is identical either way.
 
-If you want to try it, the [0.0.5 build](https://github.com/MrDesjardins/audiorouter/releases/tag/v0.0.5) is a per-user installer for Windows 11, unsigned for now so Windows will show a security prompt. It needs no audio driver install, it uses your existing devices or a virtual cable like VB-Cable if you want to route sound into another app.
+If you want to try it, [https://audiorouter.org](https://audiorouter.org) is a per-user installer for Windows 11, unsigned for now so Windows will show a security prompt. It needs no audio driver install, it uses your existing devices or a virtual cable like VB-Cable if you want to route sound into another app.
