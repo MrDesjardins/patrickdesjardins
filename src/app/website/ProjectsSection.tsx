@@ -13,7 +13,7 @@ export const ProjectsSection = (): React.ReactElement => {
         <CardFixedWidth
           title="TribeMarkets"
           description="Creator. A private, play-money prediction-market platform where communities create Tribes, open markets, stake internal credits, and resolve outcomes. Built with AI across the whole lifecycle: planning, implementation, testing, code review, deployment, and self-fixing production diagnosis."
-          link="https://tribemarkets.com"
+          link="https://www.youtube.com/watch?v=Uh8MHEU2PPY"
           image={
             <Image
               className={styles.cardFixedWidthImageImg}
@@ -27,7 +27,7 @@ export const ProjectsSection = (): React.ReactElement => {
         <CardFixedWidth
           title="AudioRouter"
           description="Main maintainer. A Windows application that routes, modifies, and configures system audio, in the spirit of VoiceMeeter Banana and Audio Hijack, with an API that any LLM can drive. Rust backend and realtime audio graph, a C++ driver layer for the virtual audio device, and a React/TypeScript UI."
-          link="https://github.com/MrDesjardins/audiorouter"
+          link="https://audiorouter.org/"
           image={
             <Image
               className={styles.cardFixedWidthImageImg}
