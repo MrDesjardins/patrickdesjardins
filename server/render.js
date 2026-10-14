@@ -43,8 +43,8 @@ const styles$d = {
   imageWrapper
 };
 const gaMeasurementId = "G-6EH8HNYV13";
-const buildCommit = "21d853a4d0a00dbca39abf281724492a12aae6c2";
-const buildTime = "38472103709";
+const buildCommit = "dc63826375a7de8501a194638d6a33126952423b";
+const buildTime = "38495449159";
 function isTelemetryEnabled() {
   return typeof window !== "undefined" && typeof window.gtag === "function" && gaMeasurementId !== void 0 && gaMeasurementId.length > 0;
 }
@@ -1436,7 +1436,7 @@ const ProjectsSection = () => {
             {
               title: "TribeMarkets",
               description: "Creator. A private, play-money prediction-market platform where communities create Tribes, open markets, stake internal credits, and resolve outcomes. Built with AI across the whole lifecycle: planning, implementation, testing, code review, deployment, and self-fixing production diagnosis.",
-              link: "https://tribemarkets.com",
+              link: "https://www.youtube.com/watch?v=Uh8MHEU2PPY",
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
@@ -1454,7 +1454,7 @@ const ProjectsSection = () => {
             {
               title: "AudioRouter",
               description: "Main maintainer. A Windows application that routes, modifies, and configures system audio, in the spirit of VoiceMeeter Banana and Audio Hijack, with an API that any LLM can drive. Rust backend and realtime audio graph, a C++ driver layer for the virtual audio device, and a React/TypeScript UI.",
-              link: "https://github.com/MrDesjardins/audiorouter",
+              link: "https://audiorouter.org/",
               image: /* @__PURE__ */ jsx(
                 Image,
                 {
