@@ -907,7 +907,13 @@ fn plain_text_excerpt(body: &str, max_len: usize) -> String {
         }
     }
     if excerpt.len() > max_len {
-        excerpt.truncate(max_len);
+        let truncate_at = excerpt
+            .char_indices()
+            .map(|(index, _)| index)
+            .take_while(|index| *index <= max_len)
+            .last()
+            .unwrap_or(0);
+        excerpt.truncate(truncate_at);
         excerpt = excerpt.trim_end().to_string();
         excerpt.push('…');
     }
@@ -2886,6 +2892,13 @@ mod tests {
             plain_text_excerpt(body, 300),
             "First paragraph text. Second paragraph."
         );
+    }
+
+    #[test]
+    fn plain_text_excerpt_truncates_on_utf8_character_boundary() {
+        let excerpt = plain_text_excerpt("Café déjà vu.", 6);
+        assert_eq!(excerpt, "Café…");
+        assert!(excerpt.is_char_boundary(excerpt.len()));
     }
 
     #[test]

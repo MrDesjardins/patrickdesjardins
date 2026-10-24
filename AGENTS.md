@@ -58,6 +58,7 @@ This repository is Patrick Desjardins' static website and blog. Keep changes sim
 - Blog categories are public static routes at `/blog/category/{normalized-category}`. Category labels in listings and search results must link to those routes.
 - Category normalization is lowercase ASCII with non-alphanumeric runs replaced by `-`. Keep the TypeScript and Rust implementations equivalent.
 - Article descriptions default to a plain-text excerpt. Preserve useful frontmatter-free excerpts in metadata, feeds, and search output.
+- Rust excerpt limits are byte-based but must always truncate at UTF-8 character boundaries; keep a Unicode regression test when changing excerpt generation.
 - Search generation must exclude future-dated content using the same UTC publishing boundary as production rendering.
 - Article pages should retain back-to-collection and adjacent-article navigation.
 - Year archive pages must not show global chronological pagination, because those links leave the selected year archive.
