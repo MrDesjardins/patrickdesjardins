@@ -1,0 +1,126 @@
+<!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="strict-origin-when-cross-origin"><title>Patrick Desjardins Blog - AudioRouter and MCP: How It Works and How to Set It Up</title><meta name="description" content="I built AudioRouter so I could route Windows audio by drawing a graph instead of maintaining a pile of hidden mixer settings. The next useful step was making th…"><link rel="canonical" href="https://patrickdesjardins.com/blog/audiorouter-mcp-how-it-works-and-how-to-set-it-up"><meta property="og:title" content="Patrick Desjardins Blog - AudioRouter and MCP: How It Works and How to Set It Up"><meta property="og:description" content="I built AudioRouter so I could route Windows audio by drawing a graph instead of maintaining a pile of hidden mixer settings. The next useful step was making th…"><meta property="og:url" content="https://patrickdesjardins.com/blog/audiorouter-mcp-how-it-works-and-how-to-set-it-up"><meta property="og:type" content="article"><meta property="og:site_name" content="Patrick Desjardins"><meta property="og:image" content="https://patrickdesjardins.com/images/backgrounds/patrickdesjardins_conference_bw.webp"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Patrick Desjardins Blog - AudioRouter and MCP: How It Works and How to Set It Up"><meta name="twitter:description" content="I built AudioRouter so I could route Windows audio by drawing a graph instead of maintaining a pile of hidden mixer settings. The next useful step was making th…"><meta name="twitter:image" content="https://patrickdesjardins.com/images/backgrounds/patrickdesjardins_conference_bw.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Patrick Desjardins","url":"https://patrickdesjardins.com"},"datePublished":"2026-10-22","description":"I built AudioRouter so I could route Windows audio by drawing a graph instead of maintaining a pile of hidden mixer settings. The next useful step was making th…","headline":"AudioRouter and MCP: How It Works and How to Set It Up","image":"https://patrickdesjardins.com/images/backgrounds/patrickdesjardins_conference_bw.webp","mainEntityOfPage":"https://patrickdesjardins.com/blog/audiorouter-mcp-how-it-works-and-how-to-set-it-up"}</script><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-CBn6WbXf.css"><script async src="https://www.googletagmanager.com/gtag/js?id=G-6EH8HNYV13"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}var analyticsConsent="denied";try{analyticsConsent=localStorage.getItem("analytics-consent")==="granted"?"granted":"denied";}catch{}gtag("consent","default",{analytics_storage:analyticsConsent,ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied"});gtag("js",new Date());gtag("config","G-6EH8HNYV13");</script></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><a class="app_blog__components_BlogBody__skipLink" href="#content">Skip to content</a><header><div class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</div><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main id="content" class="app_blog__components_BlogBody__main"><a class="app_blog__components_BlogBody__articleParentLink" href="/blog">← All technical posts</a><h1 class="app_blog__components_BlogBody__heading">AudioRouter and MCP: How It Works and How to Set It Up</h1><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: <time datetime="2026-10-22">2026-10-22</time></p><p>I built AudioRouter so I could route Windows audio by drawing a graph instead of maintaining a pile of hidden mixer settings. The next useful step was making that graph available to an AI assistant through the Model Context Protocol (MCP).</p>
+<p>MCP is the part that lets an AI discover tools and call them. It does not replace the AudioRouter backend, and it does not give an assistant a secret way into the audio engine. AudioRouter still owns the sessions, graph validation, permissions, and audio processing. MCP is an adapter that translates an assistant's tool call into the same API request that the desktop application or command line client would make.</p>
+<p>This article explains the pieces, then walks through connecting AudioRouter to ChatGPT.</p>
+<h2>What MCP adds</h2>
+<p>An MCP server exposes capabilities to an MCP client. In this case:</p>
+<ul>
+<li>AudioRouter is the MCP server because it exposes audio-related tools.</li>
+<li>ChatGPT is the MCP client because it discovers and calls those tools (other client could be use later).</li>
+<li>The AudioRouter backend remains the authority that reads devices, loads sessions, edits graphs, and starts or stops playback.</li>
+</ul>
+<p>The assistant does not need to know how AudioRouter stores a session or how the Rust audio engine works. It sees a tool description, a parameter schema, and a result. For example, a simplified tool might look like this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json code-highlight">{
+  "name": "list_sessions",
+  "description": "List saved AudioRouter sessions and their revisions.",
+  "inputSchema": {
+    "type": "object",
+    "properties": {}
+  }
+}
+</code></pre>
+<p>When I ask ChatGPT to list my sessions, the sequence is roughly:</p>
+<ol>
+<li>ChatGPT chooses <code>list_sessions</code> based on the request and the tool description.</li>
+<li>The MCP client sends a tool call to AudioRouter.</li>
+<li>AudioRouter checks the client and the requested permission.</li>
+<li>The MCP adapter calls the normal AudioRouter API.</li>
+<li>The result goes back through MCP and is shown in the conversation.</li>
+</ol>
+<p>The important detail is step four. MCP does not contain a second implementation of session management. It reaches the same control plane as every other client.</p>
+<p><img src="/images/blog/Mcp_AudioRouter_Setup.png" alt="AudioRouter&#39;s MCP settings showing the ChatGPT and OpenAI tunnel connection" /></p>
+<h2>The AudioRouter side of the connection</h2>
+<p>AudioRouter exposes a local MCP connection from its MCP settings page. The application can create an optional OpenAI tunnel, which gives ChatGPT a way to reach the local MCP server without AudioRouter becoming a general public audio service.</p>
+<p>The tunnel carries MCP requests and responses. The audio itself stays on the Windows computer. If ChatGPT asks for the list of sessions, only the structured result crosses the tunnel. If it asks for a graph edit, the request crosses the tunnel, but the actual microphone and speaker streams remain local.</p>
+<p>That separation is useful for two reasons:</p>
+<ul>
+<li>The assistant can inspect or configure a setup without transporting audio to the cloud.</li>
+<li>The backend can apply its normal authorization rules before a request changes anything.</li>
+</ul>
+<p>In my current setup, the connection starts with read-only access. That lets ChatGPT inspect devices, sessions, and routes while I decide whether it should be allowed to edit them. If I grant the Editor permission, the assistant can create or change sessions through the same plan and commit workflow used by the desktop application.</p>
+<h2>How to connect it to ChatGPT</h2>
+<p>The exact labels may change as the ChatGPT connector UI evolves, but the process is straightforward.</p>
+<h3>1. Start AudioRouter</h3>
+<p>Open AudioRouter on Windows and select the <code>MCP</code> tab. The MCP page shows the connection state and the available client permissions.</p>
+<p>If the OpenAI tunnel is not connected, finish the connection from this page. AudioRouter will show when the tunnel is ready and will provide the details needed by the ChatGPT connector.</p>
+<h3>2. Add a custom MCP connector</h3>
+<p>In ChatGPT, open the plugins or connectors area and choose the option for adding a custom MCP server. Enter a name such as <code>AudioRouter</code>.</p>
+<p>The connection type should be the tunnel option supplied by AudioRouter. Paste the tunnel value into the connection field. The tunnel is a connection identifier, not a description of your audio devices, so it is normal that the field looks opaque.</p>
+<p><img src="/images/blog/Mcp_ChatGPTPlugin.png" alt="ChatGPT&#39;s Add custom MCP server dialog with AudioRouter entered as the connector name and the tunnel connection selected" /></p>
+<p>ChatGPT displays a warning when a custom MCP server is added. Read it, confirm that you trust the local application and its tunnel, and create the connector.</p>
+<h3>3. Enable AudioRouter in a conversation</h3>
+<p>Start a new conversation, open the add-tools menu, and enable the AudioRouter connector. The assistant can only call the tools when the connector is enabled for that conversation.</p>
+<p>Start with a read-only request:</p>
+<pre class="language-text" tabindex="0"><code class="language-text code-highlight">List my AudioRouter sessions and show which one has the highest revision.
+</code></pre>
+<p>This is a good first test because it proves the whole path without asking the assistant to alter anything. You should see a tool call, a short wait, and a response containing the sessions returned by AudioRouter.</p>
+<p><img src="/images/blog/Mcp_Result.png" alt="ChatGPT listing seven saved AudioRouter sessions with their revisions" /></p>
+<h2>What a real MCP request looks like</h2>
+<p>MCP uses JSON-RPC messages. The transport handles how messages move between the client and server, while the MCP methods define discovery and tool calls. A simplified request to call the tool above looks like this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json code-highlight">{
+  "jsonrpc": "2.0",
+  "id": 14,
+  "method": "tools/call",
+  "params": {
+    "name": "list_sessions",
+    "arguments": {}
+  }
+}
+</code></pre>
+<p>AudioRouter's adapter receives that request and maps it to the backend method that lists sessions. The result is returned as MCP content, commonly as text or structured JSON:</p>
+<pre class="language-json" tabindex="0"><code class="language-json code-highlight">{
+  "jsonrpc": "2.0",
+  "id": 14,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "AudioRouter desktop (revision 13)"
+      }
+    ]
+  }
+}
+</code></pre>
+<p>The names differ between the MCP surface and the internal API on purpose. A tool such as <code>list_sessions</code> is easier for an assistant to select than a low-level method with several transport and revision details. The adapter still preserves those details when it calls the backend.</p>
+<h2>Asking MCP to build a session</h2>
+<p>Once read access works, the useful part begins. I can describe the audio result instead of manually creating every node and connection:</p>
+<pre class="language-text" tabindex="0"><code class="language-text code-highlight">Create a new AudioRouter session with the PD200X microphone as an input, an Advanced EQ that gives the voice a radio-style sound, and two outputs: Cable-A and Scarlett headphones. Save it, but do not start playback.
+</code></pre>
+<p>This request requires more than one operation. A sensible MCP tool sequence is:</p>
+<ol>
+<li>List devices so the assistant can use the exact device names.</li>
+<li>Create or select a session.</li>
+<li>Add the microphone input node.</li>
+<li>Add an Advanced EQ node.</li>
+<li>Add the two output nodes.</li>
+<li>Connect the nodes.</li>
+<li>Set the EQ parameters.</li>
+<li>Ask AudioRouter to validate and plan the graph change.</li>
+<li>Commit the plan with the user's approval or according to the permission granted to the client.</li>
+<li>Save the session and report what was created.</li>
+</ol>
+<p>The result is still an ordinary AudioRouter graph. In the example below, the microphone feeds the EQ, and the EQ feeds both outputs. ChatGPT did not create a special AI-only route.</p>
+<p><img src="/images/blog/Mcp_Result2.png" alt="AudioRouter showing a microphone connected to an Advanced EQ and routed to Cable-A and Scarlett headphones" /></p>
+<p>The plan step matters. AudioRouter can show the proposed changes, detect missing devices or invalid connections, and reject a stale plan if another client changed the session in the meantime. This makes an AI request subject to the same safety checks as a change made in the desktop UI.</p>
+<h2>Permissions and what the assistant cannot do</h2>
+<p>An MCP tool description is not a security boundary. AudioRouter checks authorization in the backend for every request. The assistant may see a tool that can edit a session, but the backend still decides whether that client has the required scope.</p>
+<p>There are also operations that remain interactive. For example, granting access to a new microphone or speaker can require an explicit action in the AudioRouter desktop application. Connecting an AI assistant does not silently grant it permission to open every device.</p>
+<p>I recommend this progression:</p>
+<ul>
+<li>Begin with read-only access.</li>
+<li>Ask the assistant to list devices, sessions, and routes.</li>
+<li>Try a harmless plan, such as creating a stopped session.</li>
+<li>Grant editor access only when you understand the changes it can make.</li>
+<li>Keep playback stopped while testing generated graphs.</li>
+</ul>
+<p>MCP makes the assistant capable of taking actions, so the normal rules for automation still apply. Use precise requests, inspect the result, and do not grant more access than the task needs.</p>
+<h2>Why this is useful in practice</h2>
+<p>The most valuable part is not asking an assistant to press a virtual Play button. It is letting me describe intent at the level I actually think about audio:</p>
+<blockquote>
+<p>Make a voice route for Discord and my headphones. Keep the raw microphone out of the recording output. Add a high-pass filter and a compressor, then save it as Streaming voice.</p>
+</blockquote>
+<p>That request still needs exact devices, graph nodes, parameters, and connections, but MCP gives the assistant a controlled way to turn the description into those operations. I can then inspect the graph visually and adjust the details by hand.</p>
+<p>It also makes AudioRouter easier to integrate with other automation. A script can use the same MCP or API surface to load a session before a recording, mute a route during a game menu, or inspect whether a device disappeared. The MCP layer is useful because it gives an AI model the discovery and schema information it needs, while the backend remains responsible for correctness.</p>
+<h2>Conclusion</h2>
+<p>To try it, enable the OpenAI tunnel in AudioRouter, add the tunnel as a custom MCP connector in ChatGPT, enable the connector in a conversation, and begin with a read-only request. Once that works, ask for a stopped session and inspect the generated graph before allowing playback.</p>
+<p>The result is a practical interface to a fairly technical system: I can still see every node, connection, and parameter, but I no longer have to manually assemble all of them for every new audio setup.</p>
+<nav class="app_blog__slug__Page__articleNavigation" aria-label="Adjacent articles"><a rel="next" href="/blog/audiorouter-memory-diet-four-steps">Older: AudioRouter's Memory Diet: From 960 MB to 30 MB in Four Steps →</a></nav><section class="app__components_MastodonComments__mastodonComments" aria-labelledby="mastodon-comments"><h2 id="mastodon-comments">Discussion</h2><p>Replies are loaded from the public Mastodon thread for this article.</p><div class="app__components_MastodonComments__mastodonActions"><a class="app__components_MastodonComments__mastodonLink" href="https://mastodon.social/@mrdesjardins/117486437461705585">Reply on Mastodon</a></div><div data-mastodon-comments-root data-instance-url="https://mastodon.social" data-status-id="117486437461705585" data-status-url="https://mastodon.social/@mrdesjardins/117486437461705585"><p class="app__components_MastodonComments__mastodonStatus">Loading replies from Mastodon...</p></div></section></div></main></div></div><script type="module" src="/assets/client-BKXKhqj5.js"></script></body></html>
