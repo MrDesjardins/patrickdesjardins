@@ -1,0 +1,118 @@
+<!doctype html><html lang="en" class="app_layout__htmlstyle"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="strict-origin-when-cross-origin"><title>Patrick Desjardins Blog - AudioRouter Performance Round Two: Canvas GPU, a Native Leak, and Fewer Background Walks</title><meta name="description" content="The  ended with one open item: while audio played, the  window used about one core, mostly drawing the animated connections on the canvas. I wrote that it deser…"><link rel="canonical" href="https://patrickdesjardins.com/blog/audiorouter-performance-canvas-gpu-native-leak-and-logger"><meta property="og:title" content="Patrick Desjardins Blog - AudioRouter Performance Round Two: Canvas GPU, a Native Leak, and Fewer Background Walks"><meta property="og:description" content="The  ended with one open item: while audio played, the  window used about one core, mostly drawing the animated connections on the canvas. I wrote that it deser…"><meta property="og:url" content="https://patrickdesjardins.com/blog/audiorouter-performance-canvas-gpu-native-leak-and-logger"><meta property="og:type" content="article"><meta property="og:site_name" content="Patrick Desjardins"><meta property="og:image" content="https://patrickdesjardins.com/images/backgrounds/patrickdesjardins_conference_bw.webp"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Patrick Desjardins Blog - AudioRouter Performance Round Two: Canvas GPU, a Native Leak, and Fewer Background Walks"><meta name="twitter:description" content="The  ended with one open item: while audio played, the  window used about one core, mostly drawing the animated connections on the canvas. I wrote that it deser…"><meta name="twitter:image" content="https://patrickdesjardins.com/images/backgrounds/patrickdesjardins_conference_bw.webp"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Patrick Desjardins","url":"https://patrickdesjardins.com"},"datePublished":"2026-10-27","description":"The  ended with one open item: while audio played, the  window used about one core, mostly drawing the animated connections on the canvas. I wrote that it deser…","headline":"AudioRouter Performance Round Two: Canvas GPU, a Native Leak, and Fewer Background Walks","image":"https://patrickdesjardins.com/images/backgrounds/patrickdesjardins_conference_bw.webp","mainEntityOfPage":"https://patrickdesjardins.com/blog/audiorouter-performance-canvas-gpu-native-leak-and-logger"}</script><link rel="alternate" type="application/rss+xml" title="Patrick Desjardins Blog" href="https://patrickdesjardins.com/blog/rss.xml"><link rel="stylesheet" href="/assets/client-CBn6WbXf.css"><script async src="https://www.googletagmanager.com/gtag/js?id=G-6EH8HNYV13"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}var analyticsConsent="denied";try{analyticsConsent=localStorage.getItem("analytics-consent")==="granted"?"granted":"denied";}catch{}gtag("consent","default",{analytics_storage:analyticsConsent,ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied"});gtag("js",new Date());gtag("config","G-6EH8HNYV13");</script></head><body class="app_layout__bodystyle"><div class="app_blog_layout__blogbodystyle"><div class="app_blog__components_BlogBody__BlogBody"><a class="app_blog__components_BlogBody__skipLink" href="#content">Skip to content</a><header><div class="app_blog__components_BlogBody__siteTitle">Patrick Desjardins Blog</div><nav aria-label="Blog"><ul class="app_blog__components_BlogBody__navLinks"><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/">Main Page</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog">Blog</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/search">Search</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/philosophy">Philosophy</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2026">2026</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2025">2025</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2024">2024</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2023">2023</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2022">2022</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2021">2021</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2020">2020</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2019">2019</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2018">2018</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2017">2017</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2016">2016</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2015">2015</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2014">2014</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2013">2013</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2012">2012</a></li><li class="app_blog__components_BlogBody__navLinkItem"><a class="app_blog__components_BlogBody__navLinkText" href="/blog/for/2011">2011</a></li></ul></nav><div class="app_blog__components_BlogBody__blogPictureContainer"><img class="app_blog__components_BlogBody__blogTopPicture" alt="Patrick Desjardins picture from a conference" src="/images/backgrounds/patrickdesjardins_conference_bw.webp" width="800" height="260"></div></header><main id="content" class="app_blog__components_BlogBody__main"><a class="app_blog__components_BlogBody__articleParentLink" href="/blog">← All technical posts</a><h1 class="app_blog__components_BlogBody__heading">AudioRouter Performance Round Two: Canvas GPU, a Native Leak, and Fewer Background Walks</h1><div class="app_blog__slug__Page__blogPostContainer"><p class="app_blog__slug__Page__blogPostDate">Posted on: <time datetime="2026-10-27">2026-10-27</time></p><p>The <a href="/blog/audiorouter-memory-diet-four-steps">memory diet article</a> ended with one open item: while audio played, the <a href="https://github.com/MrDesjardins/audiorouter">AudioRouter</a> window used about one core, mostly drawing the animated connections on the canvas. I wrote that it deserved its own measurement before anyone touched it. This article is that measurement, plus what came out of the long runs I did afterward.</p>
+<p>Everything here shipped in <a href="https://github.com/MrDesjardins/audiorouter/releases/tag/v0.0.17">0.0.17</a>, over five days. There are four changes:</p>
+<ol>
+<li>The canvas GPU cost while playing.</li>
+<li>A native memory leak in the Rust shell that had been there since the first release.</li>
+<li>The background call that was triggering that leak every 4 seconds.</li>
+<li>The backend logger decoding responses it was about to throw away.</li>
+</ol>
+<h2>A soak harness first</h2>
+<p>The memory diet work was measured over minutes. An app that sits in the tray all day needs to be measured over hours. So before chasing anything, the agent wrote <code>run-app-soak.ps1</code>. It runs the release shell for a number of hours on a copy of my database, with its own <code>LOCALAPPDATA</code> and its own WebView2 profile, so my real AudioRouter and its settings are never touched. Every 30 seconds it samples memory, handles, threads and log size, and at the end it grades the growth of each.</p>
+<pre class="language-powershell" tabindex="0"><code class="language-powershell code-highlight">.\tools\quality\run-app-soak.ps1 -Hours 8 -AutoPlay
+</code></pre>
+<p>I ran it overnight on a complex real session: 19 nodes, a microphone voice chain, a game chain, a Discord capture, two mixers, a duck and a recorder. The dry run already caught a bug before any measurement: at startup, the window and the backend disagreed on which session was active, and they kept overwriting each other. 24 writes in 0.4 seconds, flipping between two sessions. That one was a plain logic fix, found only because the harness starts the app from a clean profile.</p>
+<h2>The canvas: 135% of a core of GPU</h2>
+<p>The first overnight attempt showed the WebView going from about 6% of a core to bursts of 130% to 170% while the shell stayed at 6%. The heap, the DOM and the listeners were flat, so it was not memory. It was drawing.</p>
+<p>The first two attempts to find the cause on the live route gave contradictory answers. The cost followed the audio: when I talked, more connections lit up, and the numbers moved. Measuring a moving target twice gives two different numbers, and both look convincing.</p>
+<p>So the agent moved the measurement to a controlled setup: headed Edge on the existing route test harness (4 paths, 12 nodes, 8 live connections) with fixed simulated telemetry, CPU per process read from the Chrome DevTools Protocol (<code>SystemInfo.getProcessInfo</code>), and each visual layer switched off with injected CSS. Three rounds, rotating the order of the conditions.</p>
+<p>Baseline: <strong>135% of a core in the GPU process and 78% in the renderer</strong>. With the canvas hidden: 1%.</p>
+<p>The cause was a detail of how React Flow draws: every connection lives in <strong>one SVG the size of the canvas</strong>. Any change on any connection repaints the whole layer. Three things kept changing it:</p>
+<ul>
+<li><strong>The comets</strong> (the small lights travelling along a live connection) were SMIL <code>animateMotion</code> elements inside that SVG. Six per connection, and the hidden ones were still animating at opacity 0. That kept the layer repainting at 60 fps. About 40 points of GPU.</li>
+<li><strong>The connection level</strong> changed the color and width of the line on every 20 Hz telemetry tick, with a 160 ms CSS transition. Each tick restarted the transition before the previous one ended, so the layer never stopped repainting. About 50 points.</li>
+<li><strong>The meters</strong> on the nodes animated <code>height</code>, which triggers layout.</li>
+</ul>
+<p>The fixes:</p>
+<ul>
+<li>The comets moved out of the SVG. They are now small HTML elements in React Flow's label layer, moved with Web Animations <code>transform</code> keyframes. The compositor moves them without repainting anything. The keyframes are computed along the curve at constant speed, so they look the same as before.</li>
+<li>Connections draw the level in <strong>3 dB steps</strong>, without transitions. Rounding means most ticks change nothing, and nothing is repainted.</li>
+<li>Meter bars scale with <code>transform</code> instead of <code>height</code>.</li>
+</ul>
+<pre class="language-tsx" tabindex="0"><code class="language-tsx code-highlight">export const LEVEL_STEP_DB = 3;
+
+/** The level a connection draws: `levelDb` rounded to `LEVEL_STEP_DB`. */
+export function shownLevel(levelDb: number | null): number | null {
+  return levelDb === null || !Number.isFinite(levelDb)
+    ? levelDb
+    : Math.round(levelDb / LEVEL_STEP_DB) * LEVEL_STEP_DB;
+}
+</code></pre>
+<p>Result on the same harness: <strong>46% GPU and 43% renderer</strong> with the lights moving. Most of what remains is the cost of compositing a window at 60 fps.</p>
+<p>There was also a product decision. The setting "Animated connections" had three values: always, while AudioRouter is the active window, or never. The default was "always". Most of the time the window sits behind a game, where nobody sees the comets. The default is now "while AudioRouter is the active window", which brings it to <strong>17% GPU and 24% renderer</strong> when another program is in front. People who had already picked a value keep it.</p>
+<table><thead><tr><th>Condition (8 live connections)</th><th>GPU process</th><th>Renderer</th></tr></thead><tbody>
+<tr><td>Before</td><td>135%</td><td>78%</td></tr>
+<tr><td>After, lights moving</td><td>46%</td><td>43%</td></tr>
+<tr><td>After, lights paused (new default when not focused)</td><td>17%</td><td>24%</td></tr>
+</tbody></table>
+<p><img src="/images/blog/audiorouter-canvas-gpu.webp" alt="" /></p>
+<p>The rule that went into the project's <code>AGENTS.md</code>: never animate inside the shared edge SVG, and measure canvas cost with controlled telemetry, per process, not on a live route.</p>
+<h2>The shell: 9.3 MiB per hour, for 8 hours</h2>
+<p>With the canvas fixed, I ran two more overnight soaks. Both flagged the same thing: the shell's private bytes grew <strong>9.3 MiB per hour, in a straight line, for 8 hours</strong>. About 220 MiB a day for an app meant to stay on all the time. The working set stayed flat around 45 MiB while private bytes grew, which means memory written once and never read again.</p>
+<p>This time it was not garbage collection. The shell is Rust. The agent narrowed it down with a few probes, each one on a database copy beside my real app:</p>
+<ul>
+<li><strong>Idle, nothing playing</strong>: flat. So something tied to normal activity.</li>
+<li><strong>The window's request path flooded</strong>: 777,000 <code>system.diagnostics</code> calls through DevTools, about 10 hours of the 20 Hz refresh. +1.4 MiB, then flat. The window, Tauri, the pipe and the backend request path do not leak.</li>
+<li><strong>A dhat build</strong> (Rust heap profiler as the global allocator): the live Rust heap stayed around 6 KB and flat, while process private bytes still grew 8 MiB/h. So the leak was not a Rust allocation. It was native.</li>
+</ul>
+<p>For native memory, the agent used the Windows debugger (<code>cdb</code>) to take two snapshots of the process heap 25 minutes apart and compared the block counts per size. Every size was stable except one: the 128-byte bucket went from <strong>15,112 to 43,039 blocks</strong>. Dumping a few of those blocks showed strings like <code>{0.0.1.00000000}.{…}</code>. Those are Windows audio endpoint IDs.</p>
+<p>The cause was six lines of code. <code>IMMDevice::GetId</code> returns a string allocated by COM. In the <code>windows</code> crate, that is a raw pointer with no destructor: the caller must free it with <code>CoTaskMemFree</code>. All six call sites copied it with <code>to_string()</code> and dropped the pointer. Two of them even had a comment saying the crate wrapper frees it. It does not. Each walk of the audio endpoints leaked about 150 bytes per endpoint, and my PC has 62 endpoints.</p>
+<p>The fix is one helper used at all six sites:</p>
+<pre class="language-rust" tabindex="0"><code class="language-rust code-highlight">unsafe fn take_endpoint_id(id: windows::core::PWSTR) -&gt; Result&lt;String, AudioError&gt; {
+    // SAFETY: `id` is a live, NUL-terminated CoTaskMem string owned here.
+    // It is read once, then freed exactly once.
+    unsafe {
+        let text = id.to_string().map_err(|_| AudioError::InvalidUtf16);
+        windows::Win32::System::Com::CoTaskMemFree(Some(id.0 as *const core::ffi::c_void));
+        text
+    }
+}
+</code></pre>
+<p>A regression test walks all endpoints 500 times and checks how much the process heap grew. On the old code it failed with <strong>5.6 MB left behind</strong>. With the fix it passes. Then the real check, another overnight soak on the fixed build:</p>
+<table><thead><tr><th>Check over 8 hours</th><th>Before</th><th>After</th></tr></thead><tbody>
+<tr><td>Shell private bytes slope</td><td>9.31 MiB/h</td><td>0.11 MiB/h</td></tr>
+<tr><td>Shell private bytes at the end</td><td>104.8 MiB</td><td>30.9 MiB</td></tr>
+<tr><td>Handles</td><td>509</td><td>509</td></tr>
+<tr><td>Errors in logs</td><td>0</td><td>0</td></tr>
+</tbody></table>
+<p><img src="/images/blog/audiorouter-shell-leak-soak.webp" alt="" /></p>
+<p>This bug had been in every release since the first Windows audio adapter, v0.0.1. The short tests never showed it because 9 MiB per hour is invisible in a 10-minute run. It took an 8-hour run to see a slope.</p>
+<h2>Who was walking the endpoints every 4 seconds?</h2>
+<p>The leak fix stopped the bleeding, but one question was still open: why was something enumerating every audio endpoint so often while playing? The leak rate matched one walk every few seconds.</p>
+<p>The first suspect was the endpoint monitor: it re-enumerates when Windows reports a device change. A probe registered beside the app counted the Windows endpoint notifications: <strong>zero</strong> in 4 minutes of playing. Not the monitor.</p>
+<p>So the agent built a temporary instrumented shell that counted each walk. The answer was <code>virtualCable.status</code>. The UI polls it every 2 seconds to show whether the virtual cable driver is installed and healthy. The backend cached the answer for 2 seconds. Poll, cache, expire, poll: a full walk of all 62 endpoints about every 4 seconds, just to say "the cables are fine".</p>
+<p>The cache now lasts until Windows reports an endpoint change, through a read-only notification subscription, with a 30 second backstop for driver states that do not announce themselves. Measured with the same instrumented build: <strong>7.5 walks per 30 seconds down to 1</strong>.</p>
+<h2>The logger decoding what it throws away</h2>
+<p>The dhat profile from the leak hunt had a side finding: about <strong>82,000 short-lived allocations per second</strong> while playing. All freed, so not a leak, but a lot of work for an app moving audio around.</p>
+<p>Part of it was the backend logger. Successful routine reads like the 20 Hz <code>system.diagnostics</code> are not logged; only failures are. But the logger thread built a full JSON tree of every response first, then checked whether to log it, then dropped it.</p>
+<p>Now it reads only the <code>error</code> member of each response with serde's <code>IgnoredAny</code>, which skips the rest without building anything, and returns early when every request is a routine read and none failed:</p>
+<pre class="language-rust" tabindex="0"><code class="language-rust code-highlight">fn any_response_error(responses: &amp;[Vec&lt;u8&gt;]) -&gt; bool {
+    #[derive(serde::Deserialize)]
+    struct Outcome {
+        #[serde(default)]
+        error: Option&lt;serde::de::IgnoredAny&gt;,
+    }
+    responses.iter().any(|frame| {
+        audiorouter_protocol::decode_frame::&lt;Outcome&gt;(frame)
+            .map_or(true, |outcome| outcome.error.is_some())
+    })
+}
+</code></pre>
+<p>For a diagnostics response the size of my session (9.7 KB), the logger went from <strong>61 µs to 6 µs per record</strong>. A frame that cannot be decoded counts as an error, so it takes the full path and failures are still logged the same way.</p>
+<p>A related fix from earlier in the week: the list of reads that should not be logged was a list of method names, and it only had two. The window's newer polls (meters, session summary, recorders, cable status) were logged on every call, and my log files held <strong>33 minutes of history</strong> before rotating. The rule is now by method class: every read-only method in the API table logs only failures. The soak harness now reports more than 30,000 hours of history at the measured rate.</p>
+<h2>What about the driver?</h2>
+<p>The virtual cable driver had a busy week too, but its work was correctness and qualification, not speed: bit-exact audio at 44.1, 48 and 96 kHz on 1, 2 and 8 channels, THD+N at −153 dB, and cable routes that now open at the cables' actual rate instead of always 48 kHz (before, a cable set to 44.1 kHz moved no audio at all). Those are real results, but calling them performance improvements would be stretching it. They belong in a driver article.</p>
+<h2>What I take from it</h2>
+<p>The two biggest problems this week were invisible in the way I tested before. The GPU cost depended on the audio, so it changed every time I measured it on the live route. The leak was 9 MiB per hour, so it hid in any test shorter than a few hours. Both needed a different measurement setup before any code change: a controlled harness for the canvas, an 8-hour soak for the shell.</p>
+<p>The leak is also a good reminder about comments. Two comments in the code said the crate freed the string, and nobody questioned them for six weeks. The heap snapshot did not care what the comment said.</p>
+<p>The pattern from the memory diet held: measure, change one thing, measure again on the real session in the release build. The agent did the probing, the heap snapshots and the regression tests. My part was running the overnight soaks on my PC, deciding the new default for the animated connections, and asking "who calls this every 4 seconds?" instead of stopping once the leak was fixed.</p>
+<p>Pros:</p>
+<ul>
+<li>Each fix has a number before and after, and a regression test that fails on the old code.</li>
+<li>The soak harness is reusable, so the next slow leak should show up in one night instead of in a user's Task Manager.</li>
+</ul>
+<p>Cons:</p>
+<ul>
+<li>8-hour soaks are slow. A fix takes a day to confirm.</li>
+<li>The canvas still costs about half a core of GPU when the window is in front with lights moving. That is the price of a 60 fps window, and I accepted it :)</li>
+</ul>
+<nav class="app_blog__slug__Page__articleNavigation" aria-label="Adjacent articles"><a rel="next" href="/blog/audiorouter-mcp-how-it-works-and-how-to-set-it-up">Older: AudioRouter and MCP: How It Works and How to Set It Up →</a></nav><section class="app__components_MastodonComments__mastodonComments" aria-labelledby="mastodon-comments"><h2 id="mastodon-comments">Discussion</h2><p>Replies are loaded from the public Mastodon thread for this article.</p><div class="app__components_MastodonComments__mastodonActions"><a class="app__components_MastodonComments__mastodonLink" href="https://mastodon.social/@mrdesjardins/117514915722776358">Reply on Mastodon</a></div><div data-mastodon-comments-root data-instance-url="https://mastodon.social" data-status-id="117514915722776358" data-status-url="https://mastodon.social/@mrdesjardins/117514915722776358"><p class="app__components_MastodonComments__mastodonStatus">Loading replies from Mastodon...</p></div></section></div></main></div></div><script type="module" src="/assets/client-Dp5bS9gp.js"></script></body></html>
