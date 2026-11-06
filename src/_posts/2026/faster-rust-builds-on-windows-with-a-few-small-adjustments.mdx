@@ -1,0 +1,93 @@
+---
+title: "Faster Rust Builds on Windows With a Few Small Adjustments"
+date: "2026-11-06"
+categories:
+  - "rust"
+  - "performance"
+  - "windows"
+  - "audiorouter"
+---
+
+My desktop has a 24-core Core Ultra 9 285K, 32 GB of RAM and a fast NVMe drive. Yet every time I built or tested [AudioRouter](https://github.com/MrDesjardins/audiorouter), it felt slow. AudioRouter is a Rust workspace of 12 crates, plus a Tauri desktop app.
+
+The hardware was not the problem. The setup around it was, and a few small adjustments fixed most of it: a full build of the test programs dropped from 56.5 to 37.9 seconds, and the build output shrank by almost half.
+
+## What was slowing it down
+
+I asked an agent to inspect the machine before changing anything. It found five things:
+
+- **Linker:** Rust was using Microsoft's default `link.exe`, and every test program has to be linked.
+- **Debug info:** every crate and dependency was built with full debug info.
+- **Antivirus:** Defender's real-time scanning was on, and builds create a huge number of small files.
+- **Power plan:** Windows was on Balanced, which can push background terminal builds to the slower E-cores on this chip.
+- **Worktrees:** I had 70 Git worktrees, mostly left behind by agents. The 52 `target` folders we measured added up to **514 GB**.
+
+`sccache` was already installed, and it helps with dependencies. It does not help with a workspace's own crates in a debug build, because incremental compilation makes them non-cacheable.
+
+## Rust Configuration changes
+
+This is the part I could measure. It goes in the user-level `~/.cargo/config.toml`, so it stays on my machine and CI is not affected:
+
+```toml
+# Faster linking, using the LLD linker that ships with the Rust toolchain
+[target.x86_64-pc-windows-msvc]
+linker = "rust-lld.exe"
+
+# Keep line numbers in my own crates
+[profile.dev]
+debug = "line-tables-only"
+
+# No debug info for dependencies
+[profile.dev.package."*"]
+debug = false
+```
+
+Backtraces still have line numbers, but a debugger shows less about local variables. When I need that, I can turn debug info back on for a session.
+
+To measure it, I built the same commit twice, from a temporary checkout with an empty `target` folder:
+
+```powershell
+$env:SCCACHE_RECACHE = "1"  # same compile work in both runs, no cache hits
+cargo test --workspace --no-run -j 12
+```
+
+| Measurement | Before | After | Change |
+|---|---|---|---|
+| Full build of all test programs | 56.5 s | 37.9 s | -33% |
+| Rebuild after changing `domain` | 23.7 s | 12.8 s | -46% |
+| Rebuild after changing `dsp` | 15.6 s | 12.9 s | -17% |
+| `target` folder size | 6.4 GB | 3.5 GB | -45% |
+
+The rebuilds are the numbers I care about most, because that is the loop I sit through all day. Changing `domain` forces everything that depends on it to recompile and relink, so it gains the most.
+
+Take these as approximate. It is one run per configuration at low priority, with other work running on the machine, and it limits Cargo to 12 jobs instead of all 24 cores.
+
+## Windows Defender and the power plan
+
+These two commands take a few seconds, in an administrator PowerShell:
+
+```powershell
+Add-MpPreference -ExclusionPath "C:\code","$env:USERPROFILE\.cargo","$env:USERPROFILE\.rustup","$env:LOCALAPPDATA\Mozilla\sccache"
+powercfg /setactive SCHEME_MIN
+```
+
+I have no number to give you for these. Both were already active when I ran the table above, so **their gain is not in it**, and I did not want to turn protection back off just to get a benchmark.
+
+The Defender change also has a real cost: anything in those folders, including crates you download, is no longer scanned in real time. Windows has a better option called a [Dev Drive](https://learn.microsoft.com/en-us/windows/dev-drive/), a volume made for code that still scans files but without making builds wait. I skipped it for now, because moving the repository means moving every worktree too.
+
+## Git Worktrees
+
+Removing 59 of the 70 worktrees took `C:` from 235 GB free to 393 GB free. Every branch survived, because removing a worktree does not delete its branch. Each new worktree also pays for a fresh build of the workspace, so fewer of them means less rebuilding.
+
+```powershell
+# rmdir without /s removes only the link, not what it points to
+Get-ChildItem $worktree -Recurse -Force -Attributes ReparsePoint |
+  ForEach-Object { cmd /c rmdir "$($_.FullName)" }
+git worktree remove $worktree
+```
+
+The cleanup is now a script that only removes merged, clean worktrees and unlinks junctions first. My agent rules tell agents to run it after a merge, and never to delete a worktree any other way.
+
+## Conclusion
+
+The config change took two minutes and gave me the biggest measured gain. What I take from it is that a fast computer does not make up for default settings, and that the slowness was easy to find once something actually looked for it.
