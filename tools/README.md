@@ -33,19 +33,19 @@ Generates semantic search indexes for:
 **Generate both indexes:**
 
 ```bash
-uv run --directory tools python tools/search/main.py generate
+uv run --directory tools python search/main.py generate
 ```
 
 **Search the technical blog index:**
 
 ```bash
-uv run --directory tools python tools/search/main.py search "your query here"
+uv run --directory tools python search/main.py search "your query here"
 ```
 
 **Search the philosophy index:**
 
 ```bash
-uv run --directory tools python tools/search/main.py search philosophy "your query here"
+uv run --directory tools python search/main.py search philosophy "your query here"
 ```
 
 ---
@@ -57,13 +57,13 @@ Posts a new item to LinkedIn. By default, it posts technical blog posts from `sr
 **Post today's article:**
 
 ```bash
-uv run --directory tools python tools/linkedin/post.py
+uv run --directory tools python linkedin/post.py
 ```
 
 **Get your LinkedIn person ID** (run once during setup):
 
 ```bash
-uv run --directory tools python tools/linkedin/get_id.py
+uv run --directory tools python linkedin/get_id.py
 ```
 
 Required environment variables:
@@ -81,15 +81,23 @@ Copy `.env.example` to `.env` and fill in the values for local use.
 
 ### Rotating the LinkedIn Access Token (~every 60 days)
 
-LinkedIn OAuth tokens expire after ~60 days. When the workflow starts failing with a 401, rotate the token:
+LinkedIn's self-serve "Share on LinkedIn" product only issues 60-day access tokens with **no refresh token**, so a human login is required each time; this cannot be fully automated. Rotation is a single command:
 
-1. Go to [LinkedIn Developer Portal](https://www.linkedin.com/developers/apps) and open your app.
-2. Navigate to **Auth** tab → **OAuth 2.0 tools**.
-3. Click **Request access token**.
-4. Select the required scopes: `openid`, `profile`, `email`, `w_member_social`.
-5. Click **Request access token** — copy the generated token.
-6. Update `.env` locally: set `LINKEDIN_ACCESS_TOKEN=<new token>`.
-7. Update the GitHub secret: **repo → Settings → Secrets and variables → Actions → `LINKEDIN_ACCESS_TOKEN` → Update**.
+```bash
+uv run --directory tools python linkedin/rotate_token.py
+```
+
+It opens the LinkedIn consent page (if you are already logged in and have granted the scopes, it redirects immediately), catches the redirect on `http://localhost:8765/callback`, exchanges the code, then updates `.env`, the `LINKEDIN_ACCESS_TOKEN` GitHub secret, and the `LINKEDIN_TOKEN_EXPIRES_AT` repository variable. Pass `--no-github` to only update `.env`.
+
+One-time setup:
+
+1. In the [LinkedIn Developer Portal](https://www.linkedin.com/developers/apps), open the app → **Auth** tab and add `http://localhost:8765/callback` under **Authorized redirect URLs**.
+2. Copy the app's **Client ID** and **Client Secret** into `.env` as `LINKEDIN_CLIENT_ID` / `LINKEDIN_CLIENT_SECRET`.
+3. Make sure `gh auth status` works locally (needs permission to set repo secrets/variables).
+
+The `LinkedIn token expiry reminder` workflow (`.github/workflows/linkedin-token-check.yml`) runs daily and opens a GitHub issue 10 days before `LINKEDIN_TOKEN_EXPIRES_AT`, or when that variable is unset.
+
+**Refresh tokens:** if the app is ever approved for programmatic refresh (e.g. the Community Management API), LinkedIn returns a 365-day refresh token. `rotate_token.py` then stores `LINKEDIN_REFRESH_TOKEN`, `LINKEDIN_CLIENT_ID` and `LINKEDIN_CLIENT_SECRET` as GitHub secrets, and `post.py` mints a fresh access token on every run (`tools/linkedin/auth.py`), so rotation drops to once a year.
 
 ---
 
@@ -122,7 +130,7 @@ Posts a new item to X/Twitter. By default, it posts technical blog posts from `s
 **Post today's article:**
 
 ```bash
-uv run --directory tools python tools/twitter/post.py
+uv run --directory tools python twitter/post.py
 ```
 
 Required environment variables:

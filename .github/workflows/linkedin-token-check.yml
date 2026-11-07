@@ -1,0 +1,51 @@
+name: LinkedIn token expiry reminder
+
+# LinkedIn self-serve apps only get 60-day tokens with no refresh token, so
+# rotation needs a human login. This opens an issue before the token expires
+# instead of letting the continue-on-error social-post job fail silently.
+# The expiry date is written by tools/linkedin/rotate_token.py.
+on:
+  schedule:
+    - cron: "0 15 * * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Open an issue when the token is close to expiry
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          EXPIRES_AT: ${{ vars.LINKEDIN_TOKEN_EXPIRES_AT }}
+          WARN_DAYS: "10"
+        run: |
+          set -euo pipefail
+          title="Rotate LinkedIn access token"
+          if [ -z "${EXPIRES_AT}" ]; then
+            reason="LINKEDIN_TOKEN_EXPIRES_AT is not set, so the expiry date is unknown."
+          else
+            days_left=$(( ( $(date -u -d "${EXPIRES_AT}" +%s) - $(date -u +%s) ) / 86400 ))
+            echo "LinkedIn token expires ${EXPIRES_AT} (${days_left} days left)"
+            if [ "${days_left}" -gt "${WARN_DAYS}" ]; then
+              exit 0
+            fi
+            reason="The LinkedIn token expires on ${EXPIRES_AT} (${days_left} days left)."
+          fi
+          existing=$(gh issue list --state open --search "in:title \"${title}\"" --json number --jq '.[0].number // empty')
+          if [ -n "${existing}" ]; then
+            echo "Issue #${existing} already open"
+            exit 0
+          fi
+          gh issue create --title "${title}" --body "${reason}
+
+          Run locally (one browser click if you are still logged in to LinkedIn):
+
+          \`\`\`bash
+          uv run --directory tools python linkedin/rotate_token.py
+          \`\`\`
+
+          It updates \`.env\`, the \`LINKEDIN_ACCESS_TOKEN\` secret and the \`LINKEDIN_TOKEN_EXPIRES_AT\` variable. Close this issue afterwards."

@@ -6,8 +6,11 @@ import requests
 from dotenv import load_dotenv
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from social_common import (
+from auth import resolve_access_token  # noqa: E402
+
+from social_common import (  # noqa: E402
     SCRIPT_DIR,
     build_post_url,
     format_category_hashtag,
@@ -108,9 +111,10 @@ def upload_image_to_linkedin(image_path: str, person_id: str, token: str) -> str
     return asset
 
 
-def post_to_linkedin(text: str, slug: str, asset_urn: str | None = None) -> None:
+def post_to_linkedin(
+    text: str, slug: str, token: str, asset_urn: str | None = None
+) -> None:
     person_id = os.environ["LINKEDIN_PERSON_ID"]
-    token = os.environ["LINKEDIN_ACCESS_TOKEN"]
     url = build_post_url(slug)
     if get_social_content_kind() == "philosophy":
         full_text = f"{text}\n\n{url}"
@@ -142,11 +146,15 @@ def post_to_linkedin(text: str, slug: str, asset_urn: str | None = None) -> None
 
 
 if __name__ == "__main__":
-    required_vars = ["GEMINI_API_KEY", "LINKEDIN_ACCESS_TOKEN", "LINKEDIN_PERSON_ID"]
+    required_vars = ["GEMINI_API_KEY", "LINKEDIN_PERSON_ID"]
     missing = [var_name for var_name in required_vars if not os.environ.get(var_name)]
+    access_token = resolve_access_token()
+    if not access_token:
+        missing.append("LINKEDIN_ACCESS_TOKEN (or LINKEDIN_REFRESH_TOKEN + client credentials)")
     if missing:
         print(f"Error: Missing required environment variables: {', '.join(missing)}")
         sys.exit(1)
+    assert access_token is not None
 
     title, slug, content, frontmatter = find_todays_post("LINKEDIN_POST_DATE_TZ")
     if not title:
@@ -181,7 +189,7 @@ if __name__ == "__main__":
             asset_urn = upload_image_to_linkedin(
                 image_path,
                 os.environ["LINKEDIN_PERSON_ID"],
-                os.environ["LINKEDIN_ACCESS_TOKEN"],
+                access_token,
             )
         except requests.HTTPError as error:
             print(
@@ -190,10 +198,12 @@ if __name__ == "__main__":
 
     try:
         wait_for_blog_post_to_be_available(title, slug, "LINKEDIN")
-        post_to_linkedin(linkedin_text, slug, asset_urn=asset_urn)
+        post_to_linkedin(linkedin_text, slug, access_token, asset_urn=asset_urn)
     except requests.HTTPError as error:
         if error.response.status_code == 401:
-            print("LinkedIn token expired — rotate LINKEDIN_ACCESS_TOKEN")
+            print(
+                "LinkedIn token expired: run `uv run --directory tools python linkedin/rotate_token.py`"
+            )
         else:
             print(f"LinkedIn API error {error.response.status_code}: {error.response.text}")
         sys.exit(1)
