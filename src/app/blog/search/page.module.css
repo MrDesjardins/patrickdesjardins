@@ -55,7 +55,7 @@
   outline-offset: 3px;
 }
 .textbox::placeholder {
-  color: var(--current-link-background-color);
+  color: var(--blog-date-foreground-color);
   font-style: italic;
   opacity: 1; /* Firefox */
 }

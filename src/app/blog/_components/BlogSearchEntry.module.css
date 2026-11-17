@@ -21,6 +21,13 @@
   line-height: 20px;
 }
 
+.blogSearchEntryExcerpt {
+  margin-top: 6px;
+  margin-bottom: 6px;
+  color: var(--blog-text-color);
+  line-height: 1.4;
+}
+
 .searchScore {
   color: var(--blog-date-foreground-color);
   font-size: 14px;

@@ -29,7 +29,7 @@ export const BlogSearchEntry = (
           </time>
           <BlogCategories categories={props.categories} />
         </div>
-        <p>{props.excerpt}</p>
+        <p className={styles.blogSearchEntryExcerpt}>{props.excerpt}</p>
         <span className={styles.searchScore}>
           Relevance: {formatScore(props.score)}
         </span>
