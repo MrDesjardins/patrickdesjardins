@@ -1,0 +1,98 @@
+---
+title: "Recapitulation 2026"
+date: "2026-12-16"
+categories:
+  - "general"
+---
+
+Another year, another recapitulation. If you want to see how things evolved, you can read my previous ones of [2025](/blog/recapitulation-2025), [2022](/blog/recapitulation-2022), [2021](/blog/recaptulation-year-2021), [2020](/blog/my-recapitulation-of-2020-another-great-year), [2018](/blog/recapitulation-of-2018), and [2017](/blog/recapitulation-of-2017).
+
+# Blog Articles and Essays
+
+2026 is the year I wrote the most in a long time. I published 60 technical blog posts, compared to 22 in 2025, 18 in 2024, and 25 in 2023. On top of that, I opened a [new philosophy section](/philosophy/philosophy-journey) on this website and published 24 essays and fables there. That is more than 80 pieces of writing in a single year.
+
+The reason is simple: I had a lot to say. AI changed how I work at Roblox and how I build my side projects, and writing is how I make sense of what is happening.
+
+# AI Everywhere
+
+If I had to summarize the technical year in one word, it would be AI. It started with small experiments like [running a local LLM on an Nvidia 5080](/blog/runninglocal-llm-nvidia-5080-for-coding) and [Trilium with RAG](/blog/trilium-rag-ai-prompt), and it ended with agents running for days without me touching the keyboard.
+
+A few posts summarize the journey:
+
+- In February and March, I wrote about [multi-agents and the future](/blog/multi-agents-and-the-future), [AI coding, trust and review](/blog/ai-trust-and-review), and [the vibe coding plateau](/blog/the-vibe-coding-plateau).
+- In April, I described [the AI-first lifecycle](/blog/the-ai-first-lifecycle) and the [new 5-day work process](/blog/new-ai-work-process-of-5-days) I introduced with my squad. A few months later, I shared the conclusions in [5-8x coding improvement that could be doubled](/blog/5-8x-coding-improvement-that-could-be-doubled).
+- I also wrote about the subscriptions themselves. I [cancelled Claude Code Pro](/blog/cancelled-claude-code-pro) after [comparing $20 of Codex and Claude](/blog/20-codex-20-claude), and then found out that [Codex usage became as bad as Claude](/blog/codex-usage-as-bad-as-claude). The model matters less than the experience around it.
+- At work, I built [an unattended bug-fixing agent](/blog/an-unattended-bug-fixing-agent-temporal-jira-cloud-vm-and-draft-pull-request) that picks small Jira bugs and opens a draft pull request for a developer to review.
+
+The common thread is that the bottleneck moved. Writing code is no longer the slow part. Specifications, reviews, rules, and the harness around the agent are.
+
+Also, 2026 is the first year of my life that I did not write a single line of code manually. Everything was prompted. A quick estimate gives me about 1.5 million lines of code "coded by me", a number I would never have imagined. Before, I was perhaps reaching 50,000 lines per year. The impact goes beyond the many projects I created faster at work and on the side. It also spans programming languages: a full iOS and Android app at Roblox in under 4 months, C++ Windows drivers, Python for retirement simulators, and Rust for audio engines.
+
+The consequence of this fast pace is a lack of focus and depth in many areas. Changing focus often is hard and exhausting, but the speed is driven by competition, at work and even on side projects. The reality has always been to ship fast, and AI has accelerated it to a point where the feeling of losing control and comprehension comes up among my peers every couple of weeks.
+
+# Built Projects
+
+I built more projects this year than in any previous year, mostly because AI agents allowed me to work on several in parallel during my evenings.
+
+- **AudioRouter**: A visual audio router for Windows written in Rust with a React canvas, an API, and an MCP server. It started from [a Google Doc and a multi-day autonomous Codex goal](/blog/building-audiorouter-from-google-doc-to-a-multi-day-autonomous-codex-goal) and became a series of posts, including [shipping it](/blog/audiorouter-two-hours-of-spec-a-week-of-agents-and-the-last-ten-percent), [what it taught me about rules and harness](/blog/what-building-audiorouter-taught-me-about-harness-and-rules), and [its memory diet from 960 MB to 30 MB](/blog/audiorouter-memory-diet-four-steps).
+- **Oktopai**: An experiment with [a local fleet of specialized coding knowledge](/blog/oktopai-a-local-fleet-of-specialized-coding-knowledge) where I [taught a small local model to speak TypeScript](/blog/teaching-a-small-local-model-to-speak-typescript).
+- **Jev tools**: A [VS Code extension running 370 text rules under 2 seconds](/blog/typesafe-ai-jev-running-370-text-rules-under-2-seconds) and [Jev Send Guard](/blog/jev-send-guard-a-tone-check-before-you-hit-send), a tone check before hitting send.
+- **TribeMarkets**: A play-money prediction-market platform [built with AI with a self-fixing production](/blog/building-tribemarkets-with-ai-architecture-and-self-fixing-production). I later [ported the self-fixing bug workflow](/blog/self-fixing-bug-discord-bot-app-log) to my Discord bot.
+- **Audiobook machine**: [Version 2](/blog/audiobook-machine-version-2-with-esp-32) and [version 3](/blog/audiomachine-version3-using-esp32-rotary-display) with an ESP32, mixing electronics and 3D printing.
+- **Audio and studying**: [YouTube streaming radio with AI summary](/blog/youtube-streaming-radio-with-auto-ai-summary), [Kokoro TTS on GPU](/blog/Kokoro-tts-free-using-gpu-with-many-voices), [automatic audio note summary with flash cards](/blog/automatic-audio-note-summary-with-flash-card-using-ai), and [using epaper for studying](/blog/using-epaper-for-studying).
+- **This website**: I [replaced NextJS with a Rust static site generator](/blog/replacing-nextjs-with-a-rust-static-site-generator) and added [Mastodon threads as comments](/blog/mastodon-thread-static-website).
+
+I also finally finished a long-overdue project: [transferring files via HDMI](/blog/how-to-transfer-files-between-computers-using-HDMI-Part-8-registration-and-crc). A few years ago, I got it to about 90% but could not find the last piece to make it work. I started it in 2023 while learning Rust and gave up along the way to work on other priorities. This year, AI found a few weaknesses in my algorithms. I have to admit that AI is great at finding what is wrong and how to fix it within minutes. Today, the whole project could be built in less than 20 minutes with AI. It is crazy to think how many experiments (see the 8-part series) and hours it took me. While I learned a lot, this knowledge is worth much less now that AI can work on the solution, the design, and the implementation.
+
+# Technologies
+
+## Rust and TypeScript
+
+Last year, I mentioned putting Rust on hold to focus on Python. Rust came back this year, but differently. With agents writing most of the code, the language choice depends more on the runtime characteristics than on my comfort with it. AudioRouter and this website's generator are both in Rust because the performance and the strict compiler are an advantage when an agent writes the code. TypeScript remains my main language at work and in many side projects.
+
+## Python
+
+Python is still a big part of my side projects: the Discord bot, the audio tools, Oktopai, and the [15 minutes to 71 milliseconds optimization](/blog/from-15-minutes-to-71-milliseconds-big-o-and-a-matrix) that reminded me that Big O still matters, even in the era of AI.
+
+## Open-source projects
+
+Here is a list of the public open-source projects I created or actively contributed to in 2026.
+
+- https://github.com/MrDesjardins/audiorouter
+- https://github.com/MrDesjardins/oktopai
+- https://github.com/MrDesjardins/jevrealtimecodecheck
+- https://github.com/MrDesjardins/jev-send-guard
+- https://github.com/MrDesjardins/trilium-ai
+- https://github.com/MrDesjardins/python-discord-scheduler-bot
+- https://github.com/MrDesjardins/aliciaMusicMachineEsp32Rotary
+- https://github.com/MrDesjardins/audio-stream-server
+
+# Philosophy
+
+The biggest personal change of the year is philosophy. In May, I [started my philosophy journey](/philosophy/philosophy-journey) as a candidate in a philosophy program with a concentration in logic and epistemology. After four courses, I [moved on to a Master of Arts in Philosophy](/philosophy/philosophy-journey-part-2).
+
+The philosophy section of this website contains two kinds of writing: fables like [the Council of the Owls](/philosophy/council-of-the-owls) and [the Heritage of the Harness](/philosophy/the-heritage-of-the-harness), and essays like [Can Large Language Models Understand Meaning?](/philosophy/can-large-language-models-understand-meaning) and [LLMs and Hume's problem of induction](/philosophy/llms-and-genuine-discontinuities-hume-s-problem-of-induction). Unsurprisingly, the intersection of AI and philosophy is where I spend most of my thinking time.
+
+# Work at Roblox
+
+2026 was my first full year at Roblox. I led a small squad building a product with an AI-first mentality, experimenting with a new work lifecycle, and later worked on automation like the unattended bug-fixing agent. Not everything went as planned. As I described in the [5-8x coding improvement](/blog/5-8x-coding-improvement-that-could-be-doubled) post, old habits came back when pressure increased near the end of the project. Still, I am pretty proud of the outcome! The experience confirmed that the gain is real and that the process around AI matters as much as the tool.
+
+In hindsight, the year had three distinct projects. In January and February, I worked on a project with agent orchestration that led to a patent where I am the sole inventor. Then I led a 4-month AI project generating code for a mobile app, something neither I nor the 4 other engineers had ever done. Finally, I took over a 5-year-old project that is critical at Roblox and wrote a specification of over 1,000 pages. I then managed a fleet of agents that worked on it around the clock for 72 hours. The output was not perfect, but it was an amazing amount of work.
+
+# Personal Life
+
+I had a great year with my family. My daughter is doing great, and I have been playing Roblox a lot with my son (7 years old). I have a great time with them and with my wife, and I enjoy the human side of my life more and more. I have less interest in spending hours and hours learning new frameworks, languages, or programming skills, but I stay up to date with AI because I know it is the future. However, this vision also keeps me from over-investing in tech, since AI will take over a large portion of it. I did not do much 3D printing this year, mostly enclosures for a few electronic projects. Most of my free time is dedicated to learning philosophy. I found solace in thinking about different points of view on life, leaving tech behind.
+
+Since I started working at Roblox, I have been living in Foster City. It is a great place, but the rent has already increased, and $6,500/month is insane in my head, especially since my RSUs dropped heavily. While I really like California, I miss the San Jose weather (drier, less wind), and I also realize that I will not stay here for the long term. The dystopian reality is becoming more visible. It feels unrealistic and unhealthy, and I am not sure I want my children to grow up in this "rat race" where a few reach extreme wealth and so many are left behind. My wife and I are also getting older, and so are our parents and siblings. We do not plan to move back to Canada, but perhaps some middle ground will make sense.
+
+My fitness went down this year. At Adobe, there was an on-site gym, and I was motivated to go at least twice a week. At Roblox, that is not the case. The company added a free Basecamp Fitness subscription, and I went about 10 times, but I am not as motivated as I was in my twenties. I also started running a little, but I had to stop after my nose surgery and never restarted. I need to get back to it, since my cardio is very weak and I have been losing muscle mass.
+
+# What Next?
+
+For 2027, I want to continue the philosophy master's degree and keep writing on both sides of this website.
+
+AI is here to stay. The "AI slop" that some people talk about is fading away, or at least it is no worse than human slop. The specification project I mentioned above is a good example: I would have planned it for over 6 months with 4 people, and it was generated in less than 72 hours using good specifications and simple AI agents. The cost went from around $1 million to under $50,000 (80% human, 20% AI). I expect even more drastic changes in 2027 as more projects are structured with AI in mind, leading to more successes.
+
+On the side-project front, I plan to release more versions of AudioRouter. I have also started building audio drivers that will provide free virtual cables, something I have not seen on Windows. A couple of other big changes are coming, but most of them will only be official in the first half of 2027. Let's see how life makes them happen.
+
+I also want to keep the balance I found last year between work, side projects, and family. Writing 80 pieces in a year was fun, but the goal was never the number. I still can't believe I have been writing blog posts every year for 16 years already.
